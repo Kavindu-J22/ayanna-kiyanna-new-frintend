@@ -69,6 +69,7 @@ import {
 
 // Components
 import Header from './components/Header';
+import LoadingScreen from './components/LoadingScreen';
 import TestPage from './pages/TestPage';
 import Home from './pages/Home';
 import About from './pages/About';
@@ -252,6 +253,21 @@ const SidebarFooter = styled('div')(({ theme }) => ({
 }));
 
 function App() {
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 3000); // 3 seconds loading time
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <Router>
       <AppContent />
