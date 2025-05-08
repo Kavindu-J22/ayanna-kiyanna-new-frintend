@@ -1,25 +1,695 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { styled, useTheme, keyframes } from '@mui/material/styles';
+import {
+  Box,
+  CssBaseline,
+  Divider,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+  useMediaQuery,
+  Typography,
+  Avatar,
+  Button
+} from '@mui/material';
+import {
+  Menu as MenuIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
+  ExpandLess as ExpandLessIcon,
+  ExpandMore as ExpandMoreIcon,
+  Dashboard as DashboardIcon,
+  Home as HomeIcon,
+  Book as BookIcon,
+  Quiz as QuizIcon,
+  Star as StarIcon,
+  MoreHoriz as MoreHorizIcon,
+  School as SchoolIcon,
+  Class as ClassIcon,
+  ShoppingCart as ShoppingCartIcon,
+  Announcement as AnnouncementIcon,
+  ContactSupport as ContactSupportIcon,
+  VideoLibrary as VideoLibraryIcon,
+  Description as DescriptionIcon,
+  Collections as CollectionsIcon,
+  MenuBook as MenuBookIcon,
+  RateReview as RateReviewIcon,
+  LibraryBooks as LibraryBooksIcon,
+  AutoStories as AutoStoriesIcon,
+  Assignment as AssignmentIcon,
+  Timer as TimerIcon,
+  Article as ArticleIcon,
+  RateReviewOutlined as RateReviewOutlinedIcon,
+  ImportContacts as ImportContactsIcon,
+  PlayLesson as PlayLessonIcon,
+  NoteAlt as NoteAltIcon,
+  PhotoLibrary as PhotoLibraryIcon,
+  Groups as GroupsIcon,
+  EmojiEvents as EmojiEventsIcon,
+  CastForEducation as CastForEducationIcon,
+  Science as ScienceIcon,
+  Translate as TranslateIcon,
+  LocalLibrary as LocalLibraryIcon,
+  AccountTree as AccountTreeIcon,
+  ContactMail as ContactMailIcon,
+  NotificationsActive as NotificationsActiveIcon,
+  Brightness4 as Brightness4Icon,
+  ExitToApp as ExitToAppIcon,
+  Facebook as FacebookIcon,
+  Twitter as TwitterIcon,
+  Instagram as InstagramIcon,
+  YouTube as YouTubeIcon
+} from '@mui/icons-material';
+
+// Components
 import Header from './components/Header';
-import Footer from './components/Footer';
+import TestPage from './pages/TestPage';
 import Home from './pages/Home';
 import About from './pages/About';
-import Contact from './pages/Contact';
+import AkContact from './pages/Contact';
+
+const drawerWidth = 280;
+
+// Animation for mobile menu button
+const pulseGlow = keyframes`
+  0%, 100% { 
+    opacity: 1;
+    box-shadow: 0 0 0 rgba(123, 31, 162, 0.5);
+  }
+  50% { 
+    opacity: 0.8;
+    box-shadow: 0 0 10px rgba(123, 31, 162, 0.8);
+  }
+`;
+
+// Sidebar items with icons organized into categories
+const navItems = [
+  { name: "Dashboard", path: "/", icon: <DashboardIcon /> },
+  
+  // විෂය සමගාමි Category
+  {
+    name: "විෂය සමගාමි",
+    icon: <AutoStoriesIcon />,
+    subcategories: [
+      { name: "ව්‍යාකරණ", path: "/grammar", icon: <TranslateIcon /> },
+      { name: "සාහිත්‍ය", path: "/literature", icon: <LocalLibraryIcon /> },
+      { name: "සුහුරු අක්ෂර මාලාව", path: "/alphabet", icon: <AccountTreeIcon /> },
+    ],
+  },
+
+  // පරීක්ෂණාත්මක Category
+  {
+    name: "පරීක්ෂණාත්මක",
+    icon: <AssignmentIcon />,
+    subcategories: [
+      { name: "Paper Bank", path: "/paper-bank", icon: <ArticleIcon /> },
+      { name: "Online Exams", path: "/online-exams", icon: <QuizIcon /> },
+      { name: "Speed Tests", path: "/speed-tests", icon: <TimerIcon /> },
+    ],
+  },
+
+  // වැදගත් විශේෂාංග Category
+  {
+    name: "වැදගත් විශේෂාංග",
+    icon: <StarIcon />,
+    subcategories: [
+      { name: "අයන්න කියන්න E-Magazine", path: "/e-magazine", icon: <ImportContactsIcon /> },
+      { name: "විචාර හා රසවින්දන", path: "/reviews", icon: <RateReviewOutlinedIcon /> },
+      { name: "විෂය නිර්දේශ සහ ගුරු අත් පොත්", path: "/syllabus", icon: <MenuBookIcon /> },
+    ],
+  },
+
+  // වෙනත් විශේෂාංග Category
+  {
+    name: "වෙනත් විශේෂාංග",
+    icon: <MoreHorizIcon />,
+    subcategories: [
+      { name: "වීඩියෝ පාඩම්", path: "/video-lessons", icon: <PlayLessonIcon /> },
+      { name: "Paper Structures", path: "/paper-structures", icon: <NoteAltIcon /> },
+      { name: "Others", path: "/others", icon: <MoreHorizIcon /> },
+    ],
+  },
+
+  // Institute Related information Category
+  {
+    name: "Institute Related information",
+    icon: <SchoolIcon />,
+    subcategories: [
+      { name: "Academic Information", path: "/academic-info", icon: <CastForEducationIcon /> },
+      { name: "Extracurricular Infomation", path: "/extracurricular", icon: <EmojiEventsIcon /> },
+      { name: "Photo Bucket", path: "/photo-bucket", icon: <PhotoLibraryIcon /> },
+    ],
+  },
+
+  // ශ්‍රේණියේ අනුව අධ්‍යයනය කරන්න Category
+  {
+    name: "ශ්‍රේණිය අනුව අධ්‍යයනය කරන්න",
+    icon: <ClassIcon />,
+    subcategories: [
+      { name: "9 ශ්‍රේණිය", path: "/grade-9", icon: <GroupsIcon /> },
+      { name: "10 ශ්‍රේණිය", path: "/grade-10", icon: <GroupsIcon /> },
+      { name: "11 ශ්‍රේණිය", path: "/grade-11", icon: <GroupsIcon /> },
+      { name: "A/L", path: "/a-l", icon: <ScienceIcon /> },
+      { name: "සිංහල සාහිත්‍යය (කාණ්ඩ විෂය)", path: "/sinhala-literature", icon: <LibraryBooksIcon /> },
+    ],
+  },
+
+  // Other direct links
+  { name: "අයන්න කියන්න : Books & Products", path: "/books-products", icon: <ShoppingCartIcon /> },
+  { name: "අයන්න කියන්න : Specal Notices", path: "/special-notice", icon: <NotificationsActiveIcon /> },
+  { name: "අයන්න කියන්න : 2025 Calender", path: "/contact-support", icon: <ContactMailIcon /> },
+  { name: "අයන්න කියන්න : Contact Suport", path: "/contact-support", icon: <ContactMailIcon /> },
+];
+
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme, open }) => ({
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginLeft: `-${drawerWidth}px`,
+    ...(open && {
+      transition: theme.transitions.create('margin', {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      marginLeft: 0,
+    }),
+    [theme.breakpoints.down('md')]: {
+      marginLeft: 0,
+      padding: theme.spacing(2),
+    },
+  }),
+);
+
+const CustomDrawer = styled(Drawer)(({ theme }) => ({
+  '& .MuiDrawer-paper': {
+    width: drawerWidth,
+    background: 'linear-gradient(180deg, #1A032B 0%, #3A0D5D 100%)',
+    borderRight: 'none',
+    boxShadow: '5px 0 15px rgba(123, 31, 162, 0.3)',
+    marginTop: theme.spacing(9),
+    height: `calc(100% - ${theme.spacing(7)})`,
+    display: 'flex',
+    flexDirection: 'column',
+    // Hide scrollbar but keep functionality
+    scrollbarWidth: 'none', // For Firefox
+    '&::-webkit-scrollbar': { // For Chrome, Safari, Opera
+      display: 'none',
+    },
+    [theme.breakpoints.down('md')]: {
+      width: '75%',
+      position: 'fixed',
+      zIndex: 100,
+      marginTop: 0,
+      height: '100%',
+    },
+  },
+}));
+
+const SidebarHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  padding: theme.spacing(2),
+  background: 'linear-gradient(90deg, #4A148C 0%, #7B1FA2 100%)',
+  color: 'white',
+  minHeight: '64px',
+  justifyContent: 'space-between',
+  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
+}));
+
+const SidebarFooter = styled('div')(({ theme }) => ({
+  padding: theme.spacing(2),
+  marginTop: 'auto',
+  background: 'rgba(26, 3, 43, 0.7)',
+  borderTop: '1px solid rgba(123, 31, 162, 0.3)',
+  color: '#E1BEE7',
+  textAlign: 'center',
+  '& .MuiButton-root': {
+    margin: theme.spacing(1, 0),
+    background: 'linear-gradient(90deg, #7B1FA2 0%, #9C27B0 100%)',
+    color: 'white',
+    fontWeight: 'bold',
+    borderRadius: '20px',
+    padding: '8px 16px',
+    '&:hover': {
+      background: 'linear-gradient(90deg, #9C27B0 0%, #AB47BC 100%)',
+    }
+  }
+}));
 
 function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-grow">
+      <AppContent />
+    </Router>
+  );
+}
+
+function AppContent() {
+  const theme = useTheme();
+  const location = useLocation();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [expandedCategory, setExpandedCategory] = useState(null);
+  const sidebarRef = useRef(null);
+
+  // Auto-expand category if current path is in its subcategories
+  useEffect(() => {
+    navItems.forEach(item => {
+      if (item.subcategories) {
+        const isActiveCategory = item.subcategories.some(
+          subItem => subItem.path === location.pathname
+        );
+        if (isActiveCategory) {
+          setExpandedCategory(item.name);
+        }
+      }
+    });
+  }, [location.pathname]);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const handleToggleExpand = (categoryName) => {
+    setExpandedCategory(prev => prev === categoryName ? null : categoryName);
+  };
+
+  // Define routes where sidebar should not be visible
+  const noSidebarRoutes = ["/login", "/register"];
+  const isNoSidebarPage = noSidebarRoutes.includes(location.pathname);
+
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <CssBaseline />
+      <Header />
+      
+      {/* Mobile Menu Button */}
+      {!isNoSidebarPage && isMobile && (
+        <IconButton
+          onClick={handleDrawerToggle}
+          sx={{
+            display: { xs: 'flex', md: 'none' },
+            position: 'fixed',
+            top: 70,
+            left: 10,
+            zIndex: 1200,
+            color: '#fff',
+            backgroundColor: 'rgba(123, 31, 162, 0.9)',
+            width: 40,
+            height: 40,
+            padding: 0,
+            borderRadius: '50%',
+            boxShadow: '0 0 10px rgba(194, 24, 91, 0.5)',
+            animation: `${pulseGlow} 2s infinite ease-in-out`,
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              backgroundColor: 'rgba(156, 39, 176, 1)',
+              transform: 'scale(1.1)',
+              animation: 'none',
+              boxShadow: '0 0 15px rgba(194, 24, 91, 0.8)',
+            },
+          }}
+        >
+          <DashboardIcon sx={{ fontSize: '1.5rem' }} />
+        </IconButton>
+      )}
+
+      <Box sx={{ display: 'flex', flexGrow: 1 }}>
+        {!isNoSidebarPage && (
+          <>
+            {/* Mobile Sidebar */}
+            <Drawer
+              variant="temporary"
+              open={mobileOpen}
+              onClose={handleDrawerToggle}
+              ModalProps={{
+                keepMounted: true,
+              }}
+              sx={{
+                display: { xs: 'block', md: 'none' },
+                '& .MuiDrawer-paper': {
+                  width: drawerWidth,
+                  boxSizing: 'border-box',
+                  background: 'linear-gradient(180deg, #1A032B 0%, #3A0D5D 100%)',
+                },
+              }}
+            >
+              <SidebarHeader>
+                <Typography variant="h6" noWrap component="div">
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Avatar sx={{ 
+                      bgcolor: 'white', 
+                      color: '#7B1FA2', 
+                      mr: 1,
+                      background: 'linear-gradient(45deg, #E1BEE7 0%, #BA68C8 100%)'
+                    }}>
+                      <DashboardIcon />
+                    </Avatar>
+                    <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>මෙනුව</span>
+                  </Box>
+                </Typography>
+                <IconButton onClick={handleDrawerToggle} sx={{ color: 'white' }}>
+                  <ChevronLeftIcon />
+                </IconButton>
+              </SidebarHeader>
+              <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+              <NavigationList 
+                expandedCategory={expandedCategory} 
+                handleToggleExpand={handleToggleExpand} 
+                onItemClick={handleDrawerToggle}
+              />
+            <SidebarFooter>
+              <Typography variant="body2" sx={{ mb: 1, textAlign: 'center', fontWeight: 'bold', color: '#E1BEE7' }}>
+                අයන්න කියන්න ඉගෙනුම් පද්ධතිය
+              </Typography>
+              
+              {/* Social Links */}
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 2 }}>
+                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                  <FacebookIcon fontSize="small" />
+                </IconButton>
+                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                  <TwitterIcon fontSize="small" />
+                </IconButton>
+                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                  <InstagramIcon fontSize="small" />
+                </IconButton>
+                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                  <YouTubeIcon fontSize="small" />
+                </IconButton>
+              </Box>
+
+              {/* Policy Links */}
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                gap: 2, 
+                mb: 1.5,
+                '& a': {
+                  color: '#B39DDB',
+                  textDecoration: 'none',
+                  fontSize: '0.5rem',
+                  '&:hover': {
+                    color: '#E1BEE7',
+                    textDecoration: 'underline'
+                  }
+                }
+              }}>
+                <Link href="#" onClick={(e) => e.preventDefault()}>Privacy Policy</Link>
+                <Link href="#" onClick={(e) => e.preventDefault()}>Terms & Conditions</Link>
+                <Link href="#" onClick={(e) => e.preventDefault()}>Copyright Policy</Link>
+              </Box>
+              <Typography variant="caption" sx={{
+                display: 'block',
+                textAlign: 'center',
+                color: '#B39DDB',
+                fontSize: '0.5rem',
+                lineHeight: 1.5,
+                px: 2,
+                mb: 1
+              }}>
+                Developer @ kavindu Jayasinghe (SE)
+              </Typography>
+
+              {/* Copyright Section */}
+              <Typography variant="caption" sx={{
+                display: 'block',
+                textAlign: 'center',
+                color: '#B39DDB',
+                fontSize: '0.65rem',
+                lineHeight: 1.5,
+                px: 2,
+                mb: 1
+              }}>
+                © {new Date().getFullYear()} Ayanna Kiyanna Learning System<br />
+                All Rights Reserved • Version 2.0.1
+              </Typography>
+            </SidebarFooter>
+            </Drawer>
+
+            {/* Desktop Sidebar */}
+            <CustomDrawer
+              variant="permanent"
+              sx={{
+                display: { xs: 'none', md: 'block' },
+                width: drawerWidth,
+                flexShrink: 0,
+              }}
+              ref={sidebarRef}
+            >
+              <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+              <NavigationList 
+                expandedCategory={expandedCategory} 
+                handleToggleExpand={handleToggleExpand} 
+              />
+            <SidebarFooter sx={{mb: 1}}>
+              <Typography variant="body2" sx={{ mb: 1, textAlign: 'center', fontWeight: 'bold', color: '#E1BEE7' }}>
+                අයන්න කියන්න ඉගෙනුම් පද්ධතිය
+              </Typography>
+              
+              {/* Social Links */}
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 2 }}>
+                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                  <FacebookIcon fontSize="small" />
+                </IconButton>
+                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                  <TwitterIcon fontSize="small" />
+                </IconButton>
+                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                  <InstagramIcon fontSize="small" />
+                </IconButton>
+                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                  <YouTubeIcon fontSize="small" />
+                </IconButton>
+              </Box>
+
+              {/* Policy Links */}
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                gap: 2, 
+                mb: 1.5,
+                '& a': {
+                  color: '#B39DDB',
+                  textDecoration: 'none',
+                  fontSize: '0.5rem',
+                  '&:hover': {
+                    color: '#E1BEE7',
+                    textDecoration: 'underline'
+                  }
+                }
+              }}>
+                <Link href="#" onClick={(e) => e.preventDefault()}>Privacy Policy</Link>
+                <Link href="#" onClick={(e) => e.preventDefault()}>Terms & Conditions</Link>
+                <Link href="#" onClick={(e) => e.preventDefault()}>Copyright Policy</Link>
+              </Box>
+              <Typography variant="caption" sx={{
+                display: 'block',
+                textAlign: 'center',
+                color: '#B39DDB',
+                fontSize: '0.5rem',
+                lineHeight: 1.5,
+                px: 2,
+                mb: 1
+              }}>
+                Developer @ kavindu Jayasinghe (SE)
+              </Typography>
+
+              {/* Copyright Section */}
+              <Typography variant="caption" sx={{
+                display: 'block',
+                textAlign: 'center',
+                color: '#B39DDB',
+                fontSize: '0.65rem',
+                lineHeight: 1.5,
+                px: 2,
+                mb: 1
+              }}>
+                © {new Date().getFullYear()} Ayanna Kiyanna Learning System<br />
+                All Rights Reserved • Version 2.0.1
+              </Typography>
+            </SidebarFooter>
+            </CustomDrawer>
+          </>
+        )}
+
+        <Main open={!isMobile} sx={{ 
+          background: 'linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9))',
+          paddingTop: '80px' 
+        }}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
+            <Route path="/contact" element={<AkContact />} />
+            <Route path="/grammar" element={<TestPage title="ව්‍යාකරණ" />} />
+            <Route path="/literature" element={<TestPage title="සාහිත්‍ය" />} />
+            <Route path="/alphabet" element={<TestPage title="අක්ෂර මාලාව" />} />
+            <Route path="/paper-bank" element={<TestPage title="Paper Bank" />} />
+            <Route path="/online-exams" element={<TestPage title="Online Exams" />} />
+            <Route path="/speed-tests" element={<TestPage title="Speed Tests" />} />
+            <Route path="/e-magazine" element={<TestPage title="E-Magazine" />} />
+            <Route path="/reviews" element={<TestPage title="Reviews" />} />
+            <Route path="/syllabus" element={<TestPage title="Syllabus" />} />
+            <Route path="/video-lessons" element={<TestPage title="Video Lessons" />} />
+            <Route path="/paper-structures" element={<TestPage title="Paper Structures" />} />
+            <Route path="/others" element={<TestPage title="Others" />} />
+            <Route path="/academic-info" element={<TestPage title="Academic Info" />} />
+            <Route path="/extracurricular" element={<TestPage title="Extracurricular" />} />
+            <Route path="/photo-bucket" element={<TestPage title="Photo Bucket" />} />
+            <Route path="/grade-9" element={<TestPage title="Grade 9" />} />
+            <Route path="/grade-10" element={<TestPage title="Grade 10" />} />
+            <Route path="/grade-11" element={<TestPage title="Grade 11" />} />
+            <Route path="/a-l" element={<TestPage title="A/L" />} />
+            <Route path="/sinhala-literature" element={<TestPage title="Sinhala Literature" />} />
+            <Route path="/books-products" element={<TestPage title="Books & Products" />} />
+            <Route path="/special-notice" element={<TestPage title="Special Notice" />} />
+            <Route path="/contact-support" element={<TestPage title="Contact Support" />} />
           </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+        </Main>
+      </Box>
+    </Box>
+  );
+}
+
+function NavigationList({ expandedCategory, handleToggleExpand, onItemClick }) {
+  const location = useLocation();
+  
+  return (
+    <List sx={{ pt: 0, flexGrow: 1 }}>
+      {navItems.map((item, index) => (
+        <React.Fragment key={index}>
+          {item.subcategories ? (
+            <>
+              <ListItemButton
+                onClick={() => handleToggleExpand(item.name)}
+                sx={{
+                  '&:hover': { 
+                    backgroundColor: 'rgba(123, 31, 162, 0.2)',
+                    '& .MuiListItemIcon-root': {
+                      color: '#E1BEE7'
+                    },
+                    '& .MuiListItemText-primary': {
+                      color: '#E1BEE7'
+                    }
+                  },
+                  backgroundColor: expandedCategory === item.name ? 'rgba(123, 31, 162, 0.3)' : 'inherit',
+                  borderLeft: expandedCategory === item.name ? '4px solid #BA68C8' : 'none',
+                  py: 1.5,
+                }}
+              >
+                <ListItemIcon sx={{ 
+                  color: expandedCategory === item.name ? '#BA68C8' : '#CE93D8',
+                  minWidth: '40px'
+                }}>
+                  {React.cloneElement(item.icon, { sx: { fontSize: '1.25rem' } })}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.name}
+                  primaryTypographyProps={{ 
+                    fontWeight: 'medium',
+                    fontSize: '0.95rem',
+                    color: expandedCategory === item.name ? '#E1BEE7' : '#CE93D8'
+                  }}
+                />
+                {expandedCategory === item.name ? (
+                  <ExpandLessIcon sx={{ color: '#BA68C8' }} />
+                ) : (
+                  <ExpandMoreIcon sx={{ color: '#CE93D8' }} />
+                )}
+              </ListItemButton>
+              <Collapse in={expandedCategory === item.name} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {item.subcategories.map((subItem, subIndex) => (
+                    <ListItemButton
+                      key={subIndex}
+                      component={Link}
+                      to={subItem.path}
+                      onClick={onItemClick}
+                      sx={{
+                        pl: 6,
+                        '&:hover': { 
+                          backgroundColor: 'rgba(123, 31, 162, 0.2)',
+                          '& .MuiListItemIcon-root': {
+                            color: '#E1BEE7'
+                          },
+                          '& .MuiListItemText-primary': {
+                            color: '#E1BEE7'
+                          }
+                        },
+                        backgroundColor: location.pathname === subItem.path ? 'rgba(123, 31, 162, 0.3)' : 'inherit',
+                        borderLeft: location.pathname === subItem.path ? '4px solid #BA68C8' : 'none',
+                        py: 1,
+                      }}
+                    >
+                      <ListItemIcon sx={{ 
+                        color: location.pathname === subItem.path ? '#BA68C8' : '#CE93D8',
+                        minWidth: '40px'
+                      }}>
+                        {React.cloneElement(subItem.icon, { sx: { fontSize: '1.1rem' } })}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={subItem.name}
+                        primaryTypographyProps={{
+                          fontWeight: location.pathname === subItem.path ? 'bold' : 'normal',
+                          fontSize: '0.9rem',
+                          color: location.pathname === subItem.path ? '#E1BEE7' : '#CE93D8'
+                        }}
+                      />
+                    </ListItemButton>
+                  ))}
+                </List>
+              </Collapse>
+            </>
+          ) : (
+            <ListItemButton
+              component={Link}
+              to={item.path}
+              onClick={onItemClick}
+              sx={{
+                '&:hover': { 
+                  backgroundColor: 'rgba(123, 31, 162, 0.2)',
+                  '& .MuiListItemIcon-root': {
+                    color: '#E1BEE7'
+                  },
+                  '& .MuiListItemText-primary': {
+                    color: '#E1BEE7'
+                  }
+                },
+                backgroundColor: location.pathname === item.path ? 'rgba(123, 31, 162, 0.3)' : 'inherit',
+                borderLeft: location.pathname === item.path ? '4px solid #BA68C8' : 'none',
+                py: 1.5,
+              }}
+            >
+              <ListItemIcon sx={{ 
+                color: location.pathname === item.path ? '#BA68C8' : '#CE93D8',
+                minWidth: '40px'
+              }}>
+                {React.cloneElement(item.icon, { sx: { fontSize: '1.25rem' } })}
+              </ListItemIcon>
+              <ListItemText
+                primary={item.name}
+                primaryTypographyProps={{
+                  fontWeight: location.pathname === item.path ? 'bold' : 'medium',
+                  fontSize: '0.95rem',
+                  color: location.pathname === item.path ? '#E1BEE7' : '#CE93D8'
+                }}
+              />
+            </ListItemButton>
+          )}
+          {index < navItems.length - 1 && <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />}
+        </React.Fragment>
+      ))}
+    </List>
   );
 }
 

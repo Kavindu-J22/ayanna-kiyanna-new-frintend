@@ -1,19 +1,500 @@
-// Header.jsx
+import React, { useState, useEffect } from 'react';
+import { 
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  Avatar,
+  Menu,
+  MenuItem,
+  Box,
+  Container,
+  useMediaQuery,
+  useTheme,
+  Collapse,
+  List,
+  ListItem,
+  ListItemText,
+  Badge,
+  Divider
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import ExploreIcon from '@mui/icons-material/Explore';
+import LoginIcon from '@mui/icons-material/Login';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import { styled, alpha } from '@mui/material/styles';
+import { keyframes } from '@mui/system';
+import { useLocation } from 'react-router-dom'; // Added this import
+
+// Import your logo image (make sure the path is correct)
+import logo from '../assets/AKlogo.png';
+
+const pulseAnimation = keyframes`
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+`;
+
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  background: `linear-gradient(135deg, ${alpha('#1a0638', 0.95)} 0%, ${alpha('#2e0b5e', 0.98)} 100%)`,
+  backdropFilter: 'blur(10px)',
+  boxShadow: '0 4px 30px rgba(0, 0, 0, 0.4)',
+  borderBottom: `1px solid ${alpha('#9c64ff', 0.2)}`,
+  padding: theme.spacing(0.5, 0),
+  position: 'fixed',
+  zIndex: 1,
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    background: `linear-gradient(135deg, ${alpha('#1a0638', 1)} 0%, ${alpha('#2e0b5e', 1)} 100%)`,
+  }
+}));
+
+const LogoTitle = styled(Typography)(({ theme }) => ({
+  fontFamily: '"Sinhala MN", "Iskoola Pota", sans-serif',
+  fontWeight: 700,
+  letterSpacing: '0.5px',
+  display: 'flex',
+  alignItems: 'center',
+  transition: 'all 0.3s ease',
+  '& img': {
+    marginRight: theme.spacing(2),
+    height: '40px',
+    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+    transition: 'all 0.3s ease',
+    [theme.breakpoints.down('sm')]: {
+      height: '32px',
+      marginRight: theme.spacing(1),
+    },
+  },
+  '&:hover img': {
+    transform: 'rotate(-5deg)',
+    filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.4))',
+  },
+  '& .title-text': {
+    textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
+    },
+  },
+}));
+
+const NavButton = styled(Button)(({ theme }) => ({
+  color: 'white',
+  fontWeight: 500,
+  margin: theme.spacing(0, 0.5),
+  padding: theme.spacing(1, 2),
+  position: 'relative',
+  overflow: 'hidden',
+  borderRadius: '8px',
+  transition: 'all 0.3s ease',
+  '&:before': {
+    content: '""',
+    position: 'absolute',
+    bottom: 0,
+    left: '50%',
+    width: 0,
+    height: '2px',
+    backgroundColor: '#b388ff',
+    transition: 'all 0.3s ease',
+    transform: 'translateX(-50%)',
+  },
+  '&:hover': {
+    backgroundColor: 'rgba(179, 136, 255, 0.1)',
+    transform: 'translateY(-2px)',
+    '&:before': {
+      width: '70%',
+    }
+  },
+  '&.active': {
+    color: '#b388ff',
+    '&:before': {
+      width: '70%',
+      backgroundColor: '#b388ff',
+    }
+  }
+}));
+
+const AuthButton = styled(Button)(({ theme }) => ({
+  marginLeft: theme.spacing(1),
+  fontWeight: 600,
+  borderRadius: '12px',
+  padding: theme.spacing(1, 2.5),
+  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
+  transition: 'all 0.3s ease, transform 0.2s ease',
+  '&:hover': {
+    transform: 'translateY(-2px)',
+    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.4)',
+  }
+}));
+
+const MobileMenuButton = styled(Button)(({ theme, open }) => ({
+  borderRadius: '12px',
+  backgroundColor: open ? 'rgba(179, 136, 255, 0.2)' : 'transparent',
+  padding: theme.spacing(0.5, 1.5),
+  fontSize: '0.875rem',
+  minWidth: 'auto',
+  transition: 'all 0.3s ease',
+  animation: `${pulseAnimation} 3s infinite`,
+  '&:hover': {
+    backgroundColor: 'rgba(179, 136, 255, 0.3)',
+  },
+  '& .MuiButton-startIcon': {
+    marginRight: theme.spacing(0.5),
+  }
+}));
+
 const Header = () => {
-    return (
-      <header className="bg-blue-600 text-white p-4 shadow-md">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Ayanna Kiyann</h1>
-          <nav>
-            <ul className="flex space-x-6">
-              <li><a href="/" className="hover:underline">Home</a></li>
-              <li><a href="/about" className="hover:underline">About</a></li>
-              <li><a href="/contact" className="hover:underline">Contact</a></li>
-            </ul>
-          </nav>
-        </div>
-      </header>
-    );
+  const location = useLocation(); // Get current location
+  const [userEmail, setUserEmail] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  useEffect(() => {
+    const email = localStorage.getItem('userEmail');
+    if (email) {
+      setUserEmail(email);
+    }
+  }, []);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
   };
-  
-  export default Header;
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('userEmail');
+    setUserEmail(null);
+    handleMenuClose();
+  };
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const navItems = [
+    { name: 'Home', path: '/' },
+    { name: 'About', path: '/about' },
+    { name: 'Info', path: '/info' },
+    { name: 'Services', path: '/services' },
+    { name: 'Contact', path: '/contact' },
+  ];
+
+  // Function to check if a nav item is active
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
+
+  return (
+    <>
+      <StyledAppBar>
+        <Container maxWidth="xl">
+          <Toolbar disableGutters>
+          <LogoTitle 
+            variant="h6" 
+            noWrap 
+            sx={{ flexGrow: isMobile ? 0 : 1, cursor: 'pointer' }}
+            onClick={() => {
+                window.location.href = '/';
+            }}
+            >
+            <img src={logo} alt="Logo" />
+            <span className="title-text">"අයන්න කියන්න"</span>
+            </LogoTitle>
+            
+            {!isMobile && (
+              <Box sx={{ 
+                display: 'flex', 
+                mx: 'auto',
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: '12px',
+                padding: '4px',
+                backdropFilter: 'blur(5px)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.1)'
+              }}>
+                {navItems.map((item) => (
+                  <NavButton 
+                    key={item.name} 
+                    href={item.path}
+                    className={isActive(item.path) ? 'active' : ''}
+                  >
+                    {item.name}
+                  </NavButton>
+                ))}
+              </Box>
+            )}
+            
+            {isMobile && (
+                <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+                <MobileMenuButton 
+                    startIcon={<ExploreIcon fontSize="small" sx={{ color: 'white' }} />}
+                    onClick={toggleMobileMenu}
+                    open={mobileMenuOpen}
+                    sx={{
+                    color: 'white',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    '&:hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                        borderColor: 'white'
+                    }
+                    }}
+                >
+                    Explore
+                </MobileMenuButton>
+                </Box>
+            )}
+            
+            <Box sx={{ flexGrow: isMobile ? 0 : 1 }} />
+            
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {userEmail ? (
+                <>
+                  <IconButton
+                    size="large"
+                    aria-label="notifications"
+                    color="inherit"
+                    sx={{
+                      '&:hover': {
+                        backgroundColor: 'rgba(179, 136, 255, 0.1)'
+                      }
+                    }}
+                  >
+                    <Badge badgeContent={3} color="secondary">
+                      <NotificationsIcon />
+                    </Badge>
+                  </IconButton>
+                  
+                  <IconButton
+                    size="large"
+                    aria-label="account of current user"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={handleMenuOpen}
+                    color="inherit"
+                    sx={{
+                      '&:hover': {
+                        transform: 'scale(1.1)',
+                      },
+                      transition: 'transform 0.3s ease'
+                    }}
+                  >
+                    <Avatar sx={{ 
+                      width: 36, 
+                      height: 36, 
+                      bgcolor: '#b388ff', 
+                      color: '#1a0638',
+                      border: '2px solid #ffffff',
+                      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)'
+                    }}>
+                      {userEmail.charAt(0).toUpperCase()}
+                    </Avatar>
+                  </IconButton>
+                  
+                  <Menu
+                    id="menu-appbar"
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    open={Boolean(anchorEl)}
+                    onClose={handleMenuClose}
+                    PaperProps={{
+                      style: {
+                        marginTop: '10px',
+                        backgroundColor: alpha('#2e0b5e', 0.98),
+                        backdropFilter: 'blur(20px)',
+                        color: 'white',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(179, 136, 255, 0.2)',
+                        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
+                        minWidth: '200px',
+                      },
+                    }}
+                  >
+                    <MenuItem 
+                      onClick={handleMenuClose} 
+                      sx={{ 
+                        '&:hover': { 
+                          backgroundColor: 'rgba(179, 136, 255, 0.1)',
+                        },
+                        '&:first-of-type': {
+                          borderTopLeftRadius: '8px',
+                          borderTopRightRadius: '8px',
+                        }
+                      }}
+                    >
+                      Profile
+                    </MenuItem>
+                    <MenuItem 
+                      onClick={handleMenuClose}
+                      sx={{ 
+                        '&:hover': { 
+                          backgroundColor: 'rgba(179, 136, 255, 0.1)',
+                        }
+                      }}
+                    >
+                      Settings
+                    </MenuItem>
+                    <Divider sx={{ borderColor: 'rgba(179, 136, 255, 0.2)' }} />
+                    <MenuItem 
+                      onClick={handleLogout}
+                      sx={{ 
+                        '&:hover': { 
+                          backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                        },
+                        '&:last-of-type': {
+                          borderBottomLeftRadius: '8px',
+                          borderBottomRightRadius: '8px',
+                        }
+                      }}
+                    >
+                      Logout
+                    </MenuItem>
+                  </Menu>
+                </>
+              ) : (
+                <>
+                  {!isMobile ? (
+                    <>
+                      <AuthButton 
+                        variant="outlined" 
+                        color="inherit" 
+                        href="/signin"
+                        sx={{ 
+                          borderColor: 'rgba(179, 136, 255, 0.3)',
+                          '&:hover': {
+                            backgroundColor: 'rgba(179, 136, 255, 0.1)',
+                            borderColor: '#b388ff'
+                          }
+                        }}
+                      >
+                        Sign In
+                      </AuthButton>
+                      <AuthButton 
+                        variant="contained" 
+                        color="secondary" 
+                        href="/signup"
+                        sx={{ 
+                          backgroundColor: '#b388ff', 
+                          color: '#1a0638',
+                          '&:hover': {
+                            backgroundColor: '#9c64ff',
+                            transform: 'translateY(-3px)'
+                          }
+                        }}
+                      >
+                        Sign Up
+                      </AuthButton>
+                    </>
+                  ) : (
+                    <>
+                      <IconButton 
+                        color="inherit" 
+                        href="/signin"
+                        sx={{ 
+                          ml: 1,
+                          '&:hover': {
+                            backgroundColor: 'rgba(179, 136, 255, 0.2)',
+                            transform: 'scale(1.1)'
+                          },
+                          transition: 'all 0.3s ease'
+                        }}
+                      >
+                        <LoginIcon />
+                      </IconButton>
+                      <IconButton 
+                        color="inherit" 
+                        href="/signup"
+                        sx={{ 
+                          backgroundColor: 'rgba(179, 136, 255, 0.3)',
+                          ml: 1,
+                          '&:hover': {
+                            backgroundColor: 'rgba(179, 136, 255, 0.5)',
+                            transform: 'scale(1.1)'
+                          },
+                          transition: 'all 0.3s ease'
+                        }}
+                      >
+                        <PersonAddIcon />
+                      </IconButton>
+                    </>
+                  )}
+                </>
+              )}
+            </Box>
+          </Toolbar>
+          
+          {/* Mobile menu dropdown */}
+          {isMobile && (
+            <Collapse in={mobileMenuOpen} sx={{ 
+              position: 'absolute',
+              top: '64px',
+              left: 0,
+              right: 0,
+              backgroundColor: alpha('#1a0638', 0.98),
+              backdropFilter: 'blur(20px)',
+              zIndex: 1,
+              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
+              borderBottom: '1px solid rgba(179, 136, 255, 0.2)'
+            }}>
+              <Box sx={{ p: 2 }}>
+                <List sx={{ py: 0 }}>
+                  {navItems.map((item) => (
+                    <ListItem 
+                      button 
+                      key={item.name} 
+                      component="a" 
+                      href={item.path}
+                      sx={{
+                        borderRadius: '8px',
+                        mb: 0.5,
+                        transition: 'all 0.3s ease',
+                        backgroundColor: isActive(item.path) ? 'rgba(179, 136, 255, 0.2)' : 'transparent',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        textAlign: 'center',
+                        '&:hover': {
+                          backgroundColor: 'rgba(179, 136, 255, 0.1)',
+                          transform: 'translateX(5px)'
+                        }
+                      }}
+                    >
+                      <ListItemText 
+                        primary={item.name} 
+                        primaryTypographyProps={{ 
+                          color: isActive(item.path) ? '#b388ff' : 'white',
+                          fontWeight: 500,
+                          variant: 'body1'
+                        }} 
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            </Collapse>
+          )}
+        </Container>
+      </StyledAppBar>
+      
+      {/* Add padding to content to account for fixed header */}
+      <Toolbar />
+      {isMobile && mobileMenuOpen && <Box sx={{ height: 'calc(100vh - 64px)', mt: '64px' }} onClick={toggleMobileMenu} />}
+    </>
+  );
+};
+
+export default Header;
