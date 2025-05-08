@@ -66,6 +66,7 @@ import {
   Instagram as InstagramIcon,
   YouTube as YouTubeIcon
 } from '@mui/icons-material';
+import { FaTiktok } from "react-icons/fa";
 
 // Components
 import Header from './components/Header';
@@ -95,39 +96,83 @@ const navItems = [
   
   // විෂය සමගාමි Category
   {
-    name: "විෂය සමගාමි",
+    name: "ව්‍යාකරණ හා සාහිත්‍ය",
     icon: <AutoStoriesIcon />,
     subcategories: [
       { name: "ව්‍යාකරණ", path: "/grammar", icon: <TranslateIcon /> },
       { name: "සාහිත්‍ය", path: "/literature", icon: <LocalLibraryIcon /> },
+    ],
+  },
+
+  {
+    name: "අක්ෂර මාලාව",
+    icon: <AutoStoriesIcon />,
+    subcategories: [
+      { name: "ස්වර", path: "/grammar", icon: <TranslateIcon /> },
+      { name: "ව්‍යංජන", path: "/literature", icon: <LocalLibraryIcon /> },
+      { name: "අකාරාදී පිළිවෙල", path: "/grammar", icon: <TranslateIcon /> },
+      { name: "අක්ෂර වින්‍යාසය", path: "/literature", icon: <LocalLibraryIcon /> },
       { 
         name: "සුහුරු අක්ෂර මාලාව", 
         path: "https://deployed-ayanna-kiyanna-institute-management-system-g6s2.vercel.app/", 
         icon: <AccountTreeIcon />,
         external: true // Add this flag to indicate it's an external link
       },
+      { name: "වර්ණ ගැන්වූ විග්‍රහය පිටපත", path: "/literature", icon: <LocalLibraryIcon /> },
     ],
   },
 
-  // පරීක්ෂණාත්මක Category
+    // වැදගත් විශේෂාංග Category
+    {
+      name: "විචාර හා රසවින්දන",
+      icon: <StarIcon />,
+      subcategories: [
+        { name: "විචාර රසවින්දන", path: "/e-magazine", icon: <ImportContactsIcon /> },
+        { name: "ගී රසවින්දන", path: "/reviews", icon: <RateReviewOutlinedIcon /> },
+        { name: "වෙනත්", path: "/syllabus", icon: <MenuBookIcon /> },
+      ],
+    },
+
+    {
+      name: "ශ්‍රේණිය අනුව අධ්‍යයනය කරන්න",
+      icon: <ClassIcon />,
+      subcategories: [
+        { name: "9 ශ්‍රේණිය", path: "/grade-9", icon: <GroupsIcon /> },
+        { name: "10 ශ්‍රේණිය", path: "/grade-10", icon: <GroupsIcon /> },
+        { name: "11 ශ්‍රේණිය", path: "/grade-11", icon: <GroupsIcon /> },
+        { name: "A/L", path: "/a-l", icon: <ScienceIcon /> },
+        { name: "සිංහල සාහිත්‍යය (කාණ්ඩ විෂය)", path: "/sinhala-literature", icon: <LibraryBooksIcon /> },
+      ],
+    },
+
+      // පරීක්ෂණාත්මක Category
   {
-    name: "පරීක්ෂණාත්මක",
+    name: "පරීක්ෂණ හා පෙරහුරු ",
     icon: <AssignmentIcon />,
     subcategories: [
-      { name: "Paper Bank", path: "/paper-bank", icon: <ArticleIcon /> },
-      { name: "Online Exams", path: "/online-exams", icon: <QuizIcon /> },
-      { name: "Speed Tests", path: "/speed-tests", icon: <TimerIcon /> },
+      { name: "Online Exams & Speed Tests", path: "/online-exams", icon: <QuizIcon /> },
+      { name: "Home Works", path: "/speed-tests", icon: <TimerIcon /> },
+      { name: "Paper Structures", path: "/syllabus", icon: <NoteAltIcon /> },
     ],
   },
+
+    {
+      name: "Paper Bank",
+      icon: <ArticleIcon />,
+      subcategories: [
+        { name: "සිංහල භාෂාව හා සාහිත්‍යය (O/L & A/L)", path: "/e-magazine", icon: <ImportContactsIcon /> },
+        { name: "සිංහල සාහිත්‍යය (කාණ්ඩ විෂය)", path: "/reviews", icon: <RateReviewOutlinedIcon /> },
+      ],
+    },
+
 
   // වැදගත් විශේෂාංග Category
   {
-    name: "වැදගත් විශේෂාංග",
-    icon: <StarIcon />,
+    name: "විෂය අධ්‍යනය",
+    icon: <MenuBookIcon />,
     subcategories: [
-      { name: "අයන්න කියන්න E-Magazine", path: "/e-magazine", icon: <ImportContactsIcon /> },
-      { name: "විචාර හා රසවින්දන", path: "/reviews", icon: <RateReviewOutlinedIcon /> },
-      { name: "විෂය නිර්දේශ සහ ගුරු අත් පොත්", path: "/syllabus", icon: <MenuBookIcon /> },
+      { name: "විෂය නිර්දේශ", path: "/syllabus", icon: <MenuBookIcon /> },
+      { name: "ගුරු අත් පොත්", path: "/syllabus", icon: <MenuBookIcon /> },
     ],
   },
 
@@ -137,7 +182,6 @@ const navItems = [
     icon: <MoreHorizIcon />,
     subcategories: [
       { name: "වීඩියෝ පාඩම්", path: "/video-lessons", icon: <PlayLessonIcon /> },
-      { name: "Paper Structures", path: "/paper-structures", icon: <NoteAltIcon /> },
       { name: "Others", path: "/others", icon: <MoreHorizIcon /> },
     ],
   },
@@ -148,25 +192,14 @@ const navItems = [
     icon: <SchoolIcon />,
     subcategories: [
       { name: "Academic Information", path: "/academic-info", icon: <CastForEducationIcon /> },
+      { name: "Time Tables", path: "/academic-info", icon: <CastForEducationIcon /> },
       { name: "Extracurricular Infomation", path: "/extracurricular", icon: <EmojiEventsIcon /> },
       { name: "Photo Bucket", path: "/photo-bucket", icon: <PhotoLibraryIcon /> },
     ],
   },
 
-  // ශ්‍රේණියේ අනුව අධ්‍යයනය කරන්න Category
-  {
-    name: "ශ්‍රේණිය අනුව අධ්‍යයනය කරන්න",
-    icon: <ClassIcon />,
-    subcategories: [
-      { name: "9 ශ්‍රේණිය", path: "/grade-9", icon: <GroupsIcon /> },
-      { name: "10 ශ්‍රේණිය", path: "/grade-10", icon: <GroupsIcon /> },
-      { name: "11 ශ්‍රේණිය", path: "/grade-11", icon: <GroupsIcon /> },
-      { name: "A/L", path: "/a-l", icon: <ScienceIcon /> },
-      { name: "සිංහල සාහිත්‍යය (කාණ්ඩ විෂය)", path: "/sinhala-literature", icon: <LibraryBooksIcon /> },
-    ],
-  },
-
   // Other direct links
+  { name: "අයන්න කියන්න E-Magazine", path: "/books-products", icon: <ImportContactsIcon /> },
   { name: "අයන්න කියන්න : Books & Products", path: "/books-products", icon: <ShoppingCartIcon /> },
   { name: "අයන්න කියන්න : Specal Notices", path: "/special-notice", icon: <NotificationsActiveIcon /> },
   { name: "අයන්න කියන්න : 2025 Calender", path: "/contact-support", icon: <ContactMailIcon /> },
@@ -400,10 +433,10 @@ function AppContent() {
                   <FacebookIcon fontSize="small" />
                 </IconButton>
                 <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
-                  <TwitterIcon fontSize="small" />
+                  <InstagramIcon fontSize="small" />
                 </IconButton>
                 <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
-                  <InstagramIcon fontSize="small" />
+                  <FaTiktok fontSize="small" />
                 </IconButton>
                 <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
                   <YouTubeIcon fontSize="small" />
@@ -484,11 +517,12 @@ function AppContent() {
                   <FacebookIcon fontSize="small" />
                 </IconButton>
                 <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
-                  <TwitterIcon fontSize="small" />
-                </IconButton>
-                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
                   <InstagramIcon fontSize="small" />
                 </IconButton>
+                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                  <FaTiktok fontSize="small" />
+                </IconButton>
+
                 <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
                   <YouTubeIcon fontSize="small" />
                 </IconButton>
