@@ -99,7 +99,12 @@ const navItems = [
     subcategories: [
       { name: "ව්‍යාකරණ", path: "/grammar", icon: <TranslateIcon /> },
       { name: "සාහිත්‍ය", path: "/literature", icon: <LocalLibraryIcon /> },
-      { name: "සුහුරු අක්ෂර මාලාව", path: "/alphabet", icon: <AccountTreeIcon /> },
+      { 
+        name: "සුහුරු අක්ෂර මාලාව", 
+        path: "https://deployed-ayanna-kiyanna-institute-management-system-g6s2.vercel.app/", 
+        icon: <AccountTreeIcon />,
+        external: true // Add this flag to indicate it's an external link
+      },
     ],
   },
 
