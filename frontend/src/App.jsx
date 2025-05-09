@@ -380,7 +380,7 @@ function AppContent() {
             left: 10,
             zIndex: 1200,
             color: '#fff',
-            backgroundColor: 'rgba(123, 31, 162, 0.9)',
+            backgroundColor: 'rgba(60, 27, 74, 0.9)',
             width: 40,
             height: 40,
             padding: 0,
