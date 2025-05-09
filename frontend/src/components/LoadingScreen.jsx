@@ -163,7 +163,7 @@ const LoadingScreen = () => {
           },
         }}
       >
-        "අයන්න කියන්න"
+        "අ"යන්න කියන්න
       </Typography>
 
       {/* Subtitle with Animated Dots */}

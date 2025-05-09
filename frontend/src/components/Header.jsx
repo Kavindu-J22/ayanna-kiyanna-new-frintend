@@ -234,7 +234,7 @@ const Header = () => {
               }}
             >
               <img src={logo} alt="Logo" />
-              <span className="title-text">"අයන්න කියන්න"</span>
+              <span className="title-text">"අ"යන්න කියන්න</span>
             </LogoTitle>
             
             {!isMobile && (

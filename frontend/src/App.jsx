@@ -67,6 +67,7 @@ import {
   Instagram as InstagramIcon,
   YouTube as YouTubeIcon
 } from '@mui/icons-material';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { FaTiktok } from "react-icons/fa";
 
 // Components
@@ -364,7 +365,7 @@ function AppContent() {
   const isNoSidebarPage = noSidebarRoutes.includes(location.pathname);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', minWidth: '100vw' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', minWidth: '99vw' }}>
       <CssBaseline />
       <Header />
       
@@ -448,7 +449,7 @@ function AppContent() {
             <SidebarFooter>
             <Box sx={{ mb: 1, textAlign: 'center' }}>
               <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#E1BEE7' }}>
-                "අයන්න කියන්න"
+                "අ"යන්න කියන්න
               </Typography>
               <Typography variant="body2" sx={{ color: '#E1BEE7', fontSize: '0.8rem' }}>
                 - ජගත් කුමාර ජයසිංහ -
@@ -537,7 +538,7 @@ function AppContent() {
             <SidebarFooter sx={{mb: 1}}>
             <Box sx={{ mb: 1, textAlign: 'center' }}>
           <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#E1BEE7' }}>
-            "අයන්න කියන්න"
+            "අ"යන්න කියන්න
           </Typography>
           <Typography variant="body2" sx={{ color: '#E1BEE7', fontSize: '0.8rem' }}>
             - ජගත් කුමාර ජයසිංහ -
@@ -611,14 +612,42 @@ function AppContent() {
           </>
         )}
 
+              {/* Customer Support Button */}
+      <a href="/CustomerSupport" style={{ textDecoration: 'none' }}>
+        <div
+          style={{
+            position: "fixed",
+            bottom: "15px",
+            right: "10px",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "30px",
+            height: "30px",
+            borderRadius: "50%",
+            backgroundColor: "rgba(65, 23, 62, 0.6)",
+            boxShadow: "0 6px 10px rgba(54, 53, 53, 0.9)",
+            transition: "width 0.3s ease-in-out, background-color 0.3s ease",
+            overflow: "hidden",
+            "&:hover": {
+              backgroundColor: "rgba(0,0,0,0.6)",
+              boxShadow: "0 6px 12px rgba(64, 64, 64, 0.9)",
+            },
+          }}
+        >
+          <HelpOutlineIcon sx={{ color: "#fff", fontSize: "17px" }} />
+        </div>
+      </a>
+
         <Main open={!isMobile} sx={{ 
-          background: 'linear-gradient(rgba(228, 154, 255, 0.2), rgba(244, 126, 195, 0.25))',
-          width: '100%',display: 'flex', justifyContent: 'center', alignItems: 'center'
+          background: 'linear-gradient(rgba(228, 154, 255, 0.86), rgba(244, 126, 195, 0.93))',
+          display: 'flex', justifyContent: 'center', alignItems: 'center'
         }}>
           <Container maxWidth="xl" sx={{ 
-            flexGrow: 1,
-            py: 3,
-            px: { xs: 2, sm: 3 },
+            
+            
+            px: { xs: 0, sm: 0 },
             width: '100%',
             height: '100%',
             display: 'flex',
