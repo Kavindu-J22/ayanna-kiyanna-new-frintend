@@ -67,6 +67,7 @@ import {
   Instagram as InstagramIcon,
   YouTube as YouTubeIcon
 } from '@mui/icons-material';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { FaTiktok } from "react-icons/fa";
 
 // Components
@@ -204,7 +205,7 @@ const navItems = [
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     flexGrow: 1,
-    padding: theme.spacing(3),
+    padding: theme.spacing(0),
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -223,7 +224,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     [theme.breakpoints.down('md')]: {
       marginLeft: 0,
       width: '100%',
-      padding: theme.spacing(2),
+      padding: theme.spacing(0),
     },
   }),
 );
@@ -451,9 +452,14 @@ function AppContent() {
             onItemClick={handleDrawerToggle}
           />
           <SidebarFooter>
-            <Typography variant="body2" sx={{ mb: 1, textAlign: 'center', fontWeight: 'bold', color: '#E1BEE7' }}>
-              අයන්න කියන්න ඉගෙනුම් පද්ධතිය
-            </Typography>
+          <Box sx={{ mb: 1, textAlign: 'center' }}>
+          <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#E1BEE7' }}>
+            "අයන්න කියන්න"
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#E1BEE7', fontSize: '0.8rem' }}>
+            - ජගත් කුමාර ජයසිංහ -
+          </Typography>
+        </Box>
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 2 }}>
               <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
                 <FacebookIcon fontSize="small" />
@@ -504,8 +510,7 @@ function AppContent() {
               color: '#B39DDB',
               fontSize: '0.65rem',
               lineHeight: 1.5,
-              px: 2,
-              mb: 1
+              px: 2
             }}>
               © {new Date().getFullYear()} Ayanna Kiyanna Learning System<br />
               All Rights Reserved • Version 2.0.1
@@ -534,9 +539,14 @@ function AppContent() {
             handleToggleExpand={handleToggleExpand} 
           />
           <SidebarFooter sx={{ mb: 1 }}>
-            <Typography variant="body2" sx={{ mb: 1, textAlign: 'center', fontWeight: 'bold', color: '#E1BEE7' }}>
-              අයන්න කියන්න ඉගෙනුම් පද්ධතිය
-            </Typography>
+          <Box sx={{ mb: 1, textAlign: 'center' }}>
+          <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#E1BEE7' }}>
+            "අයන්න කියන්න"
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#E1BEE7', fontSize: '0.8rem' }}>
+            - ජගත් කුමාර ජයසිංහ -
+          </Typography>
+        </Box>
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 2 }}>
               <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
                 <FacebookIcon fontSize="small" />
@@ -587,8 +597,7 @@ function AppContent() {
               color: '#B39DDB',
               fontSize: '0.65rem',
               lineHeight: 1.5,
-              px: 2,
-              mb: 1
+              px: 2
             }}>
               © {new Date().getFullYear()} Ayanna Kiyanna Learning System<br />
               All Rights Reserved • Version 2.0.1
@@ -597,13 +606,42 @@ function AppContent() {
         </Drawer>
       </Box>
 
+      {/* Customer Support Button */}
+      <a href="/CustomerSupport" style={{ textDecoration: 'none' }}>
+        <div
+          style={{
+            position: "fixed",
+            bottom: "15px",
+            right: "10px",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "30px",
+            height: "30px",
+            borderRadius: "50%",
+            backgroundColor: "rgba(54, 10, 75, 0.6)",
+            boxShadow: "0 6px 10px rgba(54, 53, 53, 0.9)",
+            transition: "width 0.3s ease-in-out, background-color 0.3s ease",
+            overflow: "hidden",
+            "&:hover": {
+              backgroundColor: "rgba(0,0,0,0.6)",
+              boxShadow: "0 6px 12px rgba(64, 64, 64, 0.9)",
+            },
+          }}
+        >
+          <HelpOutlineIcon sx={{ color: "#fff", fontSize: "17px" }} />
+        </div>
+      </a>
+
       <Main open={!isMobile && !isNoSidebarPage}>
         <DrawerHeader />
         <Box sx={{
           width: '100%',
           maxWidth: '100%',
-          padding: isMobile ? 2 : 3,
-          boxSizing: 'border-box'
+          padding: isMobile ? 2 : 2,
+          boxSizing: 'border-box',
+          backgroundColor: 'rgba(0, 0, 0, 0.13)'
         }}>
           <Routes>
             <Route path="/" element={<Home />} />
