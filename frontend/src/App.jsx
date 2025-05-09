@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect,  } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { styled, useTheme, keyframes } from '@mui/material/styles';
 import {
@@ -16,7 +16,8 @@ import {
   useMediaQuery,
   Typography,
   Avatar,
-  Button
+  Button,
+  Container
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -116,36 +117,34 @@ const navItems = [
         name: "සුහුරු අක්ෂර මාලාව", 
         path: "https://deployed-ayanna-kiyanna-institute-management-system-g6s2.vercel.app/", 
         icon: <AccountTreeIcon />,
-        external: true // Add this flag to indicate it's an external link
+        external: true
       },
       { name: "වර්ණ ගැන්වූ විග්‍රහය පිටපත", path: "/literature", icon: <LocalLibraryIcon /> },
     ],
   },
 
-    // වැදගත් විශේෂාංග Category
-    {
-      name: "විචාර හා රසවින්දන",
-      icon: <StarIcon />,
-      subcategories: [
-        { name: "විචාර රසවින්දන", path: "/e-magazine", icon: <ImportContactsIcon /> },
-        { name: "ගී රසවින්දන", path: "/reviews", icon: <RateReviewOutlinedIcon /> },
-        { name: "වෙනත්", path: "/syllabus", icon: <MenuBookIcon /> },
-      ],
-    },
+  {
+    name: "විචාර හා රසවින්දන",
+    icon: <StarIcon />,
+    subcategories: [
+      { name: "විචාර රසවින්දන", path: "/e-magazine", icon: <ImportContactsIcon /> },
+      { name: "ගී රසවින්දන", path: "/reviews", icon: <RateReviewOutlinedIcon /> },
+      { name: "වෙනත්", path: "/syllabus", icon: <MenuBookIcon /> },
+    ],
+  },
 
-    {
-      name: "ශ්‍රේණිය අනුව අධ්‍යයනය කරන්න",
-      icon: <ClassIcon />,
-      subcategories: [
-        { name: "9 ශ්‍රේණිය", path: "/grade-9", icon: <GroupsIcon /> },
-        { name: "10 ශ්‍රේණිය", path: "/grade-10", icon: <GroupsIcon /> },
-        { name: "11 ශ්‍රේණිය", path: "/grade-11", icon: <GroupsIcon /> },
-        { name: "A/L", path: "/a-l", icon: <ScienceIcon /> },
-        { name: "සිංහල සාහිත්‍යය (කාණ්ඩ විෂය)", path: "/sinhala-literature", icon: <LibraryBooksIcon /> },
-      ],
-    },
+  {
+    name: "ශ්‍රේණිය අනුව අධ්‍යයනය කරන්න",
+    icon: <ClassIcon />,
+    subcategories: [
+      { name: "9 ශ්‍රේණිය", path: "/grade-9", icon: <GroupsIcon /> },
+      { name: "10 ශ්‍රේණිය", path: "/grade-10", icon: <GroupsIcon /> },
+      { name: "11 ශ්‍රේණිය", path: "/grade-11", icon: <GroupsIcon /> },
+      { name: "A/L", path: "/a-l", icon: <ScienceIcon /> },
+      { name: "සිංහල සාහිත්‍යය (කාණ්ඩ විෂය)", path: "/sinhala-literature", icon: <LibraryBooksIcon /> },
+    ],
+  },
 
-      // පරීක්ෂණාත්මක Category
   {
     name: "පරීක්ෂණ හා පෙරහුරු ",
     icon: <AssignmentIcon />,
@@ -156,17 +155,15 @@ const navItems = [
     ],
   },
 
-    {
-      name: "Paper Bank",
-      icon: <ArticleIcon />,
-      subcategories: [
-        { name: "සිංහල භාෂාව හා සාහිත්‍යය (O/L & A/L)", path: "/e-magazine", icon: <ImportContactsIcon /> },
-        { name: "සිංහල සාහිත්‍යය (කාණ්ඩ විෂය)", path: "/reviews", icon: <RateReviewOutlinedIcon /> },
-      ],
-    },
+  {
+    name: "Paper Bank",
+    icon: <ArticleIcon />,
+    subcategories: [
+      { name: "සිංහල භාෂාව හා සාහිත්‍යය (O/L & A/L)", path: "/e-magazine", icon: <ImportContactsIcon /> },
+      { name: "සිංහල සාහිත්‍යය (කාණ්ඩ විෂය)", path: "/reviews", icon: <RateReviewOutlinedIcon /> },
+    ],
+  },
 
-
-  // වැදගත් විශේෂාංග Category
   {
     name: "විෂය අධ්‍යනය",
     icon: <MenuBookIcon />,
@@ -176,7 +173,6 @@ const navItems = [
     ],
   },
 
-  // වෙනත් විශේෂාංග Category
   {
     name: "වෙනත් විශේෂාංග",
     icon: <MoreHorizIcon />,
@@ -186,13 +182,12 @@ const navItems = [
     ],
   },
 
-  // Institute Related information Category
   {
     name: "Institute Related information",
     icon: <SchoolIcon />,
     subcategories: [
       { name: "Academic Information", path: "/academic-info", icon: <CastForEducationIcon /> },
-      { name: "Time Tables", path: "/academic-info", icon: <CastForEducationIcon /> },
+      { name: "Classes & Time Tables", path: "/academic-info", icon: <CastForEducationIcon /> },
       { name: "Extracurricular Infomation", path: "/extracurricular", icon: <EmojiEventsIcon /> },
       { name: "Photo Bucket", path: "/photo-bucket", icon: <PhotoLibraryIcon /> },
     ],
@@ -215,41 +210,57 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
       duration: theme.transitions.duration.leavingScreen,
     }),
     marginLeft: `-${drawerWidth}px`,
+    width: `calc(100% + ${drawerWidth}px)`,
+    minHeight: 'calc(100vh - 64px)',
     ...(open && {
       transition: theme.transitions.create('margin', {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen,
       }),
       marginLeft: 0,
+      width: '100%',
     }),
     [theme.breakpoints.down('md')]: {
       marginLeft: 0,
+      width: '100%',
       padding: theme.spacing(2),
     },
   }),
 );
+
+const DrawerHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  padding: theme.spacing(0, 1),
+  ...theme.mixins.toolbar,
+  justifyContent: 'flex-end',
+}));
 
 const CustomDrawer = styled(Drawer)(({ theme }) => ({
   '& .MuiDrawer-paper': {
     width: drawerWidth,
     background: 'linear-gradient(180deg, #1A032B 0%, #3A0D5D 100%)',
     borderRight: 'none',
-    boxShadow: '5px 0 15px rgba(123, 31, 162, 0.3)',
-    marginTop: theme.spacing(9),
-    height: `calc(100% - ${theme.spacing(7)})`,
+    boxShadow: '5px 0 15px rgba(123, 31, 162, 0.1)',
+    height: 'calc(100vh - 64px)',
+    marginTop: '64px',
+    position: 'fixed',
     display: 'flex',
     flexDirection: 'column',
-    // Hide scrollbar but keep functionality
+    overflowY: 'auto',
     scrollbarWidth: 'none', // For Firefox
     '&::-webkit-scrollbar': { // For Chrome, Safari, Opera
       display: 'none',
+      width: 0,
+      height: 0,
     },
     [theme.breakpoints.down('md')]: {
       width: '75%',
       position: 'fixed',
-      zIndex: 100,
+      zIndex: 1200,
+      height: '100vh',
+      top: 0,
       marginTop: 0,
-      height: '100%',
     },
   },
 }));
@@ -286,13 +297,12 @@ const SidebarFooter = styled('div')(({ theme }) => ({
 }));
 
 function App() {
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 3000); // 3 seconds loading time
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -303,9 +313,23 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop />
       <AppContent />
     </Router>
   );
+}
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, [pathname]);
+
+  return null;
 }
 
 function AppContent() {
@@ -314,9 +338,7 @@ function AppContent() {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState(null);
-  const sidebarRef = useRef(null);
 
-  // Auto-expand category if current path is in its subcategories
   useEffect(() => {
     navItems.forEach(item => {
       if (item.subcategories) {
@@ -338,16 +360,19 @@ function AppContent() {
     setExpandedCategory(prev => prev === categoryName ? null : categoryName);
   };
 
-  // Define routes where sidebar should not be visible
   const noSidebarRoutes = ["/login", "/register"];
   const isNoSidebarPage = noSidebarRoutes.includes(location.pathname);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{ 
+      display: 'flex',
+      width: '100%',
+      minHeight: '100vh',
+      overflowX: 'hidden'
+    }}>
       <CssBaseline />
       <Header />
       
-      {/* Mobile Menu Button */}
       {!isNoSidebarPage && isMobile && (
         <IconButton
           onClick={handleDrawerToggle}
@@ -378,209 +403,207 @@ function AppContent() {
         </IconButton>
       )}
 
-      <Box sx={{ display: 'flex', flexGrow: 1 }}>
-        {!isNoSidebarPage && (
-          <>
-            {/* Mobile Sidebar */}
-            <Drawer
-              variant="temporary"
-              open={mobileOpen}
-              onClose={handleDrawerToggle}
-              ModalProps={{
-                keepMounted: true,
-              }}
-              sx={{
-                display: { xs: 'block', md: 'none' },
-                '& .MuiDrawer-paper': {
-                  width: drawerWidth,
-                  boxSizing: 'border-box',
-                  background: 'linear-gradient(180deg, #1A032B 0%, #3A0D5D 100%)',
-                },
-              }}
-            >
-              <SidebarHeader>
-                <Typography variant="h6" noWrap component="div">
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Avatar sx={{ 
-                      bgcolor: 'white', 
-                      color: '#7B1FA2', 
-                      mr: 1,
-                      background: 'linear-gradient(45deg, #E1BEE7 0%, #BA68C8 100%)'
-                    }}>
-                      <DashboardIcon />
-                    </Avatar>
-                    <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>මෙනුව</span>
-                  </Box>
-                </Typography>
-                <IconButton onClick={handleDrawerToggle} sx={{ color: 'white' }}>
-                  <ChevronLeftIcon />
-                </IconButton>
-              </SidebarHeader>
-              <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
-              <NavigationList 
-                expandedCategory={expandedCategory} 
-                handleToggleExpand={handleToggleExpand} 
-                onItemClick={handleDrawerToggle}
-              />
-            <SidebarFooter>
-              <Typography variant="body2" sx={{ mb: 1, textAlign: 'center', fontWeight: 'bold', color: '#E1BEE7' }}>
-                අයන්න කියන්න ඉගෙනුම් පද්ධතිය
-              </Typography>
-              
-              {/* Social Links */}
-              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 2 }}>
-                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
-                  <FacebookIcon fontSize="small" />
-                </IconButton>
-                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
-                  <InstagramIcon fontSize="small" />
-                </IconButton>
-                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
-                  <FaTiktok fontSize="small" />
-                </IconButton>
-                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
-                  <YouTubeIcon fontSize="small" />
-                </IconButton>
+      <Box
+        component="nav"
+        sx={{
+          width: { md: drawerWidth },
+          flexShrink: { md: 0 },
+        }}
+      >
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{
+            keepMounted: true,
+          }}
+          sx={{
+            display: { xs: 'block', md: 'none' },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: drawerWidth,
+              background: 'linear-gradient(180deg, #1A032B 0%, #3A0D5D 100%)',
+            },
+          }}
+        >
+          <SidebarHeader>
+            <Typography variant="h6" noWrap component="div">
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Avatar sx={{ 
+                  bgcolor: 'white', 
+                  color: '#7B1FA2', 
+                  mr: 1,
+                  background: 'linear-gradient(45deg, #E1BEE7 0%, #BA68C8 100%)'
+                }}>
+                  <DashboardIcon />
+                </Avatar>
+                <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>මෙනුව</span>
               </Box>
-
-              {/* Policy Links */}
-              <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                gap: 2, 
-                mb: 1.5,
-                '& a': {
-                  color: '#B39DDB',
-                  textDecoration: 'none',
-                  fontSize: '0.5rem',
-                  '&:hover': {
-                    color: '#E1BEE7',
-                    textDecoration: 'underline'
-                  }
-                }
-              }}>
-                <Link href="#" onClick={(e) => e.preventDefault()}>Privacy Policy</Link>
-                <Link href="#" onClick={(e) => e.preventDefault()}>Terms & Conditions</Link>
-                <Link href="#" onClick={(e) => e.preventDefault()}>Copyright Policy</Link>
-              </Box>
-              <Typography variant="caption" sx={{
-                display: 'block',
-                textAlign: 'center',
+            </Typography>
+            <IconButton onClick={handleDrawerToggle} sx={{ color: 'white' }}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </SidebarHeader>
+          <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+          <NavigationList 
+            expandedCategory={expandedCategory} 
+            handleToggleExpand={handleToggleExpand} 
+            onItemClick={handleDrawerToggle}
+          />
+          <SidebarFooter>
+            <Typography variant="body2" sx={{ mb: 1, textAlign: 'center', fontWeight: 'bold', color: '#E1BEE7' }}>
+              අයන්න කියන්න ඉගෙනුම් පද්ධතිය
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 2 }}>
+              <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                <FacebookIcon fontSize="small" />
+              </IconButton>
+              <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                <InstagramIcon fontSize="small" />
+              </IconButton>
+              <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                <FaTiktok fontSize="small" />
+              </IconButton>
+              <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                <YouTubeIcon fontSize="small" />
+              </IconButton>
+            </Box>
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              gap: 2, 
+              mb: 1.5,
+              '& a': {
                 color: '#B39DDB',
+                textDecoration: 'none',
                 fontSize: '0.5rem',
-                lineHeight: 1.5,
-                px: 2,
-                mb: 1
-              }}>
-                Developer @ kavindu Jayasinghe (SE)
-              </Typography>
-
-              {/* Copyright Section */}
-              <Typography variant="caption" sx={{
-                display: 'block',
-                textAlign: 'center',
-                color: '#B39DDB',
-                fontSize: '0.65rem',
-                lineHeight: 1.5,
-                px: 2,
-                mb: 1
-              }}>
-                © {new Date().getFullYear()} Ayanna Kiyanna Learning System<br />
-                All Rights Reserved • Version 2.0.1
-              </Typography>
-            </SidebarFooter>
-            </Drawer>
-
-            {/* Desktop Sidebar */}
-            <CustomDrawer
-              variant="permanent"
-              sx={{
-                display: { xs: 'none', md: 'block' },
-                width: drawerWidth,
-                flexShrink: 0,
-              }}
-              ref={sidebarRef}
-            >
-              <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
-              <NavigationList 
-                expandedCategory={expandedCategory} 
-                handleToggleExpand={handleToggleExpand} 
-              />
-            <SidebarFooter sx={{mb: 1}}>
-              <Typography variant="body2" sx={{ mb: 1, textAlign: 'center', fontWeight: 'bold', color: '#E1BEE7' }}>
-                අයන්න කියන්න ඉගෙනුම් පද්ධතිය
-              </Typography>
-              
-              {/* Social Links */}
-              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 2 }}>
-                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
-                  <FacebookIcon fontSize="small" />
-                </IconButton>
-                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
-                  <InstagramIcon fontSize="small" />
-                </IconButton>
-                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
-                  <FaTiktok fontSize="small" />
-                </IconButton>
-
-                <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
-                  <YouTubeIcon fontSize="small" />
-                </IconButton>
-              </Box>
-
-              {/* Policy Links */}
-              <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                gap: 2, 
-                mb: 1.5,
-                '& a': {
-                  color: '#B39DDB',
-                  textDecoration: 'none',
-                  fontSize: '0.5rem',
-                  '&:hover': {
-                    color: '#E1BEE7',
-                    textDecoration: 'underline'
-                  }
+                '&:hover': {
+                  color: '#E1BEE7',
+                  textDecoration: 'underline'
                 }
-              }}>
-                <Link href="#" onClick={(e) => e.preventDefault()}>Privacy Policy</Link>
-                <Link href="#" onClick={(e) => e.preventDefault()}>Terms & Conditions</Link>
-                <Link href="#" onClick={(e) => e.preventDefault()}>Copyright Policy</Link>
-              </Box>
-              <Typography variant="caption" sx={{
-                display: 'block',
-                textAlign: 'center',
+              }
+            }}>
+              <Link href="#" onClick={(e) => e.preventDefault()}>Privacy Policy</Link>
+              <Link href="#" onClick={(e) => e.preventDefault()}>Terms & Conditions</Link>
+              <Link href="#" onClick={(e) => e.preventDefault()}>Copyright Policy</Link>
+            </Box>
+            <Typography variant="caption" sx={{
+              display: 'block',
+              textAlign: 'center',
+              color: '#B39DDB',
+              fontSize: '0.5rem',
+              lineHeight: 1.5,
+              px: 2,
+              mb: 1
+            }}>
+              Developer @ kavindu Jayasinghe (SE)
+            </Typography>
+            <Typography variant="caption" sx={{
+              display: 'block',
+              textAlign: 'center',
+              color: '#B39DDB',
+              fontSize: '0.65rem',
+              lineHeight: 1.5,
+              px: 2,
+              mb: 1
+            }}>
+              © {new Date().getFullYear()} Ayanna Kiyanna Learning System<br />
+              All Rights Reserved • Version 2.0.1
+            </Typography>
+          </SidebarFooter>
+        </Drawer>
+
+        <Drawer
+          sx={{
+            display: { xs: 'none', md: 'block' },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: drawerWidth,
+              background: 'linear-gradient(180deg, #1A032B 0%, #3A0D5D 100%)',
+              height: 'calc(100vh - 64px)',
+              mt: 9,
+              position: 'fixed',
+            },
+          }}
+          variant="permanent"
+          open
+        >
+          <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+          <NavigationList 
+            expandedCategory={expandedCategory} 
+            handleToggleExpand={handleToggleExpand} 
+          />
+          <SidebarFooter sx={{ mb: 1 }}>
+            <Typography variant="body2" sx={{ mb: 1, textAlign: 'center', fontWeight: 'bold', color: '#E1BEE7' }}>
+              අයන්න කියන්න ඉගෙනුම් පද්ධතිය
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 2 }}>
+              <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                <FacebookIcon fontSize="small" />
+              </IconButton>
+              <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                <InstagramIcon fontSize="small" />
+              </IconButton>
+              <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                <FaTiktok fontSize="small" />
+              </IconButton>
+              <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
+                <YouTubeIcon fontSize="small" />
+              </IconButton>
+            </Box>
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              gap: 2, 
+              mb: 1.5,
+              '& a': {
                 color: '#B39DDB',
+                textDecoration: 'none',
                 fontSize: '0.5rem',
-                lineHeight: 1.5,
-                px: 2,
-                mb: 1
-              }}>
-                Developer @ kavindu Jayasinghe (SE)
-              </Typography>
+                '&:hover': {
+                  color: '#E1BEE7',
+                  textDecoration: 'underline'
+                }
+              }
+            }}>
+              <Link href="#" onClick={(e) => e.preventDefault()}>Privacy Policy</Link>
+              <Link href="#" onClick={(e) => e.preventDefault()}>Terms & Conditions</Link>
+              <Link href="#" onClick={(e) => e.preventDefault()}>Copyright Policy</Link>
+            </Box>
+            <Typography variant="caption" sx={{
+              display: 'block',
+              textAlign: 'center',
+              color: '#B39DDB',
+              fontSize: '0.5rem',
+              lineHeight: 1.5,
+              px: 2,
+              mb: 1
+            }}>
+              Developer @ kavindu Jayasinghe (SE)
+            </Typography>
+            <Typography variant="caption" sx={{
+              display: 'block',
+              textAlign: 'center',
+              color: '#B39DDB',
+              fontSize: '0.65rem',
+              lineHeight: 1.5,
+              px: 2,
+              mb: 1
+            }}>
+              © {new Date().getFullYear()} Ayanna Kiyanna Learning System<br />
+              All Rights Reserved • Version 2.0.1
+            </Typography>
+          </SidebarFooter>
+        </Drawer>
+      </Box>
 
-              {/* Copyright Section */}
-              <Typography variant="caption" sx={{
-                display: 'block',
-                textAlign: 'center',
-                color: '#B39DDB',
-                fontSize: '0.65rem',
-                lineHeight: 1.5,
-                px: 2,
-                mb: 1
-              }}>
-                © {new Date().getFullYear()} Ayanna Kiyanna Learning System<br />
-                All Rights Reserved • Version 2.0.1
-              </Typography>
-            </SidebarFooter>
-            </CustomDrawer>
-          </>
-        )}
-
-        <Main open={!isMobile} sx={{ 
-          background: 'linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9))',
-          paddingTop: '80px' 
+      <Main open={!isMobile && !isNoSidebarPage}>
+        <DrawerHeader />
+        <Box sx={{
+          width: '100%',
+          maxWidth: '100%',
+          padding: isMobile ? 2 : 3,
+          boxSizing: 'border-box'
         }}>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -610,8 +633,8 @@ function AppContent() {
             <Route path="/special-notice" element={<TestPage title="Special Notice" />} />
             <Route path="/contact-support" element={<TestPage title="Contact Support" />} />
           </Routes>
-        </Main>
-      </Box>
+        </Box>
+      </Main>
     </Box>
   );
 }
@@ -620,7 +643,17 @@ function NavigationList({ expandedCategory, handleToggleExpand, onItemClick }) {
   const location = useLocation();
   
   return (
-    <List sx={{ pt: 0, flexGrow: 1 }}>
+    <List sx={{ 
+      pt: 0, 
+      flexGrow: 1,
+      overflowY: 'auto',
+      scrollbarWidth: 'none', // For Firefox
+      '&::-webkit-scrollbar': { // For Chrome, Safari, Opera
+        display: 'none',
+        width: 0,
+        height: 0,
+      },
+    }}>
       {navItems.map((item, index) => (
         <React.Fragment key={index}>
           {item.subcategories ? (
@@ -667,8 +700,10 @@ function NavigationList({ expandedCategory, handleToggleExpand, onItemClick }) {
                   {item.subcategories.map((subItem, subIndex) => (
                     <ListItemButton
                       key={subIndex}
-                      component={Link}
-                      to={subItem.path}
+                      component={subItem.external ? 'a' : Link}
+                      to={subItem.external ? undefined : subItem.path}
+                      href={subItem.external ? subItem.path : undefined}
+                      target={subItem.external ? '_blank' : undefined}
                       onClick={onItemClick}
                       sx={{
                         pl: 6,

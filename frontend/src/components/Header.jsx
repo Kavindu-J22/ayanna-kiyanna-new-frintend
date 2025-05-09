@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   AppBar,
   Toolbar,
@@ -15,6 +15,7 @@ import {
   Collapse,
   List,
   ListItem,
+  ListItemIcon,
   ListItemText,
   Badge,
   Divider
@@ -25,9 +26,14 @@ import ExploreIcon from '@mui/icons-material/Explore';
 import LoginIcon from '@mui/icons-material/Login';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import HomeIcon from '@mui/icons-material/Home';
+import InfoIcon from '@mui/icons-material/Info';
+import PeopleIcon from '@mui/icons-material/People';
+import ContactMailIcon from '@mui/icons-material/ContactMail';
+import BusinessIcon from '@mui/icons-material/Business';
 import { styled, alpha } from '@mui/material/styles';
 import { keyframes } from '@mui/system';
-import { useLocation } from 'react-router-dom'; // Added this import
+import { useLocation } from 'react-router-dom';
 
 // Import your logo image (make sure the path is correct)
 import logo from '../assets/AKlogo.png';
@@ -45,10 +51,13 @@ const StyledAppBar = styled(AppBar)(({ theme }) => ({
   borderBottom: `1px solid ${alpha('#9c64ff', 0.2)}`,
   padding: theme.spacing(0.5, 0),
   position: 'fixed',
-  zIndex: 1,
+  zIndex: 100,
   transition: 'all 0.3s ease',
   '&:hover': {
     background: `linear-gradient(135deg, ${alpha('#1a0638', 1)} 0%, ${alpha('#2e0b5e', 1)} 100%)`,
+  },
+  '& > div': {
+    position: 'relative'
   }
 }));
 
@@ -147,12 +156,13 @@ const MobileMenuButton = styled(Button)(({ theme, open }) => ({
 }));
 
 const Header = () => {
-  const location = useLocation(); // Get current location
+  const location = useLocation();
   const [userEmail, setUserEmail] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const mobileMenuRef = useRef(null);
 
   useEffect(() => {
     const email = localStorage.getItem('userEmail');
@@ -160,6 +170,25 @@ const Header = () => {
       setUserEmail(email);
     }
   }, []);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    if (mobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [mobileMenuOpen]);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -180,14 +209,13 @@ const Header = () => {
   };
 
   const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
-    { name: 'Info', path: '/info' },
-    { name: 'Services', path: '/services' },
-    { name: 'Contact', path: '/contact' },
+    { name: 'Home', path: '/', icon: <HomeIcon /> },
+    { name: 'About', path: '/about', icon: <PeopleIcon /> },
+    { name: 'Info', path: '/info', icon: <InfoIcon /> },
+    { name: 'Services', path: '/services', icon: <BusinessIcon /> },
+    { name: 'Contact', path: '/contact', icon: <ContactMailIcon /> },
   ];
 
-  // Function to check if a nav item is active
   const isActive = (path) => {
     return location.pathname === path;
   };
@@ -197,16 +225,16 @@ const Header = () => {
       <StyledAppBar>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-          <LogoTitle 
-            variant="h6" 
-            noWrap 
-            sx={{ flexGrow: isMobile ? 0 : 1, cursor: 'pointer' }}
-            onClick={() => {
-                window.location.href = '/';
-            }}
+            <LogoTitle 
+              variant="h6" 
+              noWrap 
+              sx={{ flexGrow: isMobile ? 0 : 1, cursor: 'pointer' }}
+              onClick={() => {
+                  window.location.href = '/';
+              }}
             >
-            <img src={logo} alt="Logo" />
-            <span className="title-text">"අයන්න කියන්න"</span>
+              <img src={logo} alt="Logo" />
+              <span className="title-text">"අයන්න කියන්න"</span>
             </LogoTitle>
             
             {!isMobile && (
@@ -393,7 +421,8 @@ const Header = () => {
                           color: '#1a0638',
                           '&:hover': {
                             backgroundColor: '#9c64ff',
-                            transform: 'translateY(-3px)'
+                            transform: 'translateY(-3px)',
+                            color: '#1a0638',
                           }
                         }}
                       >
@@ -440,17 +469,22 @@ const Header = () => {
           
           {/* Mobile menu dropdown */}
           {isMobile && (
-            <Collapse in={mobileMenuOpen} sx={{ 
-              position: 'absolute',
-              top: '64px',
-              left: 0,
-              right: 0,
-              backgroundColor: alpha('#1a0638', 0.98),
-              backdropFilter: 'blur(20px)',
-              zIndex: 1,
-              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
-              borderBottom: '1px solid rgba(179, 136, 255, 0.2)'
-            }}>
+            <Collapse 
+              in={mobileMenuOpen} 
+              ref={mobileMenuRef}
+              sx={{ 
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+                backgroundColor: alpha('#1a0638', 0.95),
+                backdropFilter: 'blur(20px)',
+                zIndex: theme.zIndex.appBar + 1,
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
+                borderBottom: '1px solid rgba(179, 136, 255, 0.2)',
+                width: '100%'
+              }}
+            >
               <Box sx={{ p: 2 }}>
                 <List sx={{ py: 0 }}>
                   {navItems.map((item) => (
@@ -459,20 +493,28 @@ const Header = () => {
                       key={item.name} 
                       component="a" 
                       href={item.path}
+                      onClick={() => setMobileMenuOpen(false)}
                       sx={{
                         borderRadius: '8px',
                         mb: 0.5,
                         transition: 'all 0.3s ease',
                         backgroundColor: isActive(item.path) ? 'rgba(179, 136, 255, 0.2)' : 'transparent',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        textAlign: 'center',
                         '&:hover': {
                           backgroundColor: 'rgba(179, 136, 255, 0.1)',
                           transform: 'translateX(5px)'
-                        }
+                        },
+                        display: 'flex',
+                        justifyContent: 'center', // Centers content horizontally
+                        textAlign: 'center' // Ensures text is centered
                       }}
                     >
+                      <ListItemIcon sx={{ 
+                        color: isActive(item.path) ? '#b388ff' : 'white',
+                        minWidth: 'auto', // Remove fixed icon width
+                        mr: 1 // Add some spacing between icon and text
+                      }}>
+                        {item.icon}
+                      </ListItemIcon>
                       <ListItemText 
                         primary={item.name} 
                         primaryTypographyProps={{ 
@@ -480,6 +522,10 @@ const Header = () => {
                           fontWeight: 500,
                           variant: 'body1'
                         }} 
+                        sx={{
+                          flex: 'none', // Prevent text from stretching
+                          textAlign: 'center' // Center the text
+                        }}
                       />
                     </ListItem>
                   ))}
@@ -492,7 +538,6 @@ const Header = () => {
       
       {/* Add padding to content to account for fixed header */}
       <Toolbar />
-      {isMobile && mobileMenuOpen && <Box sx={{ height: 'calc(100vh - 64px)', mt: '64px' }} onClick={toggleMobileMenu} />}
     </>
   );
 };
