@@ -77,6 +77,7 @@ import TestPage from './pages/TestPage';
 import Home from './pages/Home';
 import About from './pages/About';
 import AkContact from './pages/Contact';
+import SignIn from './pages/SignIn';
 
 const drawerWidth = 280;
 
@@ -645,8 +646,7 @@ function AppContent() {
           display: 'flex', justifyContent: 'center', alignItems: 'center'
         }}>
           <Container maxWidth="xl" sx={{ 
-            
-            
+        
             px: { xs: 0, sm: 0 },
             width: '100%',
             height: '100%',
@@ -680,6 +680,8 @@ function AppContent() {
               <Route path="/books-products" element={<TestPage title="Books & Products" />} />
               <Route path="/special-notice" element={<TestPage title="Special Notice" />} />
               <Route path="/contact-support" element={<TestPage title="Contact Support" />} />
+
+              <Route path="/login" element={<SignIn />} />
             </Routes>
           </Container>
         </Main>

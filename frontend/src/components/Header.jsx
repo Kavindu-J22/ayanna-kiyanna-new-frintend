@@ -163,6 +163,7 @@ const Header = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const mobileMenuRef = useRef(null);
+  const mobileMenuButtonRef = useRef(null);
 
   useEffect(() => {
     const email = localStorage.getItem('userEmail');
@@ -174,17 +175,17 @@ const Header = () => {
   // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+      // Check if click is outside AND the menu is actually open
+      if (mobileMenuOpen && 
+          mobileMenuRef.current && 
+          !mobileMenuRef.current.contains(event.target) &&
+          mobileMenuButtonRef.current &&
+          !mobileMenuButtonRef.current.contains(event.target)) {
         setMobileMenuOpen(false);
       }
     };
 
-    if (mobileMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
-
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -204,15 +205,19 @@ const Header = () => {
     handleMenuClose();
   };
 
-  const toggleMobileMenu = () => {
+  const toggleMobileMenu = (e) => {
+    // Only stop propagation if we're opening the menu
+    if (!mobileMenuOpen) {
+      e.stopPropagation();
+    }
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
   const navItems = [
     { name: 'Home', path: '/', icon: <HomeIcon /> },
     { name: 'About', path: '/about', icon: <PeopleIcon /> },
-    { name: 'Info', path: '/info', icon: <InfoIcon /> },
     { name: 'Services', path: '/services', icon: <BusinessIcon /> },
+    { name: 'Products', path: '/products', icon: <InfoIcon /> },
     { name: 'Contact', path: '/contact', icon: <ContactMailIcon /> },
   ];
 
@@ -263,20 +268,21 @@ const Header = () => {
             {isMobile && (
                 <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
                 <MobileMenuButton 
-                    startIcon={<ExploreIcon fontSize="small" sx={{ color: 'white' }} />}
-                    onClick={toggleMobileMenu}
-                    open={mobileMenuOpen}
-                    sx={{
-                    color: 'white',
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
-                    '&:hover': {
-                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                        borderColor: 'white'
-                    }
-                    }}
-                >
-                    Explore
-                </MobileMenuButton>
+                ref={mobileMenuButtonRef}
+                startIcon={<ExploreIcon fontSize="small" sx={{ color: 'white' }} />}
+                onClick={toggleMobileMenu}
+                open={mobileMenuOpen}
+                sx={{
+                  color: 'white',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    borderColor: 'white'
+                  }
+                }}
+              >
+                {mobileMenuOpen ? 'Close' : 'Navigate'}
+              </MobileMenuButton>
                 </Box>
             )}
             
@@ -401,7 +407,7 @@ const Header = () => {
                       <AuthButton 
                         variant="outlined" 
                         color="inherit" 
-                        href="/signin"
+                        href="/login"
                         sx={{ 
                           borderColor: 'rgba(179, 136, 255, 0.3)',
                           '&:hover': {
@@ -433,7 +439,7 @@ const Header = () => {
                     <>
                       <IconButton 
                         color="inherit" 
-                        href="/signin"
+                        href="/login"
                         sx={{ 
                           ml: 1,
                           '&:hover': {
@@ -470,7 +476,9 @@ const Header = () => {
           {/* Mobile menu dropdown */}
           {isMobile && (
             <Collapse 
-              in={mobileMenuOpen} 
+              in={mobileMenuOpen}
+              timeout="auto"
+              unmountOnExit
               ref={mobileMenuRef}
               sx={{ 
                 position: 'absolute',
@@ -504,14 +512,14 @@ const Header = () => {
                           transform: 'translateX(5px)'
                         },
                         display: 'flex',
-                        justifyContent: 'center', // Centers content horizontally
-                        textAlign: 'center' // Ensures text is centered
+                        justifyContent: 'center',
+                        textAlign: 'center'
                       }}
                     >
                       <ListItemIcon sx={{ 
                         color: isActive(item.path) ? '#b388ff' : 'white',
-                        minWidth: 'auto', // Remove fixed icon width
-                        mr: 1 // Add some spacing between icon and text
+                        minWidth: 'auto',
+                        mr: 1
                       }}>
                         {item.icon}
                       </ListItemIcon>
@@ -523,8 +531,8 @@ const Header = () => {
                           variant: 'body1'
                         }} 
                         sx={{
-                          flex: 'none', // Prevent text from stretching
-                          textAlign: 'center' // Center the text
+                          flex: 'none',
+                          textAlign: 'center'
                         }}
                       />
                     </ListItem>
