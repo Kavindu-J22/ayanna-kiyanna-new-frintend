@@ -34,6 +34,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import { styled, alpha } from '@mui/material/styles';
 import { keyframes } from '@mui/system';
 import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // Import your logo image (make sure the path is correct)
 import logo from '../assets/AKlogo.png';
@@ -164,6 +165,7 @@ const Header = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const mobileMenuRef = useRef(null);
   const mobileMenuButtonRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const email = localStorage.getItem('userEmail');
@@ -407,7 +409,7 @@ const Header = () => {
                       <AuthButton 
                         variant="outlined" 
                         color="inherit" 
-                        href="/login"
+                        onClick={() => navigate("/login")}
                         sx={{ 
                           borderColor: 'rgba(179, 136, 255, 0.3)',
                           '&:hover': {
@@ -421,7 +423,7 @@ const Header = () => {
                       <AuthButton 
                         variant="contained" 
                         color="secondary" 
-                        href="/register"
+                        onClick={() => navigate("/register")}
                         sx={{ 
                           backgroundColor: '#b388ff', 
                           color: '#1a0638',
@@ -438,8 +440,8 @@ const Header = () => {
                   ) : (
                     <>
                       <IconButton 
-                        color="inherit" 
-                        href="/login"
+                        color="inherit"
+                        onClick={() => navigate("/login")}
                         sx={{ 
                           ml: 1,
                           '&:hover': {
@@ -453,7 +455,7 @@ const Header = () => {
                       </IconButton>
                       <IconButton 
                         color="inherit" 
-                        href="/register"
+                        onClick={() => navigate("/register")}
                         sx={{ 
                           backgroundColor: 'rgba(179, 136, 255, 0.3)',
                           ml: 1,
