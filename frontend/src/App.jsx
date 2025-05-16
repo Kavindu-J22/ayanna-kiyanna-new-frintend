@@ -78,6 +78,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import AkContact from './pages/Contact';
 import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
 
 const drawerWidth = 280;
 
@@ -682,6 +683,7 @@ function AppContent() {
               <Route path="/contact-support" element={<TestPage title="Contact Support" />} />
 
               <Route path="/login" element={<SignIn />} />
+              <Route path="/register" element={<SignUp />} />
             </Routes>
           </Container>
         </Main>

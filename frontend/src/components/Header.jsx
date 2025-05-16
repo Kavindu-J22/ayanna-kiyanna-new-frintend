@@ -421,7 +421,7 @@ const Header = () => {
                       <AuthButton 
                         variant="contained" 
                         color="secondary" 
-                        href="/signup"
+                        href="/register"
                         sx={{ 
                           backgroundColor: '#b388ff', 
                           color: '#1a0638',
@@ -453,7 +453,7 @@ const Header = () => {
                       </IconButton>
                       <IconButton 
                         color="inherit" 
-                        href="/signup"
+                        href="/register"
                         sx={{ 
                           backgroundColor: 'rgba(179, 136, 255, 0.3)',
                           ml: 1,

@@ -1,4 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { 
   Box, 
   Typography, 
@@ -10,15 +12,126 @@ import {
   InputAdornment,
   IconButton,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Slide
 } from '@mui/material';
-import { Visibility, VisibilityOff, Google } from '@mui/icons-material';
+import { Visibility, VisibilityOff, Google, CheckCircle, Celebration } from '@mui/icons-material';
 import AKlogo from '../assets/AKlogo.png';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const SignInPage = () => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [rememberMe, setRememberMe] = React.useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const [error, setError] = useState('');
+  const [openSuccessPopup, setOpenSuccessPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
   const animationRef = useRef(null);
+  const navigate = useNavigate();
+
+    const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        email: formData.email,
+        password: formData.password
+      });
+
+      // Store user data in localStorage
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('userEmail', formData.email);
+      
+      if (response.data.user) {
+        localStorage.setItem('fullName', response.data.user.fullName);
+      }
+
+      // Show success popup
+      setPopupMessage(`Welcome back, ${response.data.user.fullName || response.data.user.email}!`);
+      setOpenSuccessPopup(true);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      console.error('Login error:', err);
+    }
+  };
+
+    const handleGoogleSignIn = async () => {
+    try {
+      // Load Google API client
+      await loadGoogleScript();
+      
+      const auth2 = window.gapi.auth2.getAuthInstance();
+      const googleUser = await auth2.signIn();
+      const tokenId = googleUser.getAuthResponse().id_token;
+
+      const response = await axios.post('http://localhost:5000/api/auth/google', {
+        tokenId
+      });
+
+      // Store user data in localStorage
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('userEmail', response.data.user.email);
+      localStorage.setItem('fullName', response.data.user.fullName);
+
+      // Show success popup
+      setPopupMessage(`Welcome ${response.data.user.fullName || response.data.user.email}!`);
+      setOpenSuccessPopup(true);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Google login failed. Please try again.');
+      console.error('Google login error:', err);
+    }
+  };
+
+    const loadGoogleScript = () => {
+    return new Promise((resolve) => {
+      if (window.gapi) {
+        resolve();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://apis.google.com/js/platform.js';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        window.gapi.load('auth2', () => {
+          window.gapi.auth2.init({
+            client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+            cookiepolicy: 'single_host_origin',
+          });
+          resolve();
+        });
+      };
+      document.body.appendChild(script);
+    });
+  };
+
+  const handleCloseSuccessPopup = () => {
+    setOpenSuccessPopup(false);
+    
+    // Use setTimeout to ensure navigation happens after state updates
+    setTimeout(() => {
+      window.location.href = '/'; // This will do a full navigation
+    }, 100);
+  };
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -201,12 +314,12 @@ const SignInPage = () => {
         <Paper
           elevation={6}
           sx={{
-            maxWidth: 400, // Smaller width
+            maxWidth: 400,
             width: '100%',
-            p: 3, // Less padding
+            p: 3,
             mt: 1,
             borderRadius: 3,
-            backgroundColor: 'rgba(255, 255, 255, 0.75)', // More opaque
+            backgroundColor: 'rgba(255, 255, 255, 0.75)',
             backdropFilter: 'blur(2px)',
             border: '1px solid rgba(255, 255, 255, 0.3)',
             position: 'relative',
@@ -262,71 +375,82 @@ const SignInPage = () => {
             </Typography>
           </Box>
 
-          <Box component="form" noValidate sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              variant="outlined"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                  '& fieldset': {
-                    borderColor: 'rgba(0, 0, 0, 0.23)',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: '#9c27b0', // Purple
-                  },
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#9c27b0', // Purple
-                }
-              }}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              id="password"
-              autoComplete="current-password"
-              variant="outlined"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                  '& fieldset': {
-                    borderColor: 'rgba(0, 0, 0, 0.23)',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: '#9c27b0', // Purple
-                  },
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#9c27b0', // Purple
-                }
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      edge="end"
-                      sx={{ color: '#9c27b0' }} // Purple
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
+      {/* Update the form section */}
+          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            {error && (
+              <Typography color="error" sx={{ mb: 2 }}>
+                {error}
+              </Typography>
+            )}
+
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="email"
+          label="Email Address"
+          name="email"
+          autoComplete="email"
+          autoFocus
+          variant="outlined"
+          value={formData.email}
+          onChange={handleInputChange}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 2,
+              '& fieldset': {
+                borderColor: 'rgba(0, 0, 0, 0.23)',
+              },
+              '&:hover fieldset': {
+                borderColor: '#9c27b0',
+              },
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: '#9c27b0',
+            }
+          }}
+        />
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          name="password"
+          label="Password"
+          type={showPassword ? "text" : "password"}
+          id="password"
+          autoComplete="current-password"
+          variant="outlined"
+          value={formData.password}
+          onChange={handleInputChange}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 2,
+              '& fieldset': {
+                borderColor: 'rgba(0, 0, 0, 0.23)',
+              },
+              '&:hover fieldset': {
+                borderColor: '#9c27b0',
+              },
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: '#9c27b0',
+            }
+          }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  edge="end"
+                  sx={{ color: '#9c27b0' }}
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
             
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
               <FormControlLabel
@@ -367,7 +491,7 @@ const SignInPage = () => {
                 borderRadius: 2,
                 fontSize: '0.95rem',
                 fontWeight: 600,
-                background: 'linear-gradient(45deg, #9c27b0, #673ab7)', // Purple gradient
+                background: 'linear-gradient(45deg, #9c27b0, #673ab7)',
                 boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
                 '&:hover': {
                   boxShadow: '0 6px 8px rgba(0,0,0,0.15)',
@@ -389,18 +513,19 @@ const SignInPage = () => {
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               <Button
                 fullWidth
-                variant="contained" // Changed to contained for more impact
+                variant="contained"
                 startIcon={<Google sx={{ 
                   background: 'white', 
                   borderRadius: '50%',
                   p: 0.5,
-                  color: '#DB4437' // Google red
+                  color: '#DB4437'
                 }} />}
+                onClick={handleGoogleSignIn}
                 sx={{
                   maxWidth: 300,
                   borderRadius: 2,
                   py: 1,
-                  background: 'linear-gradient(to right,rgb(104, 66, 244),rgb(52, 168, 133), #FBBC05, #EA4335)', // Google colors
+                  background: 'linear-gradient(to right,rgb(104, 66, 244),rgb(52, 168, 133), #FBBC05, #EA4335)',
                   backgroundSize: '300% 100%',
                   color: 'white',
                   fontWeight: 600,
@@ -437,7 +562,7 @@ const SignInPage = () => {
             <Box sx={{ textAlign: 'center', mt: 2 }}>
               <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
                 New to Ayanna Kiyanna?{' '}
-                <Link href="#" variant="body2" sx={{ 
+                <Link href="/register" variant="body2" sx={{ 
                   fontWeight: 600, 
                   textDecoration: 'none',
                   color: '#673ab7',
@@ -452,6 +577,83 @@ const SignInPage = () => {
           </Box>
         </Paper>
       </Box>
+
+            {/* Success Popup */}
+      <Dialog
+        open={openSuccessPopup}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleCloseSuccessPopup}
+        aria-describedby="success-dialog-description"
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: 3,
+            background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+            padding: '20px',
+            textAlign: 'center',
+            maxWidth: '400px'
+          }
+        }}
+      >
+        <DialogContent sx={{ py: 4 }}>
+          <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <Celebration sx={{ 
+              fontSize: 80, 
+              color: '#9c27b0', 
+              mb: 2,
+              filter: 'drop-shadow(0 4px 8px rgba(156, 39, 176, 0.3))'
+            }} />
+            <Typography variant="h5" component="div" sx={{ 
+              mb: 2,
+              fontWeight: 700,
+              background: 'linear-gradient(45deg, #9c27b0, #673ab7)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}>
+              Login Successful!
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 3 }}>
+              {popupMessage}
+            </Typography>
+            <Box sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(102, 187, 106, 0.2)',
+              borderRadius: '20px',
+              padding: '10px 20px',
+              mb: 3
+            }}>
+              <CheckCircle sx={{ color: '#66bb6a', mr: 1 }} />
+              <Typography variant="body2" sx={{ color: '#2e7d32' }}>
+                You are now logged in
+              </Typography>
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'center', pb: 3 }}>
+          <Button
+            onClick={handleCloseSuccessPopup}
+            variant="contained"
+            sx={{
+              borderRadius: '20px',
+              px: 4,
+              py: 1,
+              background: 'linear-gradient(45deg, #9c27b0, #673ab7)',
+              '&:hover': {
+                background: 'linear-gradient(45deg, #673ab7, #9c27b0)'
+              }
+            }}
+          >
+            Continue to Dashboard
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <style>
         {`
