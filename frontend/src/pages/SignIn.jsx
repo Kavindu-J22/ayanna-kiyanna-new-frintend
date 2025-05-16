@@ -19,7 +19,14 @@ import {
   Slide
 } from '@mui/material';
 import { Visibility, VisibilityOff, Google, CheckCircle, Celebration } from '@mui/icons-material';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { initializeApp } from 'firebase/app';
 import AKlogo from '../assets/AKlogo.png';
+import { firebaseConfig } from '../config';
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -36,7 +43,6 @@ const SignInPage = () => {
   const [openSuccessPopup, setOpenSuccessPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
   const animationRef = useRef(null);
-  const navigate = useNavigate();
 
     const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -73,55 +79,29 @@ const SignInPage = () => {
     }
   };
 
-    const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = async () => {
     try {
-      // Load Google API client
-      await loadGoogleScript();
+      const provider = new GoogleAuthProvider();
+      provider.addScope('profile');
+      provider.addScope('email');
       
-      const auth2 = window.gapi.auth2.getAuthInstance();
-      const googleUser = await auth2.signIn();
-      const tokenId = googleUser.getAuthResponse().id_token;
-
-      const response = await axios.post('http://localhost:5000/api/auth/google', {
-        tokenId
+      const result = await signInWithPopup(auth, provider);
+      const idToken = await result.user.getIdToken();
+      
+      const response = await axios.post('http://localhost:5000/api/auth/firebase-google', {
+        idToken
       });
 
-      // Store user data in localStorage
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userEmail', response.data.user.email);
       localStorage.setItem('fullName', response.data.user.fullName);
 
-      // Show success popup
       setPopupMessage(`Welcome ${response.data.user.fullName || response.data.user.email}!`);
       setOpenSuccessPopup(true);
     } catch (err) {
       setError(err.response?.data?.message || 'Google login failed. Please try again.');
       console.error('Google login error:', err);
     }
-  };
-
-    const loadGoogleScript = () => {
-    return new Promise((resolve) => {
-      if (window.gapi) {
-        resolve();
-        return;
-      }
-
-      const script = document.createElement('script');
-      script.src = 'https://apis.google.com/js/platform.js';
-      script.async = true;
-      script.defer = true;
-      script.onload = () => {
-        window.gapi.load('auth2', () => {
-          window.gapi.auth2.init({
-            client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
-            cookiepolicy: 'single_host_origin',
-          });
-          resolve();
-        });
-      };
-      document.body.appendChild(script);
-    });
   };
 
   const handleCloseSuccessPopup = () => {
@@ -578,7 +558,7 @@ const SignInPage = () => {
         </Paper>
       </Box>
 
-            {/* Success Popup */}
+      {/* Success Popup */}
       <Dialog
         open={openSuccessPopup}
         TransitionComponent={Transition}
