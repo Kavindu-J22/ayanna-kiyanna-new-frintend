@@ -205,6 +205,7 @@ const Header = () => {
     localStorage.removeItem('userEmail');
     setUserEmail(null);
     handleMenuClose();
+    window.location.reload(); // This will refresh the page
   };
 
   const toggleMobileMenu = (e) => {

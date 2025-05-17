@@ -56,7 +56,7 @@ const SignInPage = () => {
     setError('');
 
     try {
-      const response = await axios.post('https://ayanna-kiyanna-new-backend.vercel.app/api/auth/login', {
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
         email: formData.email,
         password: formData.password
       });
@@ -87,7 +87,7 @@ const SignInPage = () => {
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
       
-      const response = await axios.post('https://ayanna-kiyanna-new-backend.vercel.app/auth/firebase-google', {
+      const response = await axios.post('http://localhost:5000/api/auth/firebase-google', {
         idToken
       });
 
@@ -95,7 +95,7 @@ const SignInPage = () => {
       localStorage.setItem('userEmail', response.data.user.email);
       localStorage.setItem('fullName', response.data.user.fullName);
 
-      setPopupMessage(`Welcome ${response.data.user.fullName || response.data.user.email}!`);
+      setPopupMessage(`ආයුබෝවන් 🙏 ${response.data.user.fullName || response.data.user.email}!`);
       setOpenSuccessPopup(true);
     } catch (err) {
       setError(err.response?.data?.message || 'Google login failed. Please try again.');
@@ -534,7 +534,7 @@ const SignInPage = () => {
                   }
                 }}
               >
-                Sign in with Google
+                Continue with Google
               </Button>
             </Box>
 
@@ -594,7 +594,7 @@ const SignInPage = () => {
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent'
             }}>
-              Login Successful!
+              සාදරයෙන් පිළිගනිමු.!
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
               {popupMessage}
