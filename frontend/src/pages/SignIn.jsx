@@ -56,7 +56,7 @@ const SignInPage = () => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      const response = await axios.post('https://ayanna-kiyanna-new-backend.onrender.com/api/auth/login', {
         email: formData.email,
         password: formData.password
       });
@@ -87,7 +87,7 @@ const SignInPage = () => {
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
       
-      const response = await axios.post('http://localhost:5000/api/auth/firebase-google', {
+      const response = await axios.post('https://ayanna-kiyanna-new-backend.onrender.com/api/auth/firebase-google', {
         idToken
       });
 
