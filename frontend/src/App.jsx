@@ -17,7 +17,10 @@ import {
   Typography,
   Avatar,
   Button,
-  Container
+  Container,
+  Tooltip,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -80,15 +83,16 @@ import AkContact from './pages/Contact';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 
-const drawerWidth = 280;
+const mobileDrawerWidth = 280;
+const desktopDrawerWidth = 320; // Increased width for desktop
 
 // Animation for mobile menu button
 const pulseGlow = keyframes`
-  0%, 100% { 
+  0%, 100% {
     opacity: 1;
     box-shadow: 0 0 0 rgba(123, 31, 162, 0.5);
   }
-  50% { 
+  50% {
     opacity: 0.8;
     box-shadow: 0 0 10px rgba(123, 31, 162, 0.8);
   }
@@ -97,7 +101,7 @@ const pulseGlow = keyframes`
 // Sidebar items with icons organized into categories
 const navItems = [
   { name: "Dashboard", path: "/", icon: <DashboardIcon /> },
-  
+
   // විෂය සමගාමි Category
   {
     name: "ව්‍යාකරණ හා සාහිත්‍ය",
@@ -116,9 +120,9 @@ const navItems = [
       { name: "ව්‍යංජන", path: "/literature", icon: <LocalLibraryIcon /> },
       { name: "අකාරාදී පිළිවෙල", path: "/grammar", icon: <TranslateIcon /> },
       { name: "අක්ෂර වින්‍යාසය", path: "/literature", icon: <LocalLibraryIcon /> },
-      { 
-        name: "සුහුරු අක්ෂර මාලාව", 
-        path: "https://deployed-ayanna-kiyanna-institute-management-system-g6s2.vercel.app/", 
+      {
+        name: "සුහුරු අක්ෂර මාලාව",
+        path: "https://deployed-ayanna-kiyanna-institute-management-system-g6s2.vercel.app/",
         icon: <AccountTreeIcon />,
         external: true // Add this flag to indicate it's an external link
       },
@@ -210,32 +214,16 @@ const navItems = [
   { name: "අයන්න කියන්න : Contact Suport", path: "/contact-support", icon: <ContactMailIcon /> },
 ];
 
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
+const Main = styled('main')(
+  ({ theme }) => ({
     flexGrow: 1,
     padding: theme.spacing(0),
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: `-${drawerWidth}px`,
     width: '100%',
     minHeight: 'calc(100vh - 64px)', // Subtract header height
     boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
-    ...(open && {
-      transition: theme.transitions.create('margin', {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-      marginLeft: 0,
-    }),
-    [theme.breakpoints.down('md')]: {
-      marginLeft: 0,
-      padding: theme.spacing(0),
-      width: '100%',
-    },
+    marginLeft: 0,
   }),
 );
 
@@ -253,9 +241,10 @@ function ScrollToTop() {
   return null;
 }
 
+// We're not using this component anymore, but keeping it for reference
 const CustomDrawer = styled(Drawer)(({ theme }) => ({
   '& .MuiDrawer-paper': {
-    width: drawerWidth,
+    width: mobileDrawerWidth,
     background: 'linear-gradient(180deg, #1A032B 0%, #3A0D5D 100%)',
     borderRight: 'none',
     boxShadow: '5px 0 15px rgba(123, 31, 162, 0.1)',
@@ -337,7 +326,9 @@ function AppContent() {
   const location = useLocation();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [desktopOpen, setDesktopOpen] = useState(true); // Default to open for desktop
   const [expandedCategory, setExpandedCategory] = useState(null);
+  const [showTip, setShowTip] = useState(true);
   const sidebarRef = useRef(null);
 
   // Auto-expand category if current path is in its subcategories
@@ -354,8 +345,23 @@ function AppContent() {
     });
   }, [location.pathname]);
 
-  const handleDrawerToggle = () => {
+  // Auto-hide welcome tip after 5 seconds
+  useEffect(() => {
+    if (showTip) {
+      const timer = setTimeout(() => {
+        setShowTip(false);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showTip]);
+
+  const handleMobileDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
+  };
+
+  const handleDesktopDrawerToggle = () => {
+    setDesktopOpen(!desktopOpen);
   };
 
   const handleToggleExpand = (categoryName) => {
@@ -367,14 +373,14 @@ function AppContent() {
   const isNoSidebarPage = noSidebarRoutes.includes(location.pathname);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', minWidth: '99vw' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100vw' }}>
       <CssBaseline />
       <Header />
-      
+
       {/* Mobile Menu Button */}
       {!isNoSidebarPage && isMobile && (
         <IconButton
-          onClick={handleDrawerToggle}
+          onClick={handleMobileDrawerToggle}
           sx={{
             display: { xs: 'flex', md: 'none' },
             position: 'fixed',
@@ -402,34 +408,118 @@ function AppContent() {
         </IconButton>
       )}
 
-      <Box sx={{ display: 'flex', flexGrow: 1 }}> {/* Add margin top to account for header */}
+      {/* Desktop Menu Button */}
+      {!isNoSidebarPage && !isMobile && (
+        <Tooltip
+          title={desktopOpen ? "Close Side Menu" : "Open Side Menu"}
+          placement="right"
+          arrow
+        >
+          <IconButton
+            onClick={handleDesktopDrawerToggle}
+            sx={{
+              display: { xs: 'none', md: 'flex' },
+              position: 'fixed',
+              top: 80,
+              left: 10,
+              zIndex: 1200,
+              color: '#fff',
+              backgroundColor: 'rgba(60, 27, 74, 0.9)',
+              width: 40,
+              height: 40,
+              padding: 0,
+              borderRadius: '50%',
+              boxShadow: '0 0 10px rgba(194, 24, 91, 0.5)',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                backgroundColor: 'rgba(156, 39, 176, 1)',
+                transform: 'scale(1.1)',
+                boxShadow: '0 0 15px rgba(194, 24, 91, 0.8)',
+              },
+            }}
+          >
+            {desktopOpen ? <ChevronLeftIcon sx={{ fontSize: '1.5rem' }} /> : <DashboardIcon sx={{ fontSize: '1.5rem' }} />}
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {/* Welcome Tip */}
+      {!isNoSidebarPage && !isMobile && (
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          open={showTip}
+          onClose={() => setShowTip(false)}
+          sx={{ mt: 8 }}
+        >
+          <Alert
+            severity="info"
+            variant="filled"
+            onClose={() => setShowTip(false)}
+            sx={{
+              width: '100%',
+              backgroundColor: 'rgba(123, 31, 162, 0.9)',
+              color: 'white',
+              '& .MuiAlert-icon': {
+                color: 'white'
+              }
+            }}
+            action={
+              <Button
+                color="inherit"
+                size="small"
+                onClick={() => setShowTip(false)}
+                sx={{
+                  fontWeight: 'bold',
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                  }
+                }}
+              >
+                Got it!
+              </Button>
+            }
+          >
+            Use the Side Menu For Explore Your Learning Journey
+            
+          </Alert>
+        </Snackbar>
+      )}
+
+      <Box sx={{ display: 'flex', flexGrow: 1, width: '100%' }}> {/* Add margin top to account for header */}
         {!isNoSidebarPage && (
           <>
             {/* Mobile Sidebar */}
             <Drawer
               variant="temporary"
               open={mobileOpen}
-              onClose={handleDrawerToggle}
+              onClose={handleMobileDrawerToggle}
               ModalProps={{
                 keepMounted: true,
               }}
               sx={{
                 display: { xs: 'block', md: 'none' },
                 '& .MuiDrawer-paper': {
-                  width: drawerWidth,
+                  width: mobileDrawerWidth,
                   boxSizing: 'border-box',
                   background: 'linear-gradient(180deg, #1A032B 0%, #3A0D5D 100%)',
                   top: 0,
                   height: '100vh',
+                  // Hide scrollbar but keep functionality
+                  scrollbarWidth: 'none', // For Firefox
+                  '&::-webkit-scrollbar': { // For Chrome, Safari, Opera
+                    display: 'none',
+                  },
+                  overflowY: 'auto',
                 },
               }}
             >
               <SidebarHeader>
                 <Typography variant="h6" noWrap component="div">
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Avatar sx={{ 
-                      bgcolor: 'white', 
-                      color: '#7B1FA2', 
+                    <Avatar sx={{
+                      bgcolor: 'white',
+                      color: '#7B1FA2',
                       mr: 1,
                       background: 'linear-gradient(45deg, #E1BEE7 0%, #BA68C8 100%)'
                     }}>
@@ -438,15 +528,15 @@ function AppContent() {
                     <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>මෙනුව</span>
                   </Box>
                 </Typography>
-                <IconButton onClick={handleDrawerToggle} sx={{ color: 'white' }}>
+                <IconButton onClick={handleMobileDrawerToggle} sx={{ color: 'white' }}>
                   <ChevronLeftIcon />
                 </IconButton>
               </SidebarHeader>
               <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
-              <NavigationList 
-                expandedCategory={expandedCategory} 
-                handleToggleExpand={handleToggleExpand} 
-                onItemClick={handleDrawerToggle}
+              <NavigationList
+                expandedCategory={expandedCategory}
+                handleToggleExpand={handleToggleExpand}
+                onItemClick={handleMobileDrawerToggle}
               />
             <SidebarFooter>
             <Box sx={{ mb: 1, textAlign: 'center' }}>
@@ -457,7 +547,7 @@ function AppContent() {
                 - ජගත් කුමාර ජයසිංහ -
               </Typography>
             </Box>
-              
+
               {/* Social Links */}
               <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 2 }}>
                 <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
@@ -475,10 +565,10 @@ function AppContent() {
               </Box>
 
               {/* Policy Links */}
-              <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                gap: 2, 
+              <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: 2,
                 mb: 1.5,
                 '& a': {
                   color: '#B39DDB',
@@ -523,19 +613,54 @@ function AppContent() {
             </Drawer>
 
             {/* Desktop Sidebar */}
-            <CustomDrawer
-              variant="permanent"
+            <Drawer
+              variant="temporary"
+              open={desktopOpen}
+              onClose={handleDesktopDrawerToggle}
+              ModalProps={{
+                keepMounted: true,
+              }}
               sx={{
                 display: { xs: 'none', md: 'block' },
-                width: drawerWidth,
-                flexShrink: 0,
+                '& .MuiDrawer-paper': {
+                  width: desktopDrawerWidth,
+                  boxSizing: 'border-box',
+                  background: 'linear-gradient(180deg, #1A032B 0%, #3A0D5D 100%)',
+                  top: 0,
+                  height: '100vh',
+                  // Hide scrollbar but keep functionality
+                  scrollbarWidth: 'none', // For Firefox
+                  '&::-webkit-scrollbar': { // For Chrome, Safari, Opera
+                    display: 'none',
+                  },
+                  overflowY: 'auto',
+                },
               }}
               ref={sidebarRef}
             >
+              <SidebarHeader>
+                <Typography variant="h6" noWrap component="div">
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Avatar sx={{
+                      bgcolor: 'white',
+                      color: '#7B1FA2',
+                      mr: 1,
+                      background: 'linear-gradient(45deg, #E1BEE7 0%, #BA68C8 100%)'
+                    }}>
+                      <DashboardIcon />
+                    </Avatar>
+                    <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>මෙනුව</span>
+                  </Box>
+                </Typography>
+                <IconButton onClick={handleDesktopDrawerToggle} sx={{ color: 'white' }}>
+                  <ChevronLeftIcon />
+                </IconButton>
+              </SidebarHeader>
               <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
-              <NavigationList 
-                expandedCategory={expandedCategory} 
-                handleToggleExpand={handleToggleExpand} 
+              <NavigationList
+                expandedCategory={expandedCategory}
+                handleToggleExpand={handleToggleExpand}
+                onItemClick={handleDesktopDrawerToggle}
               />
             <SidebarFooter sx={{mb: 1}}>
             <Box sx={{ mb: 1, textAlign: 'center' }}>
@@ -546,7 +671,7 @@ function AppContent() {
             - ජගත් කුමාර ජයසිංහ -
           </Typography>
         </Box>
-              
+
               {/* Social Links */}
               <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 2 }}>
                 <IconButton sx={{ color: '#BA68C8', '&:hover': { color: '#E1BEE7' } }}>
@@ -565,10 +690,10 @@ function AppContent() {
               </Box>
 
               {/* Policy Links */}
-              <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                gap: 2, 
+              <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: 2,
                 mb: 1.5,
                 '& a': {
                   color: '#B39DDB',
@@ -610,7 +735,7 @@ function AppContent() {
                 All Rights Reserved • Version 2.0.1
               </Typography>
             </SidebarFooter>
-            </CustomDrawer>
+            </Drawer>
           </>
         )}
 
@@ -642,13 +767,16 @@ function AppContent() {
         </div>
       </a>
 
-        <Main open={!isMobile} sx={{ 
+        <Main sx={{
           background: 'linear-gradient(rgba(228, 154, 255, 0.86), rgba(244, 126, 195, 0.93))',
-          display: 'flex', justifyContent: 'center', alignItems: 'center'
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '100%',
+          maxWidth: '100%',
+          overflowX: 'hidden'
         }}>
-          <Container maxWidth="xl" sx={{ 
-        
-            px: { xs: 0, sm: 0 },
+          <Container maxWidth={false} disableGutters sx={{
             width: '100%',
             height: '100%',
             display: 'flex',
@@ -694,7 +822,7 @@ function AppContent() {
 
 function NavigationList({ expandedCategory, handleToggleExpand, onItemClick }) {
   const location = useLocation();
-  
+
   return (
     <List sx={{ pt: 0, flexGrow: 1 }}>
       {navItems.map((item, index) => (
@@ -704,7 +832,7 @@ function NavigationList({ expandedCategory, handleToggleExpand, onItemClick }) {
               <ListItemButton
                 onClick={() => handleToggleExpand(item.name)}
                 sx={{
-                  '&:hover': { 
+                  '&:hover': {
                     backgroundColor: 'rgba(123, 31, 162, 0.2)',
                     '& .MuiListItemIcon-root': {
                       color: '#E1BEE7'
@@ -718,7 +846,7 @@ function NavigationList({ expandedCategory, handleToggleExpand, onItemClick }) {
                   py: 1.5,
                 }}
               >
-                <ListItemIcon sx={{ 
+                <ListItemIcon sx={{
                   color: expandedCategory === item.name ? '#BA68C8' : '#CE93D8',
                   minWidth: '40px'
                 }}>
@@ -726,7 +854,7 @@ function NavigationList({ expandedCategory, handleToggleExpand, onItemClick }) {
                 </ListItemIcon>
                 <ListItemText
                   primary={item.name}
-                  primaryTypographyProps={{ 
+                  primaryTypographyProps={{
                     fontWeight: 'medium',
                     fontSize: '0.95rem',
                     color: expandedCategory === item.name ? '#E1BEE7' : '#CE93D8'
@@ -748,7 +876,7 @@ function NavigationList({ expandedCategory, handleToggleExpand, onItemClick }) {
                       onClick={onItemClick}
                       sx={{
                         pl: 6,
-                        '&:hover': { 
+                        '&:hover': {
                           backgroundColor: 'rgba(123, 31, 162, 0.2)',
                           '& .MuiListItemIcon-root': {
                             color: '#E1BEE7'
@@ -762,7 +890,7 @@ function NavigationList({ expandedCategory, handleToggleExpand, onItemClick }) {
                         py: 1,
                       }}
                     >
-                      <ListItemIcon sx={{ 
+                      <ListItemIcon sx={{
                         color: location.pathname === subItem.path ? '#BA68C8' : '#CE93D8',
                         minWidth: '40px'
                       }}>
@@ -787,7 +915,7 @@ function NavigationList({ expandedCategory, handleToggleExpand, onItemClick }) {
               to={item.path}
               onClick={onItemClick}
               sx={{
-                '&:hover': { 
+                '&:hover': {
                   backgroundColor: 'rgba(123, 31, 162, 0.2)',
                   '& .MuiListItemIcon-root': {
                     color: '#E1BEE7'
@@ -801,7 +929,7 @@ function NavigationList({ expandedCategory, handleToggleExpand, onItemClick }) {
                 py: 1.5,
               }}
             >
-              <ListItemIcon sx={{ 
+              <ListItemIcon sx={{
                 color: location.pathname === item.path ? '#BA68C8' : '#CE93D8',
                 minWidth: '40px'
               }}>
