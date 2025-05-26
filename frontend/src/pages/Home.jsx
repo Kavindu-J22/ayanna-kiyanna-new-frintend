@@ -44,6 +44,75 @@ const Home = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [isVisible, setIsVisible] = useState(false);
 
+  // Fix mobile scrolling issues
+  useEffect(() => {
+    // Create and inject CSS for mobile scrolling fix
+    const style = document.createElement('style');
+    style.textContent = `
+      html, body {
+        overflow: auto !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: manipulation !important;
+        height: auto !important;
+        min-height: 100vh !important;
+        position: relative !important;
+      }
+
+      * {
+        -webkit-overflow-scrolling: touch !important;
+      }
+
+      /* Fix for iOS Safari */
+      @supports (-webkit-touch-callout: none) {
+        html, body {
+          height: -webkit-fill-available !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Also set styles directly
+    document.body.style.overflow = 'auto';
+    document.body.style.overflowX = 'hidden';
+    document.body.style.overflowY = 'auto';
+    document.body.style.WebkitOverflowScrolling = 'touch';
+    document.body.style.touchAction = 'manipulation';
+    document.body.style.height = 'auto';
+    document.body.style.minHeight = '100vh';
+    document.body.style.position = 'relative';
+
+    document.documentElement.style.overflow = 'auto';
+    document.documentElement.style.overflowX = 'hidden';
+    document.documentElement.style.overflowY = 'auto';
+    document.documentElement.style.WebkitOverflowScrolling = 'touch';
+    document.documentElement.style.touchAction = 'manipulation';
+    document.documentElement.style.height = 'auto';
+    document.documentElement.style.minHeight = '100vh';
+
+    return () => {
+      // Cleanup
+      document.head.removeChild(style);
+      document.body.style.overflow = '';
+      document.body.style.overflowX = '';
+      document.body.style.overflowY = '';
+      document.body.style.WebkitOverflowScrolling = '';
+      document.body.style.touchAction = '';
+      document.body.style.height = '';
+      document.body.style.minHeight = '';
+      document.body.style.position = '';
+
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.overflowX = '';
+      document.documentElement.style.overflowY = '';
+      document.documentElement.style.WebkitOverflowScrolling = '';
+      document.documentElement.style.touchAction = '';
+      document.documentElement.style.height = '';
+      document.documentElement.style.minHeight = '';
+    };
+  }, []);
+
   useEffect(() => {
     // Check if user email exists in local storage
     const email = localStorage.getItem('userEmail');
@@ -145,7 +214,15 @@ const Home = () => {
   };
 
   return (
-    <Box sx={{ overflowX: 'hidden', maxWidth: '100%' }}>
+    <Box sx={{
+      width: '100%',
+      height: 'auto',
+      WebkitOverflowScrolling: 'touch', // Enable smooth scrolling on iOS
+      touchAction: 'manipulation', // Better touch handling for mobile
+      position: 'relative',
+      overflowX: 'hidden', // Only hide horizontal overflow
+      overflowY: 'auto' // Allow vertical scrolling
+    }}>
 {/* Welcome Section with Enhanced Animated Background */}
 <Box
   sx={{
@@ -153,11 +230,14 @@ const Home = () => {
     color: 'white',
     py: 12,
     position: 'relative',
-    overflow: 'hidden',
+    overflow: 'visible',
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
+    touchAction: 'manipulation', // Better touch handling
+    WebkitOverflowScrolling: 'touch', // Smooth scrolling on iOS
+    overflowY: 'visible', // Ensure content can overflow vertically
     '&:before': {
       content: '""',
       position: 'absolute',
@@ -263,6 +343,7 @@ const Home = () => {
           zIndex: 1,
           willChange: 'transform, opacity',
           pointerEvents: 'none',
+          touchAction: 'none', // Prevent touch interference
           ...(particle.shape === 'circle' && {
             borderRadius: '50%',
             background: `radial-gradient(circle, ${color.primary}, ${color.secondary})`,
@@ -320,7 +401,8 @@ const Home = () => {
         filter: 'blur(1px)',
         zIndex: 0,
         willChange: 'transform, opacity',
-        pointerEvents: 'none'
+        pointerEvents: 'none',
+        touchAction: 'none'
       }}
     />
   ))}
@@ -352,7 +434,8 @@ const Home = () => {
         filter: 'drop-shadow(0 0 3px rgba(255,255,255,0.8))',
         zIndex: 2,
         willChange: 'transform, opacity',
-        pointerEvents: 'none'
+        pointerEvents: 'none',
+        touchAction: 'none'
       }}
     />
   ))}
