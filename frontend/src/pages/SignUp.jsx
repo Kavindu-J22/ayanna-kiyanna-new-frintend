@@ -82,8 +82,7 @@ const float = keyframes`
 // Styled components
 const GradientBackground = styled(Box)(() => ({
   minHeight: '100vh',
-  width: '100vw',
-  maxWidth: '100%',
+  width: '100%',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -94,6 +93,7 @@ const GradientBackground = styled(Box)(() => ({
   overflow: 'hidden',
   padding: 0,
   margin: 0,
+  marginTop: 7, // Add top margin as requested
   '&::before': {
     content: '""',
     position: 'absolute',
@@ -528,7 +528,7 @@ const SignUp = () => {
       case 0:
         return (
           <Box>
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: theme.palette.primary.main }}>
+            <Typography variant="h6" sx={{ mb: { xs: 2, md: 2.5 }, fontWeight: 600, color: theme.palette.primary.main, fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
               Let's get to know you
             </Typography>
 
@@ -549,7 +549,7 @@ const SignUp = () => {
                   </InputAdornment>
                 ),
               }}
-              sx={{ mb: 3 }}
+              sx={{ mb: { xs: 2.5, md: 3 } }}
             />
 
             <StyledTextField
@@ -576,7 +576,7 @@ const SignUp = () => {
       case 1:
         return (
           <Box>
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: theme.palette.primary.main }}>
+            <Typography variant="h6" sx={{ mb: { xs: 2, md: 2.5 }, fontWeight: 600, color: theme.palette.primary.main, fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
               Secure your account
             </Typography>
 
@@ -651,15 +651,15 @@ const SignUp = () => {
       case 2:
         return (
           <Box>
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: theme.palette.primary.main }}>
+            <Typography variant="h6" sx={{ mb: { xs: 2, md: 2.5 }, fontWeight: 600, color: theme.palette.primary.main, fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
               Almost there!
             </Typography>
 
             <Box sx={{
-              p: 3,
+              p: { xs: 2.5, md: 3 },
               borderRadius: 2,
               bgcolor: alpha(theme.palette.success.main, 0.1),
-              mb: 3
+              mb: { xs: 2.5, md: 3 }
             }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <CheckCircle color="success" sx={{ mr: 1 }} />
@@ -710,7 +710,7 @@ const SignUp = () => {
       <Box sx={{
         display: 'flex',
         justifyContent: 'space-between',
-        mt: 4,
+        mt: { xs: 3, md: 3 },
         flexDirection: { xs: 'column', sm: 'row' },
         gap: { xs: 2, sm: 0 }
       }}>
@@ -775,7 +775,7 @@ const SignUp = () => {
           left: 0,
           width: '100%',
           height: '100%',
-          zIndex: 0
+          zIndex: 0,
         }}
       />
 
@@ -814,47 +814,55 @@ const SignUp = () => {
         delay={0.8}
       />
 
-      <Box sx={{
+      <Container maxWidth="xl" sx={{
         position: 'relative',
         zIndex: 2,
         width: '100%',
-        height: '100vh',
+        minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        overflow: 'hidden'
+        px: { xs: 2, sm: 3, md: 4 },
+        py: { xs: 2, sm: 3, md: 4 }
       }}>
         <Grid container sx={{
-          height: '100%',
+          height: { xs: 'auto', md: 'fit-content' },
+          minHeight: { md: '85vh' },
+          maxHeight: { md: '95vh' },
           width: '100%',
-          maxWidth: '100%',
-          m: 0
-        }} alignItems="stretch">
+          maxWidth: '1400px',
+          margin: '0 auto',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }} spacing={{ xs: 0, md: 4 }}>
           {/* Left side - Form */}
           <Grid item xs={12} md={6} sx={{
-            height: '100%',
+            height: { xs: 'auto', md: '100%' },
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'flex-end',
-            p: { xs: 2, md: 4 },
-            pr: { md: 8 }
+            justifyContent: 'center',
+            p: { xs: 1, sm: 2, md: 3 },
+            order: { xs: 2, md: 1 }
           }}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              style={{ width: '100%', maxWidth: '550px' }}
+              style={{ width: '100%', maxWidth: '500px' }}
             >
               <StyledPaper elevation={6} sx={{
-                p: { xs: 3, md: 4 },
-                height: '100%',
+                p: { xs: 3, sm: 4, md: 4 },
+                height: 'fit-content',
+                maxHeight: { xs: 'none', md: '85vh' },
                 width: '100%',
-                overflowY: 'auto',
+                overflowY: { xs: 'visible', md: 'auto' },
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                mx: 'auto',
+                my: { xs: 2, md: 0 }
               }}>
                 {/* Logo and title */}
-                <Box sx={{ textAlign: 'center', mb: 4 }}>
+                <Box sx={{ textAlign: 'center', mb: { xs: 3, md: 3 } }}>
                   <motion.div
                     animate={{ y: [0, -10, 0] }}
                     transition={{ duration: 2, repeat: Infinity, repeatType: 'loop' }}
@@ -863,7 +871,7 @@ const SignUp = () => {
                       component="img"
                       src={AKlogo}
                       alt="Ayanna Kiyanna Logo"
-                      sx={{ height: 80, width: 'auto', mb: 2 }}
+                      sx={{ height: { xs: 70, md: 75 }, width: 'auto', mb: { xs: 1.5, md: 2 } }}
                     />
                   </motion.div>
 
@@ -872,28 +880,29 @@ const SignUp = () => {
                     background: 'linear-gradient(45deg, #9c27b0, #673ab7)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
-                    mb: 1
+                    mb: 1,
+                    fontSize: { xs: '1.8rem', md: '2.125rem' }
                   }}>
                     Create Account
                   </Typography>
 
-                  <Typography variant="body1" color="text.secondary">
+                  <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
                     Join our community and start your learning journey
                   </Typography>
                 </Box>
 
                 {/* Progress indicator */}
-                <Box sx={{ mb: 4 }}>
+                <Box sx={{ mb: { xs: 3, md: 3 } }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
                       Step {activeStep + 1} of {steps.length}
                     </Typography>
-                    <Typography variant="body2" fontWeight={600} color="primary">
+                    <Typography variant="body2" fontWeight={600} color="primary" sx={{ fontSize: '0.8rem' }}>
                       {Math.round(formProgress)}% Complete
                     </Typography>
                   </Box>
 
-                  <Box sx={{ width: '100%', height: 6, bgcolor: 'rgba(0,0,0,0.1)', borderRadius: 3, overflow: 'hidden' }}>
+                  <Box sx={{ width: '100%', height: 5, bgcolor: 'rgba(0,0,0,0.1)', borderRadius: 3, overflow: 'hidden' }}>
                     <Box
                       component={motion.div}
                       initial={{ width: 0 }}
@@ -914,12 +923,15 @@ const SignUp = () => {
                   orientation="horizontal"
                   alternativeLabel={isMobile}
                   sx={{
-                    mb: 4,
+                    mb: { xs: 3, md: 3 },
                     '& .MuiStepConnector-line': {
-                      minWidth: { xs: 20, sm: 40 }
+                      minWidth: { xs: 15, sm: 30 }
                     },
                     '& .MuiStepLabel-root': {
                       flexDirection: { xs: 'column', sm: 'row' }
+                    },
+                    '& .MuiStepLabel-label': {
+                      fontSize: { xs: '0.75rem', md: '0.875rem' }
                     }
                   }}>
                   {steps.map((step, index) => (
@@ -974,9 +986,9 @@ const SignUp = () => {
                 {renderNavButtons()}
 
                 {/* Login link */}
-                <Box sx={{ textAlign: 'center', mt: 4 }}>
-                  <Divider sx={{ my: 2 }} />
-                  <Typography variant="body2" color="text.secondary">
+                <Box sx={{ textAlign: 'center', mt: { xs: 3, md: 3 } }}>
+                  <Divider sx={{ my: 1.5 }} />
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
                     Already have an account?{' '}
                     <Link
                       component={motion.a}
@@ -1002,20 +1014,19 @@ const SignUp = () => {
 
           {/* Right side - Image and info */}
           <Grid item xs={12} md={6} sx={{
-            height: '100%',
+            height: { xs: 'auto', md: '100%' },
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'flex-start',
+            justifyContent: 'center',
             order: { xs: 1, md: 2 },
-            p: { xs: 2, md: 4 },
-            pl: { md: 8 },
-            bgcolor: { xs: 'transparent', md: 'rgba(0,0,0,0.03)' }
+            p: { xs: 1, sm: 2, md: 3 },
+            bgcolor: { xs: 'transparent', md: 'rgba(0,0,0,0.02)' }
           }}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              style={{ width: '100%', height: '100%', maxWidth: '650px' }}
+              style={{ width: '100%', height: '100%', maxWidth: '500px' }}
             >
                 <Box sx={{
                   height: '100%',
@@ -1033,9 +1044,10 @@ const SignUp = () => {
                       overflow: 'hidden',
                       boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
                       position: 'relative',
-                      height: { xs: 300, sm: 400, md: '75vh' },
-                      maxHeight: '800px',
-                      mb: { xs: 2, md: 4 }
+                      height: { xs: 250, sm: 350, md: '60vh' },
+                      maxHeight: '600px',
+                      mb: { xs: 2, md: 3 },
+                      width: '100%'
                     }}
                   >
                     <Box
@@ -1062,21 +1074,25 @@ const SignUp = () => {
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'flex-end',
-                      p: 4
+                      p: { xs: 2, sm: 3, md: 4 }
                     }}>
                       <Typography variant="h3" component="h2" sx={{
                         color: 'white',
                         fontWeight: 700,
                         textShadow: '0 2px 10px rgba(0,0,0,0.5)',
-                        mb: 2
+                        mb: { xs: 1, sm: 1.5, md: 2 },
+                        fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem', lg: '3rem' },
+                        lineHeight: { xs: 1.2, md: 1.3 }
                       }}>
-                        Welcome to Ayana Kiyanna
+                        Welcome to Ayanna Kiyanna
                       </Typography>
 
                       <Typography variant="h6" sx={{
                         color: 'white',
                         textShadow: '0 1px 5px rgba(0,0,0,0.5)',
-                        mb: 3
+                        mb: { xs: 2, sm: 2.5, md: 3 },
+                        fontSize: { xs: '0.9rem', sm: '1.1rem', md: '1.25rem' },
+                        lineHeight: { xs: 1.3, md: 1.4 }
                       }}>
                         Begin your journey to language mastery
                       </Typography>
@@ -1085,10 +1101,16 @@ const SignUp = () => {
                         display: 'flex',
                         alignItems: 'center',
                         color: 'white',
-                        mb: 2
+                        mb: { xs: 1, md: 2 }
                       }}>
-                        <EmojiEvents sx={{ mr: 1, color: '#FFD700' }} />
-                        <Typography variant="body1" fontWeight={500}>
+                        <EmojiEvents sx={{
+                          mr: 1,
+                          color: '#FFD700',
+                          fontSize: { xs: '1.2rem', md: '1.5rem' }
+                        }} />
+                        <Typography variant="body1" fontWeight={500} sx={{
+                          fontSize: { xs: '0.85rem', sm: '0.95rem', md: '1rem' }
+                        }}>
                           Join thousands of successful students
                         </Typography>
                       </Box>
@@ -1098,7 +1120,7 @@ const SignUp = () => {
                   {/* Testimonial */}
                   <Card sx={{
                     borderRadius: 3,
-                    p: { xs: 2, md: 3 },
+                    p: { xs: 1.5, sm: 2, md: 3 },
                     boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)',
                     position: 'relative',
                     overflow: 'visible',
@@ -1106,10 +1128,10 @@ const SignUp = () => {
                   }}>
                     <Box sx={{
                       position: 'absolute',
-                      top: -20,
-                      left: 20,
-                      width: 40,
-                      height: 40,
+                      top: { xs: -15, md: -20 },
+                      left: { xs: 15, md: 20 },
+                      width: { xs: 35, md: 40 },
+                      height: { xs: 35, md: 40 },
                       borderRadius: '50%',
                       bgcolor: 'primary.main',
                       display: 'flex',
@@ -1117,28 +1139,56 @@ const SignUp = () => {
                       justifyContent: 'center',
                       boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)'
                     }}>
-                      <Favorite sx={{ color: 'white', fontSize: 20 }} />
+                      <Favorite sx={{
+                        color: 'white',
+                        fontSize: { xs: 18, md: 20 }
+                      }} />
                     </Box>
 
-                    <CardContent>
-                      <Typography variant="body1" sx={{ fontStyle: 'italic', mb: 2 }}>
+                    <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+                      <Typography variant="body1" sx={{
+                        fontStyle: 'italic',
+                        mb: 2,
+                        fontSize: { xs: '0.85rem', sm: '0.95rem', md: '1rem' },
+                        lineHeight: { xs: 1.4, md: 1.5 }
+                      }}>
                         "Ayana Kiyanna transformed my language learning experience. The personalized approach and expert guidance helped me achieve fluency faster than I thought possible."
                       </Typography>
 
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        gap: { xs: 1, sm: 0 }
+                      }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Avatar sx={{ bgcolor: 'secondary.main', mr: 2 }}>S</Avatar>
+                          <Avatar sx={{
+                            bgcolor: 'secondary.main',
+                            mr: { xs: 1.5, md: 2 },
+                            width: { xs: 35, md: 40 },
+                            height: { xs: 35, md: 40 },
+                            fontSize: { xs: '0.9rem', md: '1rem' }
+                          }}>S</Avatar>
                           <Box>
-                            <Typography variant="subtitle2" fontWeight={600}>
+                            <Typography variant="subtitle2" fontWeight={600} sx={{
+                              fontSize: { xs: '0.8rem', md: '0.875rem' }
+                            }}>
                               Sarah Johnson
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography variant="caption" color="text.secondary" sx={{
+                              fontSize: { xs: '0.7rem', md: '0.75rem' }
+                            }}>
                               Student since 2022
                             </Typography>
                           </Box>
                         </Box>
 
-                        <Rating value={5} readOnly size="small" />
+                        <Rating value={5} readOnly size="small" sx={{
+                          '& .MuiRating-icon': {
+                            fontSize: { xs: '1rem', md: '1.2rem' }
+                          }
+                        }} />
                       </Box>
                     </CardContent>
                   </Card>
@@ -1146,7 +1196,7 @@ const SignUp = () => {
               </motion.div>
             </Grid>
         </Grid>
-      </Box>
+      </Container>
 
       {/* Success message */}
       <Backdrop
