@@ -78,37 +78,37 @@ const AdminDashboard = () => {
   ];
 
   const quickActions = [
-    { title: 'නව සිසුවා එකතු කරන්න', icon: <PersonAdd />, color: '#667eea' },
-    { title: 'පන්ති කාලසටහන', icon: <School />, color: '#f093fb' },
-    { title: 'වාර්තා බලන්න', icon: <BarChart />, color: '#a8edea' },
-    { title: 'සිස්ටම් සැකසුම්', icon: <Settings />, color: '#ffecd2' }
+    { title: 'නව සිසුවා එකතු කරන්න', icon: <PersonAdd />, color: '#667eea', path: '/student-management' },
+    { title: 'පන්ති කළමනාකරණය', icon: <School />, color: '#f093fb', path: '/class-management' },
+    { title: 'වාර්තා බලන්න', icon: <BarChart />, color: '#a8edea', path: '/reports' },
+    { title: 'සිස්ටම් සැකසුම්', icon: <Settings />, color: '#ffecd2', path: '/settings' }
   ];
 
   return (
-    <Box sx={{ 
-      minHeight: '100vh', 
+    <Box sx={{
+      minHeight: '100vh',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       py: 3
     }}>
       <Container maxWidth="xl">
         {/* Header */}
-        <Paper elevation={3} sx={{ 
-          p: 3, 
-          mb: 3, 
+        <Paper elevation={3} sx={{
+          p: 3,
+          mb: 3,
           borderRadius: 3,
           background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)'
         }}>
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
             flexDirection: { xs: 'column', md: 'row' },
             gap: 2
           }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar sx={{ 
-                width: 60, 
-                height: 60, 
+              <Avatar sx={{
+                width: 60,
+                height: 60,
                 bgcolor: 'error.main',
                 fontSize: '1.5rem'
               }}>
@@ -123,10 +123,10 @@ const AdminDashboard = () => {
                 <Typography variant="body2" color="text.secondary">
                   {userInfo.fullName || 'පරිපාලක'} - {userInfo.email}
                 </Typography>
-                <Chip 
-                  label="පරිපාලක" 
-                  color="error" 
-                  size="small" 
+                <Chip
+                  label="පරිපාලක"
+                  color="error"
+                  size="small"
                   sx={{ mt: 0.5 }}
                 />
               </Box>
@@ -159,7 +159,7 @@ const AdminDashboard = () => {
               {stats.map((stat, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <motion.div whileHover={{ scale: 1.02 }}>
-                    <Card sx={{ 
+                    <Card sx={{
                       background: `linear-gradient(135deg, ${stat.color} 0%, ${stat.color}99 100%)`,
                       color: 'white',
                       height: '100%'
@@ -187,7 +187,7 @@ const AdminDashboard = () => {
           {/* Quick Actions */}
           <Grid item xs={12} md={4}>
             <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
-              <Typography variant="h6" fontWeight="bold" sx={{ 
+              <Typography variant="h6" fontWeight="bold" sx={{
                 mb: 3,
                 fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
               }}>
@@ -197,15 +197,16 @@ const AdminDashboard = () => {
                 {quickActions.map((action, index) => (
                   <Grid item xs={12} key={index}>
                     <motion.div whileHover={{ scale: 1.02 }}>
-                      <Card variant="outlined" sx={{ 
-                        p: 2, 
+                      <Card variant="outlined" sx={{
+                        p: 2,
                         cursor: 'pointer',
                         '&:hover': {
                           bgcolor: 'grey.50'
                         }
-                      }}>
+                      }}
+                      onClick={() => navigate(action.path)}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Avatar sx={{ 
+                          <Avatar sx={{
                             bgcolor: action.color,
                             width: 40,
                             height: 40
@@ -229,7 +230,7 @@ const AdminDashboard = () => {
           {/* Recent Students */}
           <Grid item xs={12} md={8}>
             <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
-              <Typography variant="h6" fontWeight="bold" sx={{ 
+              <Typography variant="h6" fontWeight="bold" sx={{
                 mb: 3,
                 fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
               }}>
@@ -266,7 +267,7 @@ const AdminDashboard = () => {
                           </Typography>
                         </TableCell>
                         <TableCell>
-                          <Chip 
+                          <Chip
                             label={student.status}
                             color={student.status === 'සක්‍රීය' ? 'success' : 'default'}
                             size="small"

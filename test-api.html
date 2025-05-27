@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Management API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5a6fd8;
+        }
+        .result {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <h1>Class Management API Test</h1>
+    
+    <div class="test-section">
+        <h3>Test Default Grades</h3>
+        <button onclick="testGrades()">Test Get Grades</button>
+        <div id="grades-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Default Venues</h3>
+        <button onclick="testVenues()">Test Get Venues</button>
+        <div id="venues-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Get All Classes</h3>
+        <button onclick="testGetClasses()">Test Get Classes</button>
+        <div id="classes-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Create Class</h3>
+        <button onclick="testCreateClass()">Test Create Class</button>
+        <div id="create-result" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        
+        // Mock token for testing (you'll need a real token)
+        const TEST_TOKEN = 'your-test-token-here';
+
+        async function makeRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-auth-token': TEST_TOKEN,
+                        ...options.headers
+                    },
+                    ...options
+                });
+
+                const data = await response.json();
+                return { success: response.ok, data, status: response.status };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function testGrades() {
+            const result = document.getElementById('grades-result');
+            result.textContent = 'Testing...';
+            
+            const response = await makeRequest(`${API_BASE}/classes/grades`);
+            
+            if (response.success) {
+                result.className = 'result success';
+                result.textContent = `Success! Grades:\n${JSON.stringify(response.data, null, 2)}`;
+            } else {
+                result.className = 'result error';
+                result.textContent = `Error: ${response.error || JSON.stringify(response.data, null, 2)}`;
+            }
+        }
+
+        async function testVenues() {
+            const result = document.getElementById('venues-result');
+            result.textContent = 'Testing...';
+            
+            const response = await makeRequest(`${API_BASE}/classes/venues`);
+            
+            if (response.success) {
+                result.className = 'result success';
+                result.textContent = `Success! Venues:\n${JSON.stringify(response.data, null, 2)}`;
+            } else {
+                result.className = 'result error';
+                result.textContent = `Error: ${response.error || JSON.stringify(response.data, null, 2)}`;
+            }
+        }
+
+        async function testGetClasses() {
+            const result = document.getElementById('classes-result');
+            result.textContent = 'Testing...';
+            
+            const response = await makeRequest(`${API_BASE}/classes`);
+            
+            if (response.success) {
+                result.className = 'result success';
+                result.textContent = `Success! Classes:\n${JSON.stringify(response.data, null, 2)}`;
+            } else {
+                result.className = 'result error';
+                result.textContent = `Error: ${response.error || JSON.stringify(response.data, null, 2)}`;
+            }
+        }
+
+        async function testCreateClass() {
+            const result = document.getElementById('create-result');
+            result.textContent = 'Testing...';
+            
+            const testClass = {
+                type: 'Normal',
+                grade: 'Grade 10',
+                date: 'Monday',
+                startTime: '14:00',
+                endTime: '16:00',
+                venue: 'Home(Group Class)',
+                capacity: 20,
+                specialNote: 'Test class created via API test'
+            };
+            
+            const response = await makeRequest(`${API_BASE}/classes`, {
+                method: 'POST',
+                body: JSON.stringify(testClass)
+            });
+            
+            if (response.success) {
+                result.className = 'result success';
+                result.textContent = `Success! Created class:\n${JSON.stringify(response.data, null, 2)}`;
+            } else {
+                result.className = 'result error';
+                result.textContent = `Error: ${response.error || JSON.stringify(response.data, null, 2)}`;
+            }
+        }
+
+        // Test without authentication first
+        async function testWithoutAuth() {
+            console.log('Testing API endpoints...');
+            
+            // Test grades endpoint without auth
+            try {
+                const response = await fetch(`${API_BASE}/classes/grades`);
+                console.log('Grades endpoint status:', response.status);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Grades data:', data);
+                }
+            } catch (error) {
+                console.error('Grades endpoint error:', error);
+            }
+        }
+
+        // Run basic test on page load
+        window.onload = function() {
+            testWithoutAuth();
+        };
+    </script>
+</body>
+</html>
