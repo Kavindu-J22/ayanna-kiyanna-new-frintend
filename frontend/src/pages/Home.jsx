@@ -15,6 +15,10 @@ import {
   useMediaQuery,
   TextField
 } from '@mui/material';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import AdminPasswordDialog from '../components/AdminPasswordDialog';
+import StudentRegistrationDialog from '../components/StudentRegistrationDialog';
 import {
   School,
   Person,
@@ -43,6 +47,10 @@ const Home = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [isVisible, setIsVisible] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+  const [showAdminDialog, setShowAdminDialog] = useState(false);
+  const [showStudentDialog, setShowStudentDialog] = useState(false);
+  const navigate = useNavigate();
 
   // Fix mobile scrolling issues
   useEffect(() => {
@@ -118,8 +126,51 @@ const Home = () => {
     const email = localStorage.getItem('userEmail');
     if (email) {
       setUserEmail(email);
+      fetchUserRole();
     }
   }, []);
+
+  const fetchUserRole = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const response = await axios.get('https://ayanna-kiyanna-new-backend.onrender.com/api/auth/me', {
+          headers: {
+            'x-auth-token': token
+          }
+        });
+        setUserRole(response.data.role);
+      }
+    } catch (error) {
+      console.error('Error fetching user role:', error);
+    }
+  };
+
+  const handleDashboardClick = () => {
+    if (!userEmail) {
+      // User not logged in, redirect to login
+      navigate('/login');
+      return;
+    }
+
+    // Check user role and navigate accordingly
+    if (userRole === 'student') {
+      navigate('/student-dashboard');
+    } else if (userRole === 'user') {
+      // Show student registration dialog for regular users
+      setShowStudentDialog(true);
+    } else if (userRole === 'admin' || userRole === 'moderator') {
+      // Show admin password dialog
+      setShowAdminDialog(true);
+    } else {
+      // Default to student registration dialog for unknown roles
+      setShowStudentDialog(true);
+    }
+  };
+
+  const handleAdminPasswordSuccess = () => {
+    navigate('/admin-dashboard');
+  };
 
   useEffect(() => {
     // Add scroll event listener
@@ -285,242 +336,227 @@ const Home = () => {
     },
   }}
 >
-  {/* New Awesome Floating Particle System */}
-  {[...Array(30)].map((_, i) => {
-    const particleTypes = [
-      { shape: 'circle', size: 4 + Math.sin(i) * 3 },
-      { shape: 'hexagon', size: 6 + Math.cos(i) * 4 },
-      { shape: 'star', size: 5 + Math.sin(i * 0.5) * 3 },
-      { shape: 'diamond', size: 4 + Math.cos(i * 0.7) * 3 },
-      { shape: 'heart', size: 6 + Math.sin(i * 0.3) * 2 }
-    ];
-
-    const particle = particleTypes[i % particleTypes.length];
+  {/* Optimized Floating Particle System */}
+  {[...Array(12)].map((_, i) => {
     const colors = [
-      { primary: 'rgba(255,107,157,0.6)', secondary: 'rgba(255,142,83,0.4)', glow: 'rgba(255,107,157,0.8)' },
-      { primary: 'rgba(255,142,83,0.6)', secondary: 'rgba(255,235,59,0.4)', glow: 'rgba(255,142,83,0.8)' },
-      { primary: 'rgba(255,235,59,0.6)', secondary: 'rgba(255,107,157,0.4)', glow: 'rgba(255,235,59,0.8)' },
-      { primary: 'rgba(106,17,203,0.5)', secondary: 'rgba(255,107,157,0.4)', glow: 'rgba(106,17,203,0.7)' },
-      { primary: 'rgba(255,255,255,0.7)', secondary: 'rgba(255,142,83,0.3)', glow: 'rgba(255,255,255,0.9)' }
+      'rgba(255,107,157,0.4)',
+      'rgba(255,142,83,0.4)',
+      'rgba(255,235,59,0.4)',
+      'rgba(106,17,203,0.3)'
     ];
-
-    const color = colors[i % colors.length];
-
-    // Create unique movement patterns for each particle
-    const movementPattern = {
-      x: [
-        -30 - Math.sin(i) * 20,
-        30 + Math.cos(i) * 20,
-        -20 + Math.sin(i * 0.5) * 15
-      ],
-      y: [
-        -40 - Math.cos(i) * 25,
-        40 + Math.sin(i) * 25,
-        -30 + Math.cos(i * 0.7) * 20
-      ],
-      rotate: [0, 360 + Math.sin(i) * 180, 720],
-      scale: [0.5, 1.2 + Math.sin(i * 0.3) * 0.3, 0.7],
-      opacity: [0.1, 0.8 + Math.cos(i * 0.2) * 0.2, 0.2]
-    };
 
     return (
       <motion.div
-        key={`awesome-particle-${i}`}
-        animate={movementPattern}
+        key={`particle-${i}`}
+        animate={{
+          y: [-20, 20, -20],
+          x: [-15, 15, -15],
+          opacity: [0.3, 0.6, 0.3]
+        }}
         transition={{
-          duration: 15 + Math.sin(i) * 8,
+          duration: 8 + i * 2,
           repeat: Infinity,
           ease: "easeInOut",
-          repeatType: "loop",
-          delay: (i * 0.3) % 5
+          delay: i * 0.5
         }}
         style={{
           position: 'absolute',
-          top: `${5 + (i % 9) * 10}%`,
-          left: `${5 + (i % 10) * 9}%`,
-          width: `${particle.size}px`,
-          height: `${particle.size}px`,
+          top: `${10 + (i % 8) * 10}%`,
+          left: `${10 + (i % 6) * 15}%`,
+          width: '6px',
+          height: '6px',
+          borderRadius: '50%',
+          background: colors[i % colors.length],
           zIndex: 1,
-          willChange: 'transform, opacity',
-          pointerEvents: 'none',
-          touchAction: 'none', // Prevent touch interference
-          ...(particle.shape === 'circle' && {
-            borderRadius: '50%',
-            background: `radial-gradient(circle, ${color.primary}, ${color.secondary})`,
-            boxShadow: `0 0 ${particle.size * 2}px ${color.glow}, inset 0 0 ${particle.size}px rgba(255,255,255,0.3)`
-          }),
-          ...(particle.shape === 'hexagon' && {
-            clipPath: 'polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%)',
-            background: `linear-gradient(60deg, ${color.primary}, ${color.secondary}, ${color.primary})`,
-            filter: `drop-shadow(0 0 ${particle.size}px ${color.glow})`
-          }),
-          ...(particle.shape === 'star' && {
-            clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
-            background: `conic-gradient(from 0deg, ${color.primary}, ${color.secondary}, ${color.glow}, ${color.primary})`,
-            filter: `drop-shadow(0 0 ${particle.size * 1.5}px ${color.glow})`
-          }),
-          ...(particle.shape === 'diamond' && {
-            clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
-            background: `linear-gradient(45deg, ${color.primary}, ${color.secondary})`,
-            boxShadow: `0 0 ${particle.size * 1.5}px ${color.glow}`
-          }),
-          ...(particle.shape === 'heart' && {
-            clipPath: 'path("M12,21.35l-1.45-1.32C5.4,15.36,2,12.28,2,8.5 C2,5.42,4.42,3,7.5,3c1.74,0,3.41,0.81,4.5,2.09C13.09,3.81,14.76,3,16.5,3 C19.58,3,22,5.42,22,8.5c0,3.78-3.4,6.86-8.55,11.54L12,21.35z")',
-            background: `radial-gradient(ellipse, ${color.primary}, ${color.secondary})`,
-            filter: `drop-shadow(0 0 ${particle.size}px ${color.glow})`
-          })
+          willChange: 'transform',
+          pointerEvents: 'none'
         }}
       />
     );
   })}
 
-  {/* Floating Light Orbs */}
-  {[...Array(8)].map((_, i) => (
+  {/* Simplified Light Orbs */}
+  {[...Array(4)].map((_, i) => (
     <motion.div
       key={`light-orb-${i}`}
       animate={{
-        x: [0, 100 * Math.sin(i), -80 * Math.cos(i), 0],
-        y: [0, -60 * Math.cos(i), 80 * Math.sin(i), 0],
-        scale: [0.3, 1, 0.5, 0.3],
-        opacity: [0.1, 0.6, 0.3, 0.1]
+        scale: [0.5, 1, 0.5],
+        opacity: [0.2, 0.5, 0.2]
       }}
       transition={{
-        duration: 20 + i * 2,
+        duration: 6 + i * 2,
         repeat: Infinity,
         ease: "easeInOut",
         delay: i * 1.5
       }}
       style={{
         position: 'absolute',
-        top: `${10 + i * 12}%`,
-        left: `${8 + i * 11}%`,
-        width: `${15 + i * 3}px`,
-        height: `${15 + i * 3}px`,
+        top: `${20 + i * 20}%`,
+        left: `${15 + i * 20}%`,
+        width: '20px',
+        height: '20px',
         borderRadius: '50%',
-        background: `radial-gradient(circle, rgba(255,255,255,0.8), rgba(255,107,157,0.3), transparent)`,
+        background: `radial-gradient(circle, rgba(255,255,255,0.6), rgba(255,107,157,0.2), transparent)`,
         filter: 'blur(1px)',
         zIndex: 0,
-        willChange: 'transform, opacity',
-        pointerEvents: 'none',
-        touchAction: 'none'
+        willChange: 'transform',
+        pointerEvents: 'none'
       }}
     />
   ))}
 
-  {/* Magical Sparkles */}
-  {[...Array(15)].map((_, i) => (
+  {/* Simple Sparkles */}
+  {[...Array(6)].map((_, i) => (
     <motion.div
       key={`sparkle-${i}`}
       animate={{
-        scale: [0, 1, 0],
-        rotate: [0, 180, 360],
-        opacity: [0, 1, 0]
+        opacity: [0, 0.8, 0]
       }}
       transition={{
-        duration: 3 + Math.random() * 2,
+        duration: 4,
         repeat: Infinity,
         ease: "easeInOut",
-        delay: Math.random() * 5,
-        repeatDelay: Math.random() * 3
+        delay: i * 0.8
       }}
       style={{
         position: 'absolute',
-        top: `${Math.random() * 100}%`,
-        left: `${Math.random() * 100}%`,
-        width: '3px',
-        height: '3px',
-        background: 'rgba(255,255,255,0.9)',
-        clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
-        filter: 'drop-shadow(0 0 3px rgba(255,255,255,0.8))',
+        top: `${20 + i * 15}%`,
+        left: `${20 + i * 12}%`,
+        width: '2px',
+        height: '2px',
+        background: 'rgba(255,255,255,0.8)',
+        borderRadius: '50%',
         zIndex: 2,
-        willChange: 'transform, opacity',
-        pointerEvents: 'none',
-        touchAction: 'none'
+        willChange: 'opacity',
+        pointerEvents: 'none'
       }}
     />
   ))}
 
-  {/* Floating Geometric Patterns */}
-  {[...Array(8)].map((_, i) => (
+  {/* Simple Geometric Patterns */}
+  {[...Array(3)].map((_, i) => (
     <motion.div
       key={`pattern-${i}`}
       animate={{
-        rotate: [0, 360],
-        scale: [1, 1.3, 1],
-        opacity: [0.1, 0.3, 0.1]
+        rotate: [0, 360]
       }}
       transition={{
-        duration: 15 + Math.random() * 10,
+        duration: 20,
         repeat: Infinity,
         ease: "linear",
-        delay: Math.random() * 8
+        delay: i * 5
       }}
       style={{
         position: 'absolute',
-        top: `${Math.random() * 100}%`,
-        left: `${Math.random() * 100}%`,
-        width: `${30 + Math.random() * 40}px`,
-        height: `${30 + Math.random() * 40}px`,
-        border: '2px solid rgba(255,255,255,0.2)',
+        top: `${30 + i * 25}%`,
+        left: `${80 + i * 5}%`,
+        width: '40px',
+        height: '40px',
+        border: '1px solid rgba(255,255,255,0.15)',
         borderRadius: i % 2 === 0 ? '50%' : '0%',
         background: 'transparent',
-        zIndex: 0
+        zIndex: 0,
+        willChange: 'transform'
       }}
     />
   ))}
 
-  {/* Animated Wave Layers */}
-  <motion.div
-    animate={{
-      x: [0, 100, 0],
-      y: [0, -50, 0],
-    }}
-    transition={{
-      duration: 20,
-      repeat: Infinity,
-      ease: "easeInOut"
-    }}
-    style={{
-      position: 'absolute',
-      bottom: 0,
-      left: 0,
-      width: '120%',
-      height: '200px',
-      background: 'linear-gradient(90deg, transparent, rgba(255,107,157,0.1), transparent)',
-      clipPath: 'polygon(0 50%, 100% 80%, 100% 100%, 0% 100%)',
-      zIndex: 0
-    }}
-  />
+  {/* Floating Sinhala Letters */}
+  {[
+    // Main "අයන්න කියන්න" letters - more visible
+    { letter: 'අ', top: '12%', left: '8%', delay: 0, color: 'rgba(255,107,157,0.7)', size: 'large' },
+    { letter: 'ය', top: '22%', right: '12%', delay: 2, color: 'rgba(255,142,83,0.7)', size: 'large' },
+    { letter: 'න්', top: '42%', left: '5%', delay: 4, color: 'rgba(255,235,59,0.8)', size: 'large' },
+    { letter: 'න', top: '32%', right: '6%', delay: 1, color: 'rgba(106,17,203,0.7)', size: 'large' },
+    { letter: 'කි', top: '62%', left: '10%', delay: 3, color: 'rgba(255,107,157,0.7)', size: 'large' },
+    { letter: 'ය', top: '52%', right: '15%', delay: 5, color: 'rgba(255,142,83,0.7)', size: 'large' },
+    { letter: 'න්', top: '72%', left: '7%', delay: 1.5, color: 'rgba(255,235,59,0.8)', size: 'large' },
+    { letter: 'න', top: '82%', right: '10%', delay: 4.5, color: 'rgba(106,17,203,0.7)', size: 'large' },
 
-  <motion.div
-    animate={{
-      x: [0, -80, 0],
-      y: [0, 30, 0],
-    }}
-    transition={{
-      duration: 25,
-      repeat: Infinity,
-      ease: "easeInOut",
-      delay: 5
-    }}
-    style={{
-      position: 'absolute',
-      top: 0,
-      right: 0,
-      width: '120%',
-      height: '150px',
-      background: 'linear-gradient(90deg, transparent, rgba(255,142,83,0.1), transparent)',
-      clipPath: 'polygon(0 0, 100% 0, 100% 70%, 0 40%)',
-      zIndex: 0
-    }}
-  />
+    // Additional scattered letters for richness
+    { letter: 'ස', top: '18%', left: '15%', delay: 6, color: 'rgba(255,107,157,0.5)', size: 'medium' },
+    { letter: 'ම', top: '28%', right: '20%', delay: 7, color: 'rgba(255,142,83,0.5)', size: 'medium' },
+    { letter: 'ග', top: '38%', left: '2%', delay: 8, color: 'rgba(255,235,59,0.6)', size: 'medium' },
+    { letter: 'ත', top: '48%', right: '3%', delay: 2.5, color: 'rgba(106,17,203,0.5)', size: 'medium' },
+    { letter: 'ර', top: '58%', left: '15%', delay: 9, color: 'rgba(255,107,157,0.5)', size: 'medium' },
+    { letter: 'ල', top: '68%', right: '20%', delay: 3.5, color: 'rgba(255,142,83,0.5)', size: 'medium' },
+    { letter: 'ක', top: '78%', left: '2%', delay: 10, color: 'rgba(255,235,59,0.6)', size: 'medium' },
+    { letter: 'ප', top: '88%', right: '3%', delay: 4.8, color: 'rgba(106,17,203,0.5)', size: 'medium' },
 
-  {/* Morphing Blob Animations */}
+    // Small decorative letters
+    { letter: 'ද', top: '8%', left: '20%', delay: 11, color: 'rgba(255,107,157,0.4)', size: 'small' },
+    { letter: 'ව', top: '16%', right: '25%', delay: 12, color: 'rgba(255,142,83,0.4)', size: 'small' },
+    { letter: 'බ', top: '26%', left: '25%', delay: 13, color: 'rgba(255,235,59,0.5)', size: 'small' },
+    { letter: 'ච', top: '36%', right: '25%', delay: 6.5, color: 'rgba(106,17,203,0.4)', size: 'small' },
+    { letter: 'ජ', top: '46%', left: '20%', delay: 14, color: 'rgba(255,107,157,0.4)', size: 'small' },
+    { letter: 'ට', top: '56%', right: '25%', delay: 7.5, color: 'rgba(255,142,83,0.4)', size: 'small' },
+    { letter: 'ඩ', top: '66%', left: '25%', delay: 15, color: 'rgba(255,235,59,0.5)', size: 'small' },
+    { letter: 'ණ', top: '76%', right: '25%', delay: 8.5, color: 'rgba(106,17,203,0.4)', size: 'small' },
+    { letter: 'ථ', top: '86%', left: '20%', delay: 16, color: 'rgba(255,107,157,0.4)', size: 'small' },
+    { letter: 'ධ', top: '92%', right: '22%', delay: 9.5, color: 'rgba(255,142,83,0.4)', size: 'small' }
+  ].map((item, index) => {
+    const sizes = {
+      large: { width: 80, height: 80, fontSize: 24, radius: 35 },
+      medium: { width: 65, height: 65, fontSize: 18, radius: 28 },
+      small: { width: 50, height: 50, fontSize: 14, radius: 22 }
+    };
+    const size = sizes[item.size] || sizes.medium;
+
+    return (
+      <motion.div
+        key={`floating-letter-${index}`}
+        animate={{
+          y: [-15, 15, -15],
+          x: [-8, 8, -8],
+          opacity: item.size === 'large' ? [0.3, 0.6, 0.3] : item.size === 'medium' ? [0.2, 0.4, 0.2] : [0.15, 0.3, 0.15],
+          rotate: [-5, 5, -5]
+        }}
+        transition={{
+          duration: 8 + index * 1.5,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: item.delay
+        }}
+        style={{
+          position: 'absolute',
+          top: item.top,
+          left: item.left,
+          right: item.right,
+          zIndex: 0,
+          pointerEvents: 'none'
+        }}
+      >
+        <svg width={size.width} height={size.height} viewBox={`0 0 ${size.width} ${size.height}`} fill="none">
+          <circle
+            cx={size.width / 2}
+            cy={size.height / 2}
+            r={size.radius}
+            fill={item.color.replace(/0\.\d+/, '0.15')}
+            stroke={item.color}
+            strokeWidth={item.size === 'large' ? '2' : '1'}
+            strokeDasharray={item.size === 'large' ? '4,3' : '3,2'}
+          />
+          <text
+            x={size.width / 2}
+            y={size.height / 2 + size.fontSize / 3}
+            textAnchor="middle"
+            fill={item.color}
+            fontSize={size.fontSize}
+            fontFamily='"Noto Sans Sinhala", "Yaldevi", serif'
+            fontWeight={item.size === 'large' ? '700' : '600'}
+          >
+            {item.letter}
+          </text>
+        </svg>
+      </motion.div>
+    );
+  })}
+
+  {/* Additional Decorative Sinhala Elements */}
   <motion.div
     animate={{
-      borderRadius: ['30% 70% 70% 30% / 30% 30% 70% 70%', '70% 30% 30% 70% / 70% 70% 30% 30%', '30% 70% 70% 30% / 30% 30% 70% 70%'],
-      scale: [1, 1.2, 1],
-      rotate: [0, 180, 360]
+      opacity: [0.15, 0.35, 0.15],
+      scale: [0.9, 1.1, 0.9]
     }}
     transition={{
       duration: 12,
@@ -529,36 +565,163 @@ const Home = () => {
     }}
     style={{
       position: 'absolute',
-      top: '10%',
-      left: '10%',
-      width: '200px',
-      height: '200px',
-      background: 'radial-gradient(circle, rgba(255,107,157,0.1), rgba(106,17,203,0.05))',
-      filter: 'blur(2px)',
-      zIndex: 0
+      top: '20%',
+      right: '3%',
+      zIndex: 0,
+      pointerEvents: 'none'
     }}
-  />
+  >
+    <svg width="90" height="90" viewBox="0 0 90 90" fill="none">
+      <path
+        d="M45 10 Q55 20 55 35 Q55 50 45 60 Q35 50 35 35 Q35 20 45 10 Z"
+        fill="rgba(255,107,157,0.2)"
+        stroke="rgba(255,107,157,0.4)"
+        strokeWidth="2"
+      />
+      <text
+        x="45"
+        y="80"
+        textAnchor="middle"
+        fill="rgba(255,255,255,0.4)"
+        fontSize="14"
+        fontFamily='"Noto Sans Sinhala", serif'
+        fontWeight="600"
+      >
+        සිංහල
+      </text>
+    </svg>
+  </motion.div>
 
   <motion.div
     animate={{
-      borderRadius: ['70% 30% 30% 70% / 70% 70% 30% 30%', '30% 70% 70% 30% / 30% 30% 70% 70%', '70% 30% 30% 70% / 70% 70% 30% 30%'],
-      scale: [1, 0.8, 1],
-      rotate: [360, 180, 0]
+      opacity: [0.2, 0.4, 0.2],
+      rotate: [0, 360]
     }}
     transition={{
-      duration: 15,
+      duration: 30,
       repeat: Infinity,
-      ease: "easeInOut",
-      delay: 3
+      ease: "linear"
     }}
     style={{
       position: 'absolute',
       bottom: '15%',
-      right: '15%',
-      width: '150px',
-      height: '150px',
-      background: 'radial-gradient(circle, rgba(255,142,83,0.1), rgba(255,235,59,0.05))',
-      filter: 'blur(1.5px)',
+      left: '3%',
+      zIndex: 0,
+      pointerEvents: 'none'
+    }}
+  >
+    <svg width="85" height="85" viewBox="0 0 85 85" fill="none">
+      <circle
+        cx="42.5"
+        cy="42.5"
+        r="35"
+        fill="rgba(255,142,83,0.1)"
+        stroke="rgba(255,142,83,0.4)"
+        strokeWidth="2"
+        strokeDasharray="6,4"
+      />
+      <text
+        x="42.5"
+        y="50"
+        textAnchor="middle"
+        fill="rgba(255,142,83,0.5)"
+        fontSize="18"
+        fontFamily='"Noto Sans Sinhala", serif'
+        fontWeight="600"
+      >
+        "අ"යන්න
+      </text>
+    </svg>
+  </motion.div>
+
+  {/* Additional floating word elements */}
+  <motion.div
+    animate={{
+      opacity: [0.1, 0.25, 0.1],
+      y: [-10, 10, -10]
+    }}
+    transition={{
+      duration: 14,
+      repeat: Infinity,
+      ease: "easeInOut",
+      delay: 2
+    }}
+    style={{
+      position: 'absolute',
+      top: '5%',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      zIndex: 0,
+      pointerEvents: 'none'
+    }}
+  >
+    <svg width="100" height="40" viewBox="0 0 100 40" fill="none">
+      <text
+        x="50"
+        y="25"
+        textAnchor="middle"
+        fill="rgba(255,235,59,0.4)"
+        fontSize="16"
+        fontFamily='"Noto Sans Sinhala", serif'
+        fontWeight="500"
+      >
+        ජගත්
+      </text>
+    </svg>
+  </motion.div>
+
+  <motion.div
+    animate={{
+      opacity: [0.12, 0.3, 0.12],
+      x: [-5, 5, -5]
+    }}
+    transition={{
+      duration: 16,
+      repeat: Infinity,
+      ease: "easeInOut",
+      delay: 4
+    }}
+    style={{
+      position: 'absolute',
+      bottom: '5%',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      zIndex: 0,
+      pointerEvents: 'none'
+    }}
+  >
+    <svg width="120" height="40" viewBox="0 0 120 40" fill="none">
+      <text
+        x="60"
+        y="25"
+        textAnchor="middle"
+        fill="rgba(106,17,203,0.4)"
+        fontSize="16"
+        fontFamily='"Noto Sans Sinhala", serif'
+        fontWeight="500"
+      >
+        සිංහල
+      </text>
+    </svg>
+  </motion.div>
+
+  {/* Simple Background Elements */}
+  <motion.div
+    animate={{
+      opacity: [0.1, 0.3, 0.1]
+    }}
+    transition={{
+      duration: 8,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }}
+    style={{
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      width: '100%',
+      height: '100px',
+      background: 'linear-gradient(90deg, transparent, rgba(255,107,157,0.05), transparent)',
       zIndex: 0
     }}
   />
@@ -582,6 +745,17 @@ const Home = () => {
       zIndex: 2
     }}>
       <motion.div
+        animate={{
+          y: [0, -12, 0, 12, 0],
+          rotate: [0, 1, 0, -1, 0],
+          scale: [1, 1.02, 1, 1.02, 1]
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: [0.25, 0.46, 0.45, 0.94],
+          times: [0, 0.25, 0.5, 0.75, 1]
+        }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -625,199 +799,13 @@ const Home = () => {
               mb: 2,
               fontSize: isMobile ? '3.2rem' : '5.5rem',
               position: 'relative',
-              color: 'transparent',
-              background: `
-                conic-gradient(from 0deg at 50% 50%,
-                  #ff6b9d 0deg,
-                  #ffeb3b 72deg,
-                  #ff8e53 144deg,
-                  #ff3b9d 216deg,
-                  #ffffff 288deg,
-                  #ff6b9d 360deg
-                )
+              color: 'white',
+              textShadow: `
+                0 0 10px rgba(255,107,157,0.6),
+                0 0 20px rgba(255,142,83,0.4),
+                2px 2px 4px rgba(0,0,0,0.3)
               `,
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              animation: 'crystallineGlow 5s ease-in-out infinite, floatingText 8s ease-in-out infinite',
-              transform: 'perspective(1200px) rotateX(15deg) rotateY(-5deg)',
-              transformStyle: 'preserve-3d',
-              '@keyframes crystallineGlow': {
-                '0%': {
-                  textShadow: `
-                    0 0 3px rgba(255,255,255,0.7),
-                    0 0 8px rgba(255,107,157,0.6),
-                    0 0 15px rgba(255,107,157,0.4),
-                    0 0 22px rgba(255,107,157,0.3),
-                    0 0 30px rgba(255,107,157,0.15),
-                    3px 3px 0px rgba(255,142,83,0.5),
-                    6px 6px 0px rgba(255,235,59,0.3),
-                    9px 9px 0px rgba(255,59,157,0.2)
-                  `,
-                  filter: `
-                    drop-shadow(0 0 18px rgba(255,107,157,0.5))
-                    drop-shadow(0 0 35px rgba(255,142,83,0.25))
-                    brightness(1.15)
-                    contrast(1.1)
-                    saturate(1.2)
-                  `,
-                },
-                '25%': {
-                  textShadow: `
-                    0 0 4px rgba(255,255,255,0.7),
-                    0 0 10px rgba(255,142,83,0.6),
-                    0 0 18px rgba(255,142,83,0.4),
-                    0 0 25px rgba(255,142,83,0.3),
-                    0 0 32px rgba(255,142,83,0.15),
-                    3px 3px 0px rgba(255,235,59,0.5),
-                    6px 6px 0px rgba(255,107,157,0.3),
-                    9px 9px 0px rgba(255,59,157,0.2)
-                  `,
-                  filter: `
-                    drop-shadow(0 0 20px rgba(255,142,83,0.5))
-                    drop-shadow(0 0 40px rgba(255,235,59,0.25))
-                    brightness(1.2)
-                    contrast(1.15)
-                    saturate(1.25)
-                  `,
-                },
-                '50%': {
-                  textShadow: `
-                    0 0 5px rgba(255,255,255,0.7),
-                    0 0 12px rgba(255,235,59,0.6),
-                    0 0 20px rgba(255,235,59,0.4),
-                    0 0 28px rgba(255,235,59,0.3),
-                    0 0 35px rgba(255,235,59,0.15),
-                    3px 3px 0px rgba(255,59,157,0.5),
-                    6px 6px 0px rgba(255,142,83,0.3),
-                    9px 9px 0px rgba(255,107,157,0.2)
-                  `,
-                  filter: `
-                    drop-shadow(0 0 22px rgba(255,235,59,0.5))
-                    drop-shadow(0 0 45px rgba(255,59,157,0.25))
-                    brightness(1.25)
-                    contrast(1.2)
-                    saturate(1.3)
-                  `,
-                },
-                '75%': {
-                  textShadow: `
-                    0 0 6px rgba(255,255,255,0.7),
-                    0 0 14px rgba(255,59,157,0.6),
-                    0 0 22px rgba(255,59,157,0.4),
-                    0 0 30px rgba(255,59,157,0.3),
-                    0 0 38px rgba(255,59,157,0.15),
-                    3px 3px 0px rgba(255,107,157,0.5),
-                    6px 6px 0px rgba(255,235,59,0.3),
-                    9px 9px 0px rgba(255,142,83,0.2)
-                  `,
-                  filter: `
-                    drop-shadow(0 0 25px rgba(255,59,157,0.5))
-                    drop-shadow(0 0 50px rgba(255,107,157,0.25))
-                    brightness(1.2)
-                    contrast(1.15)
-                    saturate(1.25)
-                  `,
-                },
-                '100%': {
-                  textShadow: `
-                    0 0 3px rgba(255,255,255,0.7),
-                    0 0 8px rgba(255,107,157,0.6),
-                    0 0 15px rgba(255,107,157,0.4),
-                    0 0 22px rgba(255,107,157,0.3),
-                    0 0 30px rgba(255,107,157,0.15),
-                    3px 3px 0px rgba(255,142,83,0.5),
-                    6px 6px 0px rgba(255,235,59,0.3),
-                    9px 9px 0px rgba(255,59,157,0.2)
-                  `,
-                  filter: `
-                    drop-shadow(0 0 18px rgba(255,107,157,0.5))
-                    drop-shadow(0 0 35px rgba(255,142,83,0.25))
-                    brightness(1.15)
-                    contrast(1.1)
-                    saturate(1.2)
-                  `,
-                },
-              },
-              '@keyframes floatingText': {
-                '0%, 100%': {
-                  transform: 'perspective(1200px) rotateX(15deg) rotateY(-5deg) translateY(0px) scale(1)',
-                },
-                '25%': {
-                  transform: 'perspective(1200px) rotateX(12deg) rotateY(-3deg) translateY(-8px) scale(1.02)',
-                },
-                '50%': {
-                  transform: 'perspective(1200px) rotateX(18deg) rotateY(-7deg) translateY(-5px) scale(1.01)',
-                },
-                '75%': {
-                  transform: 'perspective(1200px) rotateX(13deg) rotateY(-2deg) translateY(-10px) scale(1.03)',
-                },
-              },
-              '&::before': {
-                content: '""',
-                position: 'absolute',
-                top: '-20px',
-                left: '-20px',
-                right: '-20px',
-                bottom: '-20px',
-                background: `
-                  radial-gradient(ellipse at center,
-                    rgba(255,107,157,0.3) 0%,
-                    rgba(255,142,83,0.2) 30%,
-                    rgba(255,235,59,0.1) 60%,
-                    transparent 100%
-                  )
-                `,
-                borderRadius: '50%',
-                filter: 'blur(25px)',
-                zIndex: -1,
-                animation: 'crystalAura 4s ease-in-out infinite alternate',
-              },
-              '@keyframes crystalAura': {
-                '0%': {
-                  opacity: 0.4,
-                  transform: 'scale(0.8) rotate(0deg)',
-                },
-                '100%': {
-                  opacity: 0.8,
-                  transform: 'scale(1.2) rotate(360deg)',
-                },
-              },
-              '&::after': {
-                content: '""',
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                width: '120%',
-                height: '120%',
-                transform: 'translate(-50%, -50%)',
-                background: `
-                  conic-gradient(from 0deg,
-                    transparent 0deg,
-                    rgba(255,107,157,0.1) 90deg,
-                    transparent 180deg,
-                    rgba(255,142,83,0.1) 270deg,
-                    transparent 360deg
-                  )
-                `,
-                borderRadius: '50%',
-                filter: 'blur(15px)',
-                zIndex: -2,
-                animation: 'crystalRing 6s linear infinite',
-              },
-              '@keyframes crystalRing': {
-                '0%': {
-                  transform: 'translate(-50%, -50%) rotate(0deg) scale(0.9)',
-                  opacity: 0.3,
-                },
-                '50%': {
-                  transform: 'translate(-50%, -50%) rotate(180deg) scale(1.1)',
-                  opacity: 0.6,
-                },
-                '100%': {
-                  transform: 'translate(-50%, -50%) rotate(360deg) scale(0.9)',
-                  opacity: 0.3,
-                },
-              }
+
             }}
           >
             ආයුබෝවන්..
@@ -847,65 +835,8 @@ const Home = () => {
           >
             <Box component="span" sx={{ color: '#ffeb3b' }}>"අ"</Box>යන්න කියන්න සිංහල ආයතනයට<br />
             <Box component="span" sx={{
-              background: 'linear-gradient(to right, #ffeb3b, #ff9800)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              textShadow: `
-                0 0 1px rgba(255,255,255,0.8),
-                0 0 3px rgba(255,107,157,0.6),
-                0 0 6px rgba(255,142,83,0.4),
-                0 0 9px rgba(255,235,59,0.3),
-                2px 2px 0px rgba(255,59,157,0.4),
-                4px 4px 0px rgba(255,142,83,0.3)
-              `,
-              filter: `
-                drop-shadow(0 0 8px rgba(255,107,157,0.4))
-                drop-shadow(0 0 15px rgba(255,142,83,0.2))
-                brightness(1.1)
-                contrast(1.1)
-                saturate(1.2)
-              `,
-              '&::before': {
-                content: '""',
-                position: 'absolute',
-                top: '-8px',
-                left: '-12px',
-                right: '-12px',
-                bottom: '-8px',
-                background: `
-                  radial-gradient(ellipse at center,
-                    rgba(255,107,157,0.15) 0%,
-                    rgba(255,142,83,0.1) 40%,
-                    rgba(255,235,59,0.05) 70%,
-                    transparent 100%
-                  )
-                `,
-                borderRadius: '15px',
-                filter: 'blur(12px)',
-                zIndex: -1,
-              },
-              '&::after': {
-                content: '""',
-                position: 'absolute',
-                top: '0',
-                left: '0',
-                right: '0',
-                bottom: '0',
-                background: `
-                  linear-gradient(45deg,
-                    transparent 0%,
-                    rgba(255,255,255,0.1) 30%,
-                    rgba(255,255,255,0.2) 50%,
-                    rgba(255,255,255,0.1) 70%,
-                    transparent 100%
-                  )
-                `,
-                borderRadius: '8px',
-                zIndex: 1,
-                pointerEvents: 'none',
-                opacity: 0.6,
-              }
+              color: '#ffeb3b',
+              textShadow: '0 0 8px rgba(255,235,59,0.4), 2px 2px 4px rgba(0,0,0,0.3)'
             }}>
               සාදරයෙන් පිළිගනිමු..!
             </Box>
@@ -1049,7 +980,14 @@ const Home = () => {
                 ml: 1,
                 textShadow: '0 0 8px rgba(255,235,59,0.4)'
               }}>
-                {userEmail.split('@')[0]}
+                {(() => {
+                  const fullName = localStorage.getItem('fullName');
+                  if (fullName) {
+                    const nameParts = fullName.split(' ');
+                    return nameParts.length > 1 ? nameParts[1] : nameParts[0];
+                  }
+                  return userEmail.split('@')[0];
+                })()}
               </Box>
             </Typography>
             <motion.div whileHover={{ scale: 1.05 }}>
@@ -1058,6 +996,7 @@ const Home = () => {
                 color="secondary"
                 size="large"
                 startIcon={<Person sx={{ fontSize: '1.5rem' }} />}
+                onClick={handleDashboardClick}
                 sx={{
                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                   borderRadius: '50px',
@@ -1151,52 +1090,7 @@ const Home = () => {
     </Box>
   </Container>
 
-  {/* Animated floating elements */}
-  <motion.div
-    animate={{
-      y: [0, -40, 0],
-      rotate: [0, 360]
-    }}
-    transition={{
-      duration: 8,
-      repeat: Infinity,
-      ease: "easeInOut"
-    }}
-    style={{
-      position: 'absolute',
-      top: '20%',
-      left: '10%',
-      width: '80px',
-      height: '80px',
-      borderRadius: '50%',
-      background: 'radial-gradient(circle, rgba(255,235,59,0.3) 0%, transparent 70%)',
-      filter: 'blur(2px)',
-      zIndex: 1
-    }}
-  />
-  <motion.div
-    animate={{
-      y: [0, 30, 0],
-      x: [0, 20, 0]
-    }}
-    transition={{
-      duration: 10,
-      repeat: Infinity,
-      ease: "easeInOut",
-      delay: 2
-    }}
-    style={{
-      position: 'absolute',
-      bottom: '15%',
-      right: '15%',
-      width: '100px',
-      height: '100px',
-      borderRadius: '50%',
-      background: 'radial-gradient(circle, rgba(106,17,203,0.3) 0%, transparent 70%)',
-      filter: 'blur(3px)',
-      zIndex: 1
-    }}
-  />
+
 </Box>
 
 {/* Register as Student Section */}
@@ -2958,6 +2852,19 @@ const Home = () => {
     </IconButton>
   </motion.div>
 )}
+
+      {/* Admin Password Dialog */}
+      <AdminPasswordDialog
+        open={showAdminDialog}
+        onClose={() => setShowAdminDialog(false)}
+        onSuccess={handleAdminPasswordSuccess}
+      />
+
+      {/* Student Registration Dialog */}
+      <StudentRegistrationDialog
+        open={showStudentDialog}
+        onClose={() => setShowStudentDialog(false)}
+      />
     </Box>
   );
 };

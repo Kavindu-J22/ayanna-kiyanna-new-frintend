@@ -82,6 +82,8 @@ import About from './pages/About';
 import AkContact from './pages/Contact';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
+import StudentDashboard from './pages/StudentDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
@@ -481,7 +483,7 @@ function AppContent() {
             }
           >
             Use the Side Menu For Explore Your Learning Journey
-            
+
           </Alert>
         </Snackbar>
       )}
@@ -812,6 +814,8 @@ function AppContent() {
 
               <Route path="/login" element={<SignIn />} />
               <Route path="/register" element={<SignUp />} />
+              <Route path="/student-dashboard" element={<StudentDashboard />} />
+              <Route path="/admin-dashboard" element={<AdminDashboard />} />
             </Routes>
           </Container>
         </Main>
