@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { 
-  Box, 
-  Typography, 
-  TextField, 
-  Button, 
-  Paper, 
-  Link, 
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  Link,
   Divider,
   InputAdornment,
   IconButton,
@@ -18,6 +18,7 @@ import {
   Slide
 } from '@mui/material';
 import { Visibility, VisibilityOff, Google, CheckCircle, Celebration } from '@mui/icons-material';
+import { CircularProgress } from '@mui/material';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
 import AKlogo from '../assets/AKlogo.png';
@@ -41,6 +42,8 @@ const SignInPage = () => {
   const [error, setError] = useState('');
   const [openSuccessPopup, setOpenSuccessPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [isGoogleSigningIn, setIsGoogleSigningIn] = useState(false);
   const animationRef = useRef(null);
 
     const handleInputChange = (e) => {
@@ -54,6 +57,7 @@ const SignInPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setIsSigningIn(true);
 
     try {
       const response = await axios.post('https://ayanna-kiyanna-new-backend.onrender.com/api/auth/login', {
@@ -64,7 +68,7 @@ const SignInPage = () => {
       // Store user data in localStorage
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userEmail', formData.email);
-      
+
       if (response.data.user) {
         localStorage.setItem('fullName', response.data.user.fullName);
       }
@@ -75,18 +79,23 @@ const SignInPage = () => {
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
       console.error('Login error:', err);
+    } finally {
+      setIsSigningIn(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
+    setIsGoogleSigningIn(true);
+    setError('');
+
     try {
       const provider = new GoogleAuthProvider();
       provider.addScope('profile');
       provider.addScope('email');
-      
+
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
-      
+
       const response = await axios.post('https://ayanna-kiyanna-new-backend.onrender.com/api/auth/firebase-google', {
         idToken
       });
@@ -100,12 +109,14 @@ const SignInPage = () => {
     } catch (err) {
       setError(err.response?.data?.message || 'Google login failed. Please try again.');
       console.error('Google login error:', err);
+    } finally {
+      setIsGoogleSigningIn(false);
     }
   };
 
   const handleCloseSuccessPopup = () => {
     setOpenSuccessPopup(false);
-    
+
     // Use setTimeout to ensure navigation happens after state updates
     setTimeout(() => {
       window.location.href = '/'; // This will do a full navigation
@@ -177,51 +188,51 @@ const SignInPage = () => {
 
     const animate = () => {
       time++;
-      
+
       // Smooth color transition
       if (time % 200 === 0) { // Faster color transitions
         colorIndex = (colorIndex + 1) % colors.length;
         targetColor = colors[colorIndex];
       }
-      
+
       currentColor.r += (targetColor.r - currentColor.r) * 0.01;
       currentColor.g += (targetColor.g - currentColor.g) * 0.01;
       currentColor.b += (targetColor.b - currentColor.b) * 0.01;
-      
+
       // Create gradient
       const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
       gradient.addColorStop(0, `rgba(${Math.floor(currentColor.r)}, ${Math.floor(currentColor.g)}, ${Math.floor(currentColor.b)}, 0.7)`);
       gradient.addColorStop(1, `rgba(${Math.floor(currentColor.r * 0.6)}, ${Math.floor(currentColor.g * 0.6)}, ${Math.floor(currentColor.b * 0.6)}, 0.7)`);
-      
+
       // Fill canvas
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
+
       // Draw particles
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
-        
+
         // Create bubble shape
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = p.color;
         ctx.fill();
-        
+
         // Add subtle glow
         ctx.shadowBlur = 5;
         ctx.shadowColor = p.color;
-        
+
         // Update position
         p.x += Math.cos(p.angle) * p.speed;
         p.y += Math.sin(p.angle) * p.speed + p.drift;
-        
+
         // Reset particles that go off screen
         if (p.x < -p.radius) p.x = canvas.width + p.radius;
         if (p.x > canvas.width + p.radius) p.x = -p.radius;
         if (p.y < -p.radius) p.y = canvas.height + p.radius;
         if (p.y > canvas.height + p.radius) p.y = -p.radius;
       }
-      
+
       animationId = requestAnimationFrame(animate);
     };
 
@@ -313,8 +324,8 @@ const SignInPage = () => {
             }
           }}
         >
-          <Box sx={{ 
-            textAlign: 'center', 
+          <Box sx={{
+            textAlign: 'center',
             mb: 4,
             animation: 'fadeIn 0.5s ease-in'
           }}>
@@ -322,7 +333,7 @@ const SignInPage = () => {
               component="img"
               src={AKlogo}
               alt="Ayanna Kiyanna Sinhala Institute Logo"
-              sx={{ 
+              sx={{
                 height: 100,
                 width: 'auto',
                 marginBottom: 2,
@@ -331,12 +342,12 @@ const SignInPage = () => {
                   transform: 'scale(1.05) rotate(-5deg)'
                 },
                 filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
-              }} 
+              }}
             />
-            <Typography 
-              variant="h4" 
-              component="h1" 
-              sx={{ 
+            <Typography
+              variant="h4"
+              component="h1"
+              sx={{
                 fontWeight: 700,
                 color: '#2c3e50',
                 mt: 1,
@@ -430,14 +441,14 @@ const SignInPage = () => {
             ),
           }}
         />
-            
+
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
               <FormControlLabel
                 control={
-                  <Checkbox 
-                    checked={rememberMe} 
+                  <Checkbox
+                    checked={rememberMe}
                     onChange={handleRememberMeChange}
-                    sx={{ 
+                    sx={{
                       color: '#673ab7', // Purple
                       '&.Mui-checked': {
                         color: '#673ab7', // Purple
@@ -448,7 +459,7 @@ const SignInPage = () => {
                 label="Remember me"
                 sx={{ color: '#673ab7' }} // Purple
               />
-              <Link href="#" variant="body2" sx={{ 
+              <Link href="#" variant="body2" sx={{
                 textDecoration: 'none',
                 color: '#673ab7', // Purple
                 '&:hover': {
@@ -463,6 +474,8 @@ const SignInPage = () => {
               type="submit"
               fullWidth
               variant="contained"
+              disabled={isSigningIn}
+              startIcon={isSigningIn ? <CircularProgress size={20} color="inherit" /> : null}
               sx={{
                 mt: 2,
                 mb: 2,
@@ -477,10 +490,14 @@ const SignInPage = () => {
                   background: 'linear-gradient(45deg, #673ab7, #9c27b0)',
                   transform: 'translateY(-2px)'
                 },
+                '&:disabled': {
+                  background: 'linear-gradient(45deg, rgba(156, 39, 176, 0.6), rgba(103, 58, 183, 0.6))',
+                  color: 'rgba(255, 255, 255, 0.7)'
+                },
                 transition: 'all 0.3s ease'
               }}
             >
-              Sign In
+              {isSigningIn ? 'Signing In...' : 'Sign In'}
             </Button>
 
             <Divider sx={{ my: 3, color: '#7f8c8d' }}>
@@ -493,12 +510,16 @@ const SignInPage = () => {
               <Button
                 fullWidth
                 variant="contained"
-                startIcon={<Google sx={{ 
-                  background: 'white', 
-                  borderRadius: '50%',
-                  p: 0.5,
-                  color: '#DB4437'
-                }} />}
+                disabled={isGoogleSigningIn}
+                startIcon={isGoogleSigningIn ?
+                  <CircularProgress size={20} color="inherit" /> :
+                  <Google sx={{
+                    background: 'white',
+                    borderRadius: '50%',
+                    p: 0.5,
+                    color: '#DB4437'
+                  }} />
+                }
                 onClick={handleGoogleSignIn}
                 sx={{
                   maxWidth: 300,
@@ -514,6 +535,10 @@ const SignInPage = () => {
                     backgroundPosition: '100% 0',
                     transform: 'translateY(-2px)',
                     boxShadow: '0 6px 12px rgba(0,0,0,0.2)'
+                  },
+                  '&:disabled': {
+                    background: 'linear-gradient(to right, rgba(104, 66, 244, 0.6), rgba(52, 168, 133, 0.6), rgba(251, 188, 5, 0.6), rgba(234, 67, 53, 0.6))',
+                    color: 'rgba(255, 255, 255, 0.7)'
                   },
                   transition: 'all 0.5s ease, transform 0.3s ease',
                   position: 'relative',
@@ -534,15 +559,15 @@ const SignInPage = () => {
                   }
                 }}
               >
-                Sign In with Google
+                {isGoogleSigningIn ? 'Signing In...' : 'Sign In with Google'}
               </Button>
             </Box>
 
             <Box sx={{ textAlign: 'center', mt: 2 }}>
               <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
                 New to Ayanna Kiyanna?{' '}
-                <Link href="/register" variant="body2" sx={{ 
-                  fontWeight: 600, 
+                <Link href="/register" variant="body2" sx={{
+                  fontWeight: 600,
                   textDecoration: 'none',
                   color: '#673ab7',
                   '&:hover': {
@@ -581,13 +606,13 @@ const SignInPage = () => {
             alignItems: 'center',
             justifyContent: 'center'
           }}>
-            <Celebration sx={{ 
-              fontSize: 80, 
-              color: '#9c27b0', 
+            <Celebration sx={{
+              fontSize: 80,
+              color: '#9c27b0',
               mb: 2,
               filter: 'drop-shadow(0 4px 8px rgba(156, 39, 176, 0.3))'
             }} />
-            <Typography variant="h5" component="div" sx={{ 
+            <Typography variant="h5" component="div" sx={{
               mb: 2,
               fontWeight: 700,
               background: 'linear-gradient(45deg, #9c27b0, #673ab7)',
