@@ -528,7 +528,7 @@ const SignUp = () => {
       case 0:
         return (
           <Box>
-            <Typography variant="h6" sx={{ mb: { xs: 2, md: 2.5 }, fontWeight: 600, color: theme.palette.primary.main, fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+            <Typography variant="h6" sx={{ mb: { xs: 2, md: 2.5 }, fontWeight: 600, color: 'rgb(126, 23, 121)', fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
               Let's get to know you
             </Typography>
 
@@ -545,7 +545,7 @@ const SignUp = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Email color="primary" />
+                    <Email sx={{ color: 'rgb(104, 24, 100)' }} />
                   </InputAdornment>
                 ),
               }}
@@ -565,7 +565,7 @@ const SignUp = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Person color="primary" />
+                    <Person sx={{ color: 'rgb(104, 24, 100)' }} />
                   </InputAdornment>
                 ),
               }}
@@ -576,7 +576,7 @@ const SignUp = () => {
       case 1:
         return (
           <Box>
-            <Typography variant="h6" sx={{ mb: { xs: 2, md: 2.5 }, fontWeight: 600, color: theme.palette.primary.main, fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+            <Typography variant="h6" sx={{ mb: { xs: 2, md: 2.5 }, fontWeight: 600, color: 'rgb(126, 23, 121)', fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
               Secure your account
             </Typography>
 
@@ -593,7 +593,7 @@ const SignUp = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Lock color="primary" />
+                    <Lock sx={{ color: 'rgb(104, 24, 100)' }} />
                   </InputAdornment>
                 ),
                 endAdornment: (
@@ -627,7 +627,7 @@ const SignUp = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Fingerprint color="primary" />
+                    <Fingerprint sx={{ color: 'rgb(104, 24, 100)' }} />
                   </InputAdornment>
                 ),
                 endAdornment: (
@@ -651,7 +651,7 @@ const SignUp = () => {
       case 2:
         return (
           <Box>
-            <Typography variant="h6" sx={{ mb: { xs: 2, md: 2.5 }, fontWeight: 600, color: theme.palette.primary.main, fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+            <Typography variant="h6" sx={{ mb: { xs: 2, md: 2.5 }, fontWeight: 600, color: 'rgb(126, 23, 121)', fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
               Almost there!
             </Typography>
 
@@ -716,7 +716,6 @@ const SignUp = () => {
       }}>
         <Button
           variant="outlined"
-          color="primary"
           onClick={activeStep === 0 ? () => navigate('/login') : handleBack}
           startIcon={<ArrowBack />}
           fullWidth={isMobile}
@@ -726,6 +725,8 @@ const SignUp = () => {
             px: 3,
             textTransform: 'none',
             fontWeight: 600,
+            color: 'rgb(155, 39, 176)',
+            borderColor: 'rgb(155, 39, 176)',
             order: { xs: 2, sm: 1 }
           }}
         >
@@ -735,13 +736,12 @@ const SignUp = () => {
         {activeStep === steps.length - 1 ? (
           <AnimatedButton
             variant="contained"
-            color="primary"
             onClick={handleSubmit}
             disabled={isSubmitting}
             fullWidth={isMobile}
             size={isMobile ? "large" : "medium"}
             endIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : <CheckCircle />}
-            sx={{ order: { xs: 1, sm: 2 } }}
+            sx={{ order: { xs: 1, sm: 2 }, backgroundColor: 'rgb(141, 36, 94)' }}
           >
             {isSubmitting ? 'Creating Account...' : 'Complete Registration'}
           </AnimatedButton>
@@ -753,7 +753,7 @@ const SignUp = () => {
             fullWidth={isMobile}
             size={isMobile ? "large" : "medium"}
             endIcon={<ArrowForward />}
-            sx={{ order: { xs: 1, sm: 2 } }}
+            sx={{ order: { xs: 1, sm: 2 }, backgroundColor: 'rgb(155, 39, 176)' }}
           >
             Continue
           </AnimatedButton>
@@ -897,7 +897,7 @@ const SignUp = () => {
                     <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
                       Step {activeStep + 1} of {steps.length}
                     </Typography>
-                    <Typography variant="body2" fontWeight={600} color="primary" sx={{ fontSize: '0.8rem' }}>
+                    <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.8rem', color: '#673ab7' }}>
                       {Math.round(formProgress)}% Complete
                     </Typography>
                   </Box>
@@ -910,7 +910,7 @@ const SignUp = () => {
                       transition={{ duration: 0.5 }}
                       sx={{
                         height: '100%',
-                        background: 'linear-gradient(90deg, #9c27b0, #673ab7)',
+                        background: 'linear-gradient(90deg, #9c27b0,rgb(90, 51, 156))',
                         borderRadius: 3
                       }}
                     />
@@ -943,9 +943,9 @@ const SignUp = () => {
                               width: { xs: 30, sm: 40 },
                               height: { xs: 30, sm: 40 },
                               bgcolor: index === activeStep
-                                ? 'primary.main'
+                                ? 'rgb(90, 51, 156)'
                                 : completed[index]
-                                  ? 'success.main'
+                                  ? 'rgb(56, 165, 138)'
                                   : 'rgba(0,0,0,0.1)',
                               color: index === activeStep || completed[index] ? 'white' : 'text.secondary',
                               transition: 'all 0.3s ease',
