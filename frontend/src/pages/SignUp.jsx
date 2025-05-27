@@ -278,7 +278,9 @@ const SignUp = () => {
     confirmPassword: '',
     showPassword: false,
     showConfirmPassword: false,
-    agreeToTerms: false
+    agreeToTerms: false,
+    otp: '',
+    emailVerified: false
   });
 
   // UI states
@@ -287,11 +289,18 @@ const SignUp = () => {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
 
+  // OTP related states
+  const [isOTPSent, setIsOTPSent] = useState(false);
+  const [isVerifyingOTP, setIsVerifyingOTP] = useState(false);
+  const [otpTimer, setOtpTimer] = useState(0);
+  const [canResendOTP, setCanResendOTP] = useState(true);
+
 
 
   // Steps for the multi-step form
   const steps = [
     { label: 'Basic Info', icon: <Person /> },
+    { label: 'Email Verify', icon: <Email /> },
     { label: 'Security', icon: <Lock /> },
     { label: 'Complete', icon: <CheckCircle /> }
   ];
@@ -355,6 +364,19 @@ const SignUp = () => {
     };
   }, []);
 
+  // OTP Timer effect
+  useEffect(() => {
+    let interval = null;
+    if (otpTimer > 0) {
+      interval = setInterval(() => {
+        setOtpTimer(timer => timer - 1);
+      }, 1000);
+    } else if (otpTimer === 0) {
+      setCanResendOTP(true);
+    }
+    return () => clearInterval(interval);
+  }, [otpTimer]);
+
   // Calculate password strength
   const calculatePasswordStrength = (password) => {
     let strength = 0;
@@ -391,6 +413,73 @@ const SignUp = () => {
     setFormData({ ...formData, showConfirmPassword: !formData.showConfirmPassword });
   };
 
+  // Send OTP to email
+  const sendEmailOTP = async () => {
+    if (!formData.email || !formData.fullName) {
+      setErrors({ email: 'Email and full name are required' });
+      return;
+    }
+
+    setIsOTPSent(true);
+    setCanResendOTP(false);
+
+    try {
+      await axios.post('https://ayanna-kiyanna-new-backend.onrender.com/api/auth/send-email-otp', {
+        email: formData.email,
+        fullName: formData.fullName
+      });
+
+      setOtpTimer(600); // 10 minutes
+      setErrors({});
+
+    } catch (error) {
+      console.error('OTP sending error:', error.response?.data?.message || error.message);
+      setErrors({
+        otp: error.response?.data?.message || 'Failed to send verification code. Please try again.'
+      });
+      setIsOTPSent(false);
+      setCanResendOTP(true);
+    }
+  };
+
+  // Verify OTP
+  const verifyEmailOTP = async () => {
+    if (!formData.otp || formData.otp.length !== 6) {
+      setErrors({ otp: 'Please enter a valid 6-digit verification code' });
+      return;
+    }
+
+    setIsVerifyingOTP(true);
+
+    try {
+      await axios.post('https://ayanna-kiyanna-new-backend.onrender.com/api/auth/verify-email-otp', {
+        email: formData.email,
+        otp: formData.otp
+      });
+
+      setFormData({ ...formData, emailVerified: true });
+      setErrors({});
+
+      // Auto-advance to next step
+      const newCompleted = { ...completed };
+      newCompleted[activeStep] = true;
+      setCompleted(newCompleted);
+
+      const newProgress = ((activeStep + 1) / steps.length) * 100;
+      setFormProgress(newProgress);
+
+      setActiveStep(prevStep => prevStep + 1);
+
+    } catch (error) {
+      console.error('OTP verification error:', error.response?.data?.message || error.message);
+      setErrors({
+        otp: error.response?.data?.message || 'Invalid verification code. Please try again.'
+      });
+    } finally {
+      setIsVerifyingOTP(false);
+    }
+  };
+
 
 
   // Form validation
@@ -409,6 +498,10 @@ const SignUp = () => {
         newErrors.fullName = 'Full name is required';
       }
     } else if (activeStep === 1) {
+      if (!formData.emailVerified) {
+        newErrors.otp = 'Email verification is required';
+      }
+    } else if (activeStep === 2) {
       if (!formData.password) {
         newErrors.password = 'Password is required';
       } else if (formData.password.length < 8) {
@@ -420,7 +513,7 @@ const SignUp = () => {
       if (formData.password !== formData.confirmPassword) {
         newErrors.confirmPassword = 'Passwords do not match';
       }
-    } else if (activeStep === 2) {
+    } else if (activeStep === 3) {
       if (!formData.agreeToTerms) {
         newErrors.agreeToTerms = 'You must agree to the terms and conditions';
       }
@@ -431,16 +524,34 @@ const SignUp = () => {
   };
 
   // Handle step navigation
-  const handleNext = () => {
-    if (validateForm()) {
-      const newCompleted = { ...completed };
-      newCompleted[activeStep] = true;
-      setCompleted(newCompleted);
+  const handleNext = async () => {
+    if (activeStep === 0) {
+      // First step: validate basic info and send OTP
+      if (validateForm()) {
+        await sendEmailOTP();
+        if (!errors.otp) {
+          const newCompleted = { ...completed };
+          newCompleted[activeStep] = true;
+          setCompleted(newCompleted);
 
-      const newProgress = ((activeStep + 1) / steps.length) * 100;
-      setFormProgress(newProgress);
+          const newProgress = ((activeStep + 1) / steps.length) * 100;
+          setFormProgress(newProgress);
 
-      setActiveStep(prevStep => prevStep + 1);
+          setActiveStep(prevStep => prevStep + 1);
+        }
+      }
+    } else {
+      // Other steps: normal validation
+      if (validateForm()) {
+        const newCompleted = { ...completed };
+        newCompleted[activeStep] = true;
+        setCompleted(newCompleted);
+
+        const newProgress = ((activeStep + 1) / steps.length) * 100;
+        setFormProgress(newProgress);
+
+        setActiveStep(prevStep => prevStep + 1);
+      }
     }
   };
 
@@ -462,7 +573,8 @@ const SignUp = () => {
       await axios.post('https://ayanna-kiyanna-new-backend.onrender.com/api/auth/register', {
         email: formData.email,
         fullName: formData.fullName,
-        password: formData.password
+        password: formData.password,
+        emailVerified: formData.emailVerified
       });
 
       setShowSuccessMessage(true);
@@ -577,6 +689,92 @@ const SignUp = () => {
         return (
           <Box>
             <Typography variant="h6" sx={{ mb: { xs: 2, md: 2.5 }, fontWeight: 600, color: 'rgb(126, 23, 121)', fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+              Verify your email address
+            </Typography>
+
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3, fontSize: '0.9rem' }}>
+              We've sent a 6-digit verification code to <strong>{formData.email}</strong>. Please enter it below to continue.
+            </Typography>
+
+            <StyledTextField
+              fullWidth
+              label="Verification Code"
+              name="otp"
+              type="text"
+              variant="outlined"
+              value={formData.otp}
+              onChange={handleChange}
+              error={!!errors.otp}
+              helperText={errors.otp}
+              inputProps={{
+                maxLength: 6,
+                style: { textAlign: 'center', fontSize: '1.2rem', letterSpacing: '0.5rem' }
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Email sx={{ color: 'rgb(104, 24, 100)' }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ mb: 2 }}
+            />
+
+            {otpTimer > 0 && (
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2, textAlign: 'center' }}>
+                Code expires in: {Math.floor(otpTimer / 60)}:{(otpTimer % 60).toString().padStart(2, '0')}
+              </Typography>
+            )}
+
+            <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+              <AnimatedButton
+                variant="contained"
+                onClick={verifyEmailOTP}
+                disabled={isVerifyingOTP || !formData.otp || formData.otp.length !== 6}
+                fullWidth
+                sx={{ backgroundColor: 'rgb(155, 39, 176)' }}
+                startIcon={isVerifyingOTP ? <CircularProgress size={20} color="inherit" /> : <CheckCircle />}
+              >
+                {isVerifyingOTP ? 'Verifying...' : 'Verify Code'}
+              </AnimatedButton>
+
+              <AnimatedButton
+                variant="outlined"
+                onClick={sendEmailOTP}
+                disabled={!canResendOTP || isOTPSent}
+                fullWidth
+                sx={{
+                  borderColor: 'rgb(155, 39, 176)',
+                  color: 'rgb(155, 39, 176)'
+                }}
+              >
+                {!canResendOTP ? `Resend in ${otpTimer}s` : 'Resend Code'}
+              </AnimatedButton>
+            </Box>
+
+            {formData.emailVerified && (
+              <Box sx={{
+                mt: 2,
+                p: 2,
+                borderRadius: 2,
+                bgcolor: alpha(theme.palette.success.main, 0.1),
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1
+              }}>
+                <CheckCircle color="success" />
+                <Typography variant="body2" color="success.main" fontWeight={600}>
+                  Email verified successfully!
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        );
+
+      case 2:
+        return (
+          <Box>
+            <Typography variant="h6" sx={{ mb: { xs: 2, md: 2.5 }, fontWeight: 600, color: 'rgb(126, 23, 121)', fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
               Secure your account
             </Typography>
 
@@ -648,7 +846,7 @@ const SignUp = () => {
           </Box>
         );
 
-      case 2:
+      case 3:
         return (
           <Box>
             <Typography variant="h6" sx={{ mb: { xs: 2, md: 2.5 }, fontWeight: 600, color: 'rgb(126, 23, 121)', fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
