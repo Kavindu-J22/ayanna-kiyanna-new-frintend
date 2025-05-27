@@ -84,6 +84,15 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
     return isActive ? 'success' : 'default';
   };
 
+  const getPlatformChipColor = (platform) => {
+    switch (platform) {
+      case 'Physical': return 'primary';
+      case 'Online': return 'secondary';
+      case 'Hybrid': return 'warning';
+      default: return 'primary';
+    }
+  };
+
   const formatTime = (time) => {
     return time ? time.substring(0, 5) : '';
   };
@@ -114,6 +123,12 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
                 <Chip
                   label={classItem.category || 'N/A'}
                   color="default"
+                  size="small"
+                  variant="outlined"
+                />
+                <Chip
+                  label={classItem.platform || 'Physical'}
+                  color={getPlatformChipColor(classItem.platform)}
                   size="small"
                   variant="outlined"
                 />
@@ -324,6 +339,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
                 <TableCell sx={{ fontWeight: 'bold' }}>ශ්‍රේණිය</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>වර්ගය</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>ප්‍රවර්ගය</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Platform</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>දිනය</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>වේලාව</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>ස්ථානය</TableCell>
@@ -360,6 +376,14 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
                       <Typography variant="body2" fontWeight="medium">
                         {classItem.category || 'N/A'}
                       </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={classItem.platform || 'Physical'}
+                        color={getPlatformChipColor(classItem.platform)}
+                        size="small"
+                        variant="outlined"
+                      />
                     </TableCell>
                     <TableCell>{classItem.date}</TableCell>
                     <TableCell>

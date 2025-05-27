@@ -26,7 +26,10 @@ import {
   Delete as DeleteIcon,
   LocationOn as LocationIcon,
   People as PeopleIcon,
-  Person as PersonIcon
+  Person as PersonIcon,
+  Computer as ComputerIcon,
+  Home as HomeIcon,
+  Merge as MergeIcon
 } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -36,6 +39,7 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
   const [formData, setFormData] = useState({
     type: '',
     category: '',
+    platform: 'Physical',
     locationLink: '',
     grade: '',
     date: '',
@@ -76,6 +80,7 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
         setFormData({
           type: editingClass.type || '',
           category: editingClass.category || 'Other',
+          platform: editingClass.platform || 'Physical',
           locationLink: editingClass.locationLink || '',
           grade: editingClass.grade || '',
           date: editingClass.date || '',
@@ -150,6 +155,7 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
     setFormData({
       type: '',
       category: '',
+      platform: 'Physical',
       locationLink: '',
       grade: '',
       date: '',
@@ -241,6 +247,7 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
 
     if (!formData.type) newErrors.type = 'Type is required';
     if (!formData.category) newErrors.category = 'Category is required';
+    if (!formData.platform) newErrors.platform = 'Platform is required';
     if (!formData.grade) newErrors.grade = 'Grade is required';
     if (!formData.date) newErrors.date = 'Date is required';
     if (!formData.startTime) newErrors.startTime = 'Start time is required';
@@ -420,6 +427,49 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
                   {errors.category && (
                     <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
                       {errors.category}
+                    </Typography>
+                  )}
+                </FormControl>
+              </Grid>
+
+              {/* Platform Selection */}
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth error={!!errors.platform}>
+                  <InputLabel>Platform *</InputLabel>
+                  <Select
+                    value={formData.platform}
+                    label="Platform *"
+                    onChange={(e) => handleInputChange('platform', e.target.value)}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        '&:hover fieldset': { borderColor: '#667eea' },
+                        '&.Mui-focused fieldset': { borderColor: '#667eea' },
+                        fontSize: '1rem'
+                      }
+                    }}
+                  >
+                    <MenuItem value="Physical">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <HomeIcon fontSize="small" />
+                        Physical
+                      </Box>
+                    </MenuItem>
+                    <MenuItem value="Online">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <ComputerIcon fontSize="small" />
+                        Online
+                      </Box>
+                    </MenuItem>
+                    <MenuItem value="Hybrid">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <MergeIcon fontSize="small" />
+                        Hybrid (Both)
+                      </Box>
+                    </MenuItem>
+                  </Select>
+                  {errors.platform && (
+                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                      {errors.platform}
                     </Typography>
                   )}
                 </FormControl>
