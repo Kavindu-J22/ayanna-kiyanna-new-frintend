@@ -990,22 +990,23 @@ const SignUp = () => {
                   <Divider sx={{ my: 1.5 }} />
                   <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
                     Already have an account?{' '}
-                    <Link
-                      component={motion.a}
+                    <Box
+                      component={motion.span}
                       whileHover={{ scale: 1.05 }}
                       onClick={() => navigate('/login')}
                       sx={{
-                        color: theme.palette.primary.main,
+                        color: 'rgb(90, 51, 156)',
                         fontWeight: 600,
                         cursor: 'pointer',
                         textDecoration: 'none',
+                        display: 'inline',
                         '&:hover': {
                           textDecoration: 'underline'
                         }
                       }}
                     >
                       Sign In
-                    </Link>
+                    </Box>
                   </Typography>
                 </Box>
               </StyledPaper>
