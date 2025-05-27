@@ -64,9 +64,9 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
   ];
 
   const defaultVenues = [
-    'Home(Group Class)',
-    'Manawa (Hall class)',
-    'Yatiyanthota Nethma (Hall class)'
+    'Home - De Zoisa Hall',
+    'Manawa Ruwanwella',
+    'Opulent Yatiyanthota',
   ];
 
   useEffect(() => {
@@ -316,20 +316,24 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
           </IconButton>
         </DialogTitle>
 
-        <DialogContent dividers sx={{ p: 3 }}>
-          <Box sx={{ mb: 3 }}>
+        <DialogContent dividers sx={{ p: 4, maxHeight: '70vh', overflowY: 'auto' }}>
+          <Box sx={{ mb: 4 }}>
             <Typography variant="h6" sx={{
-              mb: 2,
+              mb: 3,
               fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
               color: '#333',
               borderBottom: '2px solid #667eea',
-              pb: 1
+              pb: 1,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1
             }}>
+              <SchoolIcon color="primary" />
               මූලික තොරතුරු
             </Typography>
             <Grid container spacing={3}>
-              {/* 1. FIRST FIELD: Type Selection - Full Width */}
-              <Grid item xs={12}>
+              {/* Type and Category in one row */}
+              <Grid item xs={12} md={6}>
                 <FormControl fullWidth error={!!errors.type}>
                   <InputLabel>පන්ති වර්ගය *</InputLabel>
                   <Select
@@ -337,12 +341,11 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
                     label="පන්ති වර්ගය *"
                     onChange={(e) => handleInputChange('type', e.target.value)}
                     sx={{
-                      minWidth: '200px',
+                      minWidth: '150px',
                       '& .MuiOutlinedInput-root': {
                         '&:hover fieldset': { borderColor: '#667eea' },
                         '&.Mui-focused fieldset': { borderColor: '#667eea' },
-                        fontSize: '1.1rem',
-                        minWidth: '200px'
+                        fontSize: '1rem'
                       }
                     }}
                   >
@@ -367,8 +370,7 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
                 </FormControl>
               </Grid>
 
-              {/* 2. SECOND FIELD: Category Selection - Full Width */}
-              <Grid item xs={12}>
+              <Grid item xs={12} md={6}>
                 <FormControl fullWidth error={!!errors.category}>
                   <InputLabel>ප්‍රවර්ගය *</InputLabel>
                   <Select
@@ -376,12 +378,11 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
                     label="ප්‍රවර්ගය *"
                     onChange={(e) => handleInputChange('category', e.target.value)}
                     sx={{
-                      minWidth: '200px',
+                      minWidth: '150px',
                       '& .MuiOutlinedInput-root': {
                         '&:hover fieldset': { borderColor: '#667eea' },
                         '&.Mui-focused fieldset': { borderColor: '#667eea' },
-                        fontSize: '1.1rem',
-                        minWidth: '200px'
+                        fontSize: '1rem',
                       }
                     }}
                   >
@@ -424,26 +425,7 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
                 </FormControl>
               </Grid>
 
-              {/* 3. THIRD FIELD: Location Link - Full Width */}
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Location Link (Optional)"
-                  value={formData.locationLink}
-                  onChange={(e) => handleInputChange('locationLink', e.target.value)}
-                  error={!!errors.locationLink}
-                  helperText={errors.locationLink || 'Enter a valid URL for the location (e.g., Google Maps link)'}
-                  placeholder="https://maps.google.com/..."
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '&:hover fieldset': { borderColor: '#667eea' },
-                      '&.Mui-focused fieldset': { borderColor: '#667eea' }
-                    }
-                  }}
-                />
-              </Grid>
-
-              {/* 4. FOURTH FIELD: Grade Selection - Full Width */}
+              {/* Grade Selection - Full Width */}
               <Grid item xs={12}>
                 <Box>
                   <Autocomplete
@@ -522,14 +504,18 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
             </Grid>
           </Box>
 
-          <Box sx={{ mb: 3 }}>
+          <Box sx={{ mb: 4 }}>
             <Typography variant="h6" sx={{
-              mb: 2,
+              mb: 3,
               fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
               color: '#333',
               borderBottom: '2px solid #667eea',
-              pb: 1
+              pb: 1,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1
             }}>
+              <CalendarIcon color="primary" />
               දිනය සහ වේලාව
             </Typography>
             <Grid container spacing={3}>
@@ -664,14 +650,18 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
             </Grid>
           </Box>
 
-          <Box sx={{ mb: 3 }}>
+          <Box sx={{ mb: 4 }}>
             <Typography variant="h6" sx={{
-              mb: 2,
+              mb: 3,
               fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
               color: '#333',
               borderBottom: '2px solid #667eea',
-              pb: 1
+              pb: 1,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1
             }}>
+              <LocationIcon color="primary" />
               ස්ථානය සහ ධාරිතාව
             </Typography>
             <Grid container spacing={3}>
@@ -775,14 +765,18 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
             </Grid>
           </Box>
 
-          <Box sx={{ mb: 3 }}>
+          <Box sx={{ mb: 4 }}>
             <Typography variant="h6" sx={{
-              mb: 2,
+              mb: 3,
               fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
               color: '#333',
               borderBottom: '2px solid #667eea',
-              pb: 1
+              pb: 1,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1
             }}>
+              <PeopleIcon color="primary" />
               අමතර තොරතුරු
             </Typography>
             <Grid container spacing={3}>
@@ -815,6 +809,25 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
                     </MenuItem>
                   </Select>
                 </FormControl>
+              </Grid>
+
+            {/* 3. THIRD FIELD: Location Link - Full Width */}
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Location Link (Optional)"
+                  value={formData.locationLink}
+                  onChange={(e) => handleInputChange('locationLink', e.target.value)}
+                  error={!!errors.locationLink}
+                  helperText={errors.locationLink || 'Enter a valid URL for the location (e.g., Google Maps link)'}
+                  placeholder="https://maps.google.com/..."
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '&:hover fieldset': { borderColor: '#667eea' },
+                      '&.Mui-focused fieldset': { borderColor: '#667eea' }
+                    }
+                  }}
+                />
               </Grid>
 
               {/* Special Note */}

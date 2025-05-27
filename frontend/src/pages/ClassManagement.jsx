@@ -29,7 +29,11 @@ import {
   LocationOn as LocationIcon,
   People as PeopleIcon,
   CalendarToday as CalendarIcon,
-  ArrowBack as ArrowBackIcon
+  ArrowBack as ArrowBackIcon,
+  Groups as GroupsIcon,
+  Person as PersonIcon,
+  Star as StarIcon,
+  Home as HomeIcon
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -47,7 +51,11 @@ const ClassManagement = () => {
     total: 0,
     normal: 0,
     special: 0,
-    active: 0
+    active: 0,
+    hallClasses: 0,
+    groupClasses: 0,
+    individualClasses: 0,
+    specialClasses: 0
   });
 
   const theme = useTheme();
@@ -88,8 +96,17 @@ const ClassManagement = () => {
       total: classesData.length,
       normal: classesData.filter(c => c.type === 'Normal').length,
       special: classesData.filter(c => c.type === 'Special').length,
-      active: classesData.filter(c => c.isActive).length
+      active: classesData.filter(c => c.isActive).length,
+      hallClasses: classesData.filter(c => c.category === 'Hall Class').length,
+      groupClasses: classesData.filter(c => c.category === 'Group Class').length,
+      individualClasses: classesData.filter(c => c.category === 'Individual Class').length,
+      specialClasses: classesData.filter(c => c.category === 'Special Class').length
     };
+
+    // Debug log to check the stats
+    console.log('Calculated stats:', stats);
+    console.log('Classes data:', classesData.map(c => ({ grade: c.grade, category: c.category })));
+
     setStats(stats);
   };
 
@@ -191,7 +208,11 @@ const ClassManagement = () => {
     { title: 'මුළු පන්ති', value: stats.total, icon: <SchoolIcon />, color: '#667eea' },
     { title: 'සාමාන්‍ය පන්ති', value: stats.normal, icon: <CalendarIcon />, color: '#f093fb' },
     { title: 'විශේෂ පන්ති', value: stats.special, icon: <TimeIcon />, color: '#a8edea' },
-    { title: 'සක්‍රීය පන්ති', value: stats.active, icon: <PeopleIcon />, color: '#ffecd2' }
+    { title: 'සක්‍රීය පන්ති', value: stats.active, icon: <PeopleIcon />, color: '#ffecd2' },
+    { title: 'Hall Classes', value: stats.hallClasses, icon: <HomeIcon />, color: '#ff9a9e' },
+    { title: 'Group Classes', value: stats.groupClasses, icon: <GroupsIcon />, color: '#a18cd1' },
+    { title: 'Individual Classes', value: stats.individualClasses, icon: <PersonIcon />, color: '#fbc2eb' },
+    { title: 'Special Classes', value: stats.specialClasses, icon: <StarIcon />, color: '#84fab0' }
   ];
 
   if (loading) {
@@ -270,9 +291,9 @@ const ClassManagement = () => {
         </Paper>
 
         {/* Statistics Cards */}
-        <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid container spacing={2} sx={{ mb: 3 }}>
           {statsCards.map((stat, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
+            <Grid item xs={6} sm={4} md={3} key={index}>
               <motion.div whileHover={{ scale: 1.02 }}>
                 <Card sx={{
                   background: `linear-gradient(135deg, ${stat.color} 0%, ${stat.color}99 100%)`,
@@ -288,15 +309,15 @@ const ClassManagement = () => {
                     '&:last-child': { pb: 2 }
                   }}>
                     <Box sx={{ mb: 1 }}>
-                      {React.cloneElement(stat.icon, { sx: { fontSize: 36 } })}
+                      {React.cloneElement(stat.icon, { sx: { fontSize: 32 } })}
                     </Box>
-                    <Typography variant="h4" fontWeight="bold" sx={{ mb: 0.5 }}>
-                      {stat.value}
+                    <Typography variant="h5" fontWeight="bold" sx={{ mb: 0.5 }}>
+                      {stat.value || 0}
                     </Typography>
                     <Typography variant="body2" sx={{
                       fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
-                      fontSize: '0.875rem',
-                      lineHeight: 1.2
+                      fontSize: '0.75rem',
+                      lineHeight: 1.1
                     }}>
                       {stat.title}
                     </Typography>

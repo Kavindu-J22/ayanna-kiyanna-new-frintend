@@ -43,6 +43,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [gradeFilter, setGradeFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -52,16 +53,19 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
     const matchesSearch =
       classItem.grade.toLowerCase().includes(searchTerm.toLowerCase()) ||
       classItem.venue.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      classItem.type.toLowerCase().includes(searchTerm.toLowerCase());
+      classItem.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (classItem.category && classItem.category.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const matchesType = !typeFilter || classItem.type === typeFilter;
     const matchesGrade = !gradeFilter || classItem.grade === gradeFilter;
+    const matchesCategory = !categoryFilter || classItem.category === categoryFilter;
 
-    return matchesSearch && matchesType && matchesGrade;
+    return matchesSearch && matchesType && matchesGrade && matchesCategory;
   });
 
-  // Get unique grades for filter
+  // Get unique grades and categories for filter
   const uniqueGrades = [...new Set(classes.map(c => c.grade))].sort();
+  const uniqueCategories = [...new Set(classes.map(c => c.category).filter(Boolean))].sort();
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -206,7 +210,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
       {/* Filters */}
       <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={3}>
             <TextField
               fullWidth
               label="සොයන්න"
@@ -215,7 +219,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
               size="small"
             />
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={2}>
             <FormControl fullWidth size="small">
               <InputLabel>වර්ගය</InputLabel>
               <Select
@@ -232,6 +236,27 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
                 <MenuItem value="">සියල්ල</MenuItem>
                 <MenuItem value="Normal">සාමාන්‍ය</MenuItem>
                 <MenuItem value="Special">විශේෂ</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={2}>
+            <FormControl fullWidth size="small">
+              <InputLabel>ප්‍රවර්ගය</InputLabel>
+              <Select
+                value={categoryFilter}
+                label="ප්‍රවර්ගය"
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                sx={{
+                  minWidth: '150px',
+                  '& .MuiOutlinedInput-root': {
+                    minWidth: '150px'
+                  }
+                }}
+              >
+                <MenuItem value="">සියල්ල</MenuItem>
+                {uniqueCategories.map((category) => (
+                  <MenuItem key={category} value={category}>{category}</MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
