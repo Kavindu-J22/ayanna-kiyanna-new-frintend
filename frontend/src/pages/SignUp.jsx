@@ -34,7 +34,11 @@ import {
   Badge,
   LinearProgress,
   Backdrop,
-  Checkbox
+  Checkbox,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Slide
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -72,6 +76,17 @@ import { keyframes } from '@emotion/react';
 // Import assets
 import AKlogo from '../assets/AKlogo.png';
 import registrationImage from '../assets/registrationImage.png';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { initializeApp } from 'firebase/app';
+import { firebaseConfig } from '../config';
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 // Animation keyframes
 const float = keyframes`
@@ -269,6 +284,8 @@ const SignUp = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [formProgress, setFormProgress] = useState(0);
+  const [openSuccessPopup, setOpenSuccessPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
 
   // Form data state
   const [formData, setFormData] = useState({
@@ -294,6 +311,7 @@ const SignUp = () => {
   const [isVerifyingOTP, setIsVerifyingOTP] = useState(false);
   const [otpTimer, setOtpTimer] = useState(0);
   const [canResendOTP, setCanResendOTP] = useState(true);
+  const [isSendingOTP, setIsSendingOTP] = useState(false);
 
 
 
@@ -417,9 +435,10 @@ const SignUp = () => {
   const sendEmailOTP = async () => {
     if (!formData.email || !formData.fullName) {
       setErrors({ email: 'Email and full name are required' });
-      return;
+      return false;
     }
 
+    setIsSendingOTP(true);
     setIsOTPSent(true);
     setCanResendOTP(false);
 
@@ -431,6 +450,7 @@ const SignUp = () => {
 
       setOtpTimer(600); // 10 minutes
       setErrors({});
+      return true;
 
     } catch (error) {
       console.error('OTP sending error:', error.response?.data?.message || error.message);
@@ -439,6 +459,9 @@ const SignUp = () => {
       });
       setIsOTPSent(false);
       setCanResendOTP(true);
+      return false;
+    } finally {
+      setIsSendingOTP(false);
     }
   };
 
@@ -528,17 +551,16 @@ const SignUp = () => {
     if (activeStep === 0) {
       // First step: validate basic info and send OTP
       if (validateForm()) {
-        await sendEmailOTP();
-        if (!errors.otp) {
-          const newCompleted = { ...completed };
-          newCompleted[activeStep] = true;
-          setCompleted(newCompleted);
+        const otpSent = await sendEmailOTP();
+        // Always proceed to next step regardless of OTP sending result
+        const newCompleted = { ...completed };
+        newCompleted[activeStep] = true;
+        setCompleted(newCompleted);
 
-          const newProgress = ((activeStep + 1) / steps.length) * 100;
-          setFormProgress(newProgress);
+        const newProgress = ((activeStep + 1) / steps.length) * 100;
+        setFormProgress(newProgress);
 
-          setActiveStep(prevStep => prevStep + 1);
-        }
+        setActiveStep(prevStep => prevStep + 1);
       }
     } else {
       // Other steps: normal validation
@@ -601,6 +623,40 @@ const SignUp = () => {
       ...formData,
       [e.target.name]: e.target.checked
     });
+  };
+
+    const handleGoogleSignIn = async () => {
+      try {
+        const provider = new GoogleAuthProvider();
+        provider.addScope('profile');
+        provider.addScope('email');
+        
+        const result = await signInWithPopup(auth, provider);
+        const idToken = await result.user.getIdToken();
+        
+        const response = await axios.post('https://ayanna-kiyanna-new-backend.onrender.com/api/auth/firebase-google', {
+          idToken
+        });
+  
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('userEmail', response.data.user.email);
+        localStorage.setItem('fullName', response.data.user.fullName);
+  
+        setPopupMessage(`ආයුබෝවන් 🙏 ${response.data.user.fullName || response.data.user.email}!`);
+        setOpenSuccessPopup(true);
+      } catch (err) {
+        setErrors(err.response?.data?.message || 'Google login failed. Please try again.');
+        console.error('Google login error:', err);
+      }
+    };
+
+    const handleCloseSuccessPopup = () => {
+    setOpenSuccessPopup(false);
+    
+    // Use setTimeout to ensure navigation happens after state updates
+    setTimeout(() => {
+      window.location.href = '/'; // This will do a full navigation
+    }, 100);
   };
 
   // Render password strength indicator
@@ -908,9 +964,9 @@ const SignUp = () => {
       <Box sx={{
         display: 'flex',
         justifyContent: 'space-between',
-        mt: { xs: 3, md: 3 },
+        mt: { xs: 2.5, md: 2.5 },
         flexDirection: { xs: 'column', sm: 'row' },
-        gap: { xs: 2, sm: 0 }
+        gap: { xs: 1.5, sm: 0 }
       }}>
         <Button
           variant="outlined"
@@ -948,12 +1004,22 @@ const SignUp = () => {
             variant="contained"
             color="primary"
             onClick={handleNext}
+            disabled={
+              (activeStep === 0 && isSendingOTP) ||
+              (activeStep === 1 && !formData.emailVerified)
+            }
             fullWidth={isMobile}
             size={isMobile ? "large" : "medium"}
-            endIcon={<ArrowForward />}
+            endIcon={
+              (activeStep === 0 && isSendingOTP) ?
+                <CircularProgress size={20} color="inherit" /> :
+                <ArrowForward />
+            }
             sx={{ order: { xs: 1, sm: 2 }, backgroundColor: 'rgb(155, 39, 176)' }}
           >
-            Continue
+            {(activeStep === 0 && isSendingOTP) ? 'Sending Code...' :
+             (activeStep === 1 && !formData.emailVerified) ? 'Verify Email First' :
+             'Continue'}
           </AnimatedButton>
         )}
       </Box>
@@ -1049,9 +1115,9 @@ const SignUp = () => {
               style={{ width: '100%', maxWidth: '500px' }}
             >
               <StyledPaper elevation={6} sx={{
-                p: { xs: 3, sm: 4, md: 4 },
+                p: { xs: 3, sm: 4, md: 3.5 },
                 height: 'fit-content',
-                maxHeight: { xs: 'none', md: '85vh' },
+                maxHeight: { xs: 'none', md: '90vh' },
                 width: '100%',
                 overflowY: { xs: 'visible', md: 'auto' },
                 display: 'flex',
@@ -1060,7 +1126,7 @@ const SignUp = () => {
                 my: { xs: 2, md: 0 }
               }}>
                 {/* Logo and title */}
-                <Box sx={{ textAlign: 'center', mb: { xs: 3, md: 3 } }}>
+                <Box sx={{ textAlign: 'center', mb: { xs: 2.5, md: 2.5 } }}>
                   <motion.div
                     animate={{ y: [0, -10, 0] }}
                     transition={{ duration: 2, repeat: Infinity, repeatType: 'loop' }}
@@ -1069,7 +1135,7 @@ const SignUp = () => {
                       component="img"
                       src={AKlogo}
                       alt="Ayanna Kiyanna Logo"
-                      sx={{ height: { xs: 70, md: 75 }, width: 'auto', mb: { xs: 1.5, md: 2 } }}
+                      sx={{ height: { xs: 60, md: 65 }, width: 'auto', mb: { xs: 1, md: 1.5 } }}
                     />
                   </motion.div>
 
@@ -1078,29 +1144,29 @@ const SignUp = () => {
                     background: 'linear-gradient(45deg, #9c27b0, #673ab7)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
-                    mb: 1,
-                    fontSize: { xs: '1.8rem', md: '2.125rem' }
+                    mb: 0.5,
+                    fontSize: { xs: '1.6rem', md: '1.9rem' }
                   }}>
                     Create Account
                   </Typography>
 
-                  <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
+                  <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.85rem', md: '0.9rem' } }}>
                     Join our community and start your learning journey
                   </Typography>
                 </Box>
 
                 {/* Progress indicator */}
-                <Box sx={{ mb: { xs: 3, md: 3 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+                <Box sx={{ mb: { xs: 2.5, md: 2.5 } }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.8 }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
                       Step {activeStep + 1} of {steps.length}
                     </Typography>
-                    <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.8rem', color: '#673ab7' }}>
+                    <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.75rem', color: '#673ab7' }}>
                       {Math.round(formProgress)}% Complete
                     </Typography>
                   </Box>
 
-                  <Box sx={{ width: '100%', height: 5, bgcolor: 'rgba(0,0,0,0.1)', borderRadius: 3, overflow: 'hidden' }}>
+                  <Box sx={{ width: '100%', height: 4, bgcolor: 'rgba(0,0,0,0.1)', borderRadius: 3, overflow: 'hidden' }}>
                     <Box
                       component={motion.div}
                       initial={{ width: 0 }}
@@ -1121,15 +1187,15 @@ const SignUp = () => {
                   orientation="horizontal"
                   alternativeLabel={isMobile}
                   sx={{
-                    mb: { xs: 3, md: 3 },
+                    mb: { xs: 2.5, md: 2.5 },
                     '& .MuiStepConnector-line': {
-                      minWidth: { xs: 15, sm: 30 }
+                      minWidth: { xs: 10, sm: 20 }
                     },
                     '& .MuiStepLabel-root': {
                       flexDirection: { xs: 'column', sm: 'row' }
                     },
                     '& .MuiStepLabel-label': {
-                      fontSize: { xs: '0.75rem', md: '0.875rem' }
+                      fontSize: { xs: '0.7rem', md: '0.8rem' }
                     }
                   }}>
                   {steps.map((step, index) => (
@@ -1138,8 +1204,8 @@ const SignUp = () => {
                         StepIconComponent={() => (
                           <Avatar
                             sx={{
-                              width: { xs: 30, sm: 40 },
-                              height: { xs: 30, sm: 40 },
+                              width: { xs: 28, sm: 35 },
+                              height: { xs: 28, sm: 35 },
                               bgcolor: index === activeStep
                                 ? 'rgb(90, 51, 156)'
                                 : completed[index]
@@ -1147,7 +1213,7 @@ const SignUp = () => {
                                   : 'rgba(0,0,0,0.1)',
                               color: index === activeStep || completed[index] ? 'white' : 'text.secondary',
                               transition: 'all 0.3s ease',
-                              fontSize: { xs: '0.8rem', sm: '1rem' }
+                              fontSize: { xs: '0.75rem', sm: '0.9rem' }
                             }}
                           >
                             {step.icon}
@@ -1183,10 +1249,65 @@ const SignUp = () => {
                 {/* Navigation buttons */}
                 {renderNavButtons()}
 
+                                            <Divider sx={{ my: 3, color: '#7f8c8d' }}>
+                              <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
+                                OR CONTINUE WITH GOOGLE
+                              </Typography>
+                            </Divider>
+                
+                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                              <Button
+                                fullWidth
+                                variant="contained"
+                                startIcon={<Google sx={{ 
+                                  background: 'white', 
+                                  borderRadius: '50%',
+                                  p: 0.5,
+                                  color: '#DB4437'
+                                }} />}
+                                onClick={handleGoogleSignIn}
+                                sx={{
+                                  maxWidth: 300,
+                                  borderRadius: 2,
+                                  py: 1,
+                                  background: 'linear-gradient(to right,rgb(104, 66, 244),rgb(52, 168, 133), #FBBC05, #EA4335)',
+                                  backgroundSize: '300% 100%',
+                                  color: 'white',
+                                  fontWeight: 600,
+                                  textTransform: 'none',
+                                  letterSpacing: 0.5,
+                                  '&:hover': {
+                                    backgroundPosition: '100% 0',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: '0 6px 12px rgba(0,0,0,0.2)'
+                                  },
+                                  transition: 'all 0.5s ease, transform 0.3s ease',
+                                  position: 'relative',
+                                  overflow: 'hidden',
+                                  '&::before': {
+                                    content: '""',
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    background: 'linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.3), rgba(255,255,255,0.1))',
+                                    transform: 'translateX(-100%)',
+                                    transition: 'transform 0.6s ease'
+                                  },
+                                  '&:hover::before': {
+                                    transform: 'translateX(100%)'
+                                  }
+                                }}
+                              >
+                                Sign Up with Google
+                              </Button>
+                            </Box>
+
                 {/* Login link */}
-                <Box sx={{ textAlign: 'center', mt: { xs: 3, md: 3 } }}>
-                  <Divider sx={{ my: 1.5 }} />
-                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                <Box sx={{ textAlign: 'center', mt: { xs: 2.5, md: 2.5 } }}>
+                  <Divider sx={{ my: 1.2 }} />
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
                     Already have an account?{' '}
                     <Box
                       component={motion.span}
@@ -1397,6 +1518,83 @@ const SignUp = () => {
         </Grid>
       </Container>
 
+            {/* Success Popup */}
+            <Dialog
+              open={openSuccessPopup}
+              TransitionComponent={Transition}
+              keepMounted
+              onClose={handleCloseSuccessPopup}
+              aria-describedby="success-dialog-description"
+              sx={{
+                '& .MuiDialog-paper': {
+                  borderRadius: 3,
+                  background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+                  padding: '20px',
+                  textAlign: 'center',
+                  maxWidth: '400px'
+                }
+              }}
+            >
+              <DialogContent sx={{ py: 4 }}>
+                <Box sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <Celebration sx={{ 
+                    fontSize: 80, 
+                    color: '#9c27b0', 
+                    mb: 2,
+                    filter: 'drop-shadow(0 4px 8px rgba(156, 39, 176, 0.3))'
+                  }} />
+                  <Typography variant="h5" component="div" sx={{ 
+                    mb: 2,
+                    fontWeight: 700,
+                    background: 'linear-gradient(45deg, #9c27b0, #673ab7)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent'
+                  }}>
+                    සාදරයෙන් පිළිගනිමු.!
+                  </Typography>
+                  <Typography variant="body1" sx={{ mb: 3 }}>
+                    {popupMessage}
+                  </Typography>
+                  <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: 'rgba(102, 187, 106, 0.2)',
+                    borderRadius: '20px',
+                    padding: '10px 20px',
+                    mb: 3
+                  }}>
+                    <CheckCircle sx={{ color: '#66bb6a', mr: 1 }} />
+                    <Typography variant="body2" sx={{ color: '#2e7d32' }}>
+                      You are now logged in
+                    </Typography>
+                  </Box>
+                </Box>
+              </DialogContent>
+              <DialogActions sx={{ justifyContent: 'center', pb: 3 }}>
+                <Button
+                  onClick={handleCloseSuccessPopup}
+                  variant="contained"
+                  sx={{
+                    borderRadius: '20px',
+                    px: 4,
+                    py: 1,
+                    background: 'linear-gradient(45deg, #9c27b0, #673ab7)',
+                    '&:hover': {
+                      background: 'linear-gradient(45deg, #673ab7, #9c27b0)'
+                    }
+                  }}
+                >
+                  Continue to Dashboard
+                </Button>
+              </DialogActions>
+            </Dialog>
+
       {/* Success message */}
       <Backdrop
         sx={{ color: '#fff', zIndex: 9999 }}
@@ -1437,6 +1635,8 @@ const SignUp = () => {
         </motion.div>
       </Backdrop>
     </GradientBackground>
+
+    
   );
 };
 

@@ -534,7 +534,7 @@ const SignInPage = () => {
                   }
                 }}
               >
-                Continue with Google
+                Sign In with Google
               </Button>
             </Box>
 
