@@ -23,7 +23,10 @@ import {
   AccessTime as TimeIcon,
   CalendarToday as CalendarIcon,
   School as SchoolIcon,
-  Delete as DeleteIcon
+  Delete as DeleteIcon,
+  LocationOn as LocationIcon,
+  People as PeopleIcon,
+  Person as PersonIcon
 } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -32,6 +35,8 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
   const [formData, setFormData] = useState({
     type: '',
+    category: '',
+    locationLink: '',
     grade: '',
     date: '',
     startTime: '',
@@ -70,6 +75,8 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
       if (editingClass) {
         setFormData({
           type: editingClass.type || '',
+          category: editingClass.category || 'Other',
+          locationLink: editingClass.locationLink || '',
           grade: editingClass.grade || '',
           date: editingClass.date || '',
           startTime: editingClass.startTime || '',
@@ -142,6 +149,8 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
   const resetForm = () => {
     setFormData({
       type: '',
+      category: '',
+      locationLink: '',
       grade: '',
       date: '',
       startTime: '',
@@ -231,12 +240,22 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
     const newErrors = {};
 
     if (!formData.type) newErrors.type = 'Type is required';
+    if (!formData.category) newErrors.category = 'Category is required';
     if (!formData.grade) newErrors.grade = 'Grade is required';
     if (!formData.date) newErrors.date = 'Date is required';
     if (!formData.startTime) newErrors.startTime = 'Start time is required';
     if (!formData.endTime) newErrors.endTime = 'End time is required';
     if (!formData.venue) newErrors.venue = 'Venue is required';
     if (!formData.capacity) newErrors.capacity = 'Capacity is required';
+
+    // Validate location link if provided
+    if (formData.locationLink && formData.locationLink.trim()) {
+      try {
+        new URL(formData.locationLink);
+      } catch (e) {
+        newErrors.locationLink = 'Please enter a valid URL';
+      }
+    }
 
     // Validate time format
     const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
@@ -348,7 +367,83 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
                 </FormControl>
               </Grid>
 
-              {/* 2. SECOND FIELD: Grade Selection - Full Width */}
+              {/* 2. SECOND FIELD: Category Selection - Full Width */}
+              <Grid item xs={12}>
+                <FormControl fullWidth error={!!errors.category}>
+                  <InputLabel>ප්‍රවර්ගය *</InputLabel>
+                  <Select
+                    value={formData.category}
+                    label="ප්‍රවර්ගය *"
+                    onChange={(e) => handleInputChange('category', e.target.value)}
+                    sx={{
+                      minWidth: '200px',
+                      '& .MuiOutlinedInput-root': {
+                        '&:hover fieldset': { borderColor: '#667eea' },
+                        '&.Mui-focused fieldset': { borderColor: '#667eea' },
+                        fontSize: '1.1rem',
+                        minWidth: '200px'
+                      }
+                    }}
+                  >
+                    <MenuItem value="Hall Class">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <SchoolIcon fontSize="small" />
+                        Hall Class
+                      </Box>
+                    </MenuItem>
+                    <MenuItem value="Group Class">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <PeopleIcon fontSize="small" />
+                        Group Class
+                      </Box>
+                    </MenuItem>
+                    <MenuItem value="Individual Class">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <PersonIcon fontSize="small" />
+                        Individual Class
+                      </Box>
+                    </MenuItem>
+                    <MenuItem value="Special Class">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <TimeIcon fontSize="small" />
+                        Special Class
+                      </Box>
+                    </MenuItem>
+                    <MenuItem value="Other">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <LocationIcon fontSize="small" />
+                        Other
+                      </Box>
+                    </MenuItem>
+                  </Select>
+                  {errors.category && (
+                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                      {errors.category}
+                    </Typography>
+                  )}
+                </FormControl>
+              </Grid>
+
+              {/* 3. THIRD FIELD: Location Link - Full Width */}
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Location Link (Optional)"
+                  value={formData.locationLink}
+                  onChange={(e) => handleInputChange('locationLink', e.target.value)}
+                  error={!!errors.locationLink}
+                  helperText={errors.locationLink || 'Enter a valid URL for the location (e.g., Google Maps link)'}
+                  placeholder="https://maps.google.com/..."
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '&:hover fieldset': { borderColor: '#667eea' },
+                      '&.Mui-focused fieldset': { borderColor: '#667eea' }
+                    }
+                  }}
+                />
+              </Grid>
+
+              {/* 4. FOURTH FIELD: Grade Selection - Full Width */}
               <Grid item xs={12}>
                 <Box>
                   <Autocomplete

@@ -353,7 +353,7 @@ function AppContent() {
     if (showTip) {
       const timer = setTimeout(() => {
         setShowTip(false);
-      }, 5000);
+      }, 2000);
 
       return () => clearTimeout(timer);
     }
@@ -483,7 +483,7 @@ function AppContent() {
               </Button>
             }
           >
-            Use the Side Menu For Explore Your Learning Journey
+            Use this Side Menu For Explore More
 
           </Alert>
         </Snackbar>

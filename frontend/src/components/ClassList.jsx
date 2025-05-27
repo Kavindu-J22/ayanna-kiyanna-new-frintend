@@ -101,11 +101,17 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
               }}>
                 {classItem.grade}
               </Typography>
-              <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+              <Box sx={{ display: 'flex', gap: 1, mt: 1, flexWrap: 'wrap' }}>
                 <Chip
                   label={classItem.type === 'Normal' ? 'සාමාන්‍ය' : 'විශේෂ'}
                   color={getTypeChipColor(classItem.type)}
                   size="small"
+                />
+                <Chip
+                  label={classItem.category || 'N/A'}
+                  color="default"
+                  size="small"
+                  variant="outlined"
                 />
                 <Chip
                   label={classItem.isActive ? 'සක්‍රීය' : 'අක්‍රීය'}
@@ -292,6 +298,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
               <TableRow>
                 <TableCell sx={{ fontWeight: 'bold' }}>ශ්‍රේණිය</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>වර්ගය</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>ප්‍රවර්ගය</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>දිනය</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>වේලාව</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>ස්ථානය</TableCell>
@@ -323,6 +330,11 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
                         color={getTypeChipColor(classItem.type)}
                         size="small"
                       />
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" fontWeight="medium">
+                        {classItem.category || 'N/A'}
+                      </Typography>
                     </TableCell>
                     <TableCell>{classItem.date}</TableCell>
                     <TableCell>
