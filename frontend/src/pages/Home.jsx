@@ -146,30 +146,95 @@ const Home = () => {
     }
   };
 
-  const handleDashboardClick = () => {
+  const handleDashboardClick = async () => {
     if (!userEmail) {
       // User not logged in, redirect to login
       navigate('/login');
       return;
     }
 
-    // Check user role and navigate accordingly
-    if (userRole === 'student') {
-      navigate('/student-dashboard');
-    } else if (userRole === 'user') {
-      // Show student registration dialog for regular users
-      setShowStudentDialog(true);
-    } else if (userRole === 'admin' || userRole === 'moderator') {
-      // Show admin password dialog
-      setShowAdminDialog(true);
-    } else {
-      // Default to student registration dialog for unknown roles
-      setShowStudentDialog(true);
+    try {
+      // Check user role from database
+      const token = localStorage.getItem('token');
+      const response = await axios.get('https://ayanna-kiyanna-new-backend.onrender.com/api/auth/me', {
+        headers: { 'x-auth-token': token }
+      });
+
+      const currentUserRole = response.data.role;
+
+      // Check user role and navigate accordingly
+      if (currentUserRole === 'student') {
+        navigate('/student-dashboard');
+      } else if (currentUserRole === 'user') {
+        // Show student registration dialog for regular users
+        setShowStudentDialog(true);
+      } else if (currentUserRole === 'admin' || currentUserRole === 'moderator') {
+        // Show admin password dialog
+        setShowAdminDialog(true);
+      } else {
+        // Default to student registration dialog for unknown roles
+        setShowStudentDialog(true);
+      }
+    } catch (error) {
+      console.error('Error checking user role:', error);
+      if (error.response?.status === 401) {
+        alert('Your session has expired. Please login again.');
+        localStorage.removeItem('token');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userRole');
+        navigate('/login');
+      } else {
+        alert('Failed to verify user permissions. Please try again.');
+      }
     }
   };
 
   const handleAdminPasswordSuccess = () => {
     navigate('/admin-dashboard');
+  };
+
+  const handleStudentRegistrationClick = async () => {
+    if (!userEmail) {
+      // User not logged in, show message
+      alert('Please login first to register as a student');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      // Check user role from database
+      const token = localStorage.getItem('token');
+      const response = await axios.get('https://ayanna-kiyanna-new-backend.onrender.com/api/auth/me', {
+        headers: { 'x-auth-token': token }
+      });
+
+      const currentUserRole = response.data.role;
+
+      if (currentUserRole === 'student') {
+        // Already a student
+        alert('You are already registered as a student. Use your personal student dashboard. Good Luck!');
+        return;
+      }
+
+      if (!['user', 'admin', 'moderator'].includes(currentUserRole)) {
+        alert('Only users with appropriate roles can register as students');
+        return;
+      }
+
+      // Navigate to student registration form
+      navigate('/student-registration');
+    } catch (error) {
+      console.error('Error checking user role:', error);
+      if (error.response?.status === 401) {
+        alert('Your session has expired. Please login again.');
+        localStorage.removeItem('token');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userRole');
+        navigate('/login');
+      } else {
+        alert('Failed to verify user permissions. Please try again.');
+      }
+    }
   };
 
   useEffect(() => {
@@ -1223,6 +1288,7 @@ const Home = () => {
                 variant="contained"
                 size="small"  // Smaller button
                 endIcon={<ArrowRight fontSize="small" />}
+                onClick={() => handleStudentRegistrationClick()}
                 sx={{
                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                   borderRadius: '50px',

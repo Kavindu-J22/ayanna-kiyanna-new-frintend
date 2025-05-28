@@ -85,6 +85,8 @@ import SignUp from './pages/SignUp';
 import StudentDashboard from './pages/StudentDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import ClassManagement from './pages/ClassManagement';
+import StudentRegistration from './pages/StudentRegistration';
+import StudentManagement from './pages/StudentManagement';
 
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
@@ -815,9 +817,11 @@ function AppContent() {
 
               <Route path="/login" element={<SignIn />} />
               <Route path="/register" element={<SignUp />} />
+              <Route path="/student-registration" element={<StudentRegistration />} />
               <Route path="/student-dashboard" element={<StudentDashboard />} />
               <Route path="/admin-dashboard" element={<AdminDashboard />} />
               <Route path="/class-management" element={<ClassManagement />} />
+              <Route path="/student-management" element={<StudentManagement />} />
             </Routes>
           </Container>
         </Main>

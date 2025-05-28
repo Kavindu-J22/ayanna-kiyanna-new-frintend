@@ -1,377 +1,487 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
+  Container,
   Typography,
+  Paper,
+  Grid,
   Card,
   CardContent,
-  Grid,
-  Avatar,
   Button,
-  Paper,
-  LinearProgress,
+  Avatar,
   Chip,
-  IconButton,
-  useTheme,
-  useMediaQuery,
-  Container
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  CircularProgress,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Badge
 } from '@mui/material';
 import {
   School,
-  Assignment,
+  Person,
+  Class as ClassIcon,
   Schedule,
-  Star,
-  BookmarkBorder,
-  PlayCircleOutline,
-  TrendingUp,
-  CalendarToday,
+  CheckCircle,
+  Pending,
+  Lock,
+  Visibility,
+  Add,
   Notifications,
-  Settings,
-  ExitToApp,
-  MenuBook,
-  Quiz,
-  VideoLibrary,
-  EmojiEvents
+  Dashboard as DashboardIcon,
+  LocationOn,
+  AccessTime,
+  Group
 } from '@mui/icons-material';
-import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import axios from 'axios';
 
 const StudentDashboard = () => {
-  const [userInfo, setUserInfo] = useState({});
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [student, setStudent] = useState(null);
+  const [availableClasses, setAvailableClasses] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(true);
+  const [studentPassword, setStudentPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [authenticating, setAuthenticating] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Get user info from localStorage
-    const email = localStorage.getItem('userEmail');
-    const fullName = localStorage.getItem('fullName');
-    setUserInfo({ email, fullName });
-  }, []);
+    const checkUserAccess = async () => {
+      // Check if user is logged in
+      const userEmail = localStorage.getItem('userEmail');
+      const token = localStorage.getItem('token');
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('fullName');
-    navigate('/');
+      if (!userEmail || !token) {
+        setError('Please login first');
+        setTimeout(() => navigate('/login'), 3000);
+        return;
+      }
+
+      try {
+        // Check user role from database
+        const response = await axios.get('https://ayanna-kiyanna-new-backend.onrender.com/api/auth/me', {
+          headers: { 'x-auth-token': token }
+        });
+
+        const currentUserRole = response.data.role;
+
+        if (currentUserRole !== 'student') {
+          setError('Access denied. Student role required.');
+          setTimeout(() => navigate('/'), 3000);
+          return;
+        }
+
+        // If authenticated, load dashboard data
+        if (authenticated) {
+          loadDashboardData();
+        }
+      } catch (error) {
+        console.error('Error checking user role:', error);
+        if (error.response?.status === 401) {
+          setError('Your session has expired. Please login again.');
+          localStorage.removeItem('token');
+          localStorage.removeItem('userEmail');
+          localStorage.removeItem('userRole');
+          setTimeout(() => navigate('/login'), 3000);
+        } else {
+          setError('Failed to verify user permissions.');
+          setTimeout(() => navigate('/'), 3000);
+        }
+      }
+    };
+
+    checkUserAccess();
+  }, [navigate, authenticated]);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+
+      // Load student profile
+      const studentResponse = await axios.get(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/students/profile',
+        { headers: { 'x-auth-token': token } }
+      );
+      setStudent(studentResponse.data);
+
+      // Load available classes
+      const classesResponse = await axios.get(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/students/available-classes',
+        { headers: { 'x-auth-token': token } }
+      );
+      setAvailableClasses(classesResponse.data.classes);
+
+      // Load notifications
+      const notificationsResponse = await axios.get(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/notifications',
+        { headers: { 'x-auth-token': token } }
+      );
+      setNotifications(notificationsResponse.data.notifications);
+
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Sample data for student dashboard
-  const courses = [
-    {
-      id: 1,
-      title: 'සිංහල භාෂා මූලධර්ම',
-      progress: 75,
-      totalLessons: 20,
-      completedLessons: 15,
-      nextLesson: 'අකුරු හඳුනාගැනීම',
-      instructor: 'ජගත් කුමාර'
-    },
-    {
-      id: 2,
-      title: 'සාම්ප්‍රදායික නර්තන',
-      progress: 45,
-      totalLessons: 16,
-      completedLessons: 7,
-      nextLesson: 'මූලික පියවර',
-      instructor: 'ජගත් කුමාර'
-    },
-    {
-      id: 3,
-      title: 'සිංහල සංගීතය',
-      progress: 60,
-      totalLessons: 12,
-      completedLessons: 7,
-      nextLesson: 'තාල ගණන',
-      instructor: 'ජගත් කුමාර'
+  const handleStudentLogin = async () => {
+    if (!studentPassword) {
+      setPasswordError('Please enter your student password');
+      return;
     }
-  ];
 
-  const upcomingClasses = [
-    {
-      title: 'සිංහල භාෂා පන්තිය',
-      time: '10:00 AM',
-      date: 'අද',
-      type: 'Live Class'
-    },
-    {
-      title: 'නර්තන පුහුණුව',
-      time: '2:00 PM',
-      date: 'හෙට',
-      type: 'Practice Session'
-    },
-    {
-      title: 'සංගීත සිද්ධාන්ත',
-      time: '4:00 PM',
-      date: 'සිකුරාදා',
-      type: 'Theory Class'
+    setAuthenticating(true);
+    setPasswordError('');
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/students/login',
+        { studentPassword },
+        { headers: { 'x-auth-token': token } }
+      );
+
+      setAuthenticated(true);
+      setShowPasswordDialog(false);
+    } catch (error) {
+      setPasswordError(error.response?.data?.message || 'Invalid student password');
+    } finally {
+      setAuthenticating(false);
     }
-  ];
+  };
 
-  const achievements = [
-    { title: 'පළමු පන්තිය සම්පූර්ණ කළා', icon: <Star />, date: '2024-01-15' },
-    { title: '10 පන්ති සම්පූර්ණ කළා', icon: <School />, date: '2024-01-20' },
-    { title: 'පරීක්ෂණය සමත් වුණා', icon: <EmojiEvents />, date: '2024-01-25' }
-  ];
+  const handleClassEnrollment = async (classId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/students/enroll-class',
+        { classId },
+        { headers: { 'x-auth-token': token } }
+      );
+
+      // Reload dashboard data
+      loadDashboardData();
+      alert('Successfully enrolled in class!');
+    } catch (error) {
+      alert(error.response?.data?.message || 'Failed to enroll in class');
+    }
+  };
+
+  if (error) {
+    return (
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <Button onClick={() => navigate('/')}>
+          Back to Home
+        </Button>
+      </Container>
+    );
+  }
+
+  // Student Password Dialog
+  if (showPasswordDialog) {
+    return (
+      <Dialog open={true} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ textAlign: 'center' }}>
+          <Avatar sx={{ bgcolor: 'primary.main', mx: 'auto', mb: 2 }}>
+            <Lock />
+          </Avatar>
+          <Typography variant="h5" component="div">
+            Student Dashboard Access
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            Enter your student password to access your dashboard
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            label="Student Password"
+            type="password"
+            value={studentPassword}
+            onChange={(e) => setStudentPassword(e.target.value)}
+            error={!!passwordError}
+            helperText={passwordError}
+            sx={{ mt: 2 }}
+            onKeyPress={(e) => e.key === 'Enter' && handleStudentLogin()}
+          />
+        </DialogContent>
+        <DialogActions sx={{ p: 3, pt: 1 }}>
+          <Button onClick={() => navigate('/')}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleStudentLogin}
+            disabled={authenticating}
+            startIcon={authenticating ? <CircularProgress size={20} /> : <Visibility />}
+          >
+            {authenticating ? 'Authenticating...' : 'Access Dashboard'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <CircularProgress size={60} />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{
       minHeight: '100vh',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      py: 3
+      py: 4
     }}>
       <Container maxWidth="xl">
-        {/* Header */}
-        <Paper elevation={3} sx={{
-          p: 3,
-          mb: 3,
-          borderRadius: 3,
-          background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)'
-        }}>
-          <Box sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexDirection: { xs: 'column', md: 'row' },
-            gap: 2
-          }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar sx={{
-                width: 60,
-                height: 60,
-                bgcolor: 'primary.main',
-                fontSize: '1.5rem'
-              }}>
-                {userInfo.fullName?.charAt(0) || 'S'}
-              </Avatar>
-              <Box>
-                <Typography variant="h5" fontWeight="bold" sx={{
-                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          {/* Header */}
+          <Paper elevation={8} sx={{ p: 3, mb: 4, borderRadius: 3 }}>
+            <Grid container spacing={3} alignItems="center">
+              <Grid item>
+                <Avatar sx={{ bgcolor: 'primary.main', width: 80, height: 80 }}>
+                  <School sx={{ fontSize: 40 }} />
+                </Avatar>
+              </Grid>
+              <Grid item xs>
+                <Typography variant="h4" component="h1" gutterBottom sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                  fontWeight: 'bold'
                 }}>
-                  ආයුබෝවන්, {userInfo.fullName || 'සිසුවා'}!
+                  Student Dashboard
+                </Typography>
+                <Typography variant="h6" color="text.secondary">
+                  Welcome back, {student?.firstName} {student?.lastName}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {userInfo.email}
+                  Student ID: {student?.studentId}
                 </Typography>
+              </Grid>
+              <Grid item>
                 <Chip
-                  label="සිසුවා"
-                  color="primary"
-                  size="small"
-                  sx={{ mt: 0.5 }}
+                  label={student?.status}
+                  color={student?.status === 'Approved' ? 'success' : student?.status === 'Pending' ? 'warning' : 'error'}
+                  icon={student?.status === 'Approved' ? <CheckCircle /> : <Pending />}
+                  sx={{ fontSize: '1rem', py: 2 }}
                 />
-              </Box>
-            </Box>
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <IconButton color="primary">
-                <Notifications />
-              </IconButton>
-              <IconButton color="primary">
-                <Settings />
-              </IconButton>
-              <Button
-                variant="outlined"
-                startIcon={<ExitToApp />}
-                onClick={handleLogout}
-                sx={{
-                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-                }}
-              >
-                ඉවත් වන්න
-              </Button>
-            </Box>
-          </Box>
-        </Paper>
-
-        <Grid container spacing={3}>
-          {/* Quick Stats */}
-          <Grid item xs={12}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={3}>
-                <motion.div whileHover={{ scale: 1.02 }}>
-                  <Card sx={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    color: 'white',
-                    height: '100%'
-                  }}>
-                    <CardContent sx={{ textAlign: 'center' }}>
-                      <School sx={{ fontSize: 40, mb: 1 }} />
-                      <Typography variant="h4" fontWeight="bold">3</Typography>
-                      <Typography variant="body2">ලියාපදිංචි පන්ති</Typography>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <motion.div whileHover={{ scale: 1.02 }}>
-                  <Card sx={{
-                    background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                    color: 'white',
-                    height: '100%'
-                  }}>
-                    <CardContent sx={{ textAlign: 'center' }}>
-                      <Assignment sx={{ fontSize: 40, mb: 1 }} />
-                      <Typography variant="h4" fontWeight="bold">29</Typography>
-                      <Typography variant="body2">සම්පූර්ණ පාඩම්</Typography>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <motion.div whileHover={{ scale: 1.02 }}>
-                  <Card sx={{
-                    background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-                    color: '#333',
-                    height: '100%'
-                  }}>
-                    <CardContent sx={{ textAlign: 'center' }}>
-                      <TrendingUp sx={{ fontSize: 40, mb: 1 }} />
-                      <Typography variant="h4" fontWeight="bold">85%</Typography>
-                      <Typography variant="body2">සාමාන්‍ය ප්‍රගතිය</Typography>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <motion.div whileHover={{ scale: 1.02 }}>
-                  <Card sx={{
-                    background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-                    color: '#333',
-                    height: '100%'
-                  }}>
-                    <CardContent sx={{ textAlign: 'center' }}>
-                      <Star sx={{ fontSize: 40, mb: 1 }} />
-                      <Typography variant="h4" fontWeight="bold">12</Typography>
-                      <Typography variant="body2">ලබාගත් සම්මාන</Typography>
-                    </CardContent>
-                  </Card>
-                </motion.div>
               </Grid>
             </Grid>
-          </Grid>
+          </Paper>
 
-          {/* My Courses */}
-          <Grid item xs={12} md={8}>
-            <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
-              <Typography variant="h6" fontWeight="bold" sx={{
-                mb: 3,
-                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-              }}>
-                මගේ පන්ති
-              </Typography>
-              <Grid container spacing={2}>
-                {courses.map((course) => (
-                  <Grid item xs={12} key={course.id}>
-                    <motion.div whileHover={{ scale: 1.01 }}>
-                      <Card variant="outlined" sx={{ p: 2 }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                          <Box sx={{ flex: 1 }}>
-                            <Typography variant="h6" fontWeight="bold" sx={{
-                              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-                            }}>
-                              {course.title}
+          <Grid container spacing={4}>
+            {/* Enrolled Classes */}
+            <Grid item xs={12} lg={8}>
+              <Paper elevation={6} sx={{ p: 3, borderRadius: 3, mb: 4 }}>
+                <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                  <ClassIcon sx={{ mr: 1 }} />
+                  My Enrolled Classes
+                </Typography>
+                <Divider sx={{ mb: 3 }} />
+
+                {student?.enrolledClasses?.length > 0 ? (
+                  <Grid container spacing={3}>
+                    {student.enrolledClasses.map((classItem) => (
+                      <Grid item xs={12} md={6} key={classItem._id}>
+                        <Card sx={{
+                          height: '100%',
+                          border: student.status === 'Approved' ? '2px solid #4caf50' : '2px solid #ff9800'
+                        }}>
+                          <CardContent>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                              <Typography variant="h6">{classItem.grade}</Typography>
+                              <Chip
+                                label={classItem.category}
+                                size="small"
+                                color="primary"
+                              />
+                            </Box>
+                            <Typography color="text.secondary" gutterBottom>
+                              <Schedule sx={{ fontSize: 16, mr: 1 }} />
+                              {classItem.date} • {classItem.startTime} - {classItem.endTime}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              ගුරුතුමා: {course.instructor}
+                            <Typography color="text.secondary" gutterBottom>
+                              <LocationOn sx={{ fontSize: 16, mr: 1 }} />
+                              {classItem.venue}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              ඊළඟ පාඩම: {course.nextLesson}
+                            <Typography color="text.secondary" gutterBottom>
+                              Platform: {classItem.platform}
                             </Typography>
-                          </Box>
-                          <Button
-                            variant="contained"
-                            size="small"
-                            startIcon={<PlayCircleOutline />}
-                            sx={{
-                              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-                            }}
-                          >
-                            දිගටම කරන්න
-                          </Button>
-                        </Box>
-                        <Box sx={{ mb: 1 }}>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                            <Typography variant="body2">ප්‍රගතිය</Typography>
-                            <Typography variant="body2">{course.completedLessons}/{course.totalLessons} පාඩම්</Typography>
-                          </Box>
-                          <LinearProgress
-                            variant="determinate"
-                            value={course.progress}
-                            sx={{ height: 8, borderRadius: 4 }}
-                          />
-                        </Box>
-                      </Card>
-                    </motion.div>
+
+                            <Button
+                              variant="contained"
+                              fullWidth
+                              sx={{ mt: 2 }}
+                              disabled={student.status !== 'Approved'}
+                              startIcon={student.status === 'Approved' ? <Visibility /> : <Lock />}
+                            >
+                              {student.status === 'Approved' ? 'Access Class' : 'Pending Approval'}
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
                   </Grid>
-                ))}
-              </Grid>
-            </Paper>
-          </Grid>
+                ) : (
+                  <Alert severity="info">
+                    You haven't enrolled in any classes yet. Browse available classes below to get started.
+                  </Alert>
+                )}
+              </Paper>
 
-          {/* Sidebar */}
-          <Grid item xs={12} md={4}>
-            {/* Upcoming Classes */}
-            <Paper elevation={3} sx={{ p: 3, borderRadius: 3, mb: 3 }}>
-              <Typography variant="h6" fontWeight="bold" sx={{
-                mb: 2,
-                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-              }}>
-                ඉදිරි පන්ති
-              </Typography>
-              {upcomingClasses.map((cls, index) => (
-                <Box key={index} sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  p: 2,
-                  mb: 1,
-                  bgcolor: 'grey.50',
-                  borderRadius: 2
-                }}>
-                  <CalendarToday sx={{ mr: 2, color: 'primary.main' }} />
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="body2" fontWeight="bold">
-                      {cls.title}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {cls.date} - {cls.time}
-                    </Typography>
-                    <Chip label={cls.type} size="small" sx={{ ml: 1 }} />
-                  </Box>
-                </Box>
-              ))}
-            </Paper>
+              {/* Available Classes */}
+              <Paper elevation={6} sx={{ p: 3, borderRadius: 3 }}>
+                <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Add sx={{ mr: 1 }} />
+                  Available Classes
+                </Typography>
+                <Divider sx={{ mb: 3 }} />
 
-            {/* Recent Achievements */}
-            <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
-              <Typography variant="h6" fontWeight="bold" sx={{
-                mb: 2,
-                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-              }}>
-                මෑත සාධනයන්
-              </Typography>
-              {achievements.map((achievement, index) => (
-                <Box key={index} sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  p: 2,
-                  mb: 1,
-                  bgcolor: 'success.50',
-                  borderRadius: 2
-                }}>
-                  <Box sx={{ mr: 2, color: 'success.main' }}>
-                    {achievement.icon}
-                  </Box>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="body2" fontWeight="bold">
-                      {achievement.title}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {achievement.date}
-                    </Typography>
-                  </Box>
-                </Box>
-              ))}
-            </Paper>
+                {availableClasses.length > 0 ? (
+                  <Grid container spacing={3}>
+                    {availableClasses.map((classItem) => (
+                      <Grid item xs={12} md={6} key={classItem._id}>
+                        <Card>
+                          <CardContent>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                              <Typography variant="h6">{classItem.grade}</Typography>
+                              <Chip
+                                label={classItem.category}
+                                size="small"
+                                variant="outlined"
+                              />
+                            </Box>
+                            <Typography color="text.secondary" gutterBottom>
+                              <Schedule sx={{ fontSize: 16, mr: 1 }} />
+                              {classItem.date} • {classItem.startTime} - {classItem.endTime}
+                            </Typography>
+                            <Typography color="text.secondary" gutterBottom>
+                              <LocationOn sx={{ fontSize: 16, mr: 1 }} />
+                              {classItem.venue}
+                            </Typography>
+                            <Typography color="text.secondary" gutterBottom>
+                              <Group sx={{ fontSize: 16, mr: 1 }} />
+                              {classItem.availableSpots} spots available
+                            </Typography>
+
+                            <Button
+                              variant="outlined"
+                              fullWidth
+                              sx={{ mt: 2 }}
+                              onClick={() => handleClassEnrollment(classItem._id)}
+                              disabled={student?.status !== 'Approved'}
+                            >
+                              Ask to Enroll
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
+                ) : (
+                  <Alert severity="info">
+                    No additional classes available for enrollment at this time.
+                  </Alert>
+                )}
+              </Paper>
+            </Grid>
+
+            {/* Sidebar */}
+            <Grid item xs={12} lg={4}>
+              {/* Notifications */}
+              <Paper elevation={6} sx={{ p: 3, borderRadius: 3, mb: 4 }}>
+                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Badge badgeContent={notifications.filter(n => !n.read).length} color="error">
+                    <Notifications sx={{ mr: 1 }} />
+                  </Badge>
+                  Notifications
+                </Typography>
+                <Divider sx={{ mb: 2 }} />
+
+                {notifications.length > 0 ? (
+                  <List dense>
+                    {notifications.slice(0, 5).map((notification) => (
+                      <ListItem key={notification._id} divider>
+                        <ListItemIcon>
+                          <Notifications color={notification.read ? 'disabled' : 'primary'} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={notification.title}
+                          secondary={notification.message}
+                          primaryTypographyProps={{
+                            fontWeight: notification.read ? 'normal' : 'bold'
+                          }}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No notifications yet
+                  </Typography>
+                )}
+              </Paper>
+
+              {/* Quick Actions */}
+              <Paper elevation={6} sx={{ p: 3, borderRadius: 3 }}>
+                <Typography variant="h6" gutterBottom>
+                  Quick Actions
+                </Typography>
+                <Divider sx={{ mb: 2 }} />
+
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  startIcon={<Person />}
+                  sx={{ mb: 2 }}
+                >
+                  View Profile
+                </Button>
+
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  startIcon={<Schedule />}
+                  sx={{ mb: 2 }}
+                >
+                  Class Schedule
+                </Button>
+
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  startIcon={<DashboardIcon />}
+                  onClick={() => navigate('/')}
+                >
+                  Back to Home
+                </Button>
+              </Paper>
+            </Grid>
           </Grid>
-        </Grid>
+        </motion.div>
       </Container>
     </Box>
   );

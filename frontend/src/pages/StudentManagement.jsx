@@ -1,0 +1,504 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Container,
+  Typography,
+  Paper,
+  Grid,
+  Card,
+  CardContent,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Alert,
+  CircularProgress,
+  IconButton,
+  Tooltip,
+  Badge,
+  Divider
+} from '@mui/material';
+import {
+  School,
+  Person,
+  CheckCircle,
+  Cancel,
+  Visibility,
+  Edit,
+  Delete,
+  Refresh,
+  FilterList,
+  ArrowBack,
+  Pending,
+  Group,
+  Assignment,
+  TrendingUp
+} from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import axios from 'axios';
+
+const StudentManagement = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [students, setStudents] = useState([]);
+  const [stats, setStats] = useState({});
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+  const [showActionDialog, setShowActionDialog] = useState(false);
+  const [actionType, setActionType] = useState('');
+  const [adminNote, setAdminNote] = useState('');
+  const [processing, setProcessing] = useState(false);
+  
+  // Filters
+  const [statusFilter, setStatusFilter] = useState('');
+  const [gradeFilter, setGradeFilter] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    loadStudentData();
+  }, [statusFilter, gradeFilter, currentPage]);
+
+  const loadStudentData = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      
+      // Load students
+      const params = new URLSearchParams({
+        page: currentPage,
+        limit: 10,
+        ...(statusFilter && { status: statusFilter }),
+        ...(gradeFilter && { grade: gradeFilter })
+      });
+
+      const studentsResponse = await axios.get(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students?${params}`,
+        { headers: { 'x-auth-token': token } }
+      );
+      setStudents(studentsResponse.data.students);
+
+      // Load stats
+      const statsResponse = await axios.get(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/stats',
+        { headers: { 'x-auth-token': token } }
+      );
+      setStats(statsResponse.data);
+
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to load student data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStudentAction = async (student, action) => {
+    setSelectedStudent(student);
+    setActionType(action);
+    setShowActionDialog(true);
+    setAdminNote('');
+  };
+
+  const confirmAction = async () => {
+    if (!selectedStudent || !actionType) return;
+
+    setProcessing(true);
+    try {
+      const token = localStorage.getItem('token');
+      const endpoint = actionType === 'approve' ? 'approve' : 'reject';
+      
+      await axios.put(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/${selectedStudent._id}/${endpoint}`,
+        { adminNote },
+        { headers: { 'x-auth-token': token } }
+      );
+
+      setSuccess(`Student registration ${actionType}d successfully`);
+      setShowActionDialog(false);
+      loadStudentData();
+    } catch (error) {
+      setError(error.response?.data?.message || `Failed to ${actionType} student`);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleApproveAll = async () => {
+    setProcessing(true);
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/approve-all',
+        { adminNote: 'Bulk approval by admin' },
+        { headers: { 'x-auth-token': token } }
+      );
+
+      setSuccess('All pending registrations approved successfully');
+      loadStudentData();
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to approve all students');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleViewDetails = (student) => {
+    setSelectedStudent(student);
+    setShowDetailsDialog(true);
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Approved': return 'success';
+      case 'Pending': return 'warning';
+      case 'Rejected': return 'error';
+      default: return 'default';
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'Approved': return <CheckCircle />;
+      case 'Pending': return <Pending />;
+      case 'Rejected': return <Cancel />;
+      default: return null;
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <CircularProgress size={60} />
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      py: 4
+    }}>
+      <Container maxWidth="xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          {/* Header */}
+          <Paper elevation={8} sx={{ p: 3, mb: 4, borderRadius: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="h4" component="h1" sx={{
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                fontWeight: 'bold',
+                display: 'flex',
+                alignItems: 'center'
+              }}>
+                <School sx={{ mr: 2, fontSize: 40 }} />
+                Student Management
+              </Typography>
+              <Button
+                variant="outlined"
+                startIcon={<ArrowBack />}
+                onClick={() => navigate('/admin-dashboard')}
+              >
+                Back to Dashboard
+              </Button>
+            </Box>
+
+            {/* Statistics Cards */}
+            <Grid container spacing={3} sx={{ mb: 3 }}>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
+                  <CardContent sx={{ textAlign: 'center' }}>
+                    <Group sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h4" fontWeight="bold">{stats.total || 0}</Typography>
+                    <Typography variant="body2">Total Students</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card sx={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white' }}>
+                  <CardContent sx={{ textAlign: 'center' }}>
+                    <Pending sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h4" fontWeight="bold">{stats.pending || 0}</Typography>
+                    <Typography variant="body2">Pending Requests</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card sx={{ background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', color: '#333' }}>
+                  <CardContent sx={{ textAlign: 'center' }}>
+                    <CheckCircle sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h4" fontWeight="bold">{stats.approved || 0}</Typography>
+                    <Typography variant="body2">Approved Students</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card sx={{ background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)', color: '#333' }}>
+                  <CardContent sx={{ textAlign: 'center' }}>
+                    <Cancel sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h4" fontWeight="bold">{stats.rejected || 0}</Typography>
+                    <Typography variant="body2">Rejected Requests</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+
+            {/* Action Buttons */}
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <Button
+                variant="contained"
+                color="success"
+                startIcon={<CheckCircle />}
+                onClick={handleApproveAll}
+                disabled={processing || stats.pending === 0}
+              >
+                Approve All Pending
+              </Button>
+              <Button
+                variant="outlined"
+                startIcon={<Refresh />}
+                onClick={loadStudentData}
+                disabled={processing}
+              >
+                Refresh
+              </Button>
+            </Box>
+          </Paper>
+
+          {/* Alerts */}
+          {error && (
+            <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>
+              {error}
+            </Alert>
+          )}
+          {success && (
+            <Alert severity="success" sx={{ mb: 3 }} onClose={() => setSuccess('')}>
+              {success}
+            </Alert>
+          )}
+
+          {/* Filters */}
+          <Paper elevation={6} sx={{ p: 3, mb: 4, borderRadius: 3 }}>
+            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+              <FilterList sx={{ mr: 1 }} />
+              Filters
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <InputLabel>Status</InputLabel>
+                  <Select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    label="Status"
+                  >
+                    <MenuItem value="">All</MenuItem>
+                    <MenuItem value="Pending">Pending</MenuItem>
+                    <MenuItem value="Approved">Approved</MenuItem>
+                    <MenuItem value="Rejected">Rejected</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <InputLabel>Grade</InputLabel>
+                  <Select
+                    value={gradeFilter}
+                    onChange={(e) => setGradeFilter(e.target.value)}
+                    label="Grade"
+                  >
+                    <MenuItem value="">All Grades</MenuItem>
+                    <MenuItem value="Grade 9">Grade 9</MenuItem>
+                    <MenuItem value="Grade 10">Grade 10</MenuItem>
+                    <MenuItem value="Grade 11">Grade 11</MenuItem>
+                    <MenuItem value="A/L">A/L</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </Paper>
+
+          {/* Students Table */}
+          <Paper elevation={6} sx={{ borderRadius: 3 }}>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: 'primary.main' }}>
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Student ID</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Name</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Email</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Grade</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Status</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Classes</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {students.map((student) => (
+                    <TableRow key={student._id} hover>
+                      <TableCell>{student.studentId}</TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <Person sx={{ mr: 1, color: 'primary.main' }} />
+                          {student.firstName} {student.lastName}
+                        </Box>
+                      </TableCell>
+                      <TableCell>{student.email}</TableCell>
+                      <TableCell>{student.selectedGrade}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={student.status}
+                          color={getStatusColor(student.status)}
+                          icon={getStatusIcon(student.status)}
+                          size="small"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Badge badgeContent={student.enrolledClasses?.length || 0} color="primary">
+                          <Assignment />
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                          <Tooltip title="View Details">
+                            <IconButton
+                              size="small"
+                              onClick={() => handleViewDetails(student)}
+                              color="primary"
+                            >
+                              <Visibility />
+                            </IconButton>
+                          </Tooltip>
+                          {student.status === 'Pending' && (
+                            <>
+                              <Tooltip title="Approve">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleStudentAction(student, 'approve')}
+                                  color="success"
+                                >
+                                  <CheckCircle />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Reject">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleStudentAction(student, 'reject')}
+                                  color="error"
+                                >
+                                  <Cancel />
+                                </IconButton>
+                              </Tooltip>
+                            </>
+                          )}
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+
+          {/* Student Details Dialog */}
+          <Dialog open={showDetailsDialog} onClose={() => setShowDetailsDialog(false)} maxWidth="md" fullWidth>
+            <DialogTitle>
+              Student Details - {selectedStudent?.studentId}
+            </DialogTitle>
+            <DialogContent>
+              {selectedStudent && (
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" gutterBottom>Personal Information</Typography>
+                    <Typography><strong>Name:</strong> {selectedStudent.firstName} {selectedStudent.lastName}</Typography>
+                    <Typography><strong>Email:</strong> {selectedStudent.email}</Typography>
+                    <Typography><strong>Contact:</strong> {selectedStudent.contactNumber}</Typography>
+                    <Typography><strong>School:</strong> {selectedStudent.school}</Typography>
+                    <Typography><strong>Grade:</strong> {selectedStudent.selectedGrade}</Typography>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" gutterBottom>Guardian Information</Typography>
+                    <Typography><strong>Guardian:</strong> {selectedStudent.guardianName}</Typography>
+                    <Typography><strong>Type:</strong> {selectedStudent.guardianType}</Typography>
+                    <Typography><strong>Contact:</strong> {selectedStudent.guardianContact}</Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="h6" gutterBottom>Status Information</Typography>
+                    <Chip
+                      label={selectedStudent.status}
+                      color={getStatusColor(selectedStudent.status)}
+                      icon={getStatusIcon(selectedStudent.status)}
+                    />
+                    {selectedStudent.adminAction?.actionNote && (
+                      <Typography sx={{ mt: 1 }}>
+                        <strong>Admin Note:</strong> {selectedStudent.adminAction.actionNote}
+                      </Typography>
+                    )}
+                  </Grid>
+                </Grid>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowDetailsDialog(false)}>Close</Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Action Confirmation Dialog */}
+          <Dialog open={showActionDialog} onClose={() => setShowActionDialog(false)} maxWidth="sm" fullWidth>
+            <DialogTitle>
+              {actionType === 'approve' ? 'Approve' : 'Reject'} Student Registration
+            </DialogTitle>
+            <DialogContent>
+              <Typography gutterBottom>
+                Are you sure you want to {actionType} the registration for {selectedStudent?.firstName} {selectedStudent?.lastName}?
+              </Typography>
+              <TextField
+                fullWidth
+                label="Admin Note (Optional)"
+                multiline
+                rows={3}
+                value={adminNote}
+                onChange={(e) => setAdminNote(e.target.value)}
+                sx={{ mt: 2 }}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowActionDialog(false)} disabled={processing}>
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmAction}
+                variant="contained"
+                color={actionType === 'approve' ? 'success' : 'error'}
+                disabled={processing}
+                startIcon={processing ? <CircularProgress size={20} /> : null}
+              >
+                {processing ? 'Processing...' : actionType === 'approve' ? 'Approve' : 'Reject'}
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </motion.div>
+      </Container>
+    </Box>
+  );
+};
+
+export default StudentManagement;
