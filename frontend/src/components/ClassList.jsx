@@ -22,7 +22,9 @@ import {
   CardContent,
   useTheme,
   useMediaQuery,
-  Tooltip
+  Tooltip,
+  Button,
+  CircularProgress
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -33,9 +35,11 @@ import {
   People as PeopleIcon,
   CalendarToday as CalendarIcon,
   School as SchoolIcon,
-  Group as GroupIcon
+  Group as GroupIcon,
+  CleaningServices as CleanIcon
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import axios from 'axios';
 
 const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
   const [page, setPage] = useState(0);
@@ -44,6 +48,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
   const [typeFilter, setTypeFilter] = useState('');
   const [gradeFilter, setGradeFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [cleaningSpots, setCleaningSpots] = useState(false);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -95,6 +100,37 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
 
   const formatTime = (time) => {
     return time ? time.substring(0, 5) : '';
+  };
+
+  const handleCleanAndResetSpots = async () => {
+    if (!window.confirm('Are you sure you want to clean and reset available spots for all classes?\n\nThis will:\n- Remove deleted students from class enrollments\n- Fix data inconsistencies between student and class records\n- Update available spots calculations\n\nThis action cannot be undone.')) {
+      return;
+    }
+
+    setCleaningSpots(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/classes/clean-and-reset-spots',
+        {},
+        { headers: { 'x-auth-token': token } }
+      );
+
+      if (response.data.success) {
+        const summary = response.data.summary;
+        alert(`Cleanup completed successfully!\n\nSummary:\n- Classes processed: ${summary.totalClassesProcessed}\n- Students removed: ${summary.totalStudentsRemoved}\n- Deleted students removed: ${summary.totalDeletedStudentsRemoved}\n- Classes modified: ${summary.classesModified}`);
+
+        // Refresh the class list
+        if (onRefresh) {
+          onRefresh();
+        }
+      }
+    } catch (error) {
+      console.error('Error cleaning spots:', error);
+      alert(error.response?.data?.message || 'Failed to clean and reset available spots');
+    } finally {
+      setCleaningSpots(false);
+    }
   };
 
   // Mobile Card View
@@ -297,9 +333,28 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
             </FormControl>
           </Grid>
           <Grid item xs={12} md={2}>
-            <Typography variant="body2" color="text.secondary">
-              මුළු: {filteredClasses.length}
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Typography variant="body2" color="text.secondary">
+                මුළු: {filteredClasses.length}
+              </Typography>
+              <Button
+                variant="contained"
+                color="warning"
+                size="small"
+                startIcon={cleaningSpots ? <CircularProgress size={16} color="inherit" /> : <CleanIcon />}
+                onClick={handleCleanAndResetSpots}
+                disabled={cleaningSpots}
+                sx={{
+                  ml: 2,
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                  fontWeight: 'bold',
+                  borderRadius: 2,
+                  textTransform: 'none'
+                }}
+              >
+                {cleaningSpots ? 'Cleaning...' : 'Clean & Reset Spots'}
+              </Button>
+            </Box>
           </Grid>
         </Grid>
       </Box>
