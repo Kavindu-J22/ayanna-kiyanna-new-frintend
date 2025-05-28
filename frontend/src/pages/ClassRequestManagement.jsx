@@ -40,7 +40,8 @@ import {
   Pending,
   Assignment,
   Person,
-  Search
+  Search,
+  Delete
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -186,6 +187,28 @@ const ClassRequestManagement = () => {
       loadRequests();
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to approve all requests');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleDeleteRequest = async (request) => {
+    if (!window.confirm(`Are you sure you want to delete this class request from ${request.student?.firstName} ${request.student?.lastName}?\n\nThis action cannot be undone.`)) {
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/class-requests/admin/${request._id}`,
+        { headers: { 'x-auth-token': token } }
+      );
+
+      setSuccess('Class request deleted successfully');
+      loadRequests();
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to delete request');
     } finally {
       setProcessing(false);
     }
@@ -531,6 +554,20 @@ const ClassRequestManagement = () => {
                                 </IconButton>
                               </Tooltip>
                             </>
+                          )}
+
+                          {/* Delete Button - Available for Pending and Rejected statuses only */}
+                          {request.status !== 'Approved' && (
+                            <Tooltip title="Delete Request">
+                              <IconButton
+                                size="small"
+                                onClick={() => handleDeleteRequest(request)}
+                                color="error"
+                                disabled={processing}
+                              >
+                                <Delete />
+                              </IconButton>
+                            </Tooltip>
                           )}
                         </Box>
                       </TableCell>

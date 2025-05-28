@@ -22,7 +22,8 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  Badge
+  Badge,
+  IconButton
 } from '@mui/material';
 import {
   School,
@@ -38,7 +39,8 @@ import {
   Dashboard as DashboardIcon,
   LocationOn,
   AccessTime,
-  Group
+  Group,
+  Delete
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -208,6 +210,26 @@ const StudentDashboard = () => {
       alert(error.response?.data?.message || 'Failed to submit enrollment request');
     } finally {
       setSubmittingRequest(false);
+    }
+  };
+
+  const deleteClassRequest = async (requestId) => {
+    if (!window.confirm('Are you sure you want to delete this class request?')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/class-requests/${requestId}`,
+        { headers: { 'x-auth-token': token } }
+      );
+
+      // Reload data
+      await loadAdditionalData();
+      alert('Class request deleted successfully!');
+    } catch (error) {
+      alert(error.response?.data?.message || 'Failed to delete class request');
     }
   };
 
@@ -448,7 +470,23 @@ const StudentDashboard = () => {
                 {classRequests.length > 0 ? (
                   <List dense>
                     {classRequests.slice(0, 5).map((request) => (
-                      <ListItem key={request._id} divider>
+                      <ListItem
+                        key={request._id}
+                        divider
+                        secondaryAction={
+                          request.status === 'Pending' && (
+                            <IconButton
+                              edge="end"
+                              aria-label="delete"
+                              onClick={() => deleteClassRequest(request._id)}
+                              size="small"
+                              color="error"
+                            >
+                              <Delete />
+                            </IconButton>
+                          )
+                        }
+                      >
                         <ListItemIcon>
                           {request.status === 'Pending' && <Pending color="warning" />}
                           {request.status === 'Approved' && <CheckCircle color="success" />}
