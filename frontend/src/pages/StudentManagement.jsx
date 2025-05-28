@@ -681,7 +681,7 @@ const StudentManagement = () => {
                           )}
 
                           {student.status === 'Approved' && (
-                            <Tooltip title="Change to Pending">
+                            <Tooltip title="Change to hold Sudent">
                               <IconButton
                                 size="small"
                                 onClick={() => handleStatusChange(student, 'Pending')}
@@ -884,7 +884,7 @@ const StudentManagement = () => {
             </DialogTitle>
             <DialogContent>
               <Typography gutterBottom>
-                Are you sure you want to change the status of {selectedStudent?.firstName} {selectedStudent?.lastName} to {newStatus}?
+                Are you sure you want to change the status of {selectedStudent?.firstName} {selectedStudent?.lastName} to {newStatus} (Hold This Student) ?. with that, the Student's all Classes will be Hold and Pending. They Can't Access to any Classes!
               </Typography>
               {selectedStudent && (
                 <Box sx={{ mt: 2, p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
