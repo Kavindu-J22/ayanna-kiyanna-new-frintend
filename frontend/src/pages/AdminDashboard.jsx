@@ -80,6 +80,7 @@ const AdminDashboard = () => {
   const quickActions = [
     { title: 'සිසු කළමනාකරණය', icon: <PersonAdd />, color: '#667eea', path: '/student-management' },
     { title: 'පන්ති කළමනාකරණය', icon: <School />, color: '#f093fb', path: '/class-management' },
+    { title: 'පන්ති ඉල්ලීම්', icon: <Assignment />, color: '#ff9800', path: '/class-requests' },
     { title: 'වාර්තා බලන්න', icon: <BarChart />, color: '#a8edea', path: '/reports' },
     { title: 'සිස්ටම් සැකසුම්', icon: <Settings />, color: '#ffecd2', path: '/settings' }
   ];

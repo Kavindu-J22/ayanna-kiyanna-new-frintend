@@ -45,7 +45,12 @@ import {
   Pending,
   Group,
   Assignment,
-  TrendingUp
+  TrendingUp,
+  Search,
+  Message,
+  SwapHoriz,
+  RemoveCircle,
+  Class
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -64,21 +69,55 @@ const StudentManagement = () => {
   const [actionType, setActionType] = useState('');
   const [adminNote, setAdminNote] = useState('');
   const [processing, setProcessing] = useState(false);
-  
+
   // Filters
   const [statusFilter, setStatusFilter] = useState('');
   const [gradeFilter, setGradeFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // New functionality states
+  const [availableClasses, setAvailableClasses] = useState([]);
+  const [availableGrades, setAvailableGrades] = useState([]);
+  const [showMessageDialog, setShowMessageDialog] = useState(false);
+  const [showClassChangeDialog, setShowClassChangeDialog] = useState(false);
+  const [messageSubject, setMessageSubject] = useState('');
+  const [messageBody, setMessageBody] = useState('');
+  const [selectedOldClass, setSelectedOldClass] = useState('');
+  const [selectedNewClass, setSelectedNewClass] = useState('');
 
   useEffect(() => {
     loadStudentData();
+    loadAdditionalData();
   }, [statusFilter, gradeFilter, currentPage]);
+
+  const loadAdditionalData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+
+      // Load available classes for assignment
+      const classesResponse = await axios.get(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/available-classes',
+        { headers: { 'x-auth-token': token } }
+      );
+      setAvailableClasses(classesResponse.data.classes || []);
+
+      // Load available grades
+      const gradesResponse = await axios.get(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/available-grades',
+        { headers: { 'x-auth-token': token } }
+      );
+      setAvailableGrades(gradesResponse.data.grades || []);
+    } catch (error) {
+      console.error('Error loading additional data:', error);
+    }
+  };
 
   const loadStudentData = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      
+
       // Load students
       const params = new URLSearchParams({
         page: currentPage,
@@ -121,7 +160,7 @@ const StudentManagement = () => {
     try {
       const token = localStorage.getItem('token');
       const endpoint = actionType === 'approve' ? 'approve' : 'reject';
-      
+
       await axios.put(
         `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/${selectedStudent._id}/${endpoint}`,
         { adminNote },
@@ -160,6 +199,91 @@ const StudentManagement = () => {
   const handleViewDetails = (student) => {
     setSelectedStudent(student);
     setShowDetailsDialog(true);
+  };
+
+  const handleSendMessage = (student) => {
+    setSelectedStudent(student);
+    setShowMessageDialog(true);
+    setMessageSubject('');
+    setMessageBody('');
+  };
+
+  const handleChangeClass = (student) => {
+    setSelectedStudent(student);
+    setShowClassChangeDialog(true);
+    setSelectedOldClass('');
+    setSelectedNewClass('');
+  };
+
+  const handleRemoveFromClass = async (student, classId) => {
+    if (!window.confirm('Are you sure you want to remove this student from the class?')) {
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/${student._id}/classes/${classId}`,
+        { headers: { 'x-auth-token': token } }
+      );
+
+      setSuccess('Student removed from class successfully');
+      loadStudentData();
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to remove student from class');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const confirmSendMessage = async () => {
+    if (!messageSubject.trim() || !messageBody.trim()) {
+      setError('Please fill in both subject and message');
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/${selectedStudent._id}/message`,
+        { subject: messageSubject, message: messageBody },
+        { headers: { 'x-auth-token': token } }
+      );
+
+      setSuccess('Message sent successfully');
+      setShowMessageDialog(false);
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to send message');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const confirmClassChange = async () => {
+    if (!selectedOldClass || !selectedNewClass) {
+      setError('Please select both old and new classes');
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/${selectedStudent._id}/change-class`,
+        { oldClassId: selectedOldClass, newClassId: selectedNewClass },
+        { headers: { 'x-auth-token': token } }
+      );
+
+      setSuccess('Student class changed successfully');
+      setShowClassChangeDialog(false);
+      loadStudentData();
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to change student class');
+    } finally {
+      setProcessing(false);
+    }
   };
 
   const getStatusColor = (status) => {
@@ -299,9 +423,21 @@ const StudentManagement = () => {
           <Paper elevation={6} sx={{ p: 3, mb: 4, borderRadius: 3 }}>
             <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
               <FilterList sx={{ mr: 1 }} />
-              Filters
+              Filters & Search
             </Typography>
             <Grid container spacing={3}>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  fullWidth
+                  label="Search Students"
+                  placeholder="Search by name, email, or student ID..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />
+                  }}
+                />
+              </Grid>
               <Grid item xs={12} md={4}>
                 <FormControl fullWidth>
                   <InputLabel>Status</InputLabel>
@@ -326,10 +462,9 @@ const StudentManagement = () => {
                     label="Grade"
                   >
                     <MenuItem value="">All Grades</MenuItem>
-                    <MenuItem value="Grade 9">Grade 9</MenuItem>
-                    <MenuItem value="Grade 10">Grade 10</MenuItem>
-                    <MenuItem value="Grade 11">Grade 11</MenuItem>
-                    <MenuItem value="A/L">A/L</MenuItem>
+                    {availableGrades.map((grade) => (
+                      <MenuItem key={grade} value={grade}>{grade}</MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -352,7 +487,17 @@ const StudentManagement = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {students.map((student) => (
+                  {students.filter(student => {
+                    const matchesStatus = !statusFilter || student.status === statusFilter;
+                    const matchesGrade = !gradeFilter || student.selectedGrade === gradeFilter;
+                    const matchesSearch = !searchTerm ||
+                      student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      student.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      student.studentId?.toLowerCase().includes(searchTerm.toLowerCase());
+                    return matchesStatus && matchesGrade && matchesSearch;
+                  }).map((student) => (
                     <TableRow key={student._id} hover>
                       <TableCell>{student.studentId}</TableCell>
                       <TableCell>
@@ -372,12 +517,35 @@ const StudentManagement = () => {
                         />
                       </TableCell>
                       <TableCell>
-                        <Badge badgeContent={student.enrolledClasses?.length || 0} color="primary">
-                          <Assignment />
-                        </Badge>
+                        {student.enrolledClasses && student.enrolledClasses.length > 0 ? (
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                            {student.enrolledClasses.slice(0, 2).map((classItem, index) => (
+                              <Chip
+                                key={index}
+                                label={`${classItem.grade} - ${classItem.category}`}
+                                size="small"
+                                variant="outlined"
+                                color="primary"
+                                onDelete={() => handleRemoveFromClass(student, classItem._id)}
+                                deleteIcon={<RemoveCircle />}
+                              />
+                            ))}
+                            {student.enrolledClasses.length > 2 && (
+                              <Chip
+                                label={`+${student.enrolledClasses.length - 2} more`}
+                                size="small"
+                                variant="outlined"
+                              />
+                            )}
+                          </Box>
+                        ) : (
+                          <Typography variant="body2" color="text.secondary">
+                            No classes
+                          </Typography>
+                        )}
                       </TableCell>
                       <TableCell>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                           <Tooltip title="View Details">
                             <IconButton
                               size="small"
@@ -387,6 +555,29 @@ const StudentManagement = () => {
                               <Visibility />
                             </IconButton>
                           </Tooltip>
+
+                          <Tooltip title="Send Message">
+                            <IconButton
+                              size="small"
+                              onClick={() => handleSendMessage(student)}
+                              color="info"
+                            >
+                              <Message />
+                            </IconButton>
+                          </Tooltip>
+
+                          {student.status === 'Approved' && (
+                            <Tooltip title="Change Class">
+                              <IconButton
+                                size="small"
+                                onClick={() => handleChangeClass(student)}
+                                color="warning"
+                              >
+                                <SwapHoriz />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+
                           {student.status === 'Pending' && (
                             <>
                               <Tooltip title="Approve">
@@ -492,6 +683,95 @@ const StudentManagement = () => {
                 startIcon={processing ? <CircularProgress size={20} /> : null}
               >
                 {processing ? 'Processing...' : actionType === 'approve' ? 'Approve' : 'Reject'}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Send Message Dialog */}
+          <Dialog open={showMessageDialog} onClose={() => setShowMessageDialog(false)} maxWidth="sm" fullWidth>
+            <DialogTitle>
+              Send Message to {selectedStudent?.firstName} {selectedStudent?.lastName}
+            </DialogTitle>
+            <DialogContent>
+              <TextField
+                fullWidth
+                label="Subject"
+                value={messageSubject}
+                onChange={(e) => setMessageSubject(e.target.value)}
+                sx={{ mb: 2, mt: 1 }}
+              />
+              <TextField
+                fullWidth
+                label="Message"
+                multiline
+                rows={4}
+                value={messageBody}
+                onChange={(e) => setMessageBody(e.target.value)}
+                placeholder="Enter your message here..."
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowMessageDialog(false)} disabled={processing}>
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmSendMessage}
+                variant="contained"
+                disabled={processing || !messageSubject.trim() || !messageBody.trim()}
+                startIcon={processing ? <CircularProgress size={20} /> : <Message />}
+              >
+                {processing ? 'Sending...' : 'Send Message'}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Change Class Dialog */}
+          <Dialog open={showClassChangeDialog} onClose={() => setShowClassChangeDialog(false)} maxWidth="sm" fullWidth>
+            <DialogTitle>
+              Change Class for {selectedStudent?.firstName} {selectedStudent?.lastName}
+            </DialogTitle>
+            <DialogContent>
+              <FormControl fullWidth sx={{ mb: 2, mt: 1 }}>
+                <InputLabel>Current Class</InputLabel>
+                <Select
+                  value={selectedOldClass}
+                  onChange={(e) => setSelectedOldClass(e.target.value)}
+                  label="Current Class"
+                >
+                  {selectedStudent?.enrolledClasses?.map((classItem) => (
+                    <MenuItem key={classItem._id} value={classItem._id}>
+                      {classItem.grade} - {classItem.category} ({classItem.date})
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl fullWidth>
+                <InputLabel>New Class</InputLabel>
+                <Select
+                  value={selectedNewClass}
+                  onChange={(e) => setSelectedNewClass(e.target.value)}
+                  label="New Class"
+                >
+                  {availableClasses.map((classItem) => (
+                    <MenuItem key={classItem._id} value={classItem._id}>
+                      {classItem.grade} - {classItem.category} ({classItem.date}) - {classItem.availableSpots} spots available
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowClassChangeDialog(false)} disabled={processing}>
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmClassChange}
+                variant="contained"
+                disabled={processing || !selectedOldClass || !selectedNewClass}
+                startIcon={processing ? <CircularProgress size={20} /> : <SwapHoriz />}
+              >
+                {processing ? 'Changing...' : 'Change Class'}
               </Button>
             </DialogActions>
           </Dialog>

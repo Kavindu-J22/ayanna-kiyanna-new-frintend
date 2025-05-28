@@ -50,12 +50,16 @@ const StudentDashboard = () => {
   const [error, setError] = useState('');
   const [student, setStudent] = useState(null);
   const [availableClasses, setAvailableClasses] = useState([]);
-  const [notifications, setNotifications] = useState([]);
+  const [classRequests, setClassRequests] = useState([]);
   const [showPasswordDialog, setShowPasswordDialog] = useState(true);
   const [studentPassword, setStudentPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [authenticating, setAuthenticating] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
+  const [showRequestDialog, setShowRequestDialog] = useState(false);
+  const [selectedClass, setSelectedClass] = useState(null);
+  const [requestReason, setRequestReason] = useState('');
+  const [submittingRequest, setSubmittingRequest] = useState(false);
 
   useEffect(() => {
     const checkUserAccess = async () => {
@@ -120,16 +124,16 @@ const StudentDashboard = () => {
         setAvailableClasses([]);
       }
 
-      // Load notifications (with error handling)
+      // Load class requests (with error handling)
       try {
-        const notificationsResponse = await axios.get(
-          'https://ayanna-kiyanna-new-backend.onrender.com/api/notifications',
+        const requestsResponse = await axios.get(
+          'https://ayanna-kiyanna-new-backend.onrender.com/api/students/class-requests',
           { headers: { 'x-auth-token': token } }
         );
-        setNotifications(notificationsResponse.data.notifications || []);
+        setClassRequests(requestsResponse.data.requests || []);
       } catch (error) {
-        console.error('Error loading notifications:', error);
-        setNotifications([]);
+        console.error('Error loading class requests:', error);
+        setClassRequests([]);
       }
     } catch (error) {
       console.error('Error loading additional data:', error);
@@ -167,20 +171,43 @@ const StudentDashboard = () => {
     }
   };
 
-  const handleClassEnrollment = async (classId) => {
+  const handleClassEnrollment = (classItem) => {
+    setSelectedClass(classItem);
+    setShowRequestDialog(true);
+    setRequestReason('');
+  };
+
+  const submitClassRequest = async () => {
+    if (!requestReason.trim()) {
+      alert('Please enter a reason for your enrollment request');
+      return;
+    }
+
+    if (requestReason.trim().length < 10) {
+      alert('Please provide a more detailed reason (at least 10 characters)');
+      return;
+    }
+
+    setSubmittingRequest(true);
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        'https://ayanna-kiyanna-new-backend.onrender.com/api/students/enroll-class',
-        { classId },
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/class-requests',
+        {
+          classId: selectedClass._id,
+          reason: requestReason.trim()
+        },
         { headers: { 'x-auth-token': token } }
       );
 
-      // Reload student data and available classes
+      // Reload data
       await loadAdditionalData();
-      alert('Successfully enrolled in class!');
+      setShowRequestDialog(false);
+      alert('Class enrollment request submitted successfully!');
     } catch (error) {
-      alert(error.response?.data?.message || 'Failed to enroll in class');
+      alert(error.response?.data?.message || 'Failed to submit enrollment request');
+    } finally {
+      setSubmittingRequest(false);
     }
   };
 
@@ -388,10 +415,10 @@ const StudentDashboard = () => {
                               variant="outlined"
                               fullWidth
                               sx={{ mt: 2 }}
-                              onClick={() => handleClassEnrollment(classItem._id)}
+                              onClick={() => handleClassEnrollment(classItem)}
                               disabled={student?.status !== 'Approved'}
                             >
-                              Ask to Enroll
+                              Request to Enroll
                             </Button>
                           </CardContent>
                         </Card>
@@ -408,36 +435,44 @@ const StudentDashboard = () => {
 
             {/* Sidebar */}
             <Grid item xs={12} lg={4}>
-              {/* Notifications */}
+              {/* Class Requests Status */}
               <Paper elevation={6} sx={{ p: 3, borderRadius: 3, mb: 4 }}>
                 <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Badge badgeContent={notifications.filter(n => !n.read).length} color="error">
-                    <Notifications sx={{ mr: 1 }} />
+                  <Badge badgeContent={classRequests.filter(r => r.status === 'Pending').length} color="warning">
+                    <Pending sx={{ mr: 1 }} />
                   </Badge>
-                  Notifications
+                  My Class Requests
                 </Typography>
                 <Divider sx={{ mb: 2 }} />
 
-                {notifications.length > 0 ? (
+                {classRequests.length > 0 ? (
                   <List dense>
-                    {notifications.slice(0, 5).map((notification) => (
-                      <ListItem key={notification._id} divider>
+                    {classRequests.slice(0, 5).map((request) => (
+                      <ListItem key={request._id} divider>
                         <ListItemIcon>
-                          <Notifications color={notification.read ? 'disabled' : 'primary'} />
+                          {request.status === 'Pending' && <Pending color="warning" />}
+                          {request.status === 'Approved' && <CheckCircle color="success" />}
+                          {request.status === 'Rejected' && <Notifications color="error" />}
                         </ListItemIcon>
                         <ListItemText
-                          primary={notification.title}
-                          secondary={notification.message}
-                          primaryTypographyProps={{
-                            fontWeight: notification.read ? 'normal' : 'bold'
-                          }}
+                          primary={`${request.class?.grade} - ${request.class?.category}`}
+                          secondary={
+                            <Box>
+                              <Typography variant="caption" display="block">
+                                Status: {request.status}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                {request.reason.substring(0, 50)}...
+                              </Typography>
+                            </Box>
+                          }
                         />
                       </ListItem>
                     ))}
                   </List>
                 ) : (
                   <Typography variant="body2" color="text.secondary">
-                    No notifications yet
+                    No class requests yet
                   </Typography>
                 )}
               </Paper>
@@ -480,6 +515,56 @@ const StudentDashboard = () => {
           </Grid>
         </motion.div>
       </Container>
+
+      {/* Class Request Dialog */}
+      <Dialog open={showRequestDialog} onClose={() => setShowRequestDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          Request to Enroll in Class
+        </DialogTitle>
+        <DialogContent>
+          {selectedClass && (
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                {selectedClass.grade} - {selectedClass.category}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                {selectedClass.date} • {selectedClass.startTime} - {selectedClass.endTime}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Venue: {selectedClass.venue}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Available Spots: {selectedClass.availableSpots}
+              </Typography>
+            </Box>
+          )}
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            label="Reason for Enrollment Request"
+            placeholder="Please explain why you want to enroll in this class..."
+            value={requestReason}
+            onChange={(e) => setRequestReason(e.target.value)}
+            helperText={`${requestReason.length}/500 characters (minimum 10 required)`}
+            inputProps={{ maxLength: 500 }}
+            sx={{ mt: 2 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowRequestDialog(false)}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={submitClassRequest}
+            disabled={submittingRequest || requestReason.trim().length < 10}
+            startIcon={submittingRequest ? <CircularProgress size={20} /> : null}
+          >
+            {submittingRequest ? 'Submitting...' : 'Submit Request'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

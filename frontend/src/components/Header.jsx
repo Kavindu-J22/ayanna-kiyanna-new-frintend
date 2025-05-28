@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
+import {
   AppBar,
   Toolbar,
   Typography,
@@ -20,6 +20,8 @@ import {
   Badge,
   Divider
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import ExploreIcon from '@mui/icons-material/Explore';
@@ -34,7 +36,6 @@ import BusinessIcon from '@mui/icons-material/Business';
 import { styled, alpha } from '@mui/material/styles';
 import { keyframes } from '@mui/system';
 import { useLocation } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
 
 // Import your logo image (make sure the path is correct)
 import logo from '../assets/AKlogo.png';
@@ -161,6 +162,7 @@ const Header = () => {
   const [userEmail, setUserEmail] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const mobileMenuRef = useRef(null);
@@ -171,15 +173,39 @@ const Header = () => {
     const email = localStorage.getItem('userEmail');
     if (email) {
       setUserEmail(email);
+      loadUnreadCount();
     }
   }, []);
+
+  const loadUnreadCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const response = await axios.get(
+          'https://ayanna-kiyanna-new-backend.onrender.com/api/notifications/unread-count',
+          { headers: { 'x-auth-token': token } }
+        );
+        setUnreadCount(response.data.unreadCount || 0);
+      }
+    } catch (error) {
+      console.error('Error loading unread count:', error);
+    }
+  };
+
+  // Refresh unread count every 30 seconds
+  useEffect(() => {
+    if (userEmail) {
+      const interval = setInterval(loadUnreadCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [userEmail]);
 
   // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       // Check if click is outside AND the menu is actually open
-      if (mobileMenuOpen && 
-          mobileMenuRef.current && 
+      if (mobileMenuOpen &&
+          mobileMenuRef.current &&
           !mobileMenuRef.current.contains(event.target) &&
           mobileMenuButtonRef.current &&
           !mobileMenuButtonRef.current.contains(event.target)) {
@@ -233,9 +259,9 @@ const Header = () => {
       <StyledAppBar>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            <LogoTitle 
-              variant="h6" 
-              noWrap 
+            <LogoTitle
+              variant="h6"
+              noWrap
               sx={{ flexGrow: isMobile ? 0 : 1, cursor: 'pointer' }}
               onClick={() => {
                   window.location.href = '/';
@@ -244,10 +270,10 @@ const Header = () => {
               <img src={logo} alt="Logo" />
               <span className="title-text">"අ"යන්න කියන්න</span>
             </LogoTitle>
-            
+
             {!isMobile && (
-              <Box sx={{ 
-                display: 'flex', 
+              <Box sx={{
+                display: 'flex',
                 mx: 'auto',
                 background: 'rgba(255, 255, 255, 0.05)',
                 borderRadius: '12px',
@@ -257,8 +283,8 @@ const Header = () => {
                 boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.1)'
               }}>
                 {navItems.map((item) => (
-                  <NavButton 
-                    key={item.name} 
+                  <NavButton
+                    key={item.name}
                     href={item.path}
                     className={isActive(item.path) ? 'active' : ''}
                   >
@@ -267,10 +293,10 @@ const Header = () => {
                 ))}
               </Box>
             )}
-            
+
             {isMobile && (
                 <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
-                <MobileMenuButton 
+                <MobileMenuButton
                 ref={mobileMenuButtonRef}
                 startIcon={<ExploreIcon fontSize="small" sx={{ color: 'white' }} />}
                 onClick={toggleMobileMenu}
@@ -288,9 +314,9 @@ const Header = () => {
               </MobileMenuButton>
                 </Box>
             )}
-            
+
             <Box sx={{ flexGrow: isMobile ? 0 : 1 }} />
-            
+
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               {userEmail ? (
                 <>
@@ -298,17 +324,18 @@ const Header = () => {
                     size="large"
                     aria-label="notifications"
                     color="inherit"
+                    onClick={() => navigate('/notifications')}
                     sx={{
                       '&:hover': {
                         backgroundColor: 'rgba(179, 136, 255, 0.1)'
                       }
                     }}
                   >
-                    <Badge badgeContent={3} color="secondary">
+                    <Badge badgeContent={unreadCount} color="secondary">
                       <NotificationsIcon />
                     </Badge>
                   </IconButton>
-                  
+
                   <IconButton
                     size="large"
                     aria-label="account of current user"
@@ -323,10 +350,10 @@ const Header = () => {
                       transition: 'transform 0.3s ease'
                     }}
                   >
-                    <Avatar sx={{ 
-                      width: 36, 
-                      height: 36, 
-                      bgcolor: '#b388ff', 
+                    <Avatar sx={{
+                      width: 36,
+                      height: 36,
+                      bgcolor: '#b388ff',
                       color: '#1a0638',
                       border: '2px solid #ffffff',
                       boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)'
@@ -334,7 +361,7 @@ const Header = () => {
                       {userEmail.charAt(0).toUpperCase()}
                     </Avatar>
                   </IconButton>
-                  
+
                   <Menu
                     id="menu-appbar"
                     anchorEl={anchorEl}
@@ -362,10 +389,10 @@ const Header = () => {
                       },
                     }}
                   >
-                    <MenuItem 
-                      onClick={handleMenuClose} 
-                      sx={{ 
-                        '&:hover': { 
+                    <MenuItem
+                      onClick={handleMenuClose}
+                      sx={{
+                        '&:hover': {
                           backgroundColor: 'rgba(179, 136, 255, 0.1)',
                         },
                         '&:first-of-type': {
@@ -376,10 +403,10 @@ const Header = () => {
                     >
                       Profile
                     </MenuItem>
-                    <MenuItem 
+                    <MenuItem
                       onClick={handleMenuClose}
-                      sx={{ 
-                        '&:hover': { 
+                      sx={{
+                        '&:hover': {
                           backgroundColor: 'rgba(179, 136, 255, 0.1)',
                         }
                       }}
@@ -387,10 +414,10 @@ const Header = () => {
                       Settings
                     </MenuItem>
                     <Divider sx={{ borderColor: 'rgba(179, 136, 255, 0.2)' }} />
-                    <MenuItem 
+                    <MenuItem
                       onClick={handleLogout}
-                      sx={{ 
-                        '&:hover': { 
+                      sx={{
+                        '&:hover': {
                           backgroundColor: 'rgba(255, 0, 0, 0.1)',
                         },
                         '&:last-of-type': {
@@ -407,11 +434,11 @@ const Header = () => {
                 <>
                   {!isMobile ? (
                     <>
-                      <AuthButton 
-                        variant="outlined" 
-                        color="inherit" 
+                      <AuthButton
+                        variant="outlined"
+                        color="inherit"
                         onClick={() => navigate("/login")}
-                        sx={{ 
+                        sx={{
                           borderColor: 'rgba(179, 136, 255, 0.3)',
                           '&:hover': {
                             backgroundColor: 'rgba(179, 136, 255, 0.1)',
@@ -421,12 +448,12 @@ const Header = () => {
                       >
                         Sign In
                       </AuthButton>
-                      <AuthButton 
-                        variant="contained" 
-                        color="secondary" 
+                      <AuthButton
+                        variant="contained"
+                        color="secondary"
                         onClick={() => navigate("/register")}
-                        sx={{ 
-                          backgroundColor: '#b388ff', 
+                        sx={{
+                          backgroundColor: '#b388ff',
                           color: '#1a0638',
                           '&:hover': {
                             backgroundColor: '#9c64ff',
@@ -440,10 +467,10 @@ const Header = () => {
                     </>
                   ) : (
                     <>
-                      <IconButton 
+                      <IconButton
                         color="inherit"
                         onClick={() => navigate("/login")}
-                        sx={{ 
+                        sx={{
                           ml: 1,
                           '&:hover': {
                             backgroundColor: 'rgba(179, 136, 255, 0.2)',
@@ -454,10 +481,10 @@ const Header = () => {
                       >
                         <LoginIcon />
                       </IconButton>
-                      <IconButton 
-                        color="inherit" 
+                      <IconButton
+                        color="inherit"
                         onClick={() => navigate("/register")}
-                        sx={{ 
+                        sx={{
                           backgroundColor: 'rgba(179, 136, 255, 0.3)',
                           ml: 1,
                           '&:hover': {
@@ -475,15 +502,15 @@ const Header = () => {
               )}
             </Box>
           </Toolbar>
-          
+
           {/* Mobile menu dropdown */}
           {isMobile && (
-            <Collapse 
+            <Collapse
               in={mobileMenuOpen}
               timeout="auto"
               unmountOnExit
               ref={mobileMenuRef}
-              sx={{ 
+              sx={{
                 position: 'absolute',
                 top: '100%',
                 left: 0,
@@ -499,10 +526,10 @@ const Header = () => {
               <Box sx={{ p: 2 }}>
                 <List sx={{ py: 0 }}>
                   {navItems.map((item) => (
-                    <ListItem 
-                      button 
-                      key={item.name} 
-                      component="a" 
+                    <ListItem
+                      button
+                      key={item.name}
+                      component="a"
                       href={item.path}
                       onClick={() => setMobileMenuOpen(false)}
                       sx={{
@@ -519,20 +546,20 @@ const Header = () => {
                         textAlign: 'center'
                       }}
                     >
-                      <ListItemIcon sx={{ 
+                      <ListItemIcon sx={{
                         color: isActive(item.path) ? '#b388ff' : 'white',
                         minWidth: 'auto',
                         mr: 1
                       }}>
                         {item.icon}
                       </ListItemIcon>
-                      <ListItemText 
-                        primary={item.name} 
-                        primaryTypographyProps={{ 
+                      <ListItemText
+                        primary={item.name}
+                        primaryTypographyProps={{
                           color: isActive(item.path) ? '#b388ff' : 'white',
                           fontWeight: 500,
                           variant: 'body1'
-                        }} 
+                        }}
                         sx={{
                           flex: 'none',
                           textAlign: 'center'
@@ -546,7 +573,7 @@ const Header = () => {
           )}
         </Container>
       </StyledAppBar>
-      
+
       {/* Add padding to content to account for fixed header */}
       <Toolbar />
     </>
