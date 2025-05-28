@@ -163,6 +163,34 @@ const ClassRequestManagement = () => {
     }
   };
 
+  const handleApproveAll = async () => {
+    if (!window.confirm('Are you sure you want to approve all pending class requests?')) {
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/class-requests/approve-all',
+        { adminNote: 'Bulk approval by administrator' },
+        { headers: { 'x-auth-token': token } }
+      );
+
+      if (response.data.failedCount > 0) {
+        setSuccess(`${response.data.message} Some requests failed due to capacity limits.`);
+      } else {
+        setSuccess(response.data.message);
+      }
+
+      loadRequests();
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to approve all requests');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'Approved': return 'success';
@@ -278,6 +306,19 @@ const ClassRequestManagement = () => {
 
             {/* Action Buttons */}
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <Tooltip title={pendingCount === 0 ? "No pending requests to approve" : `Approve all ${pendingCount} pending requests`}>
+                <span>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    startIcon={<CheckCircle />}
+                    onClick={handleApproveAll}
+                    disabled={processing || pendingCount === 0}
+                  >
+                    Approve All Pending ({pendingCount})
+                  </Button>
+                </span>
+              </Tooltip>
               <Button
                 variant="outlined"
                 startIcon={<Refresh />}
