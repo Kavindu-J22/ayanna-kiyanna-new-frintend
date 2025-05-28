@@ -37,20 +37,16 @@ import {
   CheckCircle,
   Cancel,
   Visibility,
-  Edit,
   Delete,
   Refresh,
   FilterList,
   ArrowBack,
   Pending,
   Group,
-  Assignment,
-  TrendingUp,
   Search,
   Message,
   SwapHoriz,
-  RemoveCircle,
-  Class
+  RemoveCircle
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -73,6 +69,7 @@ const StudentManagement = () => {
   // Filters
   const [statusFilter, setStatusFilter] = useState('');
   const [gradeFilter, setGradeFilter] = useState('');
+  const [classFilter, setClassFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -81,15 +78,18 @@ const StudentManagement = () => {
   const [availableGrades, setAvailableGrades] = useState([]);
   const [showMessageDialog, setShowMessageDialog] = useState(false);
   const [showClassChangeDialog, setShowClassChangeDialog] = useState(false);
+  const [showStatusChangeDialog, setShowStatusChangeDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [messageSubject, setMessageSubject] = useState('');
   const [messageBody, setMessageBody] = useState('');
   const [selectedOldClass, setSelectedOldClass] = useState('');
   const [selectedNewClass, setSelectedNewClass] = useState('');
+  const [newStatus, setNewStatus] = useState('');
 
   useEffect(() => {
     loadStudentData();
     loadAdditionalData();
-  }, [statusFilter, gradeFilter, currentPage]);
+  }, [statusFilter, gradeFilter, classFilter, currentPage]);
 
   const loadAdditionalData = async () => {
     try {
@@ -123,7 +123,8 @@ const StudentManagement = () => {
         page: currentPage,
         limit: 10,
         ...(statusFilter && { status: statusFilter }),
-        ...(gradeFilter && { grade: gradeFilter })
+        ...(gradeFilter && { grade: gradeFilter }),
+        ...(classFilter && { classId: classFilter })
       });
 
       const studentsResponse = await axios.get(
@@ -304,6 +305,66 @@ const StudentManagement = () => {
     }
   };
 
+  const handleStatusChange = (student, status) => {
+    setSelectedStudent(student);
+    setNewStatus(status);
+    setShowStatusChangeDialog(true);
+    setAdminNote('');
+  };
+
+  const confirmStatusChange = async () => {
+    if (!selectedStudent || !newStatus) return;
+
+    setProcessing(true);
+    try {
+      const token = localStorage.getItem('token');
+
+      await axios.put(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/${selectedStudent._id}/change-status`,
+        {
+          status: newStatus,
+          adminNote
+        },
+        { headers: { 'x-auth-token': token } }
+      );
+
+      setSuccess(`Student status changed to ${newStatus} successfully`);
+      setShowStatusChangeDialog(false);
+      loadStudentData();
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to change student status');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleDeleteStudent = (student) => {
+    setSelectedStudent(student);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDeleteStudent = async () => {
+    if (!selectedStudent) return;
+
+    setProcessing(true);
+    try {
+      const token = localStorage.getItem('token');
+
+      await axios.delete(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/${selectedStudent._id}`,
+        { headers: { 'x-auth-token': token } }
+      );
+
+      setSuccess('Student deleted successfully');
+      setShowDeleteDialog(false);
+      loadStudentData();
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to delete student');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
@@ -426,7 +487,7 @@ const StudentManagement = () => {
               Filters & Search
             </Typography>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={3}>
                 <TextField
                   fullWidth
                   label="Search Students"
@@ -438,7 +499,7 @@ const StudentManagement = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={3}>
                 <FormControl fullWidth>
                   <InputLabel>Status</InputLabel>
                   <Select
@@ -453,7 +514,7 @@ const StudentManagement = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={3}>
                 <FormControl fullWidth>
                   <InputLabel>Grade</InputLabel>
                   <Select
@@ -464,6 +525,23 @@ const StudentManagement = () => {
                     <MenuItem value="">All Grades</MenuItem>
                     {availableGrades.map((grade) => (
                       <MenuItem key={grade} value={grade}>{grade}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <FormControl fullWidth>
+                  <InputLabel>Class</InputLabel>
+                  <Select
+                    value={classFilter}
+                    onChange={(e) => setClassFilter(e.target.value)}
+                    label="Class"
+                  >
+                    <MenuItem value="">All Classes</MenuItem>
+                    {availableClasses.map((classItem) => (
+                      <MenuItem key={classItem._id} value={classItem._id}>
+                        {classItem.grade} - {classItem.category} ({classItem.date})
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -490,13 +568,14 @@ const StudentManagement = () => {
                   {students.filter(student => {
                     const matchesStatus = !statusFilter || student.status === statusFilter;
                     const matchesGrade = !gradeFilter || student.selectedGrade === gradeFilter;
+                    const matchesClass = !classFilter || (student.enrolledClasses && student.enrolledClasses.some(cls => cls._id === classFilter));
                     const matchesSearch = !searchTerm ||
                       student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                       student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                       student.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                       student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                       student.studentId?.toLowerCase().includes(searchTerm.toLowerCase());
-                    return matchesStatus && matchesGrade && matchesSearch;
+                    return matchesStatus && matchesGrade && matchesClass && matchesSearch;
                   }).map((student) => (
                     <TableRow key={student._id} hover>
                       <TableCell>{student.studentId}</TableCell>
@@ -600,6 +679,28 @@ const StudentManagement = () => {
                               </Tooltip>
                             </>
                           )}
+
+                          {student.status === 'Approved' && (
+                            <Tooltip title="Change to Pending">
+                              <IconButton
+                                size="small"
+                                onClick={() => handleStatusChange(student, 'Pending')}
+                                color="warning"
+                              >
+                                <Pending />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+
+                          <Tooltip title="Delete Student">
+                            <IconButton
+                              size="small"
+                              onClick={() => handleDeleteStudent(student)}
+                              color="error"
+                            >
+                              <Delete />
+                            </IconButton>
+                          </Tooltip>
                         </Box>
                       </TableCell>
                     </TableRow>
@@ -772,6 +873,100 @@ const StudentManagement = () => {
                 startIcon={processing ? <CircularProgress size={20} /> : <SwapHoriz />}
               >
                 {processing ? 'Changing...' : 'Change Class'}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Status Change Dialog */}
+          <Dialog open={showStatusChangeDialog} onClose={() => setShowStatusChangeDialog(false)} maxWidth="sm" fullWidth>
+            <DialogTitle>
+              Change Student Status
+            </DialogTitle>
+            <DialogContent>
+              <Typography gutterBottom>
+                Are you sure you want to change the status of {selectedStudent?.firstName} {selectedStudent?.lastName} to {newStatus}?
+              </Typography>
+              {selectedStudent && (
+                <Box sx={{ mt: 2, p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
+                  <Typography variant="body2">
+                    <strong>Student:</strong> {selectedStudent.firstName} {selectedStudent.lastName} ({selectedStudent.studentId})
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Current Status:</strong> {selectedStudent.status}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>New Status:</strong> {newStatus}
+                  </Typography>
+                </Box>
+              )}
+              <TextField
+                fullWidth
+                label="Admin Note (Optional)"
+                multiline
+                rows={3}
+                value={adminNote}
+                onChange={(e) => setAdminNote(e.target.value)}
+                sx={{ mt: 2 }}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowStatusChangeDialog(false)} disabled={processing}>
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmStatusChange}
+                variant="contained"
+                color="warning"
+                disabled={processing}
+                startIcon={processing ? <CircularProgress size={20} /> : null}
+              >
+                {processing ? 'Processing...' : 'Change Status'}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Delete Student Dialog */}
+          <Dialog open={showDeleteDialog} onClose={() => setShowDeleteDialog(false)} maxWidth="sm" fullWidth>
+            <DialogTitle>
+              Delete Student
+            </DialogTitle>
+            <DialogContent>
+              <Typography gutterBottom color="error">
+                Are you sure you want to permanently delete this student? This action cannot be undone.
+              </Typography>
+              {selectedStudent && (
+                <Box sx={{ mt: 2, p: 2, backgroundColor: 'error.light', borderRadius: 1, color: 'white' }}>
+                  <Typography variant="body2">
+                    <strong>Student:</strong> {selectedStudent.firstName} {selectedStudent.lastName}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Student ID:</strong> {selectedStudent.studentId}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Email:</strong> {selectedStudent.email}
+                  </Typography>
+                </Box>
+              )}
+              <Typography variant="body2" sx={{ mt: 2 }} color="text.secondary">
+                This will also:
+                • Remove the student from all enrolled classes
+                • Delete all class requests
+                • Delete all notifications
+                • Change the user's role back to 'user'
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowDeleteDialog(false)} disabled={processing}>
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmDeleteStudent}
+                variant="contained"
+                color="error"
+                disabled={processing}
+                startIcon={processing ? <CircularProgress size={20} /> : <Delete />}
+              >
+                {processing ? 'Deleting...' : 'Delete Student'}
               </Button>
             </DialogActions>
           </Dialog>

@@ -39,7 +39,8 @@ import {
   ArrowBack,
   Pending,
   Assignment,
-  Person
+  Person,
+  Search
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -54,17 +55,20 @@ const ClassRequestManagement = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [showActionDialog, setShowActionDialog] = useState(false);
+  const [showStatusChangeDialog, setShowStatusChangeDialog] = useState(false);
   const [actionType, setActionType] = useState('');
+  const [newStatus, setNewStatus] = useState('');
   const [adminNote, setAdminNote] = useState('');
   const [processing, setProcessing] = useState(false);
 
   // Filters
   const [statusFilter, setStatusFilter] = useState('');
   const [gradeFilter, setGradeFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     loadRequests();
-  }, [statusFilter, gradeFilter]);
+  }, [statusFilter, gradeFilter, searchTerm]);
 
   const loadRequests = async () => {
     try {
@@ -73,7 +77,8 @@ const ClassRequestManagement = () => {
 
       const params = new URLSearchParams({
         ...(statusFilter && { status: statusFilter }),
-        ...(gradeFilter && { grade: gradeFilter })
+        ...(gradeFilter && { grade: gradeFilter }),
+        ...(searchTerm && { search: searchTerm })
       });
 
       const response = await axios.get(
@@ -123,6 +128,39 @@ const ClassRequestManagement = () => {
   const handleViewDetails = (request) => {
     setSelectedRequest(request);
     setShowDetailsDialog(true);
+  };
+
+  const handleStatusChange = (request, status) => {
+    setSelectedRequest(request);
+    setNewStatus(status);
+    setShowStatusChangeDialog(true);
+    setAdminNote('');
+  };
+
+  const confirmStatusChange = async () => {
+    if (!selectedRequest || !newStatus) return;
+
+    setProcessing(true);
+    try {
+      const token = localStorage.getItem('token');
+
+      await axios.put(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/class-requests/${selectedRequest._id}/change-status`,
+        {
+          status: newStatus,
+          adminNote
+        },
+        { headers: { 'x-auth-token': token } }
+      );
+
+      setSuccess(`Class request status changed to ${newStatus} successfully`);
+      setShowStatusChangeDialog(false);
+      loadRequests();
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to change request status');
+    } finally {
+      setProcessing(false);
+    }
   };
 
   const getStatusColor = (status) => {
@@ -270,7 +308,19 @@ const ClassRequestManagement = () => {
               Filters
             </Typography>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  fullWidth
+                  label="Search Requests"
+                  placeholder="Search by student name, ID, class, or reason..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
                 <FormControl fullWidth>
                   <InputLabel>Status</InputLabel>
                   <Select
@@ -285,7 +335,7 @@ const ClassRequestManagement = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={4}>
                 <FormControl fullWidth>
                   <InputLabel>Grade</InputLabel>
                   <Select
@@ -395,6 +445,52 @@ const ClassRequestManagement = () => {
                               </Tooltip>
                             </>
                           )}
+
+                          {request.status === 'Approved' && (
+                            <>
+                              <Tooltip title="Change to Pending">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleStatusChange(request, 'Pending')}
+                                  color="warning"
+                                >
+                                  <Pending />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Change to Rejected">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleStatusChange(request, 'Rejected')}
+                                  color="error"
+                                >
+                                  <Cancel />
+                                </IconButton>
+                              </Tooltip>
+                            </>
+                          )}
+
+                          {request.status === 'Rejected' && (
+                            <>
+                              <Tooltip title="Change to Pending">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleStatusChange(request, 'Pending')}
+                                  color="warning"
+                                >
+                                  <Pending />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Change to Approved">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleStatusChange(request, 'Approved')}
+                                  color="success"
+                                >
+                                  <CheckCircle />
+                                </IconButton>
+                              </Tooltip>
+                            </>
+                          )}
                         </Box>
                       </TableCell>
                     </TableRow>
@@ -496,6 +592,57 @@ const ClassRequestManagement = () => {
                 startIcon={processing ? <CircularProgress size={20} /> : null}
               >
                 {processing ? 'Processing...' : actionType === 'approve' ? 'Approve' : 'Reject'}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Status Change Dialog */}
+          <Dialog open={showStatusChangeDialog} onClose={() => setShowStatusChangeDialog(false)} maxWidth="sm" fullWidth>
+            <DialogTitle>
+              Change Request Status
+            </DialogTitle>
+            <DialogContent>
+              <Typography gutterBottom>
+                Are you sure you want to change the status of this class request to {newStatus}?
+              </Typography>
+              {selectedRequest && (
+                <Box sx={{ mt: 2, p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
+                  <Typography variant="body2">
+                    <strong>Student:</strong> {`${selectedRequest.student?.firstName || ''} ${selectedRequest.student?.lastName || ''}`.trim()} ({selectedRequest.student?.studentId})
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Class:</strong> {selectedRequest.class?.grade} - {selectedRequest.class?.category}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Current Status:</strong> {selectedRequest.status}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>New Status:</strong> {newStatus}
+                  </Typography>
+                </Box>
+              )}
+              <TextField
+                fullWidth
+                label="Admin Note (Optional)"
+                multiline
+                rows={3}
+                value={adminNote}
+                onChange={(e) => setAdminNote(e.target.value)}
+                sx={{ mt: 2 }}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowStatusChangeDialog(false)} disabled={processing}>
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmStatusChange}
+                variant="contained"
+                color={newStatus === 'Approved' ? 'success' : newStatus === 'Rejected' ? 'error' : 'warning'}
+                disabled={processing}
+                startIcon={processing ? <CircularProgress size={20} /> : null}
+              >
+                {processing ? 'Processing...' : `Change to ${newStatus}`}
               </Button>
             </DialogActions>
           </Dialog>
