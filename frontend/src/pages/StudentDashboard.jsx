@@ -46,7 +46,7 @@ import axios from 'axios';
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState('');
   const [student, setStudent] = useState(null);
   const [availableClasses, setAvailableClasses] = useState([]);
@@ -83,10 +83,7 @@ const StudentDashboard = () => {
           return;
         }
 
-        // If authenticated, load dashboard data
-        if (authenticated) {
-          loadDashboardData();
-        }
+        // Dashboard data will be loaded after successful login
       } catch (error) {
         console.error('Error checking user role:', error);
         if (error.response?.status === 401) {
@@ -105,36 +102,37 @@ const StudentDashboard = () => {
     checkUserAccess();
   }, [navigate, authenticated]);
 
-  const loadDashboardData = async () => {
+
+
+  const loadAdditionalData = async () => {
     try {
-      setLoading(true);
       const token = localStorage.getItem('token');
 
-      // Load student profile
-      const studentResponse = await axios.get(
-        'https://ayanna-kiyanna-new-backend.onrender.com/api/students/profile',
-        { headers: { 'x-auth-token': token } }
-      );
-      setStudent(studentResponse.data);
+      // Load available classes (with error handling)
+      try {
+        const classesResponse = await axios.get(
+          'https://ayanna-kiyanna-new-backend.onrender.com/api/students/available-classes',
+          { headers: { 'x-auth-token': token } }
+        );
+        setAvailableClasses(classesResponse.data.classes || []);
+      } catch (error) {
+        console.error('Error loading available classes:', error);
+        setAvailableClasses([]);
+      }
 
-      // Load available classes
-      const classesResponse = await axios.get(
-        'https://ayanna-kiyanna-new-backend.onrender.com/api/students/available-classes',
-        { headers: { 'x-auth-token': token } }
-      );
-      setAvailableClasses(classesResponse.data.classes);
-
-      // Load notifications
-      const notificationsResponse = await axios.get(
-        'https://ayanna-kiyanna-new-backend.onrender.com/api/notifications',
-        { headers: { 'x-auth-token': token } }
-      );
-      setNotifications(notificationsResponse.data.notifications);
-
+      // Load notifications (with error handling)
+      try {
+        const notificationsResponse = await axios.get(
+          'https://ayanna-kiyanna-new-backend.onrender.com/api/notifications',
+          { headers: { 'x-auth-token': token } }
+        );
+        setNotifications(notificationsResponse.data.notifications || []);
+      } catch (error) {
+        console.error('Error loading notifications:', error);
+        setNotifications([]);
+      }
     } catch (error) {
-      setError(error.response?.data?.message || 'Failed to load dashboard data');
-    } finally {
-      setLoading(false);
+      console.error('Error loading additional data:', error);
     }
   };
 
@@ -149,14 +147,19 @@ const StudentDashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post(
+      const response = await axios.post(
         'https://ayanna-kiyanna-new-backend.onrender.com/api/students/login',
         { studentPassword },
         { headers: { 'x-auth-token': token } }
       );
 
+      // Set student data from login response
+      setStudent(response.data.student);
       setAuthenticated(true);
       setShowPasswordDialog(false);
+
+      // Load additional data separately with error handling
+      await loadAdditionalData();
     } catch (error) {
       setPasswordError(error.response?.data?.message || 'Invalid student password');
     } finally {
@@ -173,8 +176,8 @@ const StudentDashboard = () => {
         { headers: { 'x-auth-token': token } }
       );
 
-      // Reload dashboard data
-      loadDashboardData();
+      // Reload student data and available classes
+      await loadAdditionalData();
       alert('Successfully enrolled in class!');
     } catch (error) {
       alert(error.response?.data?.message || 'Failed to enroll in class');
@@ -239,13 +242,7 @@ const StudentDashboard = () => {
     );
   }
 
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-        <CircularProgress size={60} />
-      </Box>
-    );
-  }
+
 
   return (
     <Box sx={{
