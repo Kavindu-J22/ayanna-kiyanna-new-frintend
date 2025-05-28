@@ -1002,8 +1002,9 @@ const StudentRegistration = () => {
                           <Grid container spacing={3}>
                             {availableClasses.map((classItem) => {
                               const isSelected = formData.enrolledClasses.includes(classItem._id);
-                              const isAtCapacity = classItem.enrolledStudents >= classItem.capacity;
-                              const capacityPercentage = (classItem.enrolledStudents / classItem.capacity) * 100;
+                              const enrolledCount = classItem.enrolledCount || (classItem.enrolledStudents ? classItem.enrolledStudents.length : 0);
+                              const isAtCapacity = enrolledCount >= classItem.capacity;
+                              const capacityPercentage = (enrolledCount / classItem.capacity) * 100;
 
                               return (
                                 <Grid item xs={12} md={6} lg={4} key={classItem._id}>
@@ -1094,7 +1095,7 @@ const StudentRegistration = () => {
                                             fontWeight: 'bold',
                                             color: capacityPercentage >= 90 ? 'error.main' : capacityPercentage >= 70 ? 'warning.main' : 'success.main'
                                           }}>
-                                            {classItem.enrolledStudents}/{classItem.capacity}
+                                            {enrolledCount}/{classItem.capacity}
                                           </Typography>
                                         </Box>
                                         <Box sx={{
