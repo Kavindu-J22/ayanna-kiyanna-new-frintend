@@ -390,10 +390,10 @@ function AppContent() {
           onClick={handleMobileDrawerToggle}
           sx={{
             display: { xs: 'flex', md: 'none' },
-            position: 'fixed',
+            position: 'fixed !important', // Force fixed position
             top: 70,
             left: 10,
-            zIndex: 1200,
+            zIndex: 1400, // Higher z-index to ensure it's above header
             color: '#fff',
             backgroundColor: 'rgba(60, 27, 74, 0.9)',
             width: 40,
@@ -403,6 +403,8 @@ function AppContent() {
             boxShadow: '0 0 10px rgba(194, 24, 91, 0.5)',
             animation: `${pulseGlow} 2s infinite ease-in-out`,
             transition: 'all 0.3s ease',
+            backdropFilter: 'blur(5px)', // Add backdrop filter for better visibility
+            border: '1px solid rgba(255, 255, 255, 0.1)', // Add subtle border
             '&:hover': {
               backgroundColor: 'rgba(156, 39, 176, 1)',
               transform: 'scale(1.1)',

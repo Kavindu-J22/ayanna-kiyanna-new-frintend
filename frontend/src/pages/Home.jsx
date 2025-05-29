@@ -1205,7 +1205,11 @@ const Home = () => {
         mt: 6,
         textAlign: 'center',
         position: 'relative',
-        zIndex: 2
+        zIndex: 2,
+        // Fix mobile button overflow
+        px: isMobile ? 2 : 0,
+        overflow: 'visible', // Allow button content to be fully visible
+        minHeight: isMobile ? '120px' : 'auto' // Ensure enough space for button
       }}>
         {userEmail ? (
           <motion.div

@@ -53,13 +53,22 @@ const StyledAppBar = styled(AppBar)(({ theme }) => ({
   borderBottom: `1px solid ${alpha('#9c64ff', 0.2)}`,
   padding: theme.spacing(0.5, 0),
   position: 'fixed',
-  zIndex: 100,
+  zIndex: 1300, // Increased z-index for mobile to ensure it stays on top
   transition: 'all 0.3s ease',
+  top: 0,
+  left: 0,
+  right: 0,
   '&:hover': {
     background: `linear-gradient(135deg, ${alpha('#1a0638', 1)} 0%, ${alpha('#2e0b5e', 1)} 100%)`,
   },
   '& > div': {
     position: 'relative'
+  },
+  // Ensure fixed position on mobile
+  [theme.breakpoints.down('md')]: {
+    position: 'fixed !important',
+    zIndex: 1300,
+    width: '100%'
   }
 }));
 
