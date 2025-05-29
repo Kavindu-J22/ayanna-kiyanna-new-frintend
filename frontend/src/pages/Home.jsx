@@ -1234,7 +1234,7 @@ const Home = () => {
                   }
                   return userEmail.split('@')[0];
                 })()}
-              </Box>
+              </Box> 👋
             </Typography>
             <motion.div whileHover={{ scale: 1.05 }}>
               <Button
@@ -1246,13 +1246,18 @@ const Home = () => {
                 sx={{
                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                   borderRadius: '50px',
-                  px: 5,
+                  px: isMobile ? 3 : 5, // Reduce padding on mobile
                   py: 1.5,
                   fontWeight: 'bold',
-                  fontSize: isMobile ? '1rem' : '1.1rem',
+                  fontSize: isMobile ? '0.9rem' : '1.1rem', // Smaller font on mobile
                   boxShadow: '0 8px 20px rgba(0,0,0,0.3)',
                   background: 'linear-gradient(45deg, #ff9800 30%, #ffeb3b 90%)',
                   transition: 'all 0.3s ease',
+                  width: isMobile ? '100%' : 'auto', // Full width on mobile
+                  maxWidth: isMobile ? '300px' : 'none', // Limit max width on mobile
+                  overflow: 'hidden', // Prevent text overflow
+                  textOverflow: 'ellipsis', // Add ellipsis if needed
+                  whiteSpace: isMobile ? 'nowrap' : 'normal', // Prevent wrapping on mobile
                   '&:hover': {
                     transform: 'translateY(-3px)',
                     boxShadow: '0 12px 25px rgba(0,0,0,0.4)'
