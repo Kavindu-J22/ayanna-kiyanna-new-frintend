@@ -979,7 +979,7 @@ const Home = () => {
         zIndex: 2,
         // Fix clipping issue - allow shadow to extend beyond container
         overflow: 'visible',
-        padding: '20px' // Add padding to prevent shadow clipping
+        padding: '0 20px 20px 20px' // Reduce top padding, keep sides and bottom
       }}>
       <motion.div
         animate={{
@@ -998,7 +998,7 @@ const Home = () => {
         style={{
           // Ensure shadow is not clipped during animation
           overflow: 'visible',
-          padding: '10px' // Extra space for shadow
+          padding: '0 10px 10px 10px' // Reduce top padding, keep sides and bottom
         }}
       >
         <img
