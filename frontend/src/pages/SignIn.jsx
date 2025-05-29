@@ -23,6 +23,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
 import AKlogo from '../assets/AKlogo.png';
 import { firebaseConfig } from '../config';
+import ForgotPassword from '../components/ForgotPassword';
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -44,6 +45,7 @@ const SignInPage = () => {
   const [popupMessage, setPopupMessage] = useState('');
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isGoogleSigningIn, setIsGoogleSigningIn] = useState(false);
+  const [openForgotPassword, setOpenForgotPassword] = useState(false);
   const animationRef = useRef(null);
 
     const handleInputChange = (e) => {
@@ -129,6 +131,15 @@ const SignInPage = () => {
 
   const handleRememberMeChange = (event) => {
     setRememberMe(event.target.checked);
+  };
+
+  const handleForgotPasswordClick = (e) => {
+    e.preventDefault();
+    setOpenForgotPassword(true);
+  };
+
+  const handleCloseForgotPassword = () => {
+    setOpenForgotPassword(false);
   };
 
   useEffect(() => {
@@ -459,13 +470,19 @@ const SignInPage = () => {
                 label="Remember me"
                 sx={{ color: '#673ab7' }} // Purple
               />
-              <Link href="#" variant="body2" sx={{
-                textDecoration: 'none',
-                color: '#673ab7', // Purple
-                '&:hover': {
-                  textDecoration: 'underline'
-                }
-              }}>
+              <Link
+                href="#"
+                variant="body2"
+                onClick={handleForgotPasswordClick}
+                sx={{
+                  textDecoration: 'none',
+                  color: '#673ab7', // Purple
+                  cursor: 'pointer',
+                  '&:hover': {
+                    textDecoration: 'underline'
+                  }
+                }}
+              >
                 Forgot password?
               </Link>
             </Box>
@@ -658,6 +675,12 @@ const SignInPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Forgot Password Dialog */}
+      <ForgotPassword
+        open={openForgotPassword}
+        onClose={handleCloseForgotPassword}
+      />
 
       <style>
         {`
