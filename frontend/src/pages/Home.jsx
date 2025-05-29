@@ -52,73 +52,78 @@ const Home = () => {
   const [showStudentDialog, setShowStudentDialog] = useState(false);
   const navigate = useNavigate();
 
-  // Fix mobile scrolling issues
+  // Fix mobile scrolling issues - optimized for mobile
   useEffect(() => {
-    // Create and inject CSS for mobile scrolling fix
-    const style = document.createElement('style');
-    style.textContent = `
-      html, body {
-        overflow: auto !important;
-        overflow-x: hidden !important;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch !important;
-        touch-action: manipulation !important;
-        height: auto !important;
-        min-height: 100vh !important;
-        position: relative !important;
-      }
+    // Only apply mobile fixes if on mobile device
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-      * {
-        -webkit-overflow-scrolling: touch !important;
-      }
-
-      /* Fix for iOS Safari */
-      @supports (-webkit-touch-callout: none) {
+    if (isMobileDevice) {
+      // Create and inject CSS for mobile scrolling fix
+      const style = document.createElement('style');
+      style.id = 'mobile-scroll-fix';
+      style.textContent = `
         html, body {
-          height: -webkit-fill-available !important;
+          overflow-x: hidden !important;
+          overflow-y: auto !important;
+          -webkit-overflow-scrolling: touch !important;
+          touch-action: pan-y !important;
+          height: auto !important;
+          position: relative !important;
         }
+
+        /* Fix for iOS Safari viewport */
+        @supports (-webkit-touch-callout: none) {
+          html, body {
+            height: -webkit-fill-available !important;
+          }
+        }
+
+        /* Ensure proper scrolling on mobile */
+        .MuiContainer-root {
+          overflow-x: hidden !important;
+        }
+      `;
+
+      // Check if style already exists
+      const existingStyle = document.getElementById('mobile-scroll-fix');
+      if (!existingStyle) {
+        document.head.appendChild(style);
       }
-    `;
-    document.head.appendChild(style);
 
-    // Also set styles directly
-    document.body.style.overflow = 'auto';
-    document.body.style.overflowX = 'hidden';
-    document.body.style.overflowY = 'auto';
-    document.body.style.WebkitOverflowScrolling = 'touch';
-    document.body.style.touchAction = 'manipulation';
-    document.body.style.height = 'auto';
-    document.body.style.minHeight = '100vh';
-    document.body.style.position = 'relative';
+      // Set body styles for mobile
+      document.body.style.overflowX = 'hidden';
+      document.body.style.overflowY = 'auto';
+      document.body.style.WebkitOverflowScrolling = 'touch';
+      document.body.style.touchAction = 'pan-y';
+      document.body.style.height = 'auto';
+      document.body.style.position = 'relative';
 
-    document.documentElement.style.overflow = 'auto';
-    document.documentElement.style.overflowX = 'hidden';
-    document.documentElement.style.overflowY = 'auto';
-    document.documentElement.style.WebkitOverflowScrolling = 'touch';
-    document.documentElement.style.touchAction = 'manipulation';
-    document.documentElement.style.height = 'auto';
-    document.documentElement.style.minHeight = '100vh';
+      return () => {
+        // Cleanup
+        const styleElement = document.getElementById('mobile-scroll-fix');
+        if (styleElement && styleElement.parentNode) {
+          styleElement.parentNode.removeChild(styleElement);
+        }
 
-    return () => {
-      // Cleanup
-      document.head.removeChild(style);
-      document.body.style.overflow = '';
-      document.body.style.overflowX = '';
-      document.body.style.overflowY = '';
-      document.body.style.WebkitOverflowScrolling = '';
-      document.body.style.touchAction = '';
-      document.body.style.height = '';
-      document.body.style.minHeight = '';
-      document.body.style.position = '';
+        // Reset body styles
+        document.body.style.overflowX = '';
+        document.body.style.overflowY = '';
+        document.body.style.WebkitOverflowScrolling = '';
+        document.body.style.touchAction = '';
+        document.body.style.height = '';
+        document.body.style.position = '';
+      };
+    }
+  }, []);
 
-      document.documentElement.style.overflow = '';
-      document.documentElement.style.overflowX = '';
-      document.documentElement.style.overflowY = '';
-      document.documentElement.style.WebkitOverflowScrolling = '';
-      document.documentElement.style.touchAction = '';
-      document.documentElement.style.height = '';
-      document.documentElement.style.minHeight = '';
-    };
+  // Ensure page starts at top on mobile
+  useEffect(() => {
+    // Scroll to top when component mounts
+    window.scrollTo(0, 0);
+
+    // Also ensure body scroll position is reset
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
   }, []);
 
   useEffect(() => {
@@ -334,26 +339,29 @@ const Home = () => {
       width: '100%',
       height: 'auto',
       WebkitOverflowScrolling: 'touch', // Enable smooth scrolling on iOS
-      touchAction: 'manipulation', // Better touch handling for mobile
+      touchAction: 'pan-y', // Better touch handling for mobile - allow vertical scrolling
       position: 'relative',
       overflowX: 'hidden', // Only hide horizontal overflow
-      overflowY: 'auto' // Allow vertical scrolling
+      overflowY: 'auto', // Allow vertical scrolling
+      paddingTop: 0, // Ensure no top padding that might hide content
+      marginTop: 0 // Ensure no top margin
     }}>
 {/* Welcome Section with Enhanced Animated Background */}
 <Box
   sx={{
     background: 'linear-gradient(135deg, #6a11cb 0%, #ff6b9d 50%, #ff8e53 100%)',
     color: 'white',
-    py: 12,
+    py: { xs: 8, sm: 10, md: 12 }, // Responsive padding - smaller on mobile
     position: 'relative',
     overflow: 'visible',
-    minHeight: '100vh',
+    minHeight: { xs: '100vh', sm: '100vh' }, // Ensure full height on all devices
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    touchAction: 'manipulation', // Better touch handling
+    touchAction: 'pan-y', // Better touch handling - allow vertical scrolling
     WebkitOverflowScrolling: 'touch', // Smooth scrolling on iOS
     overflowY: 'visible', // Ensure content can overflow vertically
+    paddingTop: { xs: '60px', sm: '80px' }, // Add top padding to account for header on mobile
     '&:before': {
       content: '""',
       position: 'absolute',
@@ -838,7 +846,11 @@ const Home = () => {
     </Box>
   </motion.div>
 
-  <Container >
+  <Container maxWidth="lg" sx={{
+    px: { xs: 2, sm: 3 }, // Responsive padding
+    width: '100%',
+    position: 'relative'
+  }}>
     {/* Main heading with staggered animation */}
     <Box sx={{ position: 'relative', zIndex: 2 }}>
       <motion.div
