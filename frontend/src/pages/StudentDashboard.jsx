@@ -23,7 +23,11 @@ import {
   ListItemText,
   ListItemIcon,
   Badge,
-  IconButton
+  IconButton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import {
   School,
@@ -62,6 +66,22 @@ const StudentDashboard = () => {
   const [selectedClass, setSelectedClass] = useState(null);
   const [requestReason, setRequestReason] = useState('');
   const [submittingRequest, setSubmittingRequest] = useState(false);
+
+  // Forgot Password States
+  const [showForgotPasswordDialog, setShowForgotPasswordDialog] = useState(false);
+  const [showOtpDialog, setShowOtpDialog] = useState(false);
+  const [showNewPasswordDialog, setShowNewPasswordDialog] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+  const [otpCode, setOtpCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [forgotPasswordError, setForgotPasswordError] = useState('');
+  const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
+
+  // Grade Filter States
+  const [availableGrades, setAvailableGrades] = useState([]);
+  const [selectedGrade, setSelectedGrade] = useState('');
+  const [loadingGrades, setLoadingGrades] = useState(false);
 
   useEffect(() => {
     const checkUserAccess = async () => {
@@ -107,6 +127,13 @@ const StudentDashboard = () => {
 
     checkUserAccess();
   }, [navigate, authenticated]);
+
+  // Load grades when authenticated
+  useEffect(() => {
+    if (authenticated) {
+      loadGrades();
+    }
+  }, [authenticated]);
 
 
 
@@ -233,6 +260,172 @@ const StudentDashboard = () => {
     }
   };
 
+  // Forgot Password Functions
+  const handleForgotPassword = () => {
+    setShowPasswordDialog(false);
+    setForgotPasswordError('');
+
+    // Check if email is stored in localStorage
+    const storedEmail = localStorage.getItem('userEmail');
+
+    if (storedEmail) {
+      // If email is stored, use it directly and send OTP
+      setForgotPasswordEmail(storedEmail);
+      sendPasswordResetOTPDirectly(storedEmail);
+    } else {
+      // If no email stored, show email input dialog
+      setForgotPasswordEmail('');
+      setShowForgotPasswordDialog(true);
+    }
+  };
+
+  const sendPasswordResetOTPDirectly = async (email) => {
+    setForgotPasswordLoading(true);
+    setForgotPasswordError('');
+
+    try {
+      await axios.post('https://ayanna-kiyanna-new-backend.onrender.com/api/students/forgot-password', {
+        email: email
+      });
+
+      setShowOtpDialog(true);
+      alert(`Password reset code sent to ${email}!`);
+    } catch (error) {
+      setForgotPasswordError(error.response?.data?.message || 'Failed to send reset code');
+      // If there's an error, show the email input dialog
+      setShowForgotPasswordDialog(true);
+    } finally {
+      setForgotPasswordLoading(false);
+    }
+  };
+
+  const sendPasswordResetOTP = async () => {
+    if (!forgotPasswordEmail) {
+      setForgotPasswordError('Please enter your email address');
+      return;
+    }
+
+    setForgotPasswordLoading(true);
+    setForgotPasswordError('');
+
+    try {
+      await axios.post('https://ayanna-kiyanna-new-backend.onrender.com/api/students/forgot-password', {
+        email: forgotPasswordEmail
+      });
+
+      setShowForgotPasswordDialog(false);
+      setShowOtpDialog(true);
+      alert('Password reset code sent to your email!');
+    } catch (error) {
+      setForgotPasswordError(error.response?.data?.message || 'Failed to send reset code');
+    } finally {
+      setForgotPasswordLoading(false);
+    }
+  };
+
+  const verifyOTPAndProceed = async () => {
+    if (!otpCode || otpCode.length !== 6) {
+      setForgotPasswordError('Please enter a valid 6-digit OTP');
+      return;
+    }
+
+    setForgotPasswordLoading(true);
+    setForgotPasswordError('');
+
+    try {
+      await axios.post('https://ayanna-kiyanna-new-backend.onrender.com/api/students/verify-reset-otp', {
+        email: forgotPasswordEmail,
+        otp: otpCode
+      });
+
+      setShowOtpDialog(false);
+      setShowNewPasswordDialog(true);
+    } catch (error) {
+      setForgotPasswordError(error.response?.data?.message || 'Invalid or expired OTP');
+    } finally {
+      setForgotPasswordLoading(false);
+    }
+  };
+
+  const resetPassword = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      setForgotPasswordError('Password must be at least 6 characters long');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setForgotPasswordError('Passwords do not match');
+      return;
+    }
+
+    setForgotPasswordLoading(true);
+    setForgotPasswordError('');
+
+    try {
+      await axios.post('https://ayanna-kiyanna-new-backend.onrender.com/api/students/reset-password', {
+        email: forgotPasswordEmail,
+        otp: otpCode,
+        newPassword: newPassword
+      });
+
+      // Reset all states
+      setShowNewPasswordDialog(false);
+      setShowPasswordDialog(true);
+      setForgotPasswordEmail('');
+      setOtpCode('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setForgotPasswordError('');
+
+      alert('Password reset successfully! You can now login with your new password.');
+    } catch (error) {
+      setForgotPasswordError(error.response?.data?.message || 'Failed to reset password');
+    } finally {
+      setForgotPasswordLoading(false);
+    }
+  };
+
+  // Grade Filter Functions
+  const loadGrades = async () => {
+    setLoadingGrades(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/students/grades',
+        { headers: { 'x-auth-token': token } }
+      );
+      setAvailableGrades(response.data.grades || []);
+    } catch (error) {
+      console.error('Error loading grades:', error);
+      setAvailableGrades([]);
+    } finally {
+      setLoadingGrades(false);
+    }
+  };
+
+  const loadFilteredClasses = async (grade = '') => {
+    try {
+      const token = localStorage.getItem('token');
+      const url = grade
+        ? `https://ayanna-kiyanna-new-backend.onrender.com/api/students/available-classes?grade=${encodeURIComponent(grade)}`
+        : 'https://ayanna-kiyanna-new-backend.onrender.com/api/students/available-classes';
+
+      const response = await axios.get(url, {
+        headers: { 'x-auth-token': token }
+      });
+      setAvailableClasses(response.data.classes || []);
+    } catch (error) {
+      console.error('Error loading filtered classes:', error);
+      setAvailableClasses([]);
+    }
+  };
+
+  const handleGradeFilterChange = (event) => {
+    const grade = event.target.value;
+    setSelectedGrade(grade);
+    loadFilteredClasses(grade);
+  };
+
   if (error) {
     return (
       <Container maxWidth="md" sx={{ py: 4 }}>
@@ -274,17 +467,27 @@ const StudentDashboard = () => {
             onKeyPress={(e) => e.key === 'Enter' && handleStudentLogin()}
           />
         </DialogContent>
-        <DialogActions sx={{ p: 3, pt: 1 }}>
-          <Button onClick={() => navigate('/')}>
-            Cancel
-          </Button>
+        <DialogActions sx={{ p: 3, pt: 1, flexDirection: 'column', gap: 1 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+            <Button onClick={() => navigate('/')}>
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleStudentLogin}
+              disabled={authenticating}
+              startIcon={authenticating ? <CircularProgress size={20} /> : <Visibility />}
+            >
+              {authenticating ? 'Authenticating...' : 'Access Dashboard'}
+            </Button>
+          </Box>
           <Button
-            variant="contained"
-            onClick={handleStudentLogin}
-            disabled={authenticating}
-            startIcon={authenticating ? <CircularProgress size={20} /> : <Visibility />}
+            variant="text"
+            color="secondary"
+            onClick={handleForgotPassword}
+            sx={{ textTransform: 'none' }}
           >
-            {authenticating ? 'Authenticating...' : 'Access Dashboard'}
+            Forgot Password?
           </Button>
         </DialogActions>
       </Dialog>
@@ -405,6 +608,28 @@ const StudentDashboard = () => {
                   Available Classes
                 </Typography>
                 <Divider sx={{ mb: 3 }} />
+
+                {/* Grade Filter */}
+                <Box sx={{ mb: 3 }}>
+                  <FormControl sx={{ minWidth: 200 }}>
+                    <InputLabel>Filter by Grade</InputLabel>
+                    <Select
+                      value={selectedGrade}
+                      label="Filter by Grade"
+                      onChange={handleGradeFilterChange}
+                      disabled={loadingGrades}
+                    >
+                      <MenuItem value="">
+                        <em>All Grades</em>
+                      </MenuItem>
+                      {availableGrades.map((grade) => (
+                        <MenuItem key={grade} value={grade}>
+                          {grade}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Box>
 
                 {availableClasses.length > 0 ? (
                   <Grid container spacing={3}>
@@ -602,6 +827,159 @@ const StudentDashboard = () => {
             {submittingRequest ? 'Submitting...' : 'Submit Request'}
           </Button>
         </DialogActions>
+      </Dialog>
+
+      {/* Forgot Password Dialog */}
+      <Dialog open={showForgotPasswordDialog} onClose={() => setShowForgotPasswordDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ textAlign: 'center' }}>
+          <Avatar sx={{ bgcolor: 'warning.main', mx: 'auto', mb: 2 }}>
+            <Lock />
+          </Avatar>
+          <Typography variant="h5" component="div">
+            Reset Student Password
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            We couldn't find your email in the system. Please enter your email address to receive a password reset code.
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            label="Email Address"
+            type="email"
+            value={forgotPasswordEmail}
+            onChange={(e) => setForgotPasswordEmail(e.target.value)}
+            error={!!forgotPasswordError}
+            helperText={forgotPasswordError}
+            sx={{ mt: 2 }}
+            onKeyPress={(e) => e.key === 'Enter' && sendPasswordResetOTP()}
+          />
+        </DialogContent>
+        <DialogActions sx={{ p: 3, pt: 1 }}>
+          <Button onClick={() => {
+            setShowForgotPasswordDialog(false);
+            setShowPasswordDialog(true);
+          }}>
+            Back to Login
+          </Button>
+          <Button
+            variant="contained"
+            onClick={sendPasswordResetOTP}
+            disabled={forgotPasswordLoading}
+            startIcon={forgotPasswordLoading ? <CircularProgress size={20} /> : null}
+          >
+            {forgotPasswordLoading ? 'Sending...' : 'Send Reset Code'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* OTP Verification Dialog */}
+      <Dialog open={showOtpDialog} onClose={() => setShowOtpDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ textAlign: 'center' }}>
+          <Avatar sx={{ bgcolor: 'info.main', mx: 'auto', mb: 2 }}>
+            <Lock />
+          </Avatar>
+          <Typography variant="h5" component="div">
+            Enter Verification Code
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            We sent a 6-digit code to {forgotPasswordEmail || 'your email'}
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            label="6-Digit Code"
+            value={otpCode}
+            onChange={(e) => setOtpCode(e.target.value)}
+            error={!!forgotPasswordError}
+            helperText={forgotPasswordError}
+            sx={{ mt: 2 }}
+            inputProps={{ maxLength: 6 }}
+            onKeyPress={(e) => e.key === 'Enter' && verifyOTPAndProceed()}
+          />
+        </DialogContent>
+        <DialogActions sx={{ p: 3, pt: 1 }}>
+          <Button onClick={() => {
+            setShowOtpDialog(false);
+            setShowForgotPasswordDialog(true);
+          }}>
+            Back
+          </Button>
+          <Button
+            variant="contained"
+            onClick={verifyOTPAndProceed}
+            disabled={forgotPasswordLoading}
+            startIcon={forgotPasswordLoading ? <CircularProgress size={20} /> : null}
+          >
+            {forgotPasswordLoading ? 'Verifying...' : 'Verify Code'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* New Password Dialog */}
+      <Dialog open={showNewPasswordDialog} onClose={() => setShowNewPasswordDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ textAlign: 'center' }}>
+          <Avatar sx={{ bgcolor: 'success.main', mx: 'auto', mb: 2 }}>
+            <Lock />
+          </Avatar>
+          <Typography variant="h5" component="div">
+            Set New Password
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            Enter your new student dashboard password
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            label="New Password"
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            sx={{ mt: 2, mb: 2 }}
+            helperText="Password must be at least 6 characters long"
+          />
+          <TextField
+            fullWidth
+            label="Confirm New Password"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            error={!!forgotPasswordError}
+            helperText={forgotPasswordError}
+            onKeyPress={(e) => e.key === 'Enter' && resetPassword()}
+          />
+        </DialogContent>
+        <DialogActions sx={{ p: 3, pt: 1 }}>
+          <Button onClick={() => {
+            setShowNewPasswordDialog(false);
+            setShowOtpDialog(true);
+          }}>
+            Back
+          </Button>
+          <Button
+            variant="contained"
+            onClick={resetPassword}
+            disabled={forgotPasswordLoading}
+            startIcon={forgotPasswordLoading ? <CircularProgress size={20} /> : null}
+          >
+            {forgotPasswordLoading ? 'Resetting...' : 'Reset Password'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Loading Dialog for Auto OTP Send */}
+      <Dialog open={forgotPasswordLoading && !showForgotPasswordDialog && !showOtpDialog} maxWidth="sm" fullWidth>
+        <DialogContent sx={{ textAlign: 'center', py: 4 }}>
+          <CircularProgress size={60} sx={{ mb: 2 }} />
+          <Typography variant="h6" gutterBottom>
+            Sending Reset Code
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Please wait while we send a password reset code to your email...
+          </Typography>
+        </DialogContent>
       </Dialog>
     </Box>
   );
