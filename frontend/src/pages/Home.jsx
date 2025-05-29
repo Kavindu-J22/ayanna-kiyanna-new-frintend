@@ -142,6 +142,11 @@ const Home = () => {
         section, div, .MuiPaper-root {
           overflow: hidden !important;
         }
+
+        /* Exception for logo container - allow shadow to show */
+        .logo-container, .logo-container * {
+          overflow: visible !important;
+        }
       `;
 
       // Remove existing style if present
@@ -964,13 +969,18 @@ const Home = () => {
       duration: 0.8
     }}
   >
-    <Box sx={{
-      display: 'flex',
-      justifyContent: 'center',
-      mb: 4,
-      position: 'relative',
-      zIndex: 2
-    }}>
+    <Box
+      className="logo-container"
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        mb: 2,
+        position: 'relative',
+        zIndex: 2,
+        // Fix clipping issue - allow shadow to extend beyond container
+        overflow: 'visible',
+        padding: '20px' // Add padding to prevent shadow clipping
+      }}>
       <motion.div
         animate={{
           y: [0, -12, 0, 12, 0],
@@ -985,6 +995,11 @@ const Home = () => {
         }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
+        style={{
+          // Ensure shadow is not clipped during animation
+          overflow: 'visible',
+          padding: '10px' // Extra space for shadow
+        }}
       >
         <img
           src={logo}
