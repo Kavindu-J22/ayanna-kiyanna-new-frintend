@@ -119,11 +119,36 @@ const Home = () => {
           overflow-x: hidden !important;
           overflow-y: auto !important;
           -webkit-overflow-scrolling: touch !important;
+          position: relative !important;
         }
 
         html {
           overflow-x: hidden !important;
           overflow-y: auto !important;
+          position: relative !important;
+          height: 100% !important;
+        }
+
+        /* Mobile browser specific fixes */
+        @supports (-webkit-touch-callout: none) {
+          /* iOS Safari specific fixes */
+          body {
+            position: fixed !important;
+            width: 100% !important;
+            height: 100% !important;
+            overflow: hidden !important;
+          }
+
+          #root {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            -webkit-overflow-scrolling: touch !important;
+          }
         }
 
         /* Fix for fixed positioned elements */
@@ -149,10 +174,16 @@ const Home = () => {
         }
 
         /* Exception for fixed positioned elements - header and menu buttons */
-        header, .MuiAppBar-root, .MuiAppBar-fixed {
+        header, .MuiAppBar-root, .MuiAppBar-fixed, .MuiAppBar-positionFixed {
           position: fixed !important;
           overflow: visible !important;
           z-index: 1300 !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          width: 100% !important;
+          transform: none !important;
+          -webkit-transform: none !important;
         }
 
         /* Ensure fixed positioned buttons work properly */
@@ -160,6 +191,8 @@ const Home = () => {
           position: fixed !important;
           overflow: visible !important;
           z-index: 1400 !important;
+          transform: none !important;
+          -webkit-transform: none !important;
         }
 
         /* Specific targeting for mobile menu button */
@@ -168,6 +201,44 @@ const Home = () => {
           top: 70px !important;
           left: 10px !important;
           z-index: 1400 !important;
+          transform: none !important;
+          -webkit-transform: none !important;
+        }
+
+        /* Mobile browser specific fixed positioning fixes */
+        @media screen and (max-width: 768px) {
+          /* Force fixed positioning on mobile browsers */
+          header, .MuiAppBar-root, .MuiAppBar-fixed, .MuiAppBar-positionFixed {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100vw !important;
+            z-index: 1300 !important;
+            transform: translateZ(0) !important;
+            -webkit-transform: translateZ(0) !important;
+            backface-visibility: hidden !important;
+            -webkit-backface-visibility: hidden !important;
+          }
+
+          .mobile-menu-button {
+            position: fixed !important;
+            top: 70px !important;
+            left: 10px !important;
+            z-index: 1400 !important;
+            transform: translateZ(0) !important;
+            -webkit-transform: translateZ(0) !important;
+            backface-visibility: hidden !important;
+            -webkit-backface-visibility: hidden !important;
+          }
+        }
+
+        /* Prevent body scroll when sidebar is open on mobile */
+        body.sidebar-open {
+          overflow: hidden !important;
+          position: fixed !important;
+          width: 100% !important;
+          height: 100% !important;
         }
       `;
 
