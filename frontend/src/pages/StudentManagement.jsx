@@ -51,7 +51,8 @@ import {
   Schedule,
   LocationOn,
   People,
-  Category
+  Category,
+  Assignment
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -461,6 +462,26 @@ const StudentManagement = () => {
                 disabled={processing || stats.pending === 0}
               >
                 Approve All Pending
+              </Button>
+              <Button
+                variant="contained"
+                sx={{
+                  background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+                  color: 'white',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #f57c00 0%, #ef6c00 100%)',
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 25px rgba(255, 152, 0, 0.3)'
+                  },
+                  transition: 'all 0.3s ease',
+                  fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                  fontWeight: 'bold'
+                }}
+                startIcon={<Assignment />}
+                onClick={() => navigate('/class-requests')}
+                disabled={processing}
+              >
+                පන්ති ඉල්ලීම්
               </Button>
               <Button
                 variant="outlined"

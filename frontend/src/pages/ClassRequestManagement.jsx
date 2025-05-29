@@ -281,9 +281,9 @@ const ClassRequestManagement = () => {
               <Button
                 variant="outlined"
                 startIcon={<ArrowBack />}
-                onClick={() => navigate('/admin-dashboard')}
+                onClick={() => navigate('/student-management')}
               >
-                Back to Dashboard
+                Back to Student Management
               </Button>
             </Box>
 
