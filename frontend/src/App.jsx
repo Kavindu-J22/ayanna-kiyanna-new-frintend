@@ -226,11 +226,12 @@ const Main = styled('main')(
     flexGrow: 1,
     padding: theme.spacing(0),
     width: '100%',
-    minHeight: 'calc(100vh - 64px)', // Subtract header height
+    minHeight: '100vh', // Full viewport height
     boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
     marginLeft: 0,
+    overflow: 'visible', // Allow content to scroll naturally
   }),
 );
 
@@ -364,39 +365,12 @@ function AppContent() {
   }, [showTip]);
 
   const handleMobileDrawerToggle = () => {
-    const newState = !mobileOpen;
-    setMobileOpen(newState);
-
-    // Manage body scroll for mobile browsers
-    if (newState) {
-      document.body.classList.add('sidebar-open');
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.height = '100%';
-    } else {
-      document.body.classList.remove('sidebar-open');
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.height = '';
-    }
+    setMobileOpen(!mobileOpen);
   };
 
   const handleDesktopDrawerToggle = () => {
     setDesktopOpen(!desktopOpen);
   };
-
-  // Cleanup body styles on unmount
-  useEffect(() => {
-    return () => {
-      document.body.classList.remove('sidebar-open');
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.height = '';
-    };
-  }, []);
 
   const handleToggleExpand = (categoryName) => {
     setExpandedCategory(prev => prev === categoryName ? null : categoryName);
@@ -407,21 +381,26 @@ function AppContent() {
   const isNoSidebarPage = noSidebarRoutes.includes(location.pathname);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100vw' }}>
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh',
+      width: '100vw',
+      overflow: 'hidden' // Prevent horizontal scroll on main container
+    }}>
       <CssBaseline />
       <Header />
 
       {/* Mobile Menu Button */}
       {!isNoSidebarPage && isMobile && (
         <IconButton
-          className="fixed-button mobile-menu-button MuiIconButton-root"
           onClick={handleMobileDrawerToggle}
           sx={{
             display: { xs: 'flex', md: 'none' },
-            position: 'fixed !important', // Force fixed position
+            position: 'fixed',
             top: 70,
             left: 10,
-            zIndex: 1400, // Higher z-index to ensure it's above header
+            zIndex: 1200,
             color: '#fff',
             backgroundColor: 'rgba(60, 27, 74, 0.9)',
             width: 40,
@@ -431,15 +410,9 @@ function AppContent() {
             boxShadow: '0 0 10px rgba(194, 24, 91, 0.5)',
             animation: `${pulseGlow} 2s infinite ease-in-out`,
             transition: 'all 0.3s ease',
-            backdropFilter: 'blur(5px)', // Add backdrop filter for better visibility
-            border: '1px solid rgba(255, 255, 255, 0.1)', // Add subtle border
-            transform: 'translateZ(0) !important', // Force hardware acceleration
-            WebkitTransform: 'translateZ(0) !important',
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden',
             '&:hover': {
               backgroundColor: 'rgba(156, 39, 176, 1)',
-              transform: 'scale(1.1) translateZ(0) !important',
+              transform: 'scale(1.1)',
               animation: 'none',
               boxShadow: '0 0 15px rgba(194, 24, 91, 0.8)',
             },
@@ -527,7 +500,13 @@ function AppContent() {
         </Snackbar>
       )}
 
-      <Box sx={{ display: 'flex', flexGrow: 1, width: '100%' }}> {/* Add margin top to account for header */}
+      <Box sx={{
+        display: 'flex',
+        flexGrow: 1,
+        width: '100%',
+        overflow: 'hidden', // Prevent horizontal scroll
+        minHeight: 'calc(100vh - 64px)' // Account for header height
+      }}>
         {!isNoSidebarPage && (
           <>
             {/* Mobile Sidebar */}
@@ -546,12 +525,16 @@ function AppContent() {
                   background: 'linear-gradient(180deg, #1A032B 0%, #3A0D5D 100%)',
                   top: 0,
                   height: '100vh',
+                  position: 'fixed',
+                  // Improve mobile scrolling
+                  overflowY: 'auto',
+                  overflowX: 'hidden',
+                  WebkitOverflowScrolling: 'touch',
                   // Hide scrollbar but keep functionality
                   scrollbarWidth: 'none', // For Firefox
                   '&::-webkit-scrollbar': { // For Chrome, Safari, Opera
                     display: 'none',
                   },
-                  overflowY: 'auto',
                 },
               }}
             >
@@ -669,12 +652,15 @@ function AppContent() {
                   background: 'linear-gradient(180deg, #1A032B 0%, #3A0D5D 100%)',
                   top: 0,
                   height: '100vh',
+                  position: 'fixed',
+                  // Improve desktop scrolling
+                  overflowY: 'auto',
+                  overflowX: 'hidden',
                   // Hide scrollbar but keep functionality
                   scrollbarWidth: 'none', // For Firefox
                   '&::-webkit-scrollbar': { // For Chrome, Safari, Opera
                     display: 'none',
                   },
-                  overflowY: 'auto',
                 },
               }}
               ref={sidebarRef}
@@ -812,16 +798,19 @@ function AppContent() {
           background: 'linear-gradient(rgba(228, 154, 255, 0.86), rgba(244, 126, 195, 0.93))',
           display: 'flex',
           justifyContent: 'center',
-          alignItems: 'center',
+          alignItems: 'flex-start', // Changed from center to flex-start
           width: '100%',
           maxWidth: '100%',
-          overflowX: 'hidden'
+          overflowX: 'hidden',
+          overflowY: 'auto', // Allow vertical scrolling
+          minHeight: '100vh' // Ensure full height
         }}>
           <Container maxWidth={false} disableGutters sx={{
             width: '100%',
-            height: '100%',
+            minHeight: '100%',
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            overflow: 'visible' // Allow content to flow naturally
           }}>
             <Routes>
               <Route path="/" element={<Home />} />

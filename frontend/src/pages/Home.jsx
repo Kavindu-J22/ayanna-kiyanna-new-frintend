@@ -52,331 +52,6 @@ const Home = () => {
   const [showStudentDialog, setShowStudentDialog] = useState(false);
   const navigate = useNavigate();
 
-  // Enhanced mobile scrolling fix - comprehensive solution
-  useEffect(() => {
-    // Detect mobile devices more accurately
-    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                          (window.innerWidth <= 768 && 'ontouchstart' in window);
-
-    if (isMobileDevice) {
-      // Create comprehensive CSS for mobile scrolling fix
-      const style = document.createElement('style');
-      style.id = 'mobile-scroll-fix';
-      style.textContent = `
-        /* Root level scrolling fixes */
-        html {
-          overflow-x: hidden !important;
-          overflow-y: auto !important;
-          -webkit-overflow-scrolling: touch !important;
-          touch-action: pan-y !important;
-          height: 100% !important;
-          position: relative !important;
-          scroll-behavior: smooth !important;
-        }
-
-        body {
-          overflow-x: hidden !important;
-          overflow-y: auto !important;
-          -webkit-overflow-scrolling: touch !important;
-          touch-action: pan-y !important;
-          height: auto !important;
-          min-height: 100% !important;
-          position: relative !important;
-          margin: 0 !important;
-          padding: 0 !important;
-        }
-
-        /* Fix for iOS Safari viewport issues */
-        @supports (-webkit-touch-callout: none) {
-          html {
-            height: -webkit-fill-available !important;
-          }
-          body {
-            min-height: -webkit-fill-available !important;
-          }
-        }
-
-        /* Complete overflow hidden strategy for mobile scrolling */
-        .MuiContainer-root {
-          overflow: hidden !important;
-          -webkit-overflow-scrolling: auto !important;
-        }
-
-        /* Apply overflow hidden to all Material-UI components */
-        .MuiBox-root {
-          overflow: hidden !important;
-        }
-
-        /* Force overflow hidden on all elements except body and fixed elements */
-        *:not(header):not(.MuiAppBar-root):not(.mobile-menu-button):not(.fixed-button) {
-          overflow: hidden !important;
-          -webkit-overflow-scrolling: touch !important;
-          scroll-behavior: smooth !important;
-        }
-
-        /* Only body should be scrollable */
-        body {
-          overflow-x: hidden !important;
-          overflow-y: auto !important;
-          -webkit-overflow-scrolling: touch !important;
-          position: relative !important;
-        }
-
-        html {
-          overflow-x: hidden !important;
-          overflow-y: auto !important;
-          position: relative !important;
-          height: 100% !important;
-        }
-
-        /* Mobile browser specific fixes */
-        @supports (-webkit-touch-callout: none) {
-          /* iOS Safari specific fixes */
-          body {
-            position: fixed !important;
-            width: 100% !important;
-            height: 100% !important;
-            overflow: hidden !important;
-          }
-
-          #root {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
-            -webkit-overflow-scrolling: touch !important;
-          }
-        }
-
-        /* Fix for fixed positioned elements */
-        [style*="position: fixed"] {
-          -webkit-transform: translateZ(0) !important;
-          transform: translateZ(0) !important;
-        }
-
-        /* Prevent content jumping during scroll */
-        .motion-safe {
-          will-change: auto !important;
-          transform: translateZ(0) !important;
-        }
-
-        /* Ensure all sections have overflow hidden */
-        section, div, .MuiPaper-root {
-          overflow: hidden !important;
-        }
-
-        /* Exception for logo container - allow shadow to show */
-        .logo-container, .logo-container * {
-          overflow: visible !important;
-        }
-
-        /* Exception for fixed positioned elements - header and menu buttons */
-        header, .MuiAppBar-root, .MuiAppBar-fixed, .MuiAppBar-positionFixed, .css-hip9hq-MuiPaper-root-MuiAppBar-root {
-          position: fixed !important;
-          overflow: visible !important;
-          z-index: 1300 !important;
-          top: 0 !important;
-          left: 0 !important;
-          right: 0 !important;
-          width: 100% !important;
-          transform: none !important;
-          -webkit-transform: none !important;
-        }
-
-        /* Ensure fixed positioned buttons work properly */
-        button[style*="position: fixed"], .fixed-button, .mobile-menu-button, .MuiIconButton-root.mobile-menu-button {
-          position: fixed !important;
-          overflow: visible !important;
-          z-index: 1400 !important;
-          transform: none !important;
-          -webkit-transform: none !important;
-        }
-
-        /* Specific targeting for mobile menu button */
-        .mobile-menu-button, .MuiIconButton-root.mobile-menu-button {
-          position: fixed !important;
-          top: 70px !important;
-          left: 10px !important;
-          z-index: 1400 !important;
-          transform: none !important;
-          -webkit-transform: none !important;
-        }
-
-        /* Mobile browser specific fixed positioning fixes */
-        @media screen and (max-width: 768px) {
-          /* Force fixed positioning on mobile browsers */
-          header, .MuiAppBar-root, .MuiAppBar-fixed, .MuiAppBar-positionFixed {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            width: 100vw !important;
-            z-index: 1300 !important;
-            transform: translateZ(0) !important;
-            -webkit-transform: translateZ(0) !important;
-            backface-visibility: hidden !important;
-            -webkit-backface-visibility: hidden !important;
-          }
-
-          .mobile-menu-button {
-            position: fixed !important;
-            top: 70px !important;
-            left: 10px !important;
-            z-index: 1400 !important;
-            transform: translateZ(0) !important;
-            -webkit-transform: translateZ(0) !important;
-            backface-visibility: hidden !important;
-            -webkit-backface-visibility: hidden !important;
-          }
-        }
-
-        /* Prevent body scroll when sidebar is open on mobile */
-        body.sidebar-open {
-          overflow: hidden !important;
-          position: fixed !important;
-          width: 100% !important;
-          height: 100% !important;
-        }
-      `;
-
-      // Remove existing style if present
-      const existingStyle = document.getElementById('mobile-scroll-fix');
-      if (existingStyle) {
-        existingStyle.remove();
-      }
-
-      // Add new style
-      document.head.appendChild(style);
-
-      // Apply body styles directly
-      const bodyStyles = {
-        overflowX: 'hidden',
-        overflowY: 'auto',
-        WebkitOverflowScrolling: 'touch',
-        touchAction: 'pan-y',
-        height: 'auto',
-        minHeight: '100%',
-        position: 'relative',
-        margin: '0',
-        padding: '0'
-      };
-
-      // Store original styles for cleanup
-      const originalStyles = {};
-      Object.keys(bodyStyles).forEach(key => {
-        originalStyles[key] = document.body.style[key];
-        document.body.style[key] = bodyStyles[key];
-      });
-
-      // Apply html styles
-      const htmlStyles = {
-        overflowX: 'hidden',
-        overflowY: 'auto',
-        WebkitOverflowScrolling: 'touch',
-        touchAction: 'pan-y',
-        height: '100%',
-        position: 'relative',
-        scrollBehavior: 'smooth'
-      };
-
-      const originalHtmlStyles = {};
-      Object.keys(htmlStyles).forEach(key => {
-        originalHtmlStyles[key] = document.documentElement.style[key];
-        document.documentElement.style[key] = htmlStyles[key];
-      });
-
-      // Cleanup function
-      return () => {
-        // Remove injected styles
-        const styleElement = document.getElementById('mobile-scroll-fix');
-        if (styleElement) {
-          styleElement.remove();
-        }
-
-        // Restore original body styles
-        Object.keys(originalStyles).forEach(key => {
-          document.body.style[key] = originalStyles[key];
-        });
-
-        // Restore original html styles
-        Object.keys(originalHtmlStyles).forEach(key => {
-          document.documentElement.style[key] = originalHtmlStyles[key];
-        });
-      };
-    }
-  }, []);
-
-  // Ensure page starts at top and optimize mobile scrolling
-  useEffect(() => {
-    // Scroll to top when component mounts
-    window.scrollTo(0, 0);
-
-    // Also ensure body scroll position is reset
-    document.body.scrollTop = 0;
-    document.documentElement.scrollTop = 0;
-
-    // Comprehensive mobile scroll optimization
-    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                          (window.innerWidth <= 768 && 'ontouchstart' in window);
-
-    if (isMobileDevice) {
-      // Disable momentum scrolling on problematic elements
-      const motionElements = document.querySelectorAll('[data-framer-motion], .motion-safe');
-      motionElements.forEach(element => {
-        element.style.WebkitOverflowScrolling = 'auto';
-        element.style.willChange = 'auto';
-        element.style.transform = 'translateZ(0)';
-        element.style.backfaceVisibility = 'hidden';
-      });
-
-      // Fix for content jumping during scroll
-      const allBoxElements = document.querySelectorAll('.MuiBox-root');
-      allBoxElements.forEach(element => {
-        element.style.willChange = 'auto';
-        element.style.transform = 'translateZ(0)';
-      });
-
-      // Optimize scroll performance with throttling
-      let ticking = false;
-      let lastScrollY = window.scrollY;
-
-      const updateScrollPosition = () => {
-        const currentScrollY = window.scrollY;
-
-        // Only update if scroll position actually changed
-        if (Math.abs(currentScrollY - lastScrollY) > 1) {
-          lastScrollY = currentScrollY;
-
-          // Force repaint to prevent content jumping
-          document.body.style.transform = 'translateZ(0)';
-          requestAnimationFrame(() => {
-            document.body.style.transform = '';
-          });
-        }
-
-        ticking = false;
-      };
-
-      const requestScrollUpdate = () => {
-        if (!ticking) {
-          requestAnimationFrame(updateScrollPosition);
-          ticking = true;
-        }
-      };
-
-      // Use passive listeners for better performance
-      window.addEventListener('scroll', requestScrollUpdate, { passive: true });
-      window.addEventListener('touchmove', requestScrollUpdate, { passive: true });
-
-      return () => {
-        window.removeEventListener('scroll', requestScrollUpdate);
-        window.removeEventListener('touchmove', requestScrollUpdate);
-      };
-    }
-  }, []);
 
   useEffect(() => {
     // Check if user email exists in local storage
@@ -593,8 +268,8 @@ const Home = () => {
         height: 'auto',
         minHeight: '100vh',
         position: 'relative',
-        // Apply overflow hidden to main container
-        overflow: 'hidden',
+        // Remove overflow hidden to allow page scrolling
+        overflow: 'visible',
         paddingTop: 0,
         marginTop: 0,
         // Optimize for mobile scrolling
@@ -608,7 +283,7 @@ const Home = () => {
     color: 'white',
     py: { xs: 8, sm: 10, md: 12 },
     position: 'relative',
-    overflow: 'hidden', // Apply overflow hidden
+    overflow: 'hidden', // Keep overflow hidden only for background effects
     minHeight: { xs: '100vh', sm: '100vh' },
     display: 'flex',
     flexDirection: 'column',
@@ -1799,7 +1474,7 @@ const Home = () => {
           sx={{
             position: 'relative',
             width: '100%',
-            overflow: 'hidden' // Restore overflow hidden for carousel functionality
+            overflow: 'hidden' // Keep overflow hidden for carousel functionality only
           }}>
           {/* Slider container */}
           <Box sx={{
@@ -1937,7 +1612,7 @@ const Home = () => {
     py: { xs: 4, md: 5 },
     background: 'linear-gradient(to bottom, #f9f9f9 0%, #ffffff 100%)',
     position: 'relative',
-    overflow: 'hidden', // Apply overflow hidden
+    overflow: 'visible', // Allow content to flow naturally
     '&:before': {
       content: '""',
       position: 'absolute',
@@ -2428,7 +2103,7 @@ const Home = () => {
     py: 10,
     background: 'linear-gradient(135deg, #f5f7fa 0%, #f0f4f8 100%)',
     position: 'relative',
-    overflow: 'hidden', // Apply overflow hidden
+    overflow: 'visible', // Allow content to flow naturally
     '&:before': {
       content: '""',
       position: 'absolute',
