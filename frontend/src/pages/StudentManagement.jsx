@@ -46,7 +46,12 @@ import {
   Search,
   Message,
   SwapHoriz,
-  RemoveCircle
+  RemoveCircle,
+  Class,
+  Schedule,
+  LocationOn,
+  People,
+  Category
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -711,7 +716,7 @@ const StudentManagement = () => {
           </Paper>
 
           {/* Student Details Dialog */}
-          <Dialog open={showDetailsDialog} onClose={() => setShowDetailsDialog(false)} maxWidth="md" fullWidth>
+          <Dialog open={showDetailsDialog} onClose={() => setShowDetailsDialog(false)} maxWidth="lg" fullWidth>
             <DialogTitle>
               Student Details - {selectedStudent?.studentId}
             </DialogTitle>
@@ -742,6 +747,64 @@ const StudentManagement = () => {
                     {selectedStudent.adminAction?.actionNote && (
                       <Typography sx={{ mt: 1 }}>
                         <strong>Admin Note:</strong> {selectedStudent.adminAction.actionNote}
+                      </Typography>
+                    )}
+                  </Grid>
+
+                  {/* Class Details Section */}
+                  <Grid item xs={12}>
+                    <Divider sx={{ my: 2 }} />
+                    <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Class sx={{ mr: 1 }} />
+                      Enrolled Classes ({selectedStudent.enrolledClasses?.length || 0})
+                    </Typography>
+                    {selectedStudent.enrolledClasses && selectedStudent.enrolledClasses.length > 0 ? (
+                      <Grid container spacing={2}>
+                        {selectedStudent.enrolledClasses.map((classItem, index) => {
+                          // Use the calculated fields from backend
+                          const capacity = classItem.capacity || 0;
+                          const enrolledCount = classItem.enrolledCount || 0;
+                          const availableSpots = classItem.availableSpots || 0;
+
+                          return (
+                            <Grid item xs={12} md={6} key={index}>
+                              <Paper elevation={2} sx={{ p: 2, borderRadius: 2, border: '1px solid #e0e0e0' }}>
+                                <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
+                                  <Category sx={{ mr: 1, fontSize: 20 }} />
+                                  {classItem.category}
+                                </Typography>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                  <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <School sx={{ mr: 1, fontSize: 16, color: 'primary.main' }} />
+                                    <strong>Grade:</strong> {classItem.grade}
+                                  </Typography>
+                                  <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Schedule sx={{ mr: 1, fontSize: 16, color: 'primary.main' }} />
+                                    <strong>Time:</strong> {classItem.startTime} - {classItem.endTime}
+                                  </Typography>
+                                  <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <LocationOn sx={{ mr: 1, fontSize: 16, color: 'primary.main' }} />
+                                    <strong>Venue:</strong> {classItem.venue}
+                                  </Typography>
+                                  <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <People sx={{ mr: 1, fontSize: 16, color: 'primary.main' }} />
+                                    <strong>Available Spots:</strong> {availableSpots} / {capacity} (Enrolled: {enrolledCount})
+                                  </Typography>
+                                  <Typography variant="body2">
+                                    <strong>Platform:</strong> {classItem.platform || 'Physical'}
+                                  </Typography>
+                                  <Typography variant="body2">
+                                    <strong>Day:</strong> {classItem.date}
+                                  </Typography>
+                                </Box>
+                              </Paper>
+                            </Grid>
+                          );
+                        })}
+                      </Grid>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                        No classes enrolled yet.
                       </Typography>
                     )}
                   </Grid>
