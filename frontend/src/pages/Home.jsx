@@ -266,22 +266,19 @@ const Home = () => {
       sx={{
         width: '100%',
         height: 'auto',
-        // Remove minHeight constraint that causes mobile scrolling issues
         position: 'relative',
-        // Ensure proper scrolling on mobile
         overflow: 'visible',
         paddingTop: 0,
         marginTop: 0,
-        // Enhanced mobile scrolling support
-        WebkitOverflowScrolling: 'touch',
-        touchAction: 'manipulation', // Better touch handling for mobile
-        // Fix mobile browser scrolling issues
+        // Simple mobile scrolling fix
         [theme.breakpoints.down('sm')]: {
-          position: 'static', // Remove relative positioning on mobile
-          minHeight: 'auto', // Ensure no height constraints on mobile
+          position: 'static',
+          minHeight: 'auto',
           height: 'auto',
-          transform: 'translateZ(0)', // Force hardware acceleration
-          backfaceVisibility: 'hidden', // Improve mobile performance
+          overflow: 'visible',
+          // Remove all touch restrictions that might interfere
+          touchAction: 'auto',
+          WebkitOverflowScrolling: 'touch',
         }
       }}>
 {/* Welcome Section with Enhanced Animated Background */}
@@ -289,20 +286,21 @@ const Home = () => {
   sx={{
     background: 'linear-gradient(135deg, #6a11cb 0%, #ff6b9d 50%, #ff8e53 100%)',
     color: 'white',
-    py: { xs: 8, sm: 10, md: 12 },
+    py: { xs: 6, sm: 10, md: 12 },
     position: 'relative',
     overflow: 'hidden', // Keep overflow hidden only for background effects
-    // Remove all height constraints to fix mobile scrolling
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     paddingTop: { xs: '60px', sm: '80px' },
-    // Mobile-specific fixes
+    // Mobile-specific fixes for scrolling
     [theme.breakpoints.down('sm')]: {
-      paddingBottom: '40px', // Ensure content doesn't get cut off
-      minHeight: 'auto', // Allow natural height on mobile
-      height: 'auto', // Ensure no height constraints
-      justifyContent: 'flex-start', // Don't center content vertically on mobile
+      paddingBottom: '40px',
+      minHeight: 'auto',
+      height: 'auto',
+      justifyContent: 'flex-start',
+      py: 6, // Consistent padding
+      position: 'relative', // Ensure proper positioning
     },
     '&:before': {
       content: '""',
