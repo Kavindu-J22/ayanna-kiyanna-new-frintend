@@ -107,8 +107,8 @@ const Home = () => {
           overflow: hidden !important;
         }
 
-        /* Force overflow hidden on all elements except body */
-        * {
+        /* Force overflow hidden on all elements except body and fixed elements */
+        *:not(header):not(.MuiAppBar-root):not(.mobile-menu-button):not(.fixed-button) {
           overflow: hidden !important;
           -webkit-overflow-scrolling: touch !important;
           scroll-behavior: smooth !important;
@@ -174,7 +174,7 @@ const Home = () => {
         }
 
         /* Exception for fixed positioned elements - header and menu buttons */
-        header, .MuiAppBar-root, .MuiAppBar-fixed, .MuiAppBar-positionFixed {
+        header, .MuiAppBar-root, .MuiAppBar-fixed, .MuiAppBar-positionFixed, .css-hip9hq-MuiPaper-root-MuiAppBar-root {
           position: fixed !important;
           overflow: visible !important;
           z-index: 1300 !important;
@@ -187,7 +187,7 @@ const Home = () => {
         }
 
         /* Ensure fixed positioned buttons work properly */
-        button[style*="position: fixed"], .fixed-button, .mobile-menu-button {
+        button[style*="position: fixed"], .fixed-button, .mobile-menu-button, .MuiIconButton-root.mobile-menu-button {
           position: fixed !important;
           overflow: visible !important;
           z-index: 1400 !important;
@@ -196,7 +196,7 @@ const Home = () => {
         }
 
         /* Specific targeting for mobile menu button */
-        .mobile-menu-button {
+        .mobile-menu-button, .MuiIconButton-root.mobile-menu-button {
           position: fixed !important;
           top: 70px !important;
           left: 10px !important;

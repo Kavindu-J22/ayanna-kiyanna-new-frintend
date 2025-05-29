@@ -364,12 +364,39 @@ function AppContent() {
   }, [showTip]);
 
   const handleMobileDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+    const newState = !mobileOpen;
+    setMobileOpen(newState);
+
+    // Manage body scroll for mobile browsers
+    if (newState) {
+      document.body.classList.add('sidebar-open');
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+    } else {
+      document.body.classList.remove('sidebar-open');
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+    }
   };
 
   const handleDesktopDrawerToggle = () => {
     setDesktopOpen(!desktopOpen);
   };
+
+  // Cleanup body styles on unmount
+  useEffect(() => {
+    return () => {
+      document.body.classList.remove('sidebar-open');
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+    };
+  }, []);
 
   const handleToggleExpand = (categoryName) => {
     setExpandedCategory(prev => prev === categoryName ? null : categoryName);
@@ -387,7 +414,7 @@ function AppContent() {
       {/* Mobile Menu Button */}
       {!isNoSidebarPage && isMobile && (
         <IconButton
-          className="fixed-button mobile-menu-button"
+          className="fixed-button mobile-menu-button MuiIconButton-root"
           onClick={handleMobileDrawerToggle}
           sx={{
             display: { xs: 'flex', md: 'none' },
@@ -406,9 +433,13 @@ function AppContent() {
             transition: 'all 0.3s ease',
             backdropFilter: 'blur(5px)', // Add backdrop filter for better visibility
             border: '1px solid rgba(255, 255, 255, 0.1)', // Add subtle border
+            transform: 'translateZ(0) !important', // Force hardware acceleration
+            WebkitTransform: 'translateZ(0) !important',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
             '&:hover': {
               backgroundColor: 'rgba(156, 39, 176, 1)',
-              transform: 'scale(1.1)',
+              transform: 'scale(1.1) translateZ(0) !important',
               animation: 'none',
               boxShadow: '0 0 15px rgba(194, 24, 91, 0.8)',
             },
