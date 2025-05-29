@@ -586,6 +586,7 @@ const StudentDashboard = () => {
                               sx={{ mt: 2 }}
                               disabled={student.status !== 'Approved'}
                               startIcon={student.status === 'Approved' ? <Visibility /> : <Lock />}
+                              onClick={() => student.status === 'Approved' && navigate(`/class/${classItem._id}`)}
                             >
                               {student.status === 'Approved' ? 'Access Class' : 'Pending Approval'}
                             </Button>

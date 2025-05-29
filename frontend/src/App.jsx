@@ -89,6 +89,7 @@ import StudentRegistration from './pages/StudentRegistration';
 import StudentManagement from './pages/StudentManagement';
 import NotificationsPage from './pages/NotificationsPage';
 import ClassRequestManagement from './pages/ClassRequestManagement';
+import SpecificClass from './pages/SpecificClass';
 
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
@@ -849,6 +850,7 @@ function AppContent() {
               <Route path="/student-management" element={<StudentManagement />} />
               <Route path="/class-requests" element={<ClassRequestManagement />} />
               <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/class/:classId" element={<SpecificClass />} />
             </Routes>
           </Container>
         </Main>

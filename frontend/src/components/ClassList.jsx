@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Paper,
   Table,
@@ -53,6 +54,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const navigate = useNavigate();
 
   // Filter classes based on search and filters
   const filteredClasses = classes.filter(classItem => {
@@ -193,6 +195,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
                 <IconButton
                   size="small"
                   color="success"
+                  onClick={() => navigate(`/class/${classItem._id}`)}
                   sx={{
                     bgcolor: 'rgba(76, 175, 80, 0.1)',
                     '&:hover': { bgcolor: 'rgba(76, 175, 80, 0.2)' }
@@ -495,6 +498,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
                           <IconButton
                             size="small"
                             color="success"
+                            onClick={() => navigate(`/class/${classItem._id}`)}
                             sx={{
                               bgcolor: 'rgba(76, 175, 80, 0.1)',
                               '&:hover': { bgcolor: 'rgba(76, 175, 80, 0.2)' }
