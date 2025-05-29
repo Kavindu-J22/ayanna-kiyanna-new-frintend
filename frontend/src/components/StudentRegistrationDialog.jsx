@@ -19,16 +19,66 @@ import {
   AutoStories
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const StudentRegistrationDialog = ({ open, onClose }) => {
+  const navigate = useNavigate();
+
   const handleClose = () => {
     onClose();
   };
 
-  const handleRegisterNow = () => {
-    // For now, just close the dialog as requested
-    // In the future, this can navigate to registration
-    handleClose();
+  const handleRegisterNow = async () => {
+    const userEmail = localStorage.getItem('userEmail');
+
+    if (!userEmail) {
+      // User not logged in, show message
+      alert('Please login first to register as a student');
+      handleClose();
+      navigate('/login');
+      return;
+    }
+
+    try {
+      // Check user role from database
+      const token = localStorage.getItem('token');
+      const response = await axios.get('https://ayanna-kiyanna-new-backend.onrender.com/api/auth/me', {
+        headers: { 'x-auth-token': token }
+      });
+
+      const currentUserRole = response.data.role;
+
+      if (currentUserRole === 'student') {
+        // Already a student
+        alert('You are already registered as a student. Use your personal student dashboard. Good Luck!');
+        handleClose();
+        return;
+      }
+
+      if (!['user', 'admin', 'moderator'].includes(currentUserRole)) {
+        alert('Only users with appropriate roles can register as students');
+        handleClose();
+        return;
+      }
+
+      // Navigate to student registration form
+      handleClose();
+      navigate('/student-registration');
+    } catch (error) {
+      console.error('Error checking user role:', error);
+      if (error.response?.status === 401) {
+        alert('Your session has expired. Please login again.');
+        localStorage.removeItem('token');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userRole');
+        handleClose();
+        navigate('/login');
+      } else {
+        alert('Failed to verify user permissions. Please try again.');
+        handleClose();
+      }
+    }
   };
 
   return (

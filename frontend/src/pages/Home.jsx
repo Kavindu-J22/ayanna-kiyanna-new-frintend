@@ -1075,6 +1075,7 @@ const Home = () => {
                   color="secondary"
                   size="large"
                   startIcon={<PersonAdd sx={{ fontSize: '1.5rem' }} />}
+                  onClick={() => navigate('/register')}
                   sx={{
                     fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                     borderRadius: '50px',
@@ -1100,6 +1101,7 @@ const Home = () => {
                   color="secondary"
                   size="large"
                   startIcon={<Login sx={{ fontSize: '1.5rem' }} />}
+                  onClick={() => navigate('/login')}
                   sx={{
                     fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                     borderRadius: '50px',
