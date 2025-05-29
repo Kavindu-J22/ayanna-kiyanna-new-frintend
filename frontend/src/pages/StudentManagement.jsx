@@ -71,6 +71,8 @@ const StudentManagement = () => {
   const [actionType, setActionType] = useState('');
   const [adminNote, setAdminNote] = useState('');
   const [processing, setProcessing] = useState(false);
+  const [pendingClassRequestsCount, setPendingClassRequestsCount] = useState(0);
+  const [classRequestsLoading, setClassRequestsLoading] = useState(false);
 
   // Filters
   const [statusFilter, setStatusFilter] = useState('');
@@ -95,6 +97,7 @@ const StudentManagement = () => {
   useEffect(() => {
     loadStudentData();
     loadAdditionalData();
+    loadPendingClassRequestsCount();
   }, [statusFilter, gradeFilter, classFilter, currentPage]);
 
   const loadAdditionalData = async () => {
@@ -116,6 +119,26 @@ const StudentManagement = () => {
       setAvailableGrades(gradesResponse.data.grades || []);
     } catch (error) {
       console.error('Error loading additional data:', error);
+    }
+  };
+
+  const loadPendingClassRequestsCount = async () => {
+    try {
+      setClassRequestsLoading(true);
+      const token = localStorage.getItem('token');
+
+      const response = await axios.get(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/class-requests?status=Pending',
+        { headers: { 'x-auth-token': token } }
+      );
+
+      const pendingRequests = response.data.requests || [];
+      setPendingClassRequestsCount(pendingRequests.length);
+    } catch (error) {
+      console.error('Error loading pending class requests count:', error);
+      setPendingClassRequestsCount(0);
+    } finally {
+      setClassRequestsLoading(false);
     }
   };
 
@@ -475,13 +498,107 @@ const StudentManagement = () => {
                   },
                   transition: 'all 0.3s ease',
                   fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
-                  fontWeight: 'bold'
+                  fontWeight: 'bold',
+                  position: 'relative',
+                  overflow: 'visible'
                 }}
-                startIcon={<Assignment />}
+                startIcon={
+                  <Badge
+                    badgeContent={
+                      pendingClassRequestsCount > 0 ? (
+                        <Box sx={{
+                          background: 'linear-gradient(135deg, #e91e63 0%, #ad1457 100%)',
+                          color: 'white',
+                          borderRadius: '50%',
+                          width: 20,
+                          height: 20,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '0.7rem',
+                          fontWeight: 'bold',
+                          boxShadow: '0 2px 8px rgba(233, 30, 99, 0.4)',
+                          animation: pendingClassRequestsCount > 0 ? 'pulse 2s infinite' : 'none',
+                          '@keyframes pulse': {
+                            '0%': {
+                              transform: 'scale(1)',
+                              boxShadow: '0 2px 8px rgba(233, 30, 99, 0.4)'
+                            },
+                            '50%': {
+                              transform: 'scale(1.1)',
+                              boxShadow: '0 4px 12px rgba(233, 30, 99, 0.6)'
+                            },
+                            '100%': {
+                              transform: 'scale(1)',
+                              boxShadow: '0 2px 8px rgba(233, 30, 99, 0.4)'
+                            }
+                          }
+                        }}>
+                          {classRequestsLoading ? <CircularProgress size={10} sx={{ color: 'white' }} /> : pendingClassRequestsCount}
+                        </Box>
+                      ) : null
+                    }
+                    sx={{
+                      '& .MuiBadge-badge': {
+                        top: -6,
+                        right: -6,
+                        border: 'none',
+                        padding: 0,
+                        minWidth: 'auto',
+                        height: 'auto',
+                        backgroundColor: 'transparent'
+                      }
+                    }}
+                  >
+                    <Assignment />
+                  </Badge>
+                }
                 onClick={() => navigate('/class-requests')}
                 disabled={processing}
               >
-                පන්ති ඉල්ලීම්
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography component="span" sx={{
+                    fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                    fontWeight: 'bold'
+                  }}>
+                    පන්ති ඉල්ලීම්
+                  </Typography>
+                  {pendingClassRequestsCount > 0 && (
+                    <Typography component="span" sx={{
+                      color: '#fff3e0',
+                      fontWeight: 'bold',
+                      fontSize: '0.85rem',
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      px: 1,
+                      py: 0.3,
+                      borderRadius: 2,
+                      border: '1px solid rgba(255, 255, 255, 0.3)',
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                    }}>
+                      ({pendingClassRequestsCount})
+                    </Typography>
+                  )}
+                </Box>
+                {pendingClassRequestsCount > 0 && (
+                  <Typography variant="caption" sx={{
+                    position: 'absolute',
+                    bottom: -18,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    color: '#ff9800',
+                    fontWeight: 'medium',
+                    fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                    fontSize: '0.7rem',
+                    whiteSpace: 'nowrap',
+                    background: 'rgba(255, 255, 255, 0.9)',
+                    px: 1,
+                    py: 0.2,
+                    borderRadius: 1,
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+                  }}>
+                    අනුමැතිය බලාපොරොත්තුවෙන්
+                  </Typography>
+                )}
               </Button>
               <Button
                 variant="outlined"

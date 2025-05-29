@@ -19,7 +19,9 @@ import {
   useTheme,
   useMediaQuery,
   Container,
-  Divider
+  Divider,
+  Badge,
+  CircularProgress
 } from '@mui/material';
 import {
   Dashboard,
@@ -43,6 +45,8 @@ import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const [userInfo, setUserInfo] = useState({});
+  const [pendingCount, setPendingCount] = useState(0);
+  const [loading, setLoading] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigate = useNavigate();
@@ -52,7 +56,26 @@ const AdminDashboard = () => {
     const email = localStorage.getItem('userEmail');
     const fullName = localStorage.getItem('fullName');
     setUserInfo({ email, fullName });
+
+    // Load pending student count
+    loadPendingCount();
   }, []);
+
+  const loadPendingCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/stats', {
+        headers: { 'x-auth-token': token }
+      });
+      const data = await response.json();
+      setPendingCount(data.pending || 0);
+    } catch (error) {
+      console.error('Error loading pending count:', error);
+      setPendingCount(0);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Sample data for admin dashboard
   const stats = [
@@ -185,22 +208,98 @@ const AdminDashboard = () => {
                         cursor: 'pointer',
                         '&:hover': {
                           bgcolor: 'grey.50'
-                        }
+                        },
+                        position: 'relative',
+                        overflow: 'visible'
                       }}
                       onClick={() => navigate(action.path)}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Avatar sx={{
-                            bgcolor: action.color,
-                            width: 40,
-                            height: 40
-                          }}>
-                            {action.icon}
-                          </Avatar>
-                          <Typography variant="body1" fontWeight="medium" sx={{
-                            fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-                          }}>
-                            {action.title}
-                          </Typography>
+                          <Badge
+                            badgeContent={
+                              action.title === 'සිසු කළමනාකරණය' && pendingCount > 0 ? (
+                                <Box sx={{
+                                  background: 'linear-gradient(135deg, #ff4444 0%, #cc0000 100%)',
+                                  color: 'white',
+                                  borderRadius: '50%',
+                                  width: 24,
+                                  height: 24,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: '0.75rem',
+                                  fontWeight: 'bold',
+                                  boxShadow: '0 2px 8px rgba(255, 68, 68, 0.4)',
+                                  animation: pendingCount > 0 ? 'pulse 2s infinite' : 'none',
+                                  '@keyframes pulse': {
+                                    '0%': {
+                                      transform: 'scale(1)',
+                                      boxShadow: '0 2px 8px rgba(255, 68, 68, 0.4)'
+                                    },
+                                    '50%': {
+                                      transform: 'scale(1.1)',
+                                      boxShadow: '0 4px 12px rgba(255, 68, 68, 0.6)'
+                                    },
+                                    '100%': {
+                                      transform: 'scale(1)',
+                                      boxShadow: '0 2px 8px rgba(255, 68, 68, 0.4)'
+                                    }
+                                  }
+                                }}>
+                                  {loading ? <CircularProgress size={12} sx={{ color: 'white' }} /> : pendingCount}
+                                </Box>
+                              ) : null
+                            }
+                            sx={{
+                              '& .MuiBadge-badge': {
+                                top: -8,
+                                right: -8,
+                                border: 'none',
+                                padding: 0,
+                                minWidth: 'auto',
+                                height: 'auto',
+                                backgroundColor: 'transparent'
+                              }
+                            }}
+                          >
+                            <Avatar sx={{
+                              bgcolor: action.color,
+                              width: 40,
+                              height: 40
+                            }}>
+                              {action.icon}
+                            </Avatar>
+                          </Badge>
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="body1" fontWeight="medium" sx={{
+                              fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
+                            }}>
+                              {action.title}
+                              {action.title === 'සිසු කළමනාකරණය' && pendingCount > 0 && (
+                                <Typography component="span" sx={{
+                                  ml: 1,
+                                  color: '#ff4444',
+                                  fontWeight: 'bold',
+                                  fontSize: '0.9rem',
+                                  background: 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)',
+                                  px: 1,
+                                  py: 0.5,
+                                  borderRadius: 2,
+                                  border: '1px solid #ffcdd2'
+                                }}>
+                                  ({pendingCount})
+                                </Typography>
+                              )}
+                            </Typography>
+                            {action.title === 'සිසු කළමනාකරණය' && pendingCount > 0 && (
+                              <Typography variant="caption" sx={{
+                                color: '#ff4444',
+                                fontWeight: 'medium',
+                                fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
+                              }}>
+                                අනුමැතිය බලාපොරොත්තුවෙන්
+                              </Typography>
+                            )}
+                          </Box>
                         </Box>
                       </Card>
                     </motion.div>
