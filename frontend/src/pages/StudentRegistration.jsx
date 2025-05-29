@@ -28,7 +28,11 @@ import {
   Chip,
   Skeleton,
   Badge,
-  Tooltip
+  Tooltip,
+  useTheme,
+  useMediaQuery,
+  InputAdornment,
+  Collapse
 } from '@mui/material';
 import {
   Person,
@@ -46,7 +50,12 @@ import {
   LocationOn,
   Computer,
   Warning,
-  CheckCircle
+  CheckCircle,
+  CalendarToday,
+  Phone,
+  WhatsApp,
+  Info,
+  Error as ErrorIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -54,6 +63,8 @@ import axios from 'axios';
 
 const StudentRegistration = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [loadingClasses, setLoadingClasses] = useState(false);
@@ -62,6 +73,7 @@ const StudentRegistration = () => {
   const [availableGrades, setAvailableGrades] = useState([]);
   const [availableClasses, setAvailableClasses] = useState([]);
   const [useContactForWhatsapp, setUseContactForWhatsapp] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
 
   // Form data state
   const [formData, setFormData] = useState({
@@ -98,10 +110,10 @@ const StudentRegistration = () => {
   });
 
   const steps = [
-    'Personal Information',
-    'Guardian Information',
-    'Academic Information',
-    'Security & Agreement'
+    'පුද්ගලික තොරතුරු', // Personal Information
+    'භාරකරු තොරතුරු', // Guardian Information
+    'අධ්‍යාපනික තොරතුරු', // Academic Information
+    'ආරක්ෂාව සහ එකඟතාව' // Security & Agreement
   ];
 
   const fetchAvailableGrades = useCallback(async () => {
@@ -315,7 +327,7 @@ const StudentRegistration = () => {
       }
 
       return age >= 13;
-    } catch (error) {
+    } catch {
       return false;
     }
   };
@@ -585,14 +597,19 @@ const StudentRegistration = () => {
             {/* Stepper */}
             <Stepper
               activeStep={activeStep}
+              orientation={isMobile ? 'vertical' : 'horizontal'}
               sx={{
                 mb: 4,
                 '& .MuiStepLabel-label': {
                   fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                  fontWeight: 'bold'
+                  fontWeight: 'bold',
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                 },
                 '& .MuiStepIcon-root': {
                   fontSize: { xs: '1.2rem', sm: '1.5rem' }
+                },
+                '& .MuiStepConnector-line': {
+                  borderColor: 'rgba(255, 107, 107, 0.3)'
                 }
               }}
             >
@@ -604,10 +621,45 @@ const StudentRegistration = () => {
             </Stepper>
 
             {error && (
-              <Alert severity="error" sx={{ mb: 3 }}>
+              <Alert
+                severity="error"
+                icon={<ErrorIcon />}
+                sx={{
+                  mb: 3,
+                  '& .MuiAlert-message': {
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                  }
+                }}
+              >
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  ❌ දෝෂය (Error)
+                </Typography>
                 {error}
               </Alert>
             )}
+
+            {/* Validation Status */}
+            <Collapse in={!validateStep(activeStep) && activeStep < steps.length}>
+              <Alert
+                severity="warning"
+                icon={<Warning />}
+                sx={{
+                  mb: 3,
+                  bgcolor: 'rgba(255, 152, 0, 0.1)',
+                  border: '1px solid rgba(255, 152, 0, 0.3)'
+                }}
+              >
+                <Typography variant="body2" sx={{
+                  fontWeight: 'bold',
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                }}>
+                  ⚠️ කරුණාකර සියලුම අවශ්‍ය ක්ෂේත්‍ර සම්පූර්ණ කරන්න
+                </Typography>
+                <Typography variant="caption" sx={{ display: 'block', mt: 0.5 }}>
+                  Please complete all required fields to continue
+                </Typography>
+              </Alert>
+            </Collapse>
 
             {/* Step Content */}
             <Box sx={{
@@ -620,83 +672,132 @@ const StudentRegistration = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Typography variant="h6" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+                  <Typography variant="h6" gutterBottom sx={{
+                    mb: 3,
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                    color: 'primary.main'
+                  }}>
                     <Person sx={{ mr: 1 }} />
-                    Personal Information
+                    පුද්ගලික තොරතුරු (Personal Information)
                   </Typography>
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={4}>
                       <TextField
                         fullWidth
-                        label="Surname"
+                        label="වාසගම (Surname)"
                         value={formData.surname || ''}
                         onChange={(e) => handleInputChange('surname', e.target.value)}
                         required
                         sx={{ minWidth: 200 }}
                         error={formData.surname && formData.surname.length < 2}
-                        helperText={formData.surname && formData.surname.length < 2 ? 'Surname must be at least 2 characters' : ''}
+                        helperText={formData.surname && formData.surname.length < 2 ? 'වාසගම අවම වශයෙන් අකුරු 2ක් විය යුතුය' : ''}
                       />
                     </Grid>
                     <Grid item xs={12} md={4}>
                       <TextField
                         fullWidth
-                        label="First Name"
+                        label="මුල් නම (First Name)"
                         value={formData.firstName || ''}
                         onChange={(e) => handleInputChange('firstName', e.target.value)}
                         required
                         sx={{ minWidth: 200 }}
                         error={formData.firstName && formData.firstName.length < 2}
-                        helperText={formData.firstName && formData.firstName.length < 2 ? 'First name must be at least 2 characters' : ''}
+                        helperText={formData.firstName && formData.firstName.length < 2 ? 'මුල් නම අවම වශයෙන් අකුරු 2ක් විය යුතුය' : ''}
                       />
                     </Grid>
                     <Grid item xs={12} md={4}>
                       <TextField
                         fullWidth
-                        label="Last Name"
+                        label="අවසාන නම (Last Name)"
                         value={formData.lastName || ''}
                         onChange={(e) => handleInputChange('lastName', e.target.value)}
                         required
                         sx={{ minWidth: 200 }}
                         error={formData.lastName && formData.lastName.length < 2}
-                        helperText={formData.lastName && formData.lastName.length < 2 ? 'Last name must be at least 2 characters' : ''}
+                        helperText={formData.lastName && formData.lastName.length < 2 ? 'අවසාන නම අවම වශයෙන් අකුරු 2ක් විය යුතුය' : ''}
                       />
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <TextField
                         fullWidth
-                        label="Contact Number"
+                        label="සම්බන්ධතා අංකය (Contact Number)"
                         value={formData.contactNumber || ''}
                         onChange={(e) => handleInputChange('contactNumber', e.target.value)}
                         required
                         sx={{ minWidth: 200 }}
                         error={formData.contactNumber && !validateContactNumber(formData.contactNumber)}
-                        helperText={formData.contactNumber && !validateContactNumber(formData.contactNumber) ? 'Enter valid Sri Lankan number (10 digits starting with 0)' : 'Example: 0771234567'}
+                        helperText={formData.contactNumber && !validateContactNumber(formData.contactNumber) ? 'වලංගු ශ්‍රී ලංකා දුරකථන අංකයක් ඇතුළත් කරන්න' : 'උදාහරණය: 0771234567'}
                         placeholder="0771234567"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <Phone color="primary" />
+                            </InputAdornment>
+                          ),
+                        }}
                       />
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <Box>
                         <TextField
                           fullWidth
-                          label="WhatsApp Number"
+                          label="WhatsApp අංකය (WhatsApp Number)"
                           value={formData.whatsappNumber || ''}
                           onChange={(e) => handleInputChange('whatsappNumber', e.target.value)}
                           required
                           sx={{ minWidth: 200 }}
                           error={formData.whatsappNumber && !validateWhatsAppNumber(formData.whatsappNumber)}
-                          helperText={formData.whatsappNumber && !validateWhatsAppNumber(formData.whatsappNumber) ? 'Enter valid WhatsApp number' : 'Example: 0771234567 or +94771234567'}
+                          helperText={formData.whatsappNumber && !validateWhatsAppNumber(formData.whatsappNumber) ? 'වලංගු WhatsApp අංකයක් ඇතුළත් කරන්න' : 'උදාහරණය: 0771234567 හෝ +94771234567'}
                           placeholder="0771234567"
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <WhatsApp color="success" />
+                              </InputAdornment>
+                            ),
+                          }}
                         />
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={useContactForWhatsapp}
-                              onChange={(e) => handleUseContactForWhatsapp(e.target.checked)}
-                            />
-                          }
-                          label="Use contact number for the Whatsapp Numer (Auto Fill)"
-                          sx={{ mt: 1 }}
-                        />
+                        <Box sx={{
+                          mt: 1,
+                          p: 2,
+                          bgcolor: 'rgba(76, 175, 80, 0.1)',
+                          borderRadius: 2,
+                          border: '1px solid rgba(76, 175, 80, 0.3)'
+                        }}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={useContactForWhatsapp}
+                                onChange={(e) => handleUseContactForWhatsapp(e.target.checked)}
+                                sx={{
+                                  color: 'success.main',
+                                  '&.Mui-checked': {
+                                    color: 'success.main',
+                                  }
+                                }}
+                              />
+                            }
+                            label={
+                              <Typography variant="body2" sx={{
+                                fontWeight: 'bold',
+                                color: 'success.dark',
+                                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                              }}>
+                                මගේ WhatsApp අංකය සහ සම්බන්ධතා අංකය එකම වේ (ස්වයංක්‍රීය පිරවීම)
+                              </Typography>
+                            }
+                          />
+                          <Typography variant="caption" sx={{
+                            display: 'block',
+                            mt: 0.5,
+                            color: 'text.secondary',
+                            fontStyle: 'italic'
+                          }}>
+                            ✨ මෙය ඔබේ WhatsApp අංකය ස්වයංක්‍රීයව පිරවනු ඇත
+                          </Typography>
+                        </Box>
                       </Box>
                     </Grid>
                     <Grid item xs={12}>
@@ -750,15 +851,95 @@ const StudentRegistration = () => {
                     <Grid item xs={12} md={6}>
                       <TextField
                         fullWidth
-                        label="Birthday"
+                        label="උපන් දිනය (Birthday)"
                         type="date"
                         value={formData.birthday || ''}
                         onChange={(e) => handleInputChange('birthday', e.target.value)}
-                        slotProps={{ inputLabel: { shrink: true } }}
+                        slotProps={{
+                          inputLabel: { shrink: true },
+                          input: {
+                            sx: {
+                              cursor: 'pointer',
+                              '&::-webkit-calendar-picker-indicator': {
+                                cursor: 'pointer',
+                                fontSize: '1.2rem',
+                                padding: '4px',
+                                borderRadius: '4px',
+                                position: 'absolute',
+                                right: '8px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                width: '20px',
+                                height: '20px',
+                                opacity: 0,
+                                '&:hover': {
+                                  backgroundColor: 'rgba(25, 118, 210, 0.1)'
+                                }
+                              }
+                            }
+                          }
+                        }}
                         required
-                        sx={{ minWidth: 200 }}
+                        sx={{
+                          minWidth: 200,
+                          '& .MuiInputBase-root': {
+                            cursor: 'pointer',
+                            position: 'relative'
+                          },
+                          '& .MuiInputBase-input': {
+                            cursor: 'pointer',
+                            paddingRight: '40px !important'
+                          },
+                          '& .MuiInputBase-root::after': {
+                            content: '""',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            cursor: 'pointer',
+                            zIndex: 1
+                          }
+                        }}
                         error={formData.birthday && !validateAge(formData.birthday)}
-                        helperText={formData.birthday && !validateAge(formData.birthday) ? 'You must be at least 13 years old' : ''}
+                        helperText={formData.birthday && !validateAge(formData.birthday) ? 'ඔබ අවම වශයෙන් වයස අවුරුදු 13ක් විය යුතුය' : 'දිනය තෝරන්න'}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <CalendarToday color="primary" sx={{ cursor: 'pointer' }} />
+                            </InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <CalendarToday
+                                color="primary"
+                                sx={{
+                                  cursor: 'pointer',
+                                  fontSize: '1.2rem',
+                                  '&:hover': {
+                                    color: 'primary.dark'
+                                  }
+                                }}
+                                onClick={(e) => {
+                                  // Find the date input and trigger click
+                                  const dateInput = e.target.closest('.MuiInputBase-root').querySelector('input[type="date"]');
+                                  if (dateInput) {
+                                    dateInput.focus();
+                                    dateInput.showPicker && dateInput.showPicker();
+                                  }
+                                }}
+                              />
+                            </InputAdornment>
+                          ),
+                        }}
+                        onClick={(e) => {
+                          // Make the entire field clickable
+                          const input = e.currentTarget.querySelector('input[type="date"]');
+                          if (input) {
+                            input.focus();
+                            input.showPicker && input.showPicker();
+                          }
+                        }}
                       />
                     </Grid>
                     <Grid item xs={12} md={6}>
@@ -780,8 +961,8 @@ const StudentRegistration = () => {
                           value={formData.currentStudent || ''}
                           onChange={(e) => handleInputChange('currentStudent', e.target.value)}
                         >
-                          <FormControlLabel value="Current Student" control={<Radio />} label="Current Student" />
-                          <FormControlLabel value="New Student" control={<Radio />} label="New Student" />
+                          <FormControlLabel value="Current Student" control={<Radio />} label="පැරණි සිසුවෙකි" />
+                          <FormControlLabel value="New Student" control={<Radio />} label="අලුත්ම සිසුවෙකි" />
                         </RadioGroup>
                       </FormControl>
                     </Grid>
@@ -890,9 +1071,15 @@ const StudentRegistration = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Typography variant="h6" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+                  <Typography variant="h6" gutterBottom sx={{
+                    mb: 3,
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                    color: 'primary.main'
+                  }}>
                     <FamilyRestroom sx={{ mr: 1 }} />
-                    Guardian Information
+                    භාරකරු තොරතුරු (Guardian Information)
                   </Typography>
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={6}>
@@ -949,19 +1136,59 @@ const StudentRegistration = () => {
                     background: 'linear-gradient(45deg, #FF6B6B 30%, #4ECDC4 90%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
-                    fontWeight: 'bold'
+                    fontWeight: 'bold',
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                   }}>
                     <ClassIcon sx={{ mr: 1, color: 'primary.main' }} />
-                    Academic Information
+                    අධ්‍යාපනික තොරතුරු (Academic Information)
                   </Typography>
+
+                  {/* Important Note */}
+                  <Alert
+                    severity="warning"
+                    icon={<Info />}
+                    sx={{
+                      mb: 3,
+                      bgcolor: 'rgba(255, 193, 7, 0.1)',
+                      border: '1px solid rgba(255, 193, 7, 0.3)',
+                      '& .MuiAlert-icon': {
+                        color: 'warning.main'
+                      }
+                    }}
+                  >
+                    <Typography variant="body2" sx={{
+                      fontWeight: 'bold',
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                      mb: 1
+                    }}>
+                      ⚠️ වැදගත් සටහන (Important Note)
+                    </Typography>
+                    <Typography variant="body2" sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                    }}>
+                      ඔබේ ශ්‍රේණිය ප්‍රවේශමෙන් තෝරන්න. මන්ද ඔබට එය අනාගතයේදී වෙනස් කළ නොහැකි බැවිනි.
+                      ඔබට එය වෙනස් කිරීමට අවශ්‍ය නම් පරිපාලකයාට දන්වන්න.
+                      මන්ද පද්ධතිය ස්වයංක්‍රීයව ඔබේ ශ්‍රේණිය අනුව වසරින් වසර යාවත්කාලීන කරයි.
+                    </Typography>
+                    <Typography variant="caption" sx={{
+                      display: 'block',
+                      mt: 1,
+                      fontStyle: 'italic',
+                      color: 'text.secondary'
+                    }}>
+                      📚 Carefully select your grade as you cannot change it in the future.
+                      If you need to change it, please inform the admin as the system automatically updates your grade year by year.
+                    </Typography>
+                  </Alert>
+
                   <Grid container spacing={3}>
                     <Grid item xs={12}>
                       <FormControl fullWidth required sx={{ minWidth: 200 }}>
-                        <InputLabel>Select Your Grade</InputLabel>
+                        <InputLabel>ඔබේ ශ්‍රේණිය තෝරන්න (Select Your Grade)</InputLabel>
                         <Select
                           value={formData.selectedGrade || ''}
                           onChange={(e) => handleInputChange('selectedGrade', e.target.value)}
-                          label="Select Your Grade"
+                          label="ඔබේ ශ්‍රේණිය තෝරන්න (Select Your Grade)"
                         >
                           {availableGrades.map((grade) => (
                             <MenuItem key={grade} value={grade}>{grade}</MenuItem>
@@ -1138,35 +1365,79 @@ const StudentRegistration = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Typography variant="h6" gutterBottom sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+                  <Typography variant="h6" gutterBottom sx={{
+                    mb: 3,
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                    color: 'primary.main'
+                  }}>
                     <Security sx={{ mr: 1 }} />
-                    Security & Agreement
+                    ආරක්ෂාව සහ එකඟතාව (Security & Agreement)
                   </Typography>
+
+                  {/* Password Information Note */}
+                  <Alert
+                    severity="info"
+                    icon={<Info />}
+                    sx={{
+                      mb: 3,
+                      bgcolor: 'rgba(33, 150, 243, 0.1)',
+                      border: '1px solid rgba(33, 150, 243, 0.3)',
+                      '& .MuiAlert-icon': {
+                        color: 'info.main'
+                      }
+                    }}
+                  >
+                    <Typography variant="body2" sx={{
+                      fontWeight: 'bold',
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                      mb: 1
+                    }}>
+                      🔐 ශිෂ්‍ය ඩෑෂ්බෝඩ් මුරපදය (Student Dashboard Password)
+                    </Typography>
+                    <Typography variant="body2" sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                      mb: 1
+                    }}>
+                      මෙය ඔබේ ශිෂ්‍ය ඩෑෂ්බෝඩ් මුරපදයයි. ඔබට ඔබේ පවතින පරිශීලක ගිණුමේ මුරපදය (ප්‍රවේශ වීම සඳහා භාවිතා කරන)
+                      හෝ වෙනත් ඕනෑම මුරපදයක් භාවිතා කළ හැකිය. ඔබ කැමති එකක් තෝරාගෙන එය ඇතුලත් කරන්න.
+                    </Typography>
+                    <Typography variant="caption" sx={{
+                      display: 'block',
+                      fontStyle: 'italic',
+                      color: 'text.secondary'
+                    }}>
+                      💡 This is your Student Dashboard password. You can use your existing User Account Password (used for Sign in)
+                      or any other password. Choose the one you like. Best of luck! 🌟
+                    </Typography>
+                  </Alert>
+
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={6}>
                       <TextField
                         fullWidth
-                        label="Student Password"
+                        label="ශිෂ්‍ය මුරපදය (Student Password)"
                         type="password"
                         value={formData.studentPassword || ''}
                         onChange={(e) => handleInputChange('studentPassword', e.target.value)}
                         required
                         sx={{ minWidth: 200 }}
                         error={formData.studentPassword && formData.studentPassword.length < 6}
-                        helperText={formData.studentPassword && formData.studentPassword.length < 6 ? 'Password must be at least 6 characters' : 'Minimum 6 characters'}
+                        helperText={formData.studentPassword && formData.studentPassword.length < 6 ? 'මුරපදය අවම වශයෙන් අකුරු 6ක් විය යුතුය' : 'ආරක්ෂිත මුරපදයක් තෝරන්න'}
                       />
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <TextField
                         fullWidth
-                        label="Confirm Password"
+                        label="මුරපදය තහවුරු කරන්න (Confirm Password)"
                         type="password"
                         value={formData.confirmPassword || ''}
                         onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                         required
                         sx={{ minWidth: 200 }}
                         error={formData.confirmPassword && formData.studentPassword !== formData.confirmPassword}
-                        helperText={formData.confirmPassword && formData.studentPassword !== formData.confirmPassword ? 'Passwords do not match' : 'Re-enter your password'}
+                        helperText={formData.confirmPassword && formData.studentPassword !== formData.confirmPassword ? 'මුරපද නොගැලපේ' : 'මුරපදය නැවත ඇතුළත් කරන්න'}
                       />
                     </Grid>
                     <Grid item xs={12}>
@@ -1181,20 +1452,38 @@ const StudentRegistration = () => {
                           color: 'primary.main',
                           fontWeight: 'bold',
                           display: 'flex',
-                          alignItems: 'center'
+                          alignItems: 'center',
+                          fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                         }}>
                           <Security sx={{ mr: 1 }} />
-                          Terms and Conditions
+                          නියම සහ කොන්දේසි (Terms and Conditions)
                         </Typography>
-                        <Typography variant="body2" sx={{ mb: 2 }}>
-                          By registering as a student, you agree to:
+                        <Typography variant="body2" sx={{
+                          mb: 2,
+                          fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                          fontWeight: 'bold'
+                        }}>
+                          ශිෂ්‍යයෙකු ලෙස ලියාපදිංචි වීමෙන්, ඔබ පහත සඳහන් කරුණුවලට එකඟ වේ:
                         </Typography>
-                        <Typography variant="body2" component="ul" sx={{ pl: 2, mb: 3 }}>
-                          <li>Follow all class guidelines and rules</li>
-                          <li>Respect teachers and fellow students</li>
-                          <li>Attend classes regularly and on time</li>
-                          <li>Complete assignments and homework as required</li>
-                          <li>Maintain appropriate behavior during classes</li>
+                        <Typography variant="body2" component="ul" sx={{
+                          pl: 2,
+                          mb: 2,
+                          fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                        }}>
+                          <li>සියලුම පන්ති මාර්ගෝපදේශ සහ නීති රීති අනුගමනය කිරීම</li>
+                          <li>ගුරුවරුන්ට සහ සෙසු සිසුන්ට ගරු කිරීම</li>
+                          <li>නිතිපතා සහ නියමිත වේලාවට පන්තිවලට පැමිණීම</li>
+                          <li>අවශ්‍ය පරිදි පැවරුම් සහ ගෘහ කාර්ය සම්පූර්ණ කිරීම</li>
+                          <li>පන්ති කාලය තුළ සුදුසු හැසිරීමක් පවත්වා ගැනීම</li>
+                        </Typography>
+                        <Typography variant="body2" sx={{
+                          mb: 3,
+                          fontStyle: 'italic',
+                          color: 'text.secondary'
+                        }}>
+                          By registering as a student, you agree to: Follow all class guidelines and rules,
+                          Respect teachers and fellow students, Attend classes regularly and on time,
+                          Complete assignments and homework as required, Maintain appropriate behavior during classes.
                         </Typography>
                         <FormControlLabel
                           control={
@@ -1211,8 +1500,15 @@ const StudentRegistration = () => {
                             />
                           }
                           label={
-                            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                              I agree to the student guidelines and terms *
+                            <Typography variant="body2" sx={{
+                              fontWeight: 'bold',
+                              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                            }}>
+                              මම ශිෂ්‍ය මාර්ගෝපදේශ සහ නියමයන්ට එකඟ වෙමි *
+                              <br />
+                              <Typography variant="caption" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+                                (I agree to the student guidelines and terms *)
+                              </Typography>
                             </Typography>
                           }
                           sx={{ mt: 2 }}
@@ -1247,12 +1543,13 @@ const StudentRegistration = () => {
                   textTransform: 'none',
                   fontWeight: 'bold',
                   order: { xs: 2, sm: 1 },
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                   '&:disabled': {
                     opacity: 0.5
                   }
                 }}
               >
-                Back
+                ආපසු (Back)
               </Button>
 
               {activeStep === steps.length - 1 ? (
@@ -1269,17 +1566,19 @@ const StudentRegistration = () => {
                     fontWeight: 'bold',
                     fontSize: { xs: '1rem', sm: '1.1rem' },
                     order: { xs: 1, sm: 2 },
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                     background: loading ? 'grey.400' : 'linear-gradient(45deg, #4CAF50 30%, #45A049 90%)',
                     '&:hover': {
                       background: loading ? 'grey.400' : 'linear-gradient(45deg, #45A049 30%, #4CAF50 90%)',
                     },
                     '&:disabled': {
                       background: 'grey.400',
-                      color: 'white'
+                      color: 'white',
+                      opacity: 0.7
                     }
                   }}
                 >
-                  {loading ? 'Submitting...' : 'Complete Registration'}
+                  {loading ? 'ඉදිරිපත් කරමින්... (Submitting...)' : 'ලියාපදිංචිය සම්පූර්ණ කරන්න (Complete Registration)'}
                 </Button>
               ) : (
                 <Button
@@ -1294,17 +1593,23 @@ const StudentRegistration = () => {
                     textTransform: 'none',
                     fontWeight: 'bold',
                     order: { xs: 1, sm: 2 },
-                    background: 'linear-gradient(45deg, #FF6B6B 30%, #4ECDC4 90%)',
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                    background: !validateStep(activeStep)
+                      ? 'linear-gradient(45deg, #bdbdbd 30%, #9e9e9e 90%)'
+                      : 'linear-gradient(45deg, #FF6B6B 30%, #4ECDC4 90%)',
                     '&:hover': {
-                      background: 'linear-gradient(45deg, #4ECDC4 30%, #FF6B6B 90%)',
+                      background: !validateStep(activeStep)
+                        ? 'linear-gradient(45deg, #bdbdbd 30%, #9e9e9e 90%)'
+                        : 'linear-gradient(45deg, #4ECDC4 30%, #FF6B6B 90%)',
                     },
                     '&:disabled': {
-                      background: 'grey.400',
-                      color: 'white'
+                      background: 'linear-gradient(45deg, #bdbdbd 30%, #9e9e9e 90%)',
+                      color: 'white',
+                      opacity: 0.7
                     }
                   }}
                 >
-                  Next Step
+                  ඊළඟ පියවර (Next Step)
                 </Button>
               )}
             </Box>
