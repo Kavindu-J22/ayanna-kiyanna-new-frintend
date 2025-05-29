@@ -54,13 +54,6 @@ const AdminDashboard = () => {
     setUserInfo({ email, fullName });
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('fullName');
-    navigate('/');
-  };
-
   // Sample data for admin dashboard
   const stats = [
     { title: 'මුළු සිසුන්', value: '156', icon: <People />, color: '#667eea' },
@@ -139,16 +132,6 @@ const AdminDashboard = () => {
               <IconButton color="primary">
                 <Settings />
               </IconButton>
-              <Button
-                variant="outlined"
-                startIcon={<ExitToApp />}
-                onClick={handleLogout}
-                sx={{
-                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-                }}
-              >
-                ඉවත් වන්න
-              </Button>
             </Box>
           </Box>
         </Paper>

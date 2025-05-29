@@ -229,9 +229,12 @@ const Header = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('userEmail');
+    localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
     setUserEmail(null);
     handleMenuClose();
-    window.location.reload(); // This will refresh the page
+
+    navigate('/');
   };
 
   const toggleMobileMenu = (e) => {
