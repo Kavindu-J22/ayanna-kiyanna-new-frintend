@@ -96,29 +96,34 @@ const Home = () => {
           }
         }
 
-        /* Balanced mobile scrolling - prevent separate scroll contexts but allow necessary overflow */
+        /* Complete overflow hidden strategy for mobile scrolling */
         .MuiContainer-root {
-          overflow-x: hidden !important;
-          overflow-y: visible !important;
+          overflow: hidden !important;
           -webkit-overflow-scrolling: auto !important;
         }
 
-        /* Allow horizontal overflow hidden where needed, but keep vertical visible */
+        /* Apply overflow hidden to all Material-UI components */
         .MuiBox-root {
-          overflow-x: hidden !important;
-          overflow-y: visible !important;
+          overflow: hidden !important;
         }
 
-        /* Prevent horizontal scroll issues but allow vertical scrolling */
+        /* Force overflow hidden on all elements except body */
         * {
-          overflow-x: hidden !important;
+          overflow: hidden !important;
           -webkit-overflow-scrolling: touch !important;
           scroll-behavior: smooth !important;
         }
 
-        /* Allow carousel and specific components to have overflow hidden */
-        .carousel-container {
-          overflow: hidden !important;
+        /* Only body should be scrollable */
+        body {
+          overflow-x: hidden !important;
+          overflow-y: auto !important;
+          -webkit-overflow-scrolling: touch !important;
+        }
+
+        html {
+          overflow-x: hidden !important;
+          overflow-y: auto !important;
         }
 
         /* Fix for fixed positioned elements */
@@ -127,17 +132,15 @@ const Home = () => {
           transform: translateZ(0) !important;
         }
 
-        /* Optimize scrolling performance */
-        body {
-          -webkit-overflow-scrolling: touch !important;
-          overflow-x: hidden !important;
-          overflow-y: auto !important;
-        }
-
         /* Prevent content jumping during scroll */
         .motion-safe {
           will-change: auto !important;
           transform: translateZ(0) !important;
+        }
+
+        /* Ensure all sections have overflow hidden */
+        section, div, .MuiPaper-root {
+          overflow: hidden !important;
         }
       `;
 
@@ -492,9 +495,8 @@ const Home = () => {
         height: 'auto',
         minHeight: '100vh',
         position: 'relative',
-        // Allow horizontal overflow hidden but vertical scrolling
-        overflowX: 'hidden',
-        overflowY: 'visible',
+        // Apply overflow hidden to main container
+        overflow: 'hidden',
         paddingTop: 0,
         marginTop: 0,
         // Optimize for mobile scrolling
@@ -508,7 +510,7 @@ const Home = () => {
     color: 'white',
     py: { xs: 8, sm: 10, md: 12 },
     position: 'relative',
-    // CRITICAL: No overflow properties at all
+    overflow: 'hidden', // Apply overflow hidden
     minHeight: { xs: '100vh', sm: '100vh' },
     display: 'flex',
     flexDirection: 'column',
@@ -1328,7 +1330,7 @@ const Home = () => {
     py: 6,
     background: 'linear-gradient(135deg, #f9f9f9 0%, #e3f2fd 100%)',
     position: 'relative',
-    // CRITICAL: No overflow properties
+    overflow: 'hidden', // Apply overflow hidden
     '&:before': {
       content: '""',
       position: 'absolute',
@@ -1817,7 +1819,7 @@ const Home = () => {
     py: { xs: 4, md: 5 },
     background: 'linear-gradient(to bottom, #f9f9f9 0%, #ffffff 100%)',
     position: 'relative',
-    // CRITICAL: No overflow properties
+    overflow: 'hidden', // Apply overflow hidden
     '&:before': {
       content: '""',
       position: 'absolute',
@@ -2081,7 +2083,7 @@ const Home = () => {
     py: 10,
     background: 'linear-gradient(135deg, #f9fafe 0%, #e6ecf8 100%)',
     position: 'relative',
-    // CRITICAL: No overflow properties
+    overflow: 'hidden', // Apply overflow hidden
     '&:before': {
       content: '""',
       position: 'absolute',
@@ -2308,7 +2310,7 @@ const Home = () => {
     py: 10,
     background: 'linear-gradient(135deg, #f5f7fa 0%, #f0f4f8 100%)',
     position: 'relative',
-    // CRITICAL: No overflow properties
+    overflow: 'hidden', // Apply overflow hidden
     '&:before': {
       content: '""',
       position: 'absolute',
@@ -2520,7 +2522,7 @@ const Home = () => {
     background: 'linear-gradient(135deg, #6a11cb 0%,rgb(252, 37, 166) 100%)',
     color: 'white',
     position: 'relative',
-    // CRITICAL: No overflow properties
+    overflow: 'hidden', // Apply overflow hidden
     display: 'flex',
     alignItems: 'center',
     minHeight: { xs: 'auto', md: '100vh' }, // Remove fixed height on mobile
