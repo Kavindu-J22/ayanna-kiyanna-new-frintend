@@ -96,22 +96,29 @@ const Home = () => {
           }
         }
 
-        /* Prevent separate scrolling contexts */
+        /* Balanced mobile scrolling - prevent separate scroll contexts but allow necessary overflow */
         .MuiContainer-root {
           overflow-x: hidden !important;
           overflow-y: visible !important;
           -webkit-overflow-scrolling: auto !important;
         }
 
-        /* Fix for Material-UI components */
+        /* Allow horizontal overflow hidden where needed, but keep vertical visible */
         .MuiBox-root {
           overflow-x: hidden !important;
+          overflow-y: visible !important;
         }
 
-        /* Ensure smooth scrolling for all elements */
+        /* Prevent horizontal scroll issues but allow vertical scrolling */
         * {
+          overflow-x: hidden !important;
           -webkit-overflow-scrolling: touch !important;
           scroll-behavior: smooth !important;
+        }
+
+        /* Allow carousel and specific components to have overflow hidden */
+        .carousel-container {
+          overflow: hidden !important;
         }
 
         /* Fix for fixed positioned elements */
@@ -120,16 +127,17 @@ const Home = () => {
           transform: translateZ(0) !important;
         }
 
-        /* Prevent momentum scrolling issues */
-        .no-momentum-scroll {
-          -webkit-overflow-scrolling: auto !important;
+        /* Optimize scrolling performance */
+        body {
+          -webkit-overflow-scrolling: touch !important;
+          overflow-x: hidden !important;
+          overflow-y: auto !important;
         }
 
-        /* Fix for nested scrollable areas */
-        .scrollable-section {
-          overflow-y: visible !important;
-          height: auto !important;
-          min-height: auto !important;
+        /* Prevent content jumping during scroll */
+        .motion-safe {
+          will-change: auto !important;
+          transform: translateZ(0) !important;
         }
       `;
 
@@ -209,21 +217,45 @@ const Home = () => {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
 
-    // Additional mobile scroll optimization
+    // Comprehensive mobile scroll optimization
     const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
                           (window.innerWidth <= 768 && 'ontouchstart' in window);
 
     if (isMobileDevice) {
       // Disable momentum scrolling on problematic elements
-      const motionElements = document.querySelectorAll('[data-framer-motion]');
+      const motionElements = document.querySelectorAll('[data-framer-motion], .motion-safe');
       motionElements.forEach(element => {
         element.style.WebkitOverflowScrolling = 'auto';
         element.style.willChange = 'auto';
+        element.style.transform = 'translateZ(0)';
+        element.style.backfaceVisibility = 'hidden';
       });
 
-      // Optimize scroll performance
+      // Fix for content jumping during scroll
+      const allBoxElements = document.querySelectorAll('.MuiBox-root');
+      allBoxElements.forEach(element => {
+        element.style.willChange = 'auto';
+        element.style.transform = 'translateZ(0)';
+      });
+
+      // Optimize scroll performance with throttling
       let ticking = false;
+      let lastScrollY = window.scrollY;
+
       const updateScrollPosition = () => {
+        const currentScrollY = window.scrollY;
+
+        // Only update if scroll position actually changed
+        if (Math.abs(currentScrollY - lastScrollY) > 1) {
+          lastScrollY = currentScrollY;
+
+          // Force repaint to prevent content jumping
+          document.body.style.transform = 'translateZ(0)';
+          requestAnimationFrame(() => {
+            document.body.style.transform = '';
+          });
+        }
+
         ticking = false;
       };
 
@@ -234,10 +266,13 @@ const Home = () => {
         }
       };
 
+      // Use passive listeners for better performance
       window.addEventListener('scroll', requestScrollUpdate, { passive: true });
+      window.addEventListener('touchmove', requestScrollUpdate, { passive: true });
 
       return () => {
         window.removeEventListener('scroll', requestScrollUpdate);
+        window.removeEventListener('touchmove', requestScrollUpdate);
       };
     }
   }, []);
@@ -452,38 +487,32 @@ const Home = () => {
 
   return (
     <Box
-      className="scrollable-section"
       sx={{
         width: '100%',
         height: 'auto',
         minHeight: '100vh',
-        WebkitOverflowScrolling: 'touch',
-        touchAction: 'pan-y',
         position: 'relative',
+        // Allow horizontal overflow hidden but vertical scrolling
         overflowX: 'hidden',
-        overflowY: 'visible', // Changed from 'auto' to 'visible' to prevent separate scroll context
+        overflowY: 'visible',
         paddingTop: 0,
         marginTop: 0,
-        // Ensure this container doesn't create its own scroll context
-        contain: 'layout style paint',
-        willChange: 'auto' // Remove transform optimizations that can cause scroll issues
+        // Optimize for mobile scrolling
+        WebkitOverflowScrolling: 'touch',
+        touchAction: 'pan-y'
       }}>
 {/* Welcome Section with Enhanced Animated Background */}
 <Box
-  className="scrollable-section"
   sx={{
     background: 'linear-gradient(135deg, #6a11cb 0%, #ff6b9d 50%, #ff8e53 100%)',
     color: 'white',
     py: { xs: 8, sm: 10, md: 12 },
     position: 'relative',
-    overflow: 'visible', // Ensure no separate scroll context
+    // CRITICAL: No overflow properties at all
     minHeight: { xs: '100vh', sm: '100vh' },
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    touchAction: 'pan-y',
-    WebkitOverflowScrolling: 'touch',
-    overflowY: 'visible', // Prevent separate scrolling
     paddingTop: { xs: '60px', sm: '80px' },
     '&:before': {
       content: '""',
@@ -1295,12 +1324,11 @@ const Home = () => {
 
 {/* Register as Student Section */}
 <Box
-  className="scrollable-section"
   sx={{
     py: 6,
     background: 'linear-gradient(135deg, #f9f9f9 0%, #e3f2fd 100%)',
     position: 'relative',
-    overflow: 'visible', // Changed from 'hidden' to 'visible'
+    // CRITICAL: No overflow properties
     '&:before': {
       content: '""',
       position: 'absolute',
@@ -1641,30 +1669,27 @@ const Home = () => {
 
 
 <Box
-  className="scrollable-section"
   sx={{
     py: 4,
-    background: '#f9f9f9',
-    overflow: 'visible' // Ensure no separate scroll context
+    background: '#f9f9f9'
   }}>
       <Container>
-        <Box sx={{
-          position: 'relative',
-          width: '100%',
-          overflow: 'visible', // Changed from 'hidden' to 'visible' for mobile
-          // Only hide overflow on desktop to maintain carousel functionality
-          [theme.breakpoints.up('md')]: {
-            overflow: 'hidden'
-          }
-        }}>
+        <Box
+          className="carousel-container"
+          sx={{
+            position: 'relative',
+            width: '100%',
+            overflow: 'hidden' // Restore overflow hidden for carousel functionality
+          }}>
           {/* Slider container */}
           <Box sx={{
             display: 'flex',
             transition: 'transform 0.5s ease',
             transform: `translateX(-${currentSlide * (100 / carouselItems.length)}%)`,
             width: `${carouselItems.length * 100}%`,
-            // Prevent transform issues on mobile
+            // Prevent transform issues on mobile that could interfere with scrolling
             willChange: isMobile ? 'auto' : 'transform'
+            // Remove overflow property to let parent handle clipping
           }}>
             {carouselItems.map((item, index) => (
               <Box
@@ -1788,12 +1813,11 @@ const Home = () => {
 
 {/* Our Message Section */}
 <Box
-  className="scrollable-section"
   sx={{
     py: { xs: 4, md: 5 },
     background: 'linear-gradient(to bottom, #f9f9f9 0%, #ffffff 100%)',
     position: 'relative',
-    overflow: 'visible', // Changed from 'hidden' to 'visible'
+    // CRITICAL: No overflow properties
     '&:before': {
       content: '""',
       position: 'absolute',
@@ -2053,12 +2077,11 @@ const Home = () => {
 
 {/* About Teacher Section - Text Focused Design */}
 <Box
-  className="scrollable-section"
   sx={{
     py: 10,
     background: 'linear-gradient(135deg, #f9fafe 0%, #e6ecf8 100%)',
     position: 'relative',
-    overflow: 'visible', // Changed from 'hidden' to 'visible'
+    // CRITICAL: No overflow properties
     '&:before': {
       content: '""',
       position: 'absolute',
@@ -2281,12 +2304,11 @@ const Home = () => {
 
 {/* Testimonials Section - Enhanced */}
 <Box
-  className="scrollable-section"
   sx={{
     py: 10,
     background: 'linear-gradient(135deg, #f5f7fa 0%, #f0f4f8 100%)',
     position: 'relative',
-    overflow: 'visible', // Changed from 'hidden' to 'visible'
+    // CRITICAL: No overflow properties
     '&:before': {
       content: '""',
       position: 'absolute',
@@ -2493,13 +2515,12 @@ const Home = () => {
 
 {/* Contact Section */}
 <Box
-  className="scrollable-section"
   sx={{
     py: 8,
     background: 'linear-gradient(135deg, #6a11cb 0%,rgb(252, 37, 166) 100%)',
     color: 'white',
     position: 'relative',
-    overflow: 'visible', // Changed from 'hidden' to 'visible'
+    // CRITICAL: No overflow properties
     display: 'flex',
     alignItems: 'center',
     minHeight: { xs: 'auto', md: '100vh' }, // Remove fixed height on mobile
