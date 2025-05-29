@@ -28,7 +28,13 @@ import {
   Tooltip,
   useTheme,
   useMediaQuery,
-  Fab
+  Fab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
 } from '@mui/material';
 import {
   ArrowBack,
@@ -70,6 +76,7 @@ const SpecificClass = () => {
   const [students, setStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loadingStudents, setLoadingStudents] = useState(false);
+  const [monitorSearchTerm, setMonitorSearchTerm] = useState('');
 
   // Monitor management states
   const [addingMonitor, setAddingMonitor] = useState(false);
@@ -732,10 +739,32 @@ const SpecificClass = () => {
               මෙම පන්තියට ලියාපදිංචි වූ සිසුන්ගෙන් නිරීක්ෂකයෙකු තෝරන්න
             </Typography>
 
+            {/* Search Field for Monitor Selection */}
+            <TextField
+              fullWidth
+              placeholder="සිසු ID හෝ නම අනුව සොයන්න..."
+              value={monitorSearchTerm}
+              onChange={(e) => setMonitorSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />
+              }}
+              sx={{ mb: 3 }}
+            />
+
             {isAdmin && classData?.enrolledStudents && classData.enrolledStudents.length > 0 ? (
               <List>
                 {classData.enrolledStudents
                   .filter(student => !classData.monitors?.some(monitor => monitor._id === student._id))
+                  .filter(student => {
+                    if (!monitorSearchTerm.trim()) return true;
+                    const searchTerm = monitorSearchTerm.trim().toLowerCase();
+                    return (
+                      student.studentId.toLowerCase().includes(searchTerm) ||
+                      student.firstName.toLowerCase().includes(searchTerm) ||
+                      student.lastName.toLowerCase().includes(searchTerm) ||
+                      (student.fullName && student.fullName.toLowerCase().includes(searchTerm))
+                    );
+                  })
                   .map((student) => (
                     <ListItem
                       key={student._id}
@@ -818,54 +847,99 @@ const SpecificClass = () => {
                 <CircularProgress />
               </Box>
             ) : students.length > 0 ? (
-              <List>
-                {students.map((student, index) => (
-                  <React.Fragment key={student._id}>
-                    <ListItem sx={{ px: 0 }}>
-                      <ListItemAvatar>
-                        <Avatar
-                          src={student.profilePicture}
-                          sx={{ width: 50, height: 50 }}
-                        >
-                          {student.firstName?.charAt(0)}
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Typography variant="subtitle1" fontWeight="bold">
-                              {student.firstName} {student.lastName}
-                            </Typography>
-                            <Chip
-                              label={student.studentId}
-                              size="small"
-                              color="primary"
-                              variant="outlined"
-                            />
-                          </Box>
-                        }
-                        secondary={
-                          <Box sx={{ mt: 1 }}>
-                            <Typography variant="body2" color="text.secondary">
-                              <strong>ශ්‍රේණිය:</strong> {student.selectedGrade}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              <strong>පාසල:</strong> {student.school}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              <strong>ඊමේල්:</strong> {student.email}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              <strong>සම්බන්ධතා අංකය:</strong> {student.contactNumber}
-                            </Typography>
-                          </Box>
-                        }
-                      />
-                    </ListItem>
-                    {index < students.length - 1 && <Divider />}
-                  </React.Fragment>
-                ))}
-              </List>
+              <TableContainer component={Paper} sx={{ mt: 2, maxHeight: 400 }}>
+                <Table stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                        ප්‍රොෆයිල් පින්තූරය
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                        සිසු ID
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                        නම
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                        ශ්‍රේණිය
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                        පාසල
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                        සම්බන්ධතා අංකය
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                        ක්‍රියාමාර්ග
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {students.map((student) => (
+                      <TableRow key={student._id} hover>
+                        <TableCell>
+                          <Avatar
+                            src={student.profilePicture}
+                            sx={{ width: 40, height: 40 }}
+                          >
+                            {student.firstName?.charAt(0)}
+                          </Avatar>
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            label={student.studentId}
+                            size="small"
+                            color="primary"
+                            variant="outlined"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2" fontWeight="medium">
+                            {student.firstName} {student.lastName}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2">
+                            {student.selectedGrade}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2">
+                            {student.school}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2">
+                            {student.contactNumber}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            startIcon={<Visibility />}
+                            sx={{
+                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                              color: 'white',
+                              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                              fontWeight: 'bold',
+                              textTransform: 'none',
+                              borderRadius: 2,
+                              '&:hover': {
+                                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                                transform: 'scale(1.02)',
+                              },
+                              transition: 'all 0.3s ease'
+                            }}
+                          >
+                            ප්‍රොෆයිලය සහ ප්‍රගතිය
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             ) : (
               <Alert severity="info">
                 {searchTerm ? 'සෙවුම සඳහා ප්‍රතිඵල හමු නොවීය' : 'මෙම පන්තියට ලියාපදිංචි වූ සිසුන් නොමැත'}

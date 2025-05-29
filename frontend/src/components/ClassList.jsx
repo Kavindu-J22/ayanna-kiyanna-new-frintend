@@ -25,7 +25,12 @@ import {
   useMediaQuery,
   Tooltip,
   Button,
-  CircularProgress
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Avatar,
+  Alert
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -38,7 +43,10 @@ import {
   School as SchoolIcon,
   Group as GroupIcon,
   CleaningServices as CleanIcon,
-  Login as AccessIcon
+  Login as AccessIcon,
+  Close,
+  Search,
+  Visibility
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -51,6 +59,13 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
   const [gradeFilter, setGradeFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [cleaningSpots, setCleaningSpots] = useState(false);
+
+  // View Students Dialog states
+  const [viewStudentsDialog, setViewStudentsDialog] = useState(false);
+  const [selectedClassForStudents, setSelectedClassForStudents] = useState(null);
+  const [classStudents, setClassStudents] = useState([]);
+  const [studentsSearchTerm, setStudentsSearchTerm] = useState('');
+  const [loadingClassStudents, setLoadingClassStudents] = useState(false);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -136,6 +151,43 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
     }
   };
 
+  // Handle viewing students for a class
+  const handleViewStudents = async (classItem) => {
+    setSelectedClassForStudents(classItem);
+    setViewStudentsDialog(true);
+    setLoadingClassStudents(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/classes/${classItem._id}/students`,
+        { headers: { 'x-auth-token': token } }
+      );
+      setClassStudents(response.data.students || []);
+    } catch (error) {
+      console.error('Error fetching class students:', error);
+      setClassStudents([]);
+    } finally {
+      setLoadingClassStudents(false);
+    }
+  };
+
+  const handleStudentsSearch = (event) => {
+    setStudentsSearchTerm(event.target.value);
+  };
+
+  // Filter students based on search term
+  const filteredStudents = classStudents.filter(student => {
+    if (!studentsSearchTerm.trim()) return true;
+    const searchTerm = studentsSearchTerm.trim().toLowerCase();
+    return (
+      student.studentId.toLowerCase().includes(searchTerm) ||
+      student.firstName.toLowerCase().includes(searchTerm) ||
+      student.lastName.toLowerCase().includes(searchTerm) ||
+      (student.fullName && student.fullName.toLowerCase().includes(searchTerm))
+    );
+  });
+
   // Mobile Card View
   const MobileClassCard = ({ classItem, index }) => (
     <motion.div
@@ -183,6 +235,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
                 <IconButton
                   size="small"
                   color="info"
+                  onClick={() => handleViewStudents(classItem)}
                   sx={{
                     bgcolor: 'rgba(33, 150, 243, 0.1)',
                     '&:hover': { bgcolor: 'rgba(33, 150, 243, 0.2)' }
@@ -486,6 +539,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
                           <IconButton
                             size="small"
                             color="info"
+                            onClick={() => handleViewStudents(classItem)}
                             sx={{
                               bgcolor: 'rgba(33, 150, 243, 0.1)',
                               '&:hover': { bgcolor: 'rgba(33, 150, 243, 0.2)' }
@@ -558,6 +612,149 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
           }
         />
       )}
+
+      {/* View Students Dialog */}
+      <Dialog
+        open={viewStudentsDialog}
+        onClose={() => setViewStudentsDialog(false)}
+        maxWidth="lg"
+        fullWidth
+      >
+        <DialogTitle sx={{
+          fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+          fontWeight: 'bold',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <span>
+            {selectedClassForStudents ?
+              `${selectedClassForStudents.grade} - ${selectedClassForStudents.category} පන්තියේ සිසුන්` :
+              'පන්තියේ සිසුන්'
+            }
+          </span>
+          <IconButton onClick={() => setViewStudentsDialog(false)}>
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          {/* Search Field */}
+          <TextField
+            fullWidth
+            placeholder="සිසු ID හෝ නම අනුව සොයන්න..."
+            value={studentsSearchTerm}
+            onChange={handleStudentsSearch}
+            InputProps={{
+              startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />
+            }}
+            sx={{ mb: 3 }}
+          />
+
+          {loadingClassStudents ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : filteredStudents.length > 0 ? (
+            <TableContainer component={Paper} sx={{ mt: 2, maxHeight: 500 }}>
+              <Table stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                      ප්‍රොෆයිල් පින්තූරය
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                      සිසු ID
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                      නම
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                      ශ්‍රේණිය
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                      පාසල
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                      සම්බන්ධතා අංකය
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                      ක්‍රියාමාර්ග
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredStudents.map((student) => (
+                    <TableRow key={student._id} hover>
+                      <TableCell>
+                        <Avatar
+                          src={student.profilePicture}
+                          sx={{ width: 40, height: 40 }}
+                        >
+                          {student.firstName?.charAt(0)}
+                        </Avatar>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={student.studentId}
+                          size="small"
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" fontWeight="medium">
+                          {student.firstName} {student.lastName}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {student.selectedGrade}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {student.school}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {student.contactNumber}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          startIcon={<Visibility />}
+                          sx={{
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            color: 'white',
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                            fontWeight: 'bold',
+                            textTransform: 'none',
+                            borderRadius: 2,
+                            '&:hover': {
+                              background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                              transform: 'scale(1.02)',
+                            },
+                            transition: 'all 0.3s ease'
+                          }}
+                        >
+                          ප්‍රොෆයිලය සහ ප්‍රගතිය
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          ) : (
+            <Alert severity="info">
+              {studentsSearchTerm ? 'සෙවුම සඳහා ප්‍රතිඵල හමු නොවීය' : 'මෙම පන්තියට ලියාපදිංචි වූ සිසුන් නොමැත'}
+            </Alert>
+          )}
+        </DialogContent>
+      </Dialog>
     </Paper>
   );
 };
