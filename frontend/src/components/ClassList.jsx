@@ -36,7 +36,8 @@ import {
   CalendarToday as CalendarIcon,
   School as SchoolIcon,
   Group as GroupIcon,
-  CleaningServices as CleanIcon
+  CleaningServices as CleanIcon,
+  Login as AccessIcon
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -188,6 +189,18 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
                   <GroupIcon />
                 </IconButton>
               </Tooltip>
+              <Tooltip title="පන්තියට ප්‍රවේශය">
+                <IconButton
+                  size="small"
+                  color="success"
+                  sx={{
+                    bgcolor: 'rgba(76, 175, 80, 0.1)',
+                    '&:hover': { bgcolor: 'rgba(76, 175, 80, 0.2)' }
+                  }}
+                >
+                  <AccessIcon />
+                </IconButton>
+              </Tooltip>
               <Tooltip title="සංස්කරණය කරන්න">
                 <IconButton
                   size="small"
@@ -238,7 +251,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                 <PeopleIcon fontSize="small" color="action" />
                 <Typography variant="body2">
-                  {classItem.enrolledCount || 0}/{classItem.capacity}
+                  {classItem.enrolledCount || 0}/{classItem.capacity} ({classItem.availableSpots || (classItem.capacity - (classItem.enrolledCount || 0))})
                 </Typography>
               </Box>
             </Grid>
@@ -454,7 +467,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <PeopleIcon fontSize="small" color="action" />
-                        {classItem.enrolledCount || 0}/{classItem.capacity}
+                        {classItem.enrolledCount || 0}/{classItem.capacity} ({classItem.availableSpots || (classItem.capacity - (classItem.enrolledCount || 0))})
                       </Box>
                     </TableCell>
                     <TableCell>
@@ -476,6 +489,18 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
                             }}
                           >
                             <GroupIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="පන්තියට ප්‍රවේශය">
+                          <IconButton
+                            size="small"
+                            color="success"
+                            sx={{
+                              bgcolor: 'rgba(76, 175, 80, 0.1)',
+                              '&:hover': { bgcolor: 'rgba(76, 175, 80, 0.2)' }
+                            }}
+                          >
+                            <AccessIcon />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="සංස්කරණය කරන්න">
