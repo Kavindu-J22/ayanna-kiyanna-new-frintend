@@ -28,6 +28,31 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  /* Fix mobile scrolling issues */
+  -webkit-overflow-scrolling: touch;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Mobile-specific fixes for scrolling */
+@media (max-width: 600px) {
+  body {
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: manipulation;
+  }
+
+  /* Ensure the root element allows scrolling on mobile */
+  #root {
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+  }
 }
 
 h1 {

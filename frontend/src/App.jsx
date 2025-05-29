@@ -803,14 +803,27 @@ function AppContent() {
           maxWidth: '100%',
           overflowX: 'hidden',
           overflowY: 'auto', // Allow vertical scrolling
-          minHeight: '100vh' // Ensure full height
+          minHeight: '100vh', // Ensure full height
+          // Mobile-specific fixes for scrolling
+          [theme.breakpoints.down('sm')]: {
+            position: 'relative',
+            WebkitOverflowScrolling: 'touch',
+            touchAction: 'manipulation',
+            transform: 'translateZ(0)', // Force hardware acceleration
+          }
         }}>
           <Container maxWidth={false} disableGutters sx={{
             width: '100%',
             minHeight: '100%',
             display: 'flex',
             flexDirection: 'column',
-            overflow: 'visible' // Allow content to flow naturally
+            overflow: 'visible', // Allow content to flow naturally
+            // Mobile-specific container fixes
+            [theme.breakpoints.down('sm')]: {
+              position: 'relative',
+              overflow: 'visible',
+              minHeight: 'auto',
+            }
           }}>
             <Routes>
               <Route path="/" element={<Home />} />

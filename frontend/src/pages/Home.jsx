@@ -268,13 +268,19 @@ const Home = () => {
         height: 'auto',
         minHeight: '100vh',
         position: 'relative',
-        // Remove overflow hidden to allow page scrolling
+        // Ensure proper scrolling on mobile
         overflow: 'visible',
         paddingTop: 0,
         marginTop: 0,
-        // Optimize for mobile scrolling
+        // Enhanced mobile scrolling support
         WebkitOverflowScrolling: 'touch',
-        touchAction: 'pan-y'
+        touchAction: 'manipulation', // Better touch handling for mobile
+        // Fix mobile browser scrolling issues
+        [theme.breakpoints.down('sm')]: {
+          position: 'static', // Remove relative positioning on mobile
+          transform: 'translateZ(0)', // Force hardware acceleration
+          backfaceVisibility: 'hidden', // Improve mobile performance
+        }
       }}>
 {/* Welcome Section with Enhanced Animated Background */}
 <Box
@@ -284,11 +290,16 @@ const Home = () => {
     py: { xs: 8, sm: 10, md: 12 },
     position: 'relative',
     overflow: 'hidden', // Keep overflow hidden only for background effects
-    minHeight: { xs: '100vh', sm: '100vh' },
+    minHeight: { xs: 'auto', sm: '100vh' }, // Remove fixed height on mobile
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     paddingTop: { xs: '60px', sm: '80px' },
+    // Mobile-specific fixes
+    [theme.breakpoints.down('sm')]: {
+      paddingBottom: '40px', // Ensure content doesn't get cut off
+      minHeight: 'auto', // Allow natural height on mobile
+    },
     '&:before': {
       content: '""',
       position: 'absolute',
