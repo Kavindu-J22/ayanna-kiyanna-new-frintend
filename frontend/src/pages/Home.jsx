@@ -13,7 +13,8 @@ import {
   IconButton,
   useTheme,
   useMediaQuery,
-  TextField
+  TextField,
+  CircularProgress
 } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -50,6 +51,7 @@ const Home = () => {
   const [userRole, setUserRole] = useState(null);
   const [showAdminDialog, setShowAdminDialog] = useState(false);
   const [showStudentDialog, setShowStudentDialog] = useState(false);
+  const [isDashboardLoading, setIsDashboardLoading] = useState(false);
   const navigate = useNavigate();
 
 
@@ -85,6 +87,8 @@ const Home = () => {
       return;
     }
 
+    setIsDashboardLoading(true);
+
     try {
       // Check user role from database
       const token = localStorage.getItem('token');
@@ -118,6 +122,8 @@ const Home = () => {
       } else {
         alert('Failed to verify user permissions. Please try again.');
       }
+    } finally {
+      setIsDashboardLoading(false);
     }
   };
 
@@ -1027,8 +1033,9 @@ const Home = () => {
                 variant="contained"
                 color="secondary"
                 size="large"
-                startIcon={<Person sx={{ fontSize: '1.5rem' }} />}
+                startIcon={isDashboardLoading ? <CircularProgress size={20} color="inherit" /> : <Person sx={{ fontSize: '1.5rem' }} />}
                 onClick={handleDashboardClick}
+                disabled={isDashboardLoading}
                 sx={{
                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                   borderRadius: '50px',
@@ -1047,10 +1054,14 @@ const Home = () => {
                   '&:hover': {
                     transform: 'translateY(-3px)',
                     boxShadow: '0 12px 25px rgba(0,0,0,0.4)'
+                  },
+                  '&:disabled': {
+                    background: 'linear-gradient(45deg, #ff9800 30%, #ffeb3b 90%)',
+                    opacity: 0.7
                   }
                 }}
               >
-                පුද්ගලික උපකරණ පුවරුව
+                {isDashboardLoading ? 'පරීක්ෂා කරමින්...' : 'පුද්ගලික උපකරණ පුවරුව'}
               </Button>
             </motion.div>
           </motion.div>
