@@ -378,21 +378,7 @@ const SpecificClass = () => {
                       පන්ති නිරීක්ෂකයින්
                     </Typography>
                     {isAdmin && (
-                      <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Tooltip title="නිරීක්ෂකයින් තහවුරු කරන්න">
-                          <IconButton
-                            color="success"
-                            onClick={handleConfirmMonitors}
-                            disabled={confirmingMonitors || !classData.monitors?.length}
-                            size="small"
-                          >
-                            {confirmingMonitors ? (
-                              <CircularProgress size={20} />
-                            ) : (
-                              <CheckCircle />
-                            )}
-                          </IconButton>
-                        </Tooltip>
+                      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                         <Tooltip title="නිරීක්ෂකයෙකු එක් කරන්න">
                           <IconButton
                             color="primary"
@@ -449,6 +435,56 @@ const SpecificClass = () => {
                     <Typography variant="body2" color="text.secondary" textAlign="center">
                       නිරීක්ෂකයින් නොමැත
                     </Typography>
+                  )}
+
+                  {/* Confirm Monitors Button */}
+                  {isAdmin && classData.monitors && classData.monitors.length > 0 && (
+                    <Box sx={{ mt: 2 }}>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        onClick={handleConfirmMonitors}
+                        disabled={confirmingMonitors}
+                        startIcon={confirmingMonitors ? <CircularProgress size={16} /> : <CheckCircle />}
+                        sx={{
+                          background: 'linear-gradient(135deg, #4caf50 0%, #2e7d32 100%)',
+                          color: 'white',
+                          fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                          fontWeight: 'bold',
+                          fontSize: '0.9rem',
+                          py: 1.5,
+                          borderRadius: 2,
+                          textTransform: 'none',
+                          boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)',
+                          '&:hover': {
+                            background: 'linear-gradient(135deg, #43a047 0%, #1b5e20 100%)',
+                            boxShadow: '0 6px 16px rgba(76, 175, 80, 0.4)',
+                            transform: 'translateY(-1px)',
+                          },
+                          '&:disabled': {
+                            background: 'linear-gradient(135deg, #a5d6a7 0%, #81c784 100%)',
+                            color: 'white',
+                            opacity: 0.7
+                          },
+                          transition: 'all 0.3s ease'
+                        }}
+                      >
+                        {confirmingMonitors ? 'නිරීක්ෂකයින් තහවුරු කරමින්...' : 'නිරීක්ෂකයින් තහවුරු කරන්න'}
+                      </Button>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{
+                          display: 'block',
+                          textAlign: 'center',
+                          mt: 1,
+                          fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                          fontSize: '0.75rem'
+                        }}
+                      >
+                        වලංගු නොවන නිරීක්ෂකයින් ස්වයංක්‍රීයව ඉවත් කරයි
+                      </Typography>
+                    </Box>
                   )}
                 </Box>
               </Grid>
