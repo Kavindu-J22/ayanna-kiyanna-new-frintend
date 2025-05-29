@@ -52,71 +52,155 @@ const Home = () => {
   const [showStudentDialog, setShowStudentDialog] = useState(false);
   const navigate = useNavigate();
 
-  // Fix mobile scrolling issues - optimized for mobile
+  // Enhanced mobile scrolling fix - comprehensive solution
   useEffect(() => {
-    // Only apply mobile fixes if on mobile device
-    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    // Detect mobile devices more accurately
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                          (window.innerWidth <= 768 && 'ontouchstart' in window);
 
     if (isMobileDevice) {
-      // Create and inject CSS for mobile scrolling fix
+      // Create comprehensive CSS for mobile scrolling fix
       const style = document.createElement('style');
       style.id = 'mobile-scroll-fix';
       style.textContent = `
-        html, body {
+        /* Root level scrolling fixes */
+        html {
+          overflow-x: hidden !important;
+          overflow-y: auto !important;
+          -webkit-overflow-scrolling: touch !important;
+          touch-action: pan-y !important;
+          height: 100% !important;
+          position: relative !important;
+          scroll-behavior: smooth !important;
+        }
+
+        body {
           overflow-x: hidden !important;
           overflow-y: auto !important;
           -webkit-overflow-scrolling: touch !important;
           touch-action: pan-y !important;
           height: auto !important;
+          min-height: 100% !important;
           position: relative !important;
+          margin: 0 !important;
+          padding: 0 !important;
         }
 
-        /* Fix for iOS Safari viewport */
+        /* Fix for iOS Safari viewport issues */
         @supports (-webkit-touch-callout: none) {
-          html, body {
+          html {
             height: -webkit-fill-available !important;
+          }
+          body {
+            min-height: -webkit-fill-available !important;
           }
         }
 
-        /* Ensure proper scrolling on mobile */
+        /* Prevent separate scrolling contexts */
         .MuiContainer-root {
           overflow-x: hidden !important;
+          overflow-y: visible !important;
+          -webkit-overflow-scrolling: auto !important;
+        }
+
+        /* Fix for Material-UI components */
+        .MuiBox-root {
+          overflow-x: hidden !important;
+        }
+
+        /* Ensure smooth scrolling for all elements */
+        * {
+          -webkit-overflow-scrolling: touch !important;
+          scroll-behavior: smooth !important;
+        }
+
+        /* Fix for fixed positioned elements */
+        [style*="position: fixed"] {
+          -webkit-transform: translateZ(0) !important;
+          transform: translateZ(0) !important;
+        }
+
+        /* Prevent momentum scrolling issues */
+        .no-momentum-scroll {
+          -webkit-overflow-scrolling: auto !important;
+        }
+
+        /* Fix for nested scrollable areas */
+        .scrollable-section {
+          overflow-y: visible !important;
+          height: auto !important;
+          min-height: auto !important;
         }
       `;
 
-      // Check if style already exists
+      // Remove existing style if present
       const existingStyle = document.getElementById('mobile-scroll-fix');
-      if (!existingStyle) {
-        document.head.appendChild(style);
+      if (existingStyle) {
+        existingStyle.remove();
       }
 
-      // Set body styles for mobile
-      document.body.style.overflowX = 'hidden';
-      document.body.style.overflowY = 'auto';
-      document.body.style.WebkitOverflowScrolling = 'touch';
-      document.body.style.touchAction = 'pan-y';
-      document.body.style.height = 'auto';
-      document.body.style.position = 'relative';
+      // Add new style
+      document.head.appendChild(style);
 
+      // Apply body styles directly
+      const bodyStyles = {
+        overflowX: 'hidden',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        touchAction: 'pan-y',
+        height: 'auto',
+        minHeight: '100%',
+        position: 'relative',
+        margin: '0',
+        padding: '0'
+      };
+
+      // Store original styles for cleanup
+      const originalStyles = {};
+      Object.keys(bodyStyles).forEach(key => {
+        originalStyles[key] = document.body.style[key];
+        document.body.style[key] = bodyStyles[key];
+      });
+
+      // Apply html styles
+      const htmlStyles = {
+        overflowX: 'hidden',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        touchAction: 'pan-y',
+        height: '100%',
+        position: 'relative',
+        scrollBehavior: 'smooth'
+      };
+
+      const originalHtmlStyles = {};
+      Object.keys(htmlStyles).forEach(key => {
+        originalHtmlStyles[key] = document.documentElement.style[key];
+        document.documentElement.style[key] = htmlStyles[key];
+      });
+
+      // Cleanup function
       return () => {
-        // Cleanup
+        // Remove injected styles
         const styleElement = document.getElementById('mobile-scroll-fix');
-        if (styleElement && styleElement.parentNode) {
-          styleElement.parentNode.removeChild(styleElement);
+        if (styleElement) {
+          styleElement.remove();
         }
 
-        // Reset body styles
-        document.body.style.overflowX = '';
-        document.body.style.overflowY = '';
-        document.body.style.WebkitOverflowScrolling = '';
-        document.body.style.touchAction = '';
-        document.body.style.height = '';
-        document.body.style.position = '';
+        // Restore original body styles
+        Object.keys(originalStyles).forEach(key => {
+          document.body.style[key] = originalStyles[key];
+        });
+
+        // Restore original html styles
+        Object.keys(originalHtmlStyles).forEach(key => {
+          document.documentElement.style[key] = originalHtmlStyles[key];
+        });
       };
     }
   }, []);
 
-  // Ensure page starts at top on mobile
+  // Ensure page starts at top and optimize mobile scrolling
   useEffect(() => {
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
@@ -124,6 +208,38 @@ const Home = () => {
     // Also ensure body scroll position is reset
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
+
+    // Additional mobile scroll optimization
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                          (window.innerWidth <= 768 && 'ontouchstart' in window);
+
+    if (isMobileDevice) {
+      // Disable momentum scrolling on problematic elements
+      const motionElements = document.querySelectorAll('[data-framer-motion]');
+      motionElements.forEach(element => {
+        element.style.WebkitOverflowScrolling = 'auto';
+        element.style.willChange = 'auto';
+      });
+
+      // Optimize scroll performance
+      let ticking = false;
+      const updateScrollPosition = () => {
+        ticking = false;
+      };
+
+      const requestScrollUpdate = () => {
+        if (!ticking) {
+          requestAnimationFrame(updateScrollPosition);
+          ticking = true;
+        }
+      };
+
+      window.addEventListener('scroll', requestScrollUpdate, { passive: true });
+
+      return () => {
+        window.removeEventListener('scroll', requestScrollUpdate);
+      };
+    }
   }, []);
 
   useEffect(() => {
@@ -335,33 +451,40 @@ const Home = () => {
   };
 
   return (
-    <Box sx={{
-      width: '100%',
-      height: 'auto',
-      WebkitOverflowScrolling: 'touch', // Enable smooth scrolling on iOS
-      touchAction: 'pan-y', // Better touch handling for mobile - allow vertical scrolling
-      position: 'relative',
-      overflowX: 'hidden', // Only hide horizontal overflow
-      overflowY: 'auto', // Allow vertical scrolling
-      paddingTop: 0, // Ensure no top padding that might hide content
-      marginTop: 0 // Ensure no top margin
-    }}>
+    <Box
+      className="scrollable-section"
+      sx={{
+        width: '100%',
+        height: 'auto',
+        minHeight: '100vh',
+        WebkitOverflowScrolling: 'touch',
+        touchAction: 'pan-y',
+        position: 'relative',
+        overflowX: 'hidden',
+        overflowY: 'visible', // Changed from 'auto' to 'visible' to prevent separate scroll context
+        paddingTop: 0,
+        marginTop: 0,
+        // Ensure this container doesn't create its own scroll context
+        contain: 'layout style paint',
+        willChange: 'auto' // Remove transform optimizations that can cause scroll issues
+      }}>
 {/* Welcome Section with Enhanced Animated Background */}
 <Box
+  className="scrollable-section"
   sx={{
     background: 'linear-gradient(135deg, #6a11cb 0%, #ff6b9d 50%, #ff8e53 100%)',
     color: 'white',
-    py: { xs: 8, sm: 10, md: 12 }, // Responsive padding - smaller on mobile
+    py: { xs: 8, sm: 10, md: 12 },
     position: 'relative',
-    overflow: 'visible',
-    minHeight: { xs: '100vh', sm: '100vh' }, // Ensure full height on all devices
+    overflow: 'visible', // Ensure no separate scroll context
+    minHeight: { xs: '100vh', sm: '100vh' },
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    touchAction: 'pan-y', // Better touch handling - allow vertical scrolling
-    WebkitOverflowScrolling: 'touch', // Smooth scrolling on iOS
-    overflowY: 'visible', // Ensure content can overflow vertically
-    paddingTop: { xs: '60px', sm: '80px' }, // Add top padding to account for header on mobile
+    touchAction: 'pan-y',
+    WebkitOverflowScrolling: 'touch',
+    overflowY: 'visible', // Prevent separate scrolling
+    paddingTop: { xs: '60px', sm: '80px' },
     '&:before': {
       content: '""',
       position: 'absolute',
@@ -1171,24 +1294,26 @@ const Home = () => {
 </Box>
 
 {/* Register as Student Section */}
-<Box sx={{
-  py: 6,  // Reduced padding
-  background: 'linear-gradient(135deg, #f9f9f9 0%, #e3f2fd 100%)',
-  position: 'relative',
-  overflow: 'hidden',
-  '&:before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    background: 'url(/abstract-bg.svg) no-repeat',
-    backgroundSize: 'cover',
-    opacity: 0.05,
-    zIndex: 0
-  }
-}}>
+<Box
+  className="scrollable-section"
+  sx={{
+    py: 6,
+    background: 'linear-gradient(135deg, #f9f9f9 0%, #e3f2fd 100%)',
+    position: 'relative',
+    overflow: 'visible', // Changed from 'hidden' to 'visible'
+    '&:before': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      background: 'url(/abstract-bg.svg) no-repeat',
+      backgroundSize: 'cover',
+      opacity: 0.05,
+      zIndex: 0
+    }
+  }}>
   <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -1515,15 +1640,31 @@ const Home = () => {
 </Box>
 
 
-<Box sx={{ py: 4, background: '#f9f9f9' }}>
+<Box
+  className="scrollable-section"
+  sx={{
+    py: 4,
+    background: '#f9f9f9',
+    overflow: 'visible' // Ensure no separate scroll context
+  }}>
       <Container>
-        <Box sx={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
+        <Box sx={{
+          position: 'relative',
+          width: '100%',
+          overflow: 'visible', // Changed from 'hidden' to 'visible' for mobile
+          // Only hide overflow on desktop to maintain carousel functionality
+          [theme.breakpoints.up('md')]: {
+            overflow: 'hidden'
+          }
+        }}>
           {/* Slider container */}
           <Box sx={{
             display: 'flex',
             transition: 'transform 0.5s ease',
             transform: `translateX(-${currentSlide * (100 / carouselItems.length)}%)`,
-            width: `${carouselItems.length * 100}%`
+            width: `${carouselItems.length * 100}%`,
+            // Prevent transform issues on mobile
+            willChange: isMobile ? 'auto' : 'transform'
           }}>
             {carouselItems.map((item, index) => (
               <Box
@@ -1646,23 +1787,25 @@ const Home = () => {
     </Box>
 
 {/* Our Message Section */}
-<Box sx={{
-  py: { xs: 4, md: 5 },
-  background: 'linear-gradient(to bottom, #f9f9f9 0%, #ffffff 100%)',
-  position: 'relative',
-  overflow: 'hidden',
-  '&:before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundImage: 'url(/path/to/subtle-pattern.png)',
-    opacity: 0.03,
-    zIndex: 0
-  }
-}}>
+<Box
+  className="scrollable-section"
+  sx={{
+    py: { xs: 4, md: 5 },
+    background: 'linear-gradient(to bottom, #f9f9f9 0%, #ffffff 100%)',
+    position: 'relative',
+    overflow: 'visible', // Changed from 'hidden' to 'visible'
+    '&:before': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      backgroundImage: 'url(/path/to/subtle-pattern.png)',
+      opacity: 0.03,
+      zIndex: 0
+    }
+  }}>
   <Container sx={{ position: 'relative', zIndex: 1 }}>
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -1909,22 +2052,24 @@ const Home = () => {
 </Box>
 
 {/* About Teacher Section - Text Focused Design */}
-<Box sx={{
-  py: 10,
-  background: 'linear-gradient(135deg, #f9fafe 0%, #e6ecf8 100%)',
-  position: 'relative',
-  overflow: 'hidden',
-  '&:before': {
-    content: '""',
-    position: 'absolute',
-    top: -100,
-    right: -100,
-    width: 400,
-    height: 400,
-    background: 'radial-gradient(circle, rgba(106,17,203,0.08) 0%, transparent 70%)',
-    zIndex: 0
-  }
-}}>
+<Box
+  className="scrollable-section"
+  sx={{
+    py: 10,
+    background: 'linear-gradient(135deg, #f9fafe 0%, #e6ecf8 100%)',
+    position: 'relative',
+    overflow: 'visible', // Changed from 'hidden' to 'visible'
+    '&:before': {
+      content: '""',
+      position: 'absolute',
+      top: -100,
+      right: -100,
+      width: 400,
+      height: 400,
+      background: 'radial-gradient(circle, rgba(106,17,203,0.08) 0%, transparent 70%)',
+      zIndex: 0
+    }
+  }}>
   <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
     {/* Section Header with Decorative Elements */}
     <Box sx={{ textAlign: 'center', mb: 8, position: 'relative' }}>
@@ -2135,23 +2280,25 @@ const Home = () => {
 </Box>
 
 {/* Testimonials Section - Enhanced */}
-<Box sx={{
-  py: 10,
-  background: 'linear-gradient(135deg, #f5f7fa 0%, #f0f4f8 100%)',
-  position: 'relative',
-  overflow: 'hidden',
-  '&:before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    background: 'url(/path/to/subtle-pattern.png)',
-    opacity: 0.05,
-    zIndex: 0
-  }
-}}>
+<Box
+  className="scrollable-section"
+  sx={{
+    py: 10,
+    background: 'linear-gradient(135deg, #f5f7fa 0%, #f0f4f8 100%)',
+    position: 'relative',
+    overflow: 'visible', // Changed from 'hidden' to 'visible'
+    '&:before': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      background: 'url(/path/to/subtle-pattern.png)',
+      opacity: 0.05,
+      zIndex: 0
+    }
+  }}>
   <Container sx={{ position: 'relative', zIndex: 1 }}>
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -2345,26 +2492,28 @@ const Home = () => {
 </Box>
 
 {/* Contact Section */}
-<Box sx={{
-  py: 8,
-  background: 'linear-gradient(135deg, #6a11cb 0%,rgb(252, 37, 166) 100%)',
-  color: 'white',
-  position: 'relative',
-  overflow: 'hidden',
-  display: 'flex',
-  alignItems: 'center',
-  minHeight: '100vh',
-  '&:before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    background: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)',
-    zIndex: 0
-  }
-}}>
+<Box
+  className="scrollable-section"
+  sx={{
+    py: 8,
+    background: 'linear-gradient(135deg, #6a11cb 0%,rgb(252, 37, 166) 100%)',
+    color: 'white',
+    position: 'relative',
+    overflow: 'visible', // Changed from 'hidden' to 'visible'
+    display: 'flex',
+    alignItems: 'center',
+    minHeight: { xs: 'auto', md: '100vh' }, // Remove fixed height on mobile
+    '&:before': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      background: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)',
+      zIndex: 0
+    }
+  }}>
   <Container maxWidth="lg" sx={{
     position: 'relative',
     zIndex: 1,
@@ -2425,7 +2574,7 @@ const Home = () => {
             padding: 4,
             borderRadius: '16px',
             height: '100%',
-            minHeight: '500px',
+            minHeight: { xs: 'auto', md: '500px' }, // Remove fixed height on mobile
             backdropFilter: 'blur(8px)',
             border: '1px solid rgba(255,255,255,0.2)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
@@ -2568,7 +2717,7 @@ const Home = () => {
             padding: 4,
             borderRadius: '16px',
             height: '100%',
-            minHeight: '500px',
+            minHeight: { xs: 'auto', md: '500px' }, // Remove fixed height on mobile
             backdropFilter: 'blur(8px)',
             border: '1px solid rgba(255,255,255,0.2)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
