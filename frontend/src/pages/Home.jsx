@@ -979,7 +979,7 @@ const Home = () => {
         zIndex: 2,
         // Fix clipping issue - allow shadow to extend beyond container
         overflow: 'visible',
-        padding: '15px 20px 20px 20px' // Add minimal top padding to prevent shadow clipping
+        padding: '25px 20px 20px 20px' // Increase top padding to fully prevent shadow clipping on mobile
       }}>
       <motion.div
         animate={{
@@ -1202,7 +1202,7 @@ const Home = () => {
 
       {/* User section with enhanced buttons */}
       <Box sx={{
-        mt: 8,
+        mt: 6,
         textAlign: 'center',
         position: 'relative',
         zIndex: 2
