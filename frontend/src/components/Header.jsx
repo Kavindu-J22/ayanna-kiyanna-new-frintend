@@ -169,6 +169,11 @@ const Header = () => {
   const mobileMenuButtonRef = useRef(null);
   const navigate = useNavigate();
 
+  // Debug mobile menu state
+  useEffect(() => {
+    console.log('Mobile menu state changed:', mobileMenuOpen, 'isMobile:', isMobile);
+  }, [mobileMenuOpen, isMobile]);
+
   useEffect(() => {
     const email = localStorage.getItem('userEmail');
     if (email) {
@@ -203,21 +208,29 @@ const Header = () => {
   // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if click is outside AND the menu is actually open
-      if (mobileMenuOpen &&
-          mobileMenuRef.current &&
-          !mobileMenuRef.current.contains(event.target) &&
-          mobileMenuButtonRef.current &&
-          !mobileMenuButtonRef.current.contains(event.target)) {
+      // Only handle if menu is open and we're on mobile
+      if (!mobileMenuOpen || !isMobile) return;
+
+      // Check if click is outside both the menu and the button
+      const isClickOutsideMenu = mobileMenuRef.current && !mobileMenuRef.current.contains(event.target);
+      const isClickOutsideButton = mobileMenuButtonRef.current && !mobileMenuButtonRef.current.contains(event.target);
+
+      if (isClickOutsideMenu && isClickOutsideButton) {
+        console.log('Clicking outside mobile menu, closing...');
         setMobileMenuOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    if (mobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+    }
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
     };
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, isMobile]);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -238,10 +251,9 @@ const Header = () => {
   };
 
   const toggleMobileMenu = (e) => {
-    // Only stop propagation if we're opening the menu
-    if (!mobileMenuOpen) {
-      e.stopPropagation();
-    }
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Toggle mobile menu clicked, current state:', mobileMenuOpen);
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
@@ -306,14 +318,18 @@ const Header = () => {
                 open={mobileMenuOpen}
                 sx={{
                   color: 'white',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  border: '2px solid rgba(255, 255, 255, 0.5)', // Made border more visible
+                  backgroundColor: mobileMenuOpen ? 'rgba(179, 136, 255, 0.3)' : 'rgba(255, 255, 255, 0.1)',
                   '&:hover': {
                     backgroundColor: 'rgba(255, 255, 255, 0.2)',
                     borderColor: 'white'
-                  }
+                  },
+                  // Add some debugging styles
+                  minHeight: '40px',
+                  minWidth: '120px'
                 }}
               >
-                {mobileMenuOpen ? 'Close' : 'Navigate'}
+                {mobileMenuOpen ? 'Close' : 'Explore'}
               </MobileMenuButton>
                 </Box>
             )}
@@ -505,77 +521,82 @@ const Header = () => {
               )}
             </Box>
           </Toolbar>
-
-          {/* Mobile menu dropdown */}
-          {isMobile && (
-            <Collapse
-              in={mobileMenuOpen}
-              timeout="auto"
-              unmountOnExit
-              ref={mobileMenuRef}
-              sx={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                right: 0,
-                backgroundColor: alpha('#1a0638', 0.95),
-                backdropFilter: 'blur(20px)',
-                zIndex: theme.zIndex.appBar + 1,
-                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
-                borderBottom: '1px solid rgba(179, 136, 255, 0.2)',
-                width: '100%'
-              }}
-            >
-              <Box sx={{ p: 2 }}>
-                <List sx={{ py: 0 }}>
-                  {navItems.map((item) => (
-                    <ListItem
-                      button
-                      key={item.name}
-                      component="a"
-                      href={item.path}
-                      onClick={() => setMobileMenuOpen(false)}
-                      sx={{
-                        borderRadius: '8px',
-                        mb: 0.5,
-                        transition: 'all 0.3s ease',
-                        backgroundColor: isActive(item.path) ? 'rgba(179, 136, 255, 0.2)' : 'transparent',
-                        '&:hover': {
-                          backgroundColor: 'rgba(179, 136, 255, 0.1)',
-                          transform: 'translateX(5px)'
-                        },
-                        display: 'flex',
-                        justifyContent: 'center',
-                        textAlign: 'center'
-                      }}
-                    >
-                      <ListItemIcon sx={{
-                        color: isActive(item.path) ? '#b388ff' : 'white',
-                        minWidth: 'auto',
-                        mr: 1
-                      }}>
-                        {item.icon}
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={item.name}
-                        primaryTypographyProps={{
-                          color: isActive(item.path) ? '#b388ff' : 'white',
-                          fontWeight: 500,
-                          variant: 'body1'
-                        }}
-                        sx={{
-                          flex: 'none',
-                          textAlign: 'center'
-                        }}
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              </Box>
-            </Collapse>
-          )}
         </Container>
       </StyledAppBar>
+
+      {/* Mobile menu dropdown - moved outside Container */}
+      {isMobile && (
+        <Collapse
+          in={mobileMenuOpen}
+          timeout="auto"
+          unmountOnExit
+          ref={mobileMenuRef}
+          sx={{
+            position: 'fixed',
+            top: '64px', // Height of AppBar
+            left: 0,
+            right: 0,
+            backgroundColor: alpha('#1a0638', 0.95),
+            backdropFilter: 'blur(20px)',
+            zIndex: 1300, // Higher than AppBar
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
+            borderBottom: '1px solid rgba(179, 136, 255, 0.2)',
+            width: '100vw',
+            maxHeight: 'calc(100vh - 64px)',
+            overflowY: 'auto'
+          }}
+        >
+          <Box sx={{ p: 2 }}>
+            <List sx={{ py: 0 }}>
+              {navItems.map((item) => (
+                <ListItem
+                  button
+                  key={item.name}
+                  component="a"
+                  href={item.path}
+                  onClick={() => {
+                    console.log('Menu item clicked:', item.name);
+                    setMobileMenuOpen(false);
+                  }}
+                  sx={{
+                    borderRadius: '8px',
+                    mb: 0.5,
+                    transition: 'all 0.3s ease',
+                    backgroundColor: isActive(item.path) ? 'rgba(179, 136, 255, 0.2)' : 'transparent',
+                    '&:hover': {
+                      backgroundColor: 'rgba(179, 136, 255, 0.1)',
+                      transform: 'translateX(5px)'
+                    },
+                    display: 'flex',
+                    justifyContent: 'center',
+                    textAlign: 'center'
+                  }}
+                >
+                  <ListItemIcon sx={{
+                    color: isActive(item.path) ? '#b388ff' : 'white',
+                    minWidth: 'auto',
+                    mr: 1
+                  }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.name}
+                    primaryTypographyProps={{
+                      color: isActive(item.path) ? '#b388ff' : 'white',
+                      fontWeight: 500,
+                      variant: 'body1'
+                    }}
+                    sx={{
+                      flex: 'none',
+                      textAlign: 'center'
+                    }}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        </Collapse>
+      )}
 
       {/* Add padding to content to account for fixed header */}
       <Toolbar />
