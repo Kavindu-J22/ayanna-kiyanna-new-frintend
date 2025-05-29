@@ -147,6 +147,28 @@ const Home = () => {
         .logo-container, .logo-container * {
           overflow: visible !important;
         }
+
+        /* Exception for fixed positioned elements - header and menu buttons */
+        header, .MuiAppBar-root, .MuiAppBar-fixed {
+          position: fixed !important;
+          overflow: visible !important;
+          z-index: 1300 !important;
+        }
+
+        /* Ensure fixed positioned buttons work properly */
+        button[style*="position: fixed"], .fixed-button, .mobile-menu-button {
+          position: fixed !important;
+          overflow: visible !important;
+          z-index: 1400 !important;
+        }
+
+        /* Specific targeting for mobile menu button */
+        .mobile-menu-button {
+          position: fixed !important;
+          top: 70px !important;
+          left: 10px !important;
+          z-index: 1400 !important;
+        }
       `;
 
       // Remove existing style if present
@@ -1209,7 +1231,8 @@ const Home = () => {
         // Fix mobile button overflow
         px: isMobile ? 2 : 0,
         overflow: 'visible', // Allow button content to be fully visible
-        minHeight: isMobile ? '120px' : 'auto' // Ensure enough space for button
+        minHeight: isMobile ? '150px' : 'auto', // Increased height for button
+        pb: isMobile ? 4 : 0 // Add bottom padding on mobile
       }}>
         {userEmail ? (
           <motion.div

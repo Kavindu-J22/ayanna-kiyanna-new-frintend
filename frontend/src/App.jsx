@@ -387,6 +387,7 @@ function AppContent() {
       {/* Mobile Menu Button */}
       {!isNoSidebarPage && isMobile && (
         <IconButton
+          className="fixed-button mobile-menu-button"
           onClick={handleMobileDrawerToggle}
           sx={{
             display: { xs: 'flex', md: 'none' },
