@@ -52,7 +52,8 @@ import {
   Notifications,
   TrendingUp,
   CalendarToday,
-  Group
+  Group,
+  CheckCircle
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -81,6 +82,7 @@ const SpecificClass = () => {
   // Monitor management states
   const [addingMonitor, setAddingMonitor] = useState(false);
   const [removingMonitor, setRemovingMonitor] = useState('');
+  const [confirmingMonitors, setConfirmingMonitors] = useState(false);
 
   useEffect(() => {
     fetchClassData();
@@ -193,6 +195,39 @@ const SpecificClass = () => {
     if (userRole === 'admin' || userRole === 'moderator') {
       setStudentsDialog(true);
       fetchStudents();
+    }
+  };
+
+  const handleConfirmMonitors = async () => {
+    if (!window.confirm('මෙම පන්තියේ නිරීක්ෂකයින් තහවුරු කරන්න?\n\nමෙය:\n- දැනට පන්තියට ලියාපදිංචි නොවූ නිරීක්ෂකයින් ඉවත් කරයි\n- මකා දැමූ සිසුන් නිරීක්ෂක ලැයිස්තුවෙන් ඉවත් කරයි\n\nමෙම ක්‍රියාව අහෝසි කළ නොහැක.')) {
+      return;
+    }
+
+    try {
+      setConfirmingMonitors(true);
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/classes/${classId}/confirm-monitors`,
+        {},
+        { headers: { 'x-auth-token': token } }
+      );
+
+      if (response.data.success) {
+        const summary = response.data.summary;
+        if (summary.monitorsRemoved > 0) {
+          alert(`නිරීක්ෂක තහවුරු කිරීම සම්පූර්ණයි!\n\nසාරාංශය:\n- ඉවත් කළ නිරීක්ෂකයින්: ${summary.monitorsRemoved}\n- දැනට ඇති නිරීක්ෂකයින්: ${summary.newMonitorsCount}`);
+        } else {
+          alert('සියලුම නිරීක්ෂකයින් වලංගු වන අතර දැනට පන්තියට ලියාපදිංචි වී ඇත.');
+        }
+
+        // Refresh class data
+        await fetchClassData();
+      }
+    } catch (err) {
+      console.error('Error confirming monitors:', err);
+      alert(err.response?.data?.message || 'නිරීක්ෂකයින් තහවුරු කිරීමේදී දෝෂයක් ඇතිවිය');
+    } finally {
+      setConfirmingMonitors(false);
     }
   };
 
@@ -343,15 +378,32 @@ const SpecificClass = () => {
                       පන්ති නිරීක්ෂකයින්
                     </Typography>
                     {isAdmin && (
-                      <Tooltip title="නිරීක්ෂකයෙකු එක් කරන්න">
-                        <IconButton
-                          color="primary"
-                          onClick={() => setAddMonitorDialog(true)}
-                          disabled={classData.monitors?.length >= 5}
-                        >
-                          <PersonAdd />
-                        </IconButton>
-                      </Tooltip>
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Tooltip title="නිරීක්ෂකයින් තහවුරු කරන්න">
+                          <IconButton
+                            color="success"
+                            onClick={handleConfirmMonitors}
+                            disabled={confirmingMonitors || !classData.monitors?.length}
+                            size="small"
+                          >
+                            {confirmingMonitors ? (
+                              <CircularProgress size={20} />
+                            ) : (
+                              <CheckCircle />
+                            )}
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="නිරීක්ෂකයෙකු එක් කරන්න">
+                          <IconButton
+                            color="primary"
+                            onClick={() => setAddMonitorDialog(true)}
+                            disabled={classData.monitors?.length >= 5}
+                            size="small"
+                          >
+                            <PersonAdd />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
                     )}
                   </Box>
 
