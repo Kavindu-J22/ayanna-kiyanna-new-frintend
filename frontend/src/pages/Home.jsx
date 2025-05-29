@@ -266,7 +266,7 @@ const Home = () => {
       sx={{
         width: '100%',
         height: 'auto',
-        minHeight: '100vh',
+        // Remove minHeight constraint that causes mobile scrolling issues
         position: 'relative',
         // Ensure proper scrolling on mobile
         overflow: 'visible',
@@ -278,6 +278,8 @@ const Home = () => {
         // Fix mobile browser scrolling issues
         [theme.breakpoints.down('sm')]: {
           position: 'static', // Remove relative positioning on mobile
+          minHeight: 'auto', // Ensure no height constraints on mobile
+          height: 'auto',
           transform: 'translateZ(0)', // Force hardware acceleration
           backfaceVisibility: 'hidden', // Improve mobile performance
         }
@@ -290,7 +292,7 @@ const Home = () => {
     py: { xs: 8, sm: 10, md: 12 },
     position: 'relative',
     overflow: 'hidden', // Keep overflow hidden only for background effects
-    minHeight: { xs: 'auto', sm: '100vh' }, // Remove fixed height on mobile
+    // Remove all height constraints to fix mobile scrolling
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -299,6 +301,8 @@ const Home = () => {
     [theme.breakpoints.down('sm')]: {
       paddingBottom: '40px', // Ensure content doesn't get cut off
       minHeight: 'auto', // Allow natural height on mobile
+      height: 'auto', // Ensure no height constraints
+      justifyContent: 'flex-start', // Don't center content vertically on mobile
     },
     '&:before': {
       content: '""',
