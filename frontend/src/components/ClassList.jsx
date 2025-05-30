@@ -121,7 +121,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
   };
 
   const handleCleanAndResetSpots = async () => {
-    if (!window.confirm('Are you sure you want to clean and reset available spots for all classes?\n\nThis will:\n- Remove deleted students from class enrollments\n- Fix data inconsistencies between student and class records\n- Update available spots calculations\n\nThis action cannot be undone.')) {
+    if (!window.confirm('ඔබට සියලුම පන්ති සඳහා තිබෙන ඉඩ ප්රමාණ පිරිසිදු කර යළි සකස් කිරීමට අවශ්ය බව ඔබට විශ්වාසද?\n\nමෙය:\n- ඉවත් කරන ලද ශිෂ්යයන් පන්ති ලියාපදිංචි වලින් ඉවත් කරයි\n- ශිෂ්ය හා පන්ති වාර්තා අතර ඇති අස්ථාවර දත්ත නිවැරදි කරයි\n- තිබෙන ඉඩ ප්රමාණ ගණනය කිරීම් යාවත්කාලීන කරයි\n\n(මෙම ක්‍රියාවලිය සෑම දිනකම රාත්‍රී 12 ට සහ දහවල් 12 ට ස්වයංක්‍රීයව සිදුවන අතර මෙය ක්‍රියාත්මක කිරීම තුලින් මේ මොහොතේ ද සිදුකල හැක) මෙම ක්‍රියාවලිය අහෝසි කළ නොහැකිය.')) {
       return;
     }
 
@@ -421,7 +421,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
                   textTransform: 'none'
                 }}
               >
-                {cleaningSpots ? 'Cleaning...' : 'Clean & Reset Spots'}
+                {cleaningSpots ? 'තහවුරු කරමින්...' : 'ඉතිරි ඉඩ ප්‍රමාණ තහවුරු කරන්න'}
               </Button>
             </Box>
           </Grid>

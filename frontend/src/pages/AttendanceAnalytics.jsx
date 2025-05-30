@@ -60,7 +60,7 @@ const AttendanceAnalytics = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      
+
       const response = await axios.get(
         `https://ayanna-kiyanna-new-backend.onrender.com/api/attendance/analytics?year=${selectedYear}`,
         { headers: { 'x-auth-token': token } }
@@ -91,19 +91,23 @@ const AttendanceAnalytics = () => {
 
   const monthlyChartData = monthNames.map((month, index) => {
     const data = analyticsData.monthlyData.find(item => item._id === index + 1);
+    const attendancePercentage = data && data.totalStudents > 0
+      ? Math.round((data.totalPresent / data.totalStudents) * 100)
+      : 0;
+
     return {
       month,
       sheets: data?.totalSheets || 0,
-      attendance: data ? Math.round((data.totalPresent / data.totalStudents) * 100) || 0 : 0
+      attendance: attendancePercentage
     };
   });
 
-  const colors = ['#667eea', '#f093fb', '#4caf50', '#ff9800', '#e91e63', '#9c27b0'];
+
 
   // Calculate summary statistics
-  const totalSheets = analyticsData.monthlyData.reduce((sum, item) => sum + item.totalSheets, 0);
-  const totalStudents = analyticsData.monthlyData.reduce((sum, item) => sum + item.totalStudents, 0);
-  const totalPresent = analyticsData.monthlyData.reduce((sum, item) => sum + item.totalPresent, 0);
+  const totalSheets = analyticsData.monthlyData?.reduce((sum, item) => sum + (item.totalSheets || 0), 0) || 0;
+  const totalStudents = analyticsData.monthlyData?.reduce((sum, item) => sum + (item.totalStudents || 0), 0) || 0;
+  const totalPresent = analyticsData.monthlyData?.reduce((sum, item) => sum + (item.totalPresent || 0), 0) || 0;
   const averageAttendance = totalStudents > 0 ? Math.round((totalPresent / totalStudents) * 100) : 0;
 
   if (loading) {
@@ -219,7 +223,7 @@ const AttendanceAnalytics = () => {
                 <CardContent sx={{ textAlign: 'center' }}>
                   <School sx={{ fontSize: 40, mb: 1 }} />
                   <Typography variant="h4" fontWeight="bold">
-                    {analyticsData.classWiseData.length}
+                    {analyticsData.classWiseData?.length || 0}
                   </Typography>
                   <Typography variant="body2" sx={{
                     fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
@@ -264,17 +268,25 @@ const AttendanceAnalytics = () => {
             }}>
               මාසික පැමිණීම් ප්‍රවණතා
             </Typography>
-            <ResponsiveContainer width="100%" height={400}>
-              <RechartsBarChart data={monthlyChartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="sheets" fill="#667eea" name="පත්‍රිකා සංඛ්‍යාව" />
-                <Bar dataKey="attendance" fill="#4caf50" name="පැමිණීම් ප්‍රතිශතය" />
-              </RechartsBarChart>
-            </ResponsiveContainer>
+            {monthlyChartData.some(data => data.sheets > 0) ? (
+              <ResponsiveContainer width="100%" height={400}>
+                <RechartsBarChart data={monthlyChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="sheets" fill="#667eea" name="පත්‍රිකා සංඛ්‍යාව" />
+                  <Bar dataKey="attendance" fill="#4caf50" name="පැමිණීම් ප්‍රතිශතය" />
+                </RechartsBarChart>
+              </ResponsiveContainer>
+            ) : (
+              <Box sx={{ textAlign: 'center', py: 8 }}>
+                <Typography variant="h6" color="text.secondary">
+                  තෝරාගත් වර්ෂය සඳහා මාසික දත්ත නොමැත
+                </Typography>
+              </Box>
+            )}
           </Paper>
         </motion.div>
 
@@ -292,29 +304,37 @@ const AttendanceAnalytics = () => {
               පන්ති අනුව පැමිණීම් කාර්ය සාධනය
             </Typography>
             <Grid container spacing={2}>
-              {analyticsData.classWiseData.map((classData, index) => (
-                <Grid item xs={12} sm={6} md={4} key={classData._id}>
-                  <Card sx={{ height: '100%' }}>
-                    <CardContent>
-                      <Typography variant="h6" fontWeight="bold" color="primary">
-                        {classData.className}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                        පත්‍රිකා: {classData.totalSheets}
-                      </Typography>
-                      <Typography variant="h4" fontWeight="bold" color={
-                        classData.averageAttendance >= 80 ? 'success.main' :
-                        classData.averageAttendance >= 60 ? 'warning.main' : 'error.main'
-                      }>
-                        {Math.round(classData.averageAttendance)}%
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        සාමාන්‍ය පැමිණීම
-                      </Typography>
-                    </CardContent>
-                  </Card>
+              {analyticsData.classWiseData?.length > 0 ? (
+                analyticsData.classWiseData.map((classData) => (
+                  <Grid item xs={12} sm={6} md={4} key={classData._id}>
+                    <Card sx={{ height: '100%' }}>
+                      <CardContent>
+                        <Typography variant="h6" fontWeight="bold" color="primary">
+                          {classData.className || 'Unknown Class'}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                          පත්‍රිකා: {classData.totalSheets || 0}
+                        </Typography>
+                        <Typography variant="h4" fontWeight="bold" color={
+                          (classData.averageAttendance || 0) >= 80 ? 'success.main' :
+                          (classData.averageAttendance || 0) >= 60 ? 'warning.main' : 'error.main'
+                        }>
+                          {Math.round(classData.averageAttendance || 0)}%
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          සාමාන්‍ය පැමිණීම
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))
+              ) : (
+                <Grid item xs={12}>
+                  <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
+                    තෝරාගත් වර්ෂය සඳහා දත්ත නොමැත
+                  </Typography>
                 </Grid>
-              ))}
+              )}
             </Grid>
           </Paper>
         </motion.div>
