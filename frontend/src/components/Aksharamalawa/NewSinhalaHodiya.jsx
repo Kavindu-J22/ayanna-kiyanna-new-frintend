@@ -19,6 +19,19 @@ function NewSinhalaHodiya() {
         navigate('/login');
     };
 
+    // Smooth popup close function
+    const smoothClosePopup = (setterFunction, currentValue) => {
+        const popupElement = document.querySelector('.akuruwistharamain');
+        if (popupElement) {
+            popupElement.classList.add('closing');
+            setTimeout(() => {
+                setterFunction(!currentValue);
+            }, 300); // Match the animation duration
+        } else {
+            setterFunction(!currentValue);
+        }
+    };
+
     const gototop = () => {
         window.scrollTo({top:0, left:0, behavior: "smooth"});
     };
@@ -5597,7 +5610,7 @@ function NewSinhalaHodiya() {
             showLetNotInc && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
 
                        <div className='AakuruwistharamainboxContent notincludeContent'>
-                       <div className='MyOkBtn'><a onClick={()=>setShowLetNotInc(!showLetNotInc)}>OK</a></div>
+                       <div className='MyOkBtn'><a onClick={()=>smoothClosePopup(setShowLetNotInc, showLetNotInc)}>OK</a></div>
                             <p>මෙම අක්ෂරය මෙම අක්ෂර කාණ්ඩයට ඇතුලත් නොවේ..!</p>
                             <p>This character is not included in this character category..!</p>
                         </div>
@@ -5608,7 +5621,7 @@ function NewSinhalaHodiya() {
             showCatNotInc && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
 
                        <div className='AakuruwistharamainboxContent notincludeContent'>
-                       <div className='MyOkBtn'><a onClick={()=>setShowCatNotInc(!showCatNotInc)}>OK</a></div>
+                       <div className='MyOkBtn'><a onClick={()=>smoothClosePopup(setShowCatNotInc, showCatNotInc)}>OK</a></div>
                             <p>මෙම තීරුවේ මෙම අක්ශර ප්‍රවර්ගයට අයත් අක්ශර මේ මොහොතේ අක්රියව පවතී...!</p>
                             <p>The characters belonging to this character category in this column are currently inactive..!</p>
                         </div>
@@ -5619,7 +5632,7 @@ function NewSinhalaHodiya() {
             showDwijakshara && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
 
                        <div className='AakuruwistharamainboxContent contentVargasTitle'>
-                       <div className='MyCloseBtn'><a onClick={()=>setShowDwijakshara(!showDwijakshara)}><i class="fa-solid fa-circle-xmark"></i></a></div>
+                       <div className='MyCloseBtn'><a onClick={()=>smoothClosePopup(setShowDwijakshara, showDwijakshara)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                         <h1>ද්විජාක්ෂර</h1>
                             <p>මෙහි කලින් දක්වා ඇති කණ්ඨජ, තාලුජ, මූර්ධජ, දන්තජ හා ඕෂ්ඨජ යන සියලු අක්ෂර එක් ස්ථානයක් පමණක් ඇසුරු කරගනිමින් උපදනා බැවින් "ඒකජාක්ෂර" නම් වේ. ද්විජාක්ෂර යනු මුඛයෙහි ස්ථාන දෙකක් පාදක කරගනිමින් හටගන්නා අක්ෂරයන් ය. එලෙස හටගන්නා අක්ෂර වර්ත කිහිපයකි.</p>
                             <ul>

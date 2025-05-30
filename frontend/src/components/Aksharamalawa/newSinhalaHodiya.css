@@ -741,6 +741,8 @@
     width: 100%;
     height: 100vh;
     z-index: 10000; /* High z-index to ensure popup appears above all other elements */
+    opacity: 0;
+    animation: popupFadeIn 0.4s ease-out forwards;
 }
 .AakuruwistharamainboxContent{
     position: relative;
@@ -763,8 +765,9 @@
     backdrop-filter: blur(2px);
     cursor: pointer;
     padding: 15px;
-    animation: animation 3s ease-in-out infinite;
     font-family: 'Noto serif Sinhala',sans-serif;
+    transform: scale(0.8) translateY(30px);
+    animation: popupSlideIn 0.5s ease-out forwards, floatingAnimation 3s ease-in-out infinite 0.5s;
 }
 .AakuruwistharamainboxContent::before{
     content: '';
@@ -1682,17 +1685,19 @@
 }
 .backToWarnamala i{
     margin-right: 5px;
-    color: #fff; /* White color for visibility */
+    color: #000; /* Black color for icon */
     font-size: 1.2em;
     display: block; /* Ensure icon is displayed */
     opacity: 1; /* Full opacity */
-    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Add shadow for better visibility */
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.8); /* White shadow for contrast */
 }
 /* Fallback for when Font Awesome doesn't load */
 .backToWarnamala i::before{
     content: "◀"; /* Left arrow fallback */
     font-size: 1em;
     font-weight: bold;
+    color: #000; /* Black color for fallback arrow */
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.8); /* White shadow for contrast */
 }
 #otherNum{
     color: #d70303aa;
@@ -2744,6 +2749,69 @@
     transform: translateY(-2px) scale(1.05);
     box-shadow: 0 6px 20px rgba(255, 140, 0, 0.4);
     background: linear-gradient(135deg, #ff9500 0%, #ff4500 100%);
+}
+
+/* Smooth Popup Animations */
+@keyframes popupFadeIn {
+    0% {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+    100% {
+        opacity: 1;
+        backdrop-filter: blur(4px);
+    }
+}
+
+@keyframes popupSlideIn {
+    0% {
+        transform: scale(0.8) translateY(30px);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes floatingAnimation {
+    0%, 100% {
+        transform: scale(1) translateY(0px);
+    }
+    50% {
+        transform: scale(1) translateY(-8px);
+    }
+}
+
+@keyframes popupFadeOut {
+    0% {
+        opacity: 1;
+        backdrop-filter: blur(4px);
+    }
+    100% {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+}
+
+@keyframes popupSlideOut {
+    0% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.8) translateY(30px);
+        opacity: 0.8;
+    }
+}
+
+/* Closing animation classes */
+.akuruwistharamain.closing {
+    animation: popupFadeOut 0.3s ease-in forwards;
+}
+
+.akuruwistharamain.closing .AakuruwistharamainboxContent {
+    animation: popupSlideOut 0.3s ease-in forwards;
 }
 
 .loginBtn:active {
