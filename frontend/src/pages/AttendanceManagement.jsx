@@ -107,7 +107,7 @@ const AttendanceManagement = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `http://localhost:5000/api/classes/${classId}`,
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/classes/${classId}`,
         { headers: { 'x-auth-token': token } }
       );
       setClassData(response.data);
@@ -123,7 +123,7 @@ const AttendanceManagement = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        'http://localhost:5000/api/auth/me',
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/auth/me',
         { headers: { 'x-auth-token': token } }
       );
       setUserRole(response.data.role);
@@ -136,7 +136,7 @@ const AttendanceManagement = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `http://localhost:5000/api/attendance/class/${classId}?month=${selectedMonth}&year=${selectedYear}`,
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/attendance/class/${classId}?month=${selectedMonth}&year=${selectedYear}`,
         { headers: { 'x-auth-token': token } }
       );
       setAttendanceSheets(response.data.data || []);
@@ -178,7 +178,7 @@ const AttendanceManagement = () => {
       };
 
       await axios.post(
-        'http://localhost:5000/api/attendance',
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/attendance',
         payload,
         { headers: { 'x-auth-token': token } }
       );
@@ -211,7 +211,7 @@ const AttendanceManagement = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.delete(
-        `http://localhost:5000/api/attendance/${attendanceId}`,
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/attendance/${attendanceId}`,
         { headers: { 'x-auth-token': token } }
       );
 

@@ -62,7 +62,7 @@ const AttendanceAnalytics = () => {
       const token = localStorage.getItem('token');
       
       const response = await axios.get(
-        `http://localhost:5000/api/attendance/analytics?year=${selectedYear}`,
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/attendance/analytics?year=${selectedYear}`,
         { headers: { 'x-auth-token': token } }
       );
 

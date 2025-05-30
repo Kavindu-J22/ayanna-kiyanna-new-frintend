@@ -79,7 +79,7 @@ const AttendanceEdit = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `http://localhost:5000/api/attendance/${id}`,
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/attendance/${id}`,
         { headers: { 'x-auth-token': token } }
       );
 
@@ -105,7 +105,7 @@ const AttendanceEdit = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        'http://localhost:5000/api/auth/me',
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/auth/me',
         { headers: { 'x-auth-token': token } }
       );
       setUserRole(response.data.role);
@@ -127,7 +127,7 @@ const AttendanceEdit = () => {
       };
 
       await axios.put(
-        `http://localhost:5000/api/attendance/${id}`,
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/attendance/${id}`,
         payload,
         { headers: { 'x-auth-token': token } }
       );

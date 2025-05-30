@@ -95,7 +95,7 @@ const AttendanceView = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `http://localhost:5000/api/classes/${classId}`,
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/classes/${classId}`,
         { headers: { 'x-auth-token': token } }
       );
 
@@ -112,7 +112,7 @@ const AttendanceView = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        'http://localhost:5000/api/auth/me',
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/auth/me',
         { headers: { 'x-auth-token': token } }
       );
 
@@ -122,7 +122,7 @@ const AttendanceView = () => {
       if (response.data.role === 'student') {
         try {
           const studentResponse = await axios.get(
-            'http://localhost:5000/api/students/profile',
+            'https://ayanna-kiyanna-new-backend.onrender.com/api/students/profile',
             { headers: { 'x-auth-token': token } }
           );
 
@@ -140,7 +140,7 @@ const AttendanceView = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `http://localhost:5000/api/attendance/class/${classId}?month=${selectedMonth}&year=${selectedYear}`,
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/attendance/class/${classId}?month=${selectedMonth}&year=${selectedYear}`,
         { headers: { 'x-auth-token': token } }
       );
 
@@ -164,7 +164,7 @@ const AttendanceView = () => {
       };
 
       await axios.put(
-        `http://localhost:5000/api/attendance/${selectedSheet._id}/monitor-update`,
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/attendance/${selectedSheet._id}/monitor-update`,
         payload,
         { headers: { 'x-auth-token': token } }
       );
@@ -240,14 +240,19 @@ const AttendanceView = () => {
 
     // Check if monitor has permission from admin
     const hasPermission = sheet.monitorPermissions?.allMonitors ||
-      sheet.monitorPermissions?.selectedMonitors?.some(monitorId =>
-        monitorId.toString() === currentStudent._id.toString()
-      );
+      sheet.monitorPermissions?.selectedMonitors?.some(monitor => {
+        // Handle both populated objects and direct IDs
+        const monitorId = monitor._id ? monitor._id.toString() : monitor.toString();
+        return monitorId === currentStudent._id.toString();
+      });
 
     // Debug permission checking
     console.log('Permission debug for sheet:', sheet._id, {
       allMonitors: sheet.monitorPermissions?.allMonitors,
-      selectedMonitors: sheet.monitorPermissions?.selectedMonitors?.map(id => id.toString()),
+      selectedMonitors: sheet.monitorPermissions?.selectedMonitors?.map(monitor => ({
+        id: monitor._id ? monitor._id.toString() : monitor.toString(),
+        name: monitor.firstName ? `${monitor.firstName} ${monitor.lastName}` : 'Unknown'
+      })),
       currentStudentId: currentStudent._id.toString(),
       hasPermission
     });
@@ -276,21 +281,8 @@ const AttendanceView = () => {
       monitor._id.toString() === currentStudent._id.toString()
     );
 
-    if (!isClassMonitor) return false;
-
-    // Check if monitor has permission from admin
-    const hasPermission = sheet.monitorPermissions?.allMonitors ||
-      sheet.monitorPermissions?.selectedMonitors?.some(monitorId =>
-        monitorId.toString() === currentStudent._id.toString()
-      );
-
-    if (!hasPermission) return false;
-
-    // Can view full sheet if:
-    // 1. This monitor has updated it, OR
-    // 2. Sheet is completed/updated (any monitor can view)
-    return (sheet.monitorUpdate?.updatedBy?.toString() === currentStudent._id.toString()) ||
-           (sheet.status === 'Updated' || sheet.status === 'Completed');
+    // All class monitors can view attendance sheets (regardless of permission)
+    return isClassMonitor;
   };
 
   const getMonitorStatus = (sheet) => {
@@ -302,15 +294,7 @@ const AttendanceView = () => {
 
     if (!isClassMonitor) return 'not_monitor';
 
-    const hasPermission = sheet.monitorPermissions?.allMonitors ||
-      sheet.monitorPermissions?.selectedMonitors?.some(monitorId =>
-        monitorId.toString() === currentStudent._id.toString()
-      );
-
-    if (!hasPermission) return 'no_permission';
-
-
-
+    // Check if sheet is updated/locked first (before checking permissions)
     if (sheet.monitorUpdate?.isLocked) {
       // Debug the comparison - check if updatedBy is populated correctly
       console.log('Monitor status debug:', {
@@ -333,6 +317,16 @@ const AttendanceView = () => {
         return 'updated_by_other';
       }
     }
+
+    // Check permissions only for non-updated sheets
+    const hasPermission = sheet.monitorPermissions?.allMonitors ||
+      sheet.monitorPermissions?.selectedMonitors?.some(monitor => {
+        // Handle both populated objects and direct IDs
+        const monitorId = monitor._id ? monitor._id.toString() : monitor.toString();
+        return monitorId === currentStudent._id.toString();
+      });
+
+    if (!hasPermission) return 'no_permission';
 
     if (sheet.status === 'Draft') {
       return 'can_update';
@@ -616,7 +610,7 @@ const AttendanceView = () => {
                                           case 'updated_by_other':
                                             return (
                                               <Typography variant="caption" color="warning.main">
-                                                වෙනත් නිරීක්ෂකයෙකු විසින් යාවත්කාලීන කර ඇත
+                                                වෙනත් නිරීක්ශකයෙකු විසින් යාවත්කාලීන කර ඇත
                                               </Typography>
                                             );
                                           case 'can_update':
