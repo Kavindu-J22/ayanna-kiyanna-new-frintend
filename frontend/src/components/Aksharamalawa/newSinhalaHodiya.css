@@ -749,14 +749,15 @@
     min-width: 35vh;
     min-height: 40vh;
     max-width: 80vw;
-    max-height: 80vh;
+    max-height: 85vh;
     box-shadow: 20px 20px 50px rgba(0,0,0,0.5);
     border-radius: 15px;
     background: rgba(255, 255, 255, 0.152);
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     border: 1px solid rgba(51, 51, 51, 0.633);
     border-top: 1px solid rgba(255,255,255,0.5);
@@ -768,6 +769,38 @@
     font-family: 'Noto serif Sinhala',sans-serif;
     transform: scale(0.8) translateY(30px);
     animation: popupSlideIn 0.5s ease-out forwards, floatingAnimation 3s ease-in-out infinite 0.5s;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.6) rgba(255, 255, 255, 0.1);
+}
+
+/* Smart Custom Scrollbar for Webkit browsers */
+.AakuruwistharamainboxContent::-webkit-scrollbar {
+    width: 8px;
+}
+
+.AakuruwistharamainboxContent::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    margin: 5px;
+}
+
+.AakuruwistharamainboxContent::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.4) 100%);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.AakuruwistharamainboxContent::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 100%);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.AakuruwistharamainboxContent::-webkit-scrollbar-thumb:active {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 100%);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 .AakuruwistharamainboxContent::before{
     content: '';
@@ -2812,6 +2845,55 @@
 
 .akuruwistharamain.closing .AakuruwistharamainboxContent {
     animation: popupSlideOut 0.3s ease-in forwards;
+}
+
+/* Small screen popup adjustments */
+@media (max-height: 700px) {
+    .AakuruwistharamainboxContent {
+        max-height: 90vh;
+        min-height: 30vh;
+        padding: 10px;
+    }
+
+    .AakuruwistharamainboxContent h1 {
+        font-size: 4em;
+        margin-bottom: 10px;
+    }
+
+    .AakuruwistharamainboxContent p {
+        font-size: 0.75em;
+        margin: 10px;
+    }
+
+    .AakuruwistharamainboxContent ul {
+        font-size: 0.75em;
+        margin: 10px;
+        padding-left: 30px;
+    }
+}
+
+@media (max-height: 600px) {
+    .AakuruwistharamainboxContent {
+        max-height: 95vh;
+        min-height: 25vh;
+        padding: 8px;
+    }
+
+    .AakuruwistharamainboxContent h1 {
+        font-size: 3em;
+        margin-bottom: 8px;
+    }
+
+    .AakuruwistharamainboxContent p {
+        font-size: 0.7em;
+        margin: 8px;
+    }
+
+    .AakuruwistharamainboxContent ul {
+        font-size: 0.7em;
+        margin: 8px;
+        padding-left: 25px;
+    }
 }
 
 .loginBtn:active {
