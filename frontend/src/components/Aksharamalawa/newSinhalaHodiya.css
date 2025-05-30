@@ -39,6 +39,7 @@
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.618);
     -webkit-box-reflect: below 1px linear-gradient(transparent,rgba(0, 0, 0, 0.125));
     font-family: 'Noto serif Sinhala',sans-serif;
+    font-size: 3rem; /* Made the title smaller */
 }
 .NuthanahodiyaMain-MAinTitelbox h2{
     color: rgb(199, 202, 215);
@@ -180,12 +181,12 @@
     min-height: 30vh;
     margin: 5px;
     background: rgba(154, 137, 228, 0.688);
-    padding: 20px 20px; 
+    padding: 20px 20px;
     border-radius: 10px;
     border: 1px solid rgba(66, 63, 63, 0.526);
     border-top: 1px solid rgba(255, 255, 255, 0.526);
     border-left: 30px solid rgba(8, 1, 24, 0.773);
-    overflow: hidden; 
+    overflow: hidden;
     box-shadow: 20px 20px 50px rgba(0, 0, 0, 0.267);
     padding-left: 45px;
     margin-top: 10px;
@@ -329,7 +330,7 @@
     background-color: rgba(225, 32, 145, 0.66);
     display: flex;
     justify-content: center;
-    align-items: center;  
+    align-items: center;
 }
 .Varganthaksara h2{
     font-family: 'Noto sans Sinhala',sans-serif;
@@ -625,8 +626,10 @@
 }
 .AakuruwistharamainboxContent{
     position: relative;
-    min-width: 40vh;
-    min-height: 50vh;
+    min-width: 35vh;
+    min-height: 40vh;
+    max-width: 80vw;
+    max-height: 80vh;
     box-shadow: 20px 20px 50px rgba(0,0,0,0.5);
     border-radius: 15px;
     background: rgba(255, 255, 255, 0.152);
@@ -640,7 +643,7 @@
     border-left: 1px solid rgba(255,255,255,0.5);
     backdrop-filter: blur(2px);
     cursor: pointer;
-    padding: 20px;
+    padding: 15px;
     animation: animation 3s ease-in-out infinite;
     font-family: 'Noto serif Sinhala',sans-serif;
 }
@@ -657,19 +660,19 @@
 }
 .AakuruwistharamainboxContent h1{
     position: relative;
-    font-size: 9em;
+    font-size: 6em;
     color: #fff;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     font-family: 'Noto serif Sinhala',sans-serif;
 }
 .AakuruwistharamainboxContent p{
     position: relative;
     text-align: center;
-    max-width: 500px;
-    font-size: .9em;
+    max-width: 450px;
+    font-size: .8em;
     font-weight: 500;
     color: #fff;
-    margin: 20px;
+    margin: 15px;
     letter-spacing: 1px;
     font-family: 'Noto serif Sinhala',sans-serif;
 }
@@ -678,15 +681,15 @@
     list-style: none;
     display: flex;
     flex-direction: column;
-    font-size: .9em;
+    font-size: .8em;
     color: rgb(244, 232, 232);
-    margin: 20px;
+    margin: 15px;
     font-weight: 500;
-    max-width: 500px;
-    padding-left: 70px;
+    max-width: 450px;
+    padding-left: 50px;
 }
 .AakuruwistharamainboxContent ul li{
-    margin: 5px;
+    margin: 3px;
     font-family: 'Noto serif Sinhala',sans-serif;
     list-style: disc;
 }
@@ -709,11 +712,11 @@
 }
 .contentAlpaa{
     background: rgba(239, 210, 66, 0.26);
-    text-shadow: 0 0 15px rgba(29, 27, 27, 0.923); 
+    text-shadow: 0 0 15px rgba(29, 27, 27, 0.923);
 }
 .contentmarapraa{
     background: rgba(133, 37, 160, 0.3);
-    text-shadow: 0 0 15px rgba(29, 27, 27, 0.923); 
+    text-shadow: 0 0 15px rgba(29, 27, 27, 0.923);
 }
 .VarAnuContentt{
     background: rgba(28, 82, 184, 0.3);
@@ -721,11 +724,11 @@
 }
 .contentSanjakaa{
     background: rgba(12, 165, 68, 0.3);
-    text-shadow: 0 0 15px rgba(29, 27, 27, 0.923); 
+    text-shadow: 0 0 15px rgba(29, 27, 27, 0.923);
 }
 .contentAnthahh{
     background: rgba(227, 117, 39, 0.3);
-    text-shadow: 0 0 15px rgba(29, 27, 27, 0.923); 
+    text-shadow: 0 0 15px rgba(29, 27, 27, 0.923);
 }
 .contentUshh{
     background: rgba(66, 3, 3, 0.3);
@@ -768,6 +771,65 @@
     transform: scale(1.1);
     opacity: 1;
   }
+
+.MyCloseBtn{
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: #fff;
+    font-size: 1.8em;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 0, 0, 0.212);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    z-index: 2001;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+.MyCloseBtn:hover{
+    background: rgba(255, 0, 0, 0.521);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    border-color: #fff;
+}
+.MyCloseBtn a{
+    position: relative;
+    color: inherit;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    transition: .3s;
+    font-weight: bold;
+}
+.MyCloseBtn a:hover{
+    color: #fff;
+    transform: rotate(90deg);
+}
+.MyCloseBtn i{
+    font-size: 1em;
+    color: inherit;
+    display: block;
+}
+/* Fallback for when Font Awesome doesn't load */
+.MyCloseBtn a::before{
+    content: "×";
+    font-size: 1.2em;
+    font-weight: bold;
+    line-height: 1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+}
 
 .hraswaswaraMainBox{
     position: relative;
@@ -1045,7 +1107,7 @@
 }
 .noush{
     transform: scale(.7);
-    filter: grayscale(1) brightness(.7); 
+    filter: grayscale(1) brightness(.7);
 }
 .noush:hover{
     transform: scale(.8);
@@ -1056,7 +1118,7 @@
 }
 .agoagoo{
     transform: scale(.7);
-    filter: grayscale(1) brightness(.7); 
+    filter: grayscale(1) brightness(.7);
 }
 .agoagoo:hover{
     transform: scale(.8);
@@ -1517,7 +1579,7 @@
         width: 300px;
         margin: 5px;
         background: #33333328;
-        margin-right: 50px;  
+        margin-right: 50px;
     }
     .emtySpaceSwarabox{
         display: none;
@@ -1527,7 +1589,7 @@
         width: auto;
         min-height: 30vh;
         margin: 5px;
-        padding: 10px 20px; 
+        padding: 10px 20px;
         border-left: 20px solid rgba(8, 1, 24, 0.773);
     }
     .akuruAK{
@@ -1633,7 +1695,7 @@
     .listboxes{
         width: 200px;
         margin: 5px;
-        background: #33333328;   
+        background: #33333328;
     }
     .emtySpaceSwarabox{
         display: none;
@@ -1641,7 +1703,7 @@
     .swaraAkuruMain{
         min-height: 25vh;
         margin: 5px;
-        padding: 10px 20px; 
+        padding: 10px 20px;
         border-left: 20px solid rgba(8, 1, 24, 0.773);
     }
     .viyanAkuruMain{
@@ -1762,7 +1824,7 @@
     .listboxes{
         width: 200px;
         margin: 5px;
-        background: #33333328;   
+        background: #33333328;
     }
     .emtySpaceSwarabox{
         display: none;
@@ -1770,7 +1832,7 @@
     .swaraAkuruMain{
         min-height: 20vh;
         margin: 5px;
-        padding: 10px 20px; 
+        padding: 10px 20px;
         border-left: 20px solid rgba(14, 4, 37, 0.773);
     }
     .viyanAkuruMain{
@@ -1880,7 +1942,7 @@
         margin: 5px;
     }
     .AakuruwistharamainboxContent #titleP{
-        font-size: .9em; 
+        font-size: .9em;
     }
     .contentVargasTitle h1{
         font-size: 1.4em;
@@ -1889,7 +1951,7 @@
         font-size: 1.4em;
     }
     .PinkWargaMaint h1{
-        font-size: 1.4em; 
+        font-size: 1.4em;
     }
     .backToWarnamala{
         position: absolute;
@@ -1923,6 +1985,36 @@
         font-size: .8em;
         width: 35px;
         height: 30px
+    }
+    .MyCloseBtn{
+        top: 10px;
+        right: 10px;
+        width: 35px;
+        height: 35px;
+        font-size: 1.4em;
+        border-width: 1px;
+    }
+    .AakuruwistharamainboxContent{
+        min-width: 90vw;
+        min-height: 60vh;
+        max-width: 95vw;
+        max-height: 85vh;
+        padding: 10px;
+    }
+    .AakuruwistharamainboxContent h1{
+        font-size: 4em;
+        margin-bottom: 15px;
+    }
+    .AakuruwistharamainboxContent p{
+        font-size: .7em;
+        margin: 10px;
+        max-width: 90%;
+    }
+    .AakuruwistharamainboxContent ul{
+        font-size: .7em;
+        margin: 10px;
+        max-width: 90%;
+        padding-left: 30px;
     }
     .mainakurutitleinmobile{
         display: flex;
