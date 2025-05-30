@@ -77,8 +77,9 @@ const AttendanceManagement = () => {
   const [formData, setFormData] = useState({
     expectedPresentCount: '',
     monitorPermissions: {
-      allMonitors: false,
-      selectedMonitors: []
+      allMonitors: true,  // Default to "all monitors" instead of "selected"
+      selectedMonitors: [],
+      adminOnly: false
     },
     notes: ''
   });
@@ -160,8 +161,9 @@ const AttendanceManagement = () => {
         return;
       }
 
-      // Validate monitor permissions
-      if (!formData.monitorPermissions.allMonitors &&
+      // Validate monitor permissions (skip validation if adminOnly is selected)
+      if (!formData.monitorPermissions.adminOnly &&
+          !formData.monitorPermissions.allMonitors &&
           formData.monitorPermissions.selectedMonitors.length === 0) {
         alert('කරුණාකර අවම වශයෙන් එක් නිරීක්ෂකයෙකු තෝරන්න හෝ "සියලුම නිරීක්ෂකයින්ට අවසර දෙන්න" තෝරන්න');
         return;
@@ -187,8 +189,9 @@ const AttendanceManagement = () => {
       setFormData({
         expectedPresentCount: '',
         monitorPermissions: {
-          allMonitors: false,
-          selectedMonitors: []
+          allMonitors: true,  // Default to "all monitors"
+          selectedMonitors: [],
+          adminOnly: false
         },
         notes: ''
       });
@@ -578,6 +581,7 @@ const AttendanceManagement = () => {
           onClose={() => setCreateDialog(false)}
           maxWidth="md"
           fullWidth
+
         >
           <DialogTitle sx={{
             fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
@@ -615,14 +619,18 @@ const AttendanceManagement = () => {
                       නිරීක්ෂක අවසර
                     </FormLabel>
                     <RadioGroup
-                      value={formData.monitorPermissions.allMonitors ? 'all' : 'selected'}
+                      value={
+                        formData.monitorPermissions.adminOnly ? 'adminOnly' :
+                        formData.monitorPermissions.allMonitors ? 'all' : 'selected'
+                      }
                       onChange={(e) => {
-                        const isAll = e.target.value === 'all';
+                        const value = e.target.value;
                         setFormData({
                           ...formData,
                           monitorPermissions: {
-                            allMonitors: isAll,
-                            selectedMonitors: isAll ? [] : formData.monitorPermissions.selectedMonitors
+                            allMonitors: value === 'all',
+                            selectedMonitors: value === 'selected' ? formData.monitorPermissions.selectedMonitors : [],
+                            adminOnly: value === 'adminOnly'
                           }
                         });
                       }}
@@ -637,12 +645,17 @@ const AttendanceManagement = () => {
                         control={<Radio />}
                         label="තෝරාගත් නිරීක්ෂකයින්ට අවසර දෙන්න"
                       />
+                      <FormControlLabel
+                        value="adminOnly"
+                        control={<Radio />}
+                        label="මට පමණක් අවසර ලැබෙමි"
+                      />
                     </RadioGroup>
                   </FormControl>
                 </Grid>
 
                 {/* Selected Monitors */}
-                {!formData.monitorPermissions.allMonitors && (
+                {!formData.monitorPermissions.allMonitors && !formData.monitorPermissions.adminOnly && (
                   <Grid item xs={12}>
                     <Typography variant="subtitle2" sx={{
                       fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
