@@ -90,6 +90,10 @@ import StudentManagement from './pages/StudentManagement';
 import NotificationsPage from './pages/NotificationsPage';
 import ClassRequestManagement from './pages/ClassRequestManagement';
 import SpecificClass from './pages/SpecificClass';
+import AttendanceManagement from './pages/AttendanceManagement';
+import AttendanceView from './pages/AttendanceView';
+import AttendanceEdit from './pages/AttendanceEdit';
+import AttendanceAnalytics from './pages/AttendanceAnalytics';
 
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
@@ -851,6 +855,10 @@ function AppContent() {
               <Route path="/class-requests" element={<ClassRequestManagement />} />
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/class/:classId" element={<SpecificClass />} />
+              <Route path="/attendance-management/:classId" element={<AttendanceManagement />} />
+              <Route path="/attendance-view/:classId" element={<AttendanceView />} />
+              <Route path="/attendance-edit/:id" element={<AttendanceEdit />} />
+              <Route path="/attendance-analytics" element={<AttendanceAnalytics />} />
             </Routes>
           </Container>
         </Main>

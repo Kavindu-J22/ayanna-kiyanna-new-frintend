@@ -545,7 +545,9 @@ const SpecificClass = () => {
                         color: 'white',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'
-                      }}>
+                      }}
+                      onClick={() => navigate(`/attendance-management/${classId}`)}
+                      >
                         <CardContent sx={{ textAlign: 'center', py: 3 }}>
                           <Assignment sx={{ fontSize: 40, mb: 2 }} />
                           <Typography variant="h6" fontWeight="bold" sx={{
@@ -692,7 +694,20 @@ const SpecificClass = () => {
                         color: 'white',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'
-                      }}>
+                      }}
+                      onClick={() => {
+                        // Check if student is a monitor
+                        const isMonitor = classData.monitors?.some(monitor =>
+                          monitor._id.toString() === currentStudent?._id.toString()
+                        );
+
+                        if (isMonitor) {
+                          navigate(`/attendance-view/${classId}?monitor=true`);
+                        } else {
+                          navigate(`/attendance-view/${classId}`);
+                        }
+                      }}
+                      >
                         <CardContent sx={{ textAlign: 'center', py: 3 }}>
                           <Assignment sx={{ fontSize: 40, mb: 2 }} />
                           <Typography variant="h6" fontWeight="bold" sx={{
@@ -701,7 +716,10 @@ const SpecificClass = () => {
                             මගේ පැමිණීම් බලන්න
                           </Typography>
                           <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
-                            පැමිණීම් වාර්තාව
+                            {classData.monitors?.some(monitor => monitor._id.toString() === currentStudent?._id.toString())
+                              ? 'නිරීක්ෂක අවසර ඇත'
+                              : 'පැමිණීම් වාර්තාව'
+                            }
                           </Typography>
                         </CardContent>
                       </Card>
