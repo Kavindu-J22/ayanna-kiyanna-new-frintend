@@ -94,6 +94,7 @@ import AttendanceManagement from './pages/AttendanceManagement';
 import AttendanceView from './pages/AttendanceView';
 import AttendanceEdit from './pages/AttendanceEdit';
 import AttendanceAnalytics from './pages/AttendanceAnalytics';
+import AksharaMalawa from './components/Aksharamalawa/NewSinhalaHodiya'
 
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
@@ -134,7 +135,7 @@ const navItems = [
       { name: "අක්ෂර වින්‍යාසය", path: "/literature", icon: <LocalLibraryIcon /> },
       {
         name: "සුහුරු අක්ෂර මාලාව",
-        path: "https://deployed-ayanna-kiyanna-institute-management-system-g6s2.vercel.app/",
+        path: "/aksharamalawa",
         icon: <AccountTreeIcon />,
         external: true // Add this flag to indicate it's an external link
       },
@@ -859,6 +860,8 @@ function AppContent() {
               <Route path="/attendance-view/:classId" element={<AttendanceView />} />
               <Route path="/attendance-edit/:id" element={<AttendanceEdit />} />
               <Route path="/attendance-analytics" element={<AttendanceAnalytics />} />
+
+              <Route path="/aksharamalawa" element={<AksharaMalawa />} />
             </Routes>
           </Container>
         </Main>
