@@ -3,8 +3,31 @@
     padding: 10px;
     width: 100%;
     min-height: 100vh;
-    background: #161623;
+    background:
+        radial-gradient(circle at 20% 80%, rgba(22, 22, 35, 0.8) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(26, 26, 46, 0.6) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(22, 33, 62, 0.4) 0%, transparent 50%),
+        linear-gradient(135deg, #161623 0%, #1a1a2e 100%);
     font-family: 'Noto serif Sinhala',sans-serif;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Subtle static pattern overlay */
+.NuthanahodiyaMain::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(circle at 25% 25%, rgba(199, 202, 215, 0.02) 1px, transparent 1px),
+        radial-gradient(circle at 75% 75%, rgba(199, 202, 215, 0.02) 1px, transparent 1px);
+    background-size: 50px 50px, 80px 80px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.5;
 }
 .NuthanahodiyaMain-MAinTitelbox{
     width: 100%;
@@ -14,6 +37,18 @@
     align-items: center;
     min-height: 130px;
     font-size: 1.7em;
+    position: relative;
+    z-index: 10;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border-radius: 15px;
+    margin: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 .Visitorbox{
     position: relative;
@@ -39,25 +74,25 @@
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.618);
     -webkit-box-reflect: below 1px linear-gradient(transparent,rgba(0, 0, 0, 0.125));
     font-family: 'Noto serif Sinhala',sans-serif;
-    font-size: 3rem; /* Made the title smaller */
-    line-height: 1.2; /* Reduced line height for compactness */
-    margin-bottom: 5px; /* Reduced bottom margin */
+    font-size: 3rem;
+    line-height: 1.2;
+    margin-bottom: 5px;
 }
 .NuthanahodiyaMain-MAinTitelbox h2{
     color: rgb(199, 202, 215);
-    margin-top: 8px; /* Reduced from 20px */
-    margin-bottom: 5px; /* Added small bottom margin */
+    margin-top: 8px;
+    margin-bottom: 5px;
     font-size: 1.2em;
     letter-spacing: 1px;
     text-shadow: 0 0 10px rgba(199, 202, 215, 0.603);
-    line-height: 1.3; /* Added line height for better control */
+    line-height: 1.3;
 }
 .NuthanahodiyaMain-MAinTitelbox h2.author-line{
-    font-size: 0.9em; /* Smaller font size for author line */
-    margin-top: 15px; /* Increased margin-top for better spacing */
+    font-size: 0.9em;
+    margin-top: 15px;
     margin-bottom: 3px;
     line-height: 1.2;
-    color: rgb(180, 185, 200); /* Slightly dimmer color */
+    color: rgb(180, 185, 200);
 }
 .mainhodibox{
     position: relative;
@@ -74,16 +109,26 @@
     min-width: 65%;
     width: auto;
     min-height: 50vh;
-    background: rgba(250, 235, 215, 0.508);
+    background: linear-gradient(135deg, rgba(250, 235, 215, 0.6) 0%, rgba(250, 235, 215, 0.4) 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 5px;
-    border-radius: 10px;
+    padding: 15px;
+    border-radius: 15px;
     margin: 5px;
-    border: 1px solid rgba(66, 63, 63, 0.526);
-    border-top: 1px solid rgba(255, 255, 255, 0.526);
-    border-left: 1px solid rgba(255, 255, 255, 0.547);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+.sinhalaAkurumainbox:hover{
+    transform: translateY(-2px);
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 .sinhalaAkuruDiscbox{
     position: relative;
@@ -250,7 +295,7 @@
     height: 100px;
     background: rgba(250, 235, 215, 0.755);
     margin: 5px;
-    border-radius: 5px;
+    border-radius: 8px; /* Slightly more rounded */
     font-family: 'Noto serif Sinhala',sans-serif;
     display: flex;
     justify-content: center;
@@ -262,13 +307,25 @@
     border-top: 1px solid rgba(255, 255, 255, 0.526);
     border-left: 1px solid rgba(255, 255, 255, 0.547);
     box-shadow: 10px 10px 15px rgba(36, 33, 33, 0.627);
-    transition: .4s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth easing */
     cursor: pointer;
+    /* Add subtle glow effect */
+    background-image: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
 }
 .akuruAK:hover{
-    transform: scale(1.1);
-    filter: brightness(1.4);
+    transform: scale(1.08) translateY(-3px); /* Lift effect */
+    filter: brightness(1.3) saturate(1.1);
     opacity: 1;
+    box-shadow:
+        15px 15px 25px rgba(36, 33, 33, 0.8),
+        0 0 20px rgba(250, 235, 215, 0.3),
+        inset 0 0 15px rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.7);
+}
+/* Add subtle pulse animation for active state */
+.akuruAK:active{
+    transform: scale(1.02) translateY(-1px);
+    transition: all 0.1s ease;
 }
 .akuruAK::before{
     content: '';
@@ -640,6 +697,7 @@
     left: 0;
     width: 100%;
     height: 100vh;
+    z-index: 10000; /* High z-index to ensure popup appears above all other elements */
 }
 .AakuruwistharamainboxContent{
     position: relative;
@@ -658,6 +716,7 @@
     border: 1px solid rgba(51, 51, 51, 0.633);
     border-top: 1px solid rgba(255,255,255,0.5);
     border-left: 1px solid rgba(255,255,255,0.5);
+    -webkit-backdrop-filter: blur(2px);
     backdrop-filter: blur(2px);
     cursor: pointer;
     padding: 15px;
@@ -760,34 +819,82 @@
 }
 .MyOkBtn{
     position: absolute;
-    bottom: 50px;
-    color: aliceblue;
-    font-size: 1.2em;
+    bottom: 20px;
+    right: 20px; /* Positioned in bottom right corner */
+    color: #1a1a1a;
+    font-size: 0.85em;
     cursor: pointer;
-    width: 60px;
-    height: 45px;
-    background: rgba(255, 255, 255, 0.096);
+    width: 70px;
+    height: 35px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 10px;
+    border-radius: 12px;
     z-index: 2000;
-    letter-spacing: 1px;
-    border: 1px solid rgba(51, 51, 51, 0.633);
-    border-top: 1px solid rgba(255, 255, 255, 0.251);
-    border-left: 1px solid rgba(255, 255, 255, 0.251);
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Noto serif Sinhala', sans-serif;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
 }
+
+.MyOkBtn::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s ease;
+}
+
+.MyOkBtn:hover{
+    transform: translateY(-2px) scale(1.05);
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 100%);
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.MyOkBtn:hover::before{
+    left: 100%;
+}
+
+.MyOkBtn:active{
+    transform: translateY(-1px) scale(1.02);
+    transition: all 0.1s ease;
+}
+
 .MyOkBtn a{
     position: relative;
-    padding: 10px;
-    transition: .4s;
-    margin-top: 4px;
-    opacity: 0.9;
-  }
-  .MyOkBtn a:hover{
-    transform: scale(1.1);
+    padding: 0;
+    transition: all 0.3s ease;
+    margin: 0;
     opacity: 1;
-  }
+    color: inherit;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    font-weight: inherit;
+}
+
+.MyOkBtn a:hover{
+    transform: none; /* Remove individual transform to prevent conflicts */
+    opacity: 1;
+}
 
 .MyCloseBtn{
     position: absolute;
@@ -1167,7 +1274,21 @@
     align-items: center;
     cursor: pointer;
     margin: 5px 0; /* Slightly increased margin for better spacing */
-    padding: 3px 0; /* Slightly increased padding */
+    padding: 8px 12px; /* Enhanced padding for better touch targets */
+    border-radius: 8px; /* Rounded corners */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-backdrop-filter: blur(5px); /* Safari support */
+    backdrop-filter: blur(5px);
+}
+.listboxes:hover{
+    transform: translateX(5px) scale(1.02);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 /* hraswa */
 .hColorbox{
@@ -1540,28 +1661,60 @@
     text-shadow: 0 0 15px rgba(29, 27, 27, 0.923);
 }
 .MAINswyawiyaa .moreStudy{
-    color: #000000;
-    font-weight: 800;
-    width: 200px;
-    height: 40px;
+    color: #1a1a1a;
+    font-weight: 700;
+    width: 220px;
+    height: 45px;
     display: flex;
-    font-style: italic;
+    font-style: normal; /* Removed italic for more professional look */
     justify-content: center;
     align-items: center;
-    background: rgba(255, 255, 255, 0.225);
-    border-radius: 10px;
-    border: 1px solid rgba(78, 75, 75, 0.748);
-    border-top: 1px solid rgba(255, 255, 255, 0.318);
-    border-left: 1px solid rgba(255, 255, 255, 0.318);
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.456);
-    text-shadow: 0 0 3px rgb(152, 140, 140);
-    transition: .4s;
-    margin: 20px 0;
-    margin-left: 30%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 25px auto; /* Centered with auto margins */
+    cursor: pointer;
+    font-family: 'Noto serif Sinhala', sans-serif;
+    font-size: 0.95em;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
 }
+
+.MAINswyawiyaa .moreStudy::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s ease;
+}
+
 .MAINswyawiyaa .moreStudy:hover{
-    transform: scale(1.1);
-    filter: brightness(1.3);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 100%);
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.MAINswyawiyaa .moreStudy:hover::before{
+    left: 100%;
+}
+
+.MAINswyawiyaa .moreStudy:active{
+    transform: translateY(-1px) scale(1.02);
+    transition: all 0.1s ease;
 }
 .PinkWargaMaint{
     background: rgba(244, 153, 241, 0.162);
@@ -1584,31 +1737,125 @@
     flex-direction: column;
     align-items: center;
     width: auto;
-    margin: 5px;
-    background: rgb(154, 147, 147);
-    border-radius: 10px;
-    padding-top: 15px;
+    margin: 8px;
+    background: linear-gradient(135deg, rgba(154, 147, 147, 0.9) 0%, rgba(140, 135, 135, 0.8) 100%);
+    border-radius: 15px;
+    padding: 20px 15px;
     min-height: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.SandaysharaMainBox:hover,.NamyaswaswaraMainBox:hover, .AnamyaswaswaraMainBox:hover{
+    transform: translateY(-3px) scale(1.02);
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Add subtle animated background pattern for each section */
+.SandaysharaMainBox::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.NamyaswaswaraMainBox::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.AnamyaswaswaraMainBox::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
 }
 .NewnewUlNewThree{
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin-left: 100px;
+    margin-left: 0; /* Removed excessive left margin */
+    margin: 10px auto; /* Centered with auto margins */
+    width: 90%; /* Controlled width for better layout */
+    max-width: 600px; /* Maximum width for larger screens */
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border-radius: 12px;
+    padding: 15px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 .NewnewUlNewThree li{
     font-family: 'Noto serif Sinhala',sans-serif;
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    margin: 12px 0;
+    list-style: none;
+    position: relative;
+    padding-left: 25px;
+    color: #2c2c2c;
+    line-height: 1.4;
+    transition: all 0.2s ease;
+}
+.NewnewUlNewThree li::before{
+    content: '●';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: rgba(154, 147, 147, 0.8);
+    font-size: 1.2em;
     font-weight: bold;
-    margin: 10px;
-    list-style: circle;
+}
+.NewnewUlNewThree li:hover{
+    transform: translateX(3px);
+    color: #1a1a1a;
 }
 .MAINswyawiyaa2{
     padding-top: 40px;
+    position: relative;
+    z-index: 2;
 }
 .NewnewUlNewThree span{
-    font-size: 20px;
-    color: #000;
+    font-size: 22px;
+    color: #1a1a1a;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    padding: 2px 6px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 .mainakurutitleinmobile{
     display: none;
@@ -1715,6 +1962,29 @@
         font-size: 1.2em;
         font-weight: 600;
     }
+
+    /* Enhanced details sections for tablet */
+    .SandaysharaMainBox,.NamyaswaswaraMainBox, .AnamyaswaswaraMainBox{
+        margin: 6px;
+        padding: 15px 12px;
+        border-radius: 12px;
+    }
+    .NewnewUlNewThree{
+        margin: 8px auto; /* Centered with auto margins */
+        width: 95%; /* Wider on tablet */
+        max-width: 500px; /* Adjusted max width for tablet */
+        padding: 12px 15px;
+        border-radius: 10px;
+    }
+    .NewnewUlNewThree li{
+        font-size: 14px;
+        margin: 10px 0;
+        padding-left: 20px;
+    }
+    .NewnewUlNewThree span{
+        font-size: 20px;
+        padding: 2px 5px;
+    }
 }
 
 @media (max-width: 785px) {
@@ -1808,6 +2078,34 @@
         font-size: .7em;
         padding: 1px 2px; /* Minimal padding on tablet */
     }
+
+    /* Enhanced mobile responsiveness */
+    .NuthanahodiyaMain-MAinTitelbox{
+        padding: 15px;
+        margin: 5px;
+        border-radius: 10px;
+    }
+    .NuthanahodiyaMain-MAinTitelbox h1{
+        font-size: 2.2rem;
+    }
+    .sinhalaAkurumainbox{
+        min-width: 95%;
+        padding: 10px;
+        border-radius: 10px;
+    }
+    .listboxes{
+        padding: 6px 10px;
+        border-radius: 6px;
+    }
+    .akuruAK{
+        width: 80px;
+        height: 80px;
+        margin: 3px;
+        border-radius: 6px;
+    }
+    .akuruAK h5{
+        font-size: 2.8em;
+    }
     .Varganthaksara{
         width: 20px;
         height: 100%;
@@ -1851,6 +2149,35 @@
         font-size: 0.8em;
         padding-right: 10px;
     }
+
+    /* Enhanced details sections for mobile */
+    .SandaysharaMainBox,.NamyaswaswaraMainBox, .AnamyaswaswaraMainBox{
+        margin: 5px;
+        padding: 12px 10px;
+        border-radius: 10px;
+    }
+    .NewnewUlNewThree{
+        margin: 6px auto; /* Centered with auto margins */
+        width: 98%; /* Almost full width on mobile */
+        max-width: 400px; /* Adjusted max width for mobile */
+        padding: 10px 12px;
+        border-radius: 8px;
+    }
+    .NewnewUlNewThree li{
+        font-size: 13px;
+        margin: 8px 0;
+        padding-left: 18px;
+        line-height: 1.3;
+    }
+    .NewnewUlNewThree li::before{
+        font-size: 1em;
+    }
+    .NewnewUlNewThree span{
+        font-size: 18px;
+        padding: 1px 4px;
+    }
+
+
 }
 
 
@@ -2040,6 +2367,15 @@
     .AakuruwistharamainboxContent #titleP{
         font-size: .9em;
     }
+
+    /* Enhanced OK button for mobile */
+    .MyOkBtn{
+        width: 90px;
+        height: 40px;
+        font-size: 0.9em;
+        bottom: 25px;
+        border-radius: 10px;
+    }
     .contentVargasTitle h1{
         font-size: 1.4em;
     }
@@ -2144,11 +2480,14 @@
         font-family: 'Noto serif Sinhala',sans-serif;
     }
     .MAINswyawiyaa .moreStudy{
-        font-size: .5em;
+        font-size: 0.8em;
         font-family: 'Noto serif Sinhala',sans-serif;
-        width: 155px;
-        height: 30px;
-        color: #010114;
+        width: 180px;
+        height: 38px;
+        color: #1a1a1a;
+        margin: 15px auto; /* Centered on mobile */
+        border-radius: 10px;
+        letter-spacing: 0.3px;
     }
     .Visitorbox{
         font-size: 0.8em;
@@ -2156,5 +2495,59 @@
     }
     .PU_Units{
         flex-direction: column;
+    }
+
+    /* Enhanced details sections for small mobile */
+    .SandaysharaMainBox,.NamyaswaswaraMainBox, .AnamyaswaswaraMainBox{
+        margin: 3px;
+        padding: 10px 8px;
+        border-radius: 8px;
+    }
+    .NewnewUlNewThree{
+        margin: 5px auto; /* Centered with auto margins */
+        width: 100%; /* Full width on small mobile */
+        max-width: 350px; /* Adjusted max width for small mobile */
+        padding: 8px 10px;
+        border-radius: 6px;
+    }
+    .NewnewUlNewThree li{
+        font-size: 12px;
+        margin: 6px 0;
+        padding-left: 15px;
+        line-height: 1.2;
+    }
+    .NewnewUlNewThree li::before{
+        font-size: 0.9em;
+    }
+    .NewnewUlNewThree span{
+        font-size: 16px;
+        padding: 1px 3px;
+    }
+
+    /* Enhanced title section for small mobile */
+    .NuthanahodiyaMain-MAinTitelbox{
+        min-height: 70px; /* Very compact on small mobile */
+        padding: 8px 10px;
+        margin: 4px 5px;
+        border-radius: 6px;
+    }
+    .NuthanahodiyaMain-MAinTitelbox h1{
+        font-size: 1.7rem; /* Smallest size for small mobile */
+        margin: 1px 0 3px 0;
+    }
+    .NuthanahodiyaMain-MAinTitelbox h2{
+        font-size: 0.85em;
+        margin: 1px 0 2px 0;
+    }
+    .NuthanahodiyaMain-MAinTitelbox h2.author-line{
+        font-size: 0.7em;
+        margin: 3px 0 1px 0;
+    }
+
+    /* Enhanced ස්වර and ව්‍යංජන buttons for small mobile */
+    .vargaLableBox h2{
+        font-size: 0.9em;
+        padding: 8px 4px;
+        border-radius: 4px;
     }
 }
