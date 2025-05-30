@@ -299,10 +299,16 @@
 }
 .akuruAK p{
     position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 1em;
+    top: 3px; /* Slightly down from the top edge */
+    left: 3px; /* Close to left edge */
+    font-size: 0.8em; /* Smaller font */
     color: rgb(197, 200, 203);
+    padding: 1px 3px; /* Minimal padding */
+    background: rgba(0, 0, 0, 0.4); /* Slightly darker background for better visibility */
+    border-radius: 2px; /* Smaller rounded corners */
+    line-height: 1; /* Tight line height */
+    z-index: 10; /* Ensure it's above other elements */
+    margin: 0; /* Remove any default margins */
 }
 #swaraAkurahodi{
     background: rgba(1, 9, 43, 0.862);
@@ -1231,9 +1237,21 @@
     border-radius: 8px;
 }
 .SandyaColorbox i{
-    font-size: 1.3em;
+    font-size: 1.2em;
     border-radius: 50%;
-    opacity: .8;
+    opacity: 1;
+    color: #000; /* Black color for pen icon */
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* Add pen icon for Sandhyakshara if Font Awesome doesn't work */
+.SandyaColorbox i::before{
+    content: "✒️"; /* Pen icon fallback */
+    font-size: 1em;
 }
 
 /* Namya Swara */
@@ -1248,9 +1266,21 @@
     border-radius: 8px;
 }
 .NamyaColorbox i{
-    font-size: 1.3em;
+    font-size: 1.2em;
     border-radius: 50%;
-    opacity: .8;
+    opacity: 1;
+    color: #000; /* Black color for icon */
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* Add book icon for Namya Swara if Font Awesome doesn't work */
+.NamyaColorbox i::before{
+    content: "📖"; /* Book icon fallback */
+    font-size: 1em;
 }
 
 /* Anamya Swara */
@@ -1266,9 +1296,21 @@
     border-radius: 8px;
 }
 .AnamyaColorbox i{
-    font-size: 1.3em;
+    font-size: 1.2em;
     border-radius: 50%;
-    opacity: .8;
+    opacity: 1;
+    color: #000; /* Black color for icon */
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* Add star icon for Anamya Swara if Font Awesome doesn't work */
+.AnamyaColorbox i::before{
+    content: "⭐"; /* Star icon fallback */
+    font-size: 1em;
 }
 
 /* alpaprana */
@@ -1476,6 +1518,17 @@
 }
 .backToWarnamala i{
     margin-right: 5px;
+    color: #fff; /* White color for visibility */
+    font-size: 1.2em;
+    display: block; /* Ensure icon is displayed */
+    opacity: 1; /* Full opacity */
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Add shadow for better visibility */
+}
+/* Fallback for when Font Awesome doesn't load */
+.backToWarnamala i::before{
+    content: "◀"; /* Left arrow fallback */
+    font-size: 1em;
+    font-weight: bold;
 }
 #otherNum{
     color: #d70303aa;
@@ -1695,6 +1748,11 @@
         margin-bottom: 1px;
         line-height: 1.0;
     }
+    .SandyaColorbox i, .NamyaColorbox i, .AnamyaColorbox i{
+        width: 25px;
+        height: 25px;
+        font-size: 1em;
+    }
     .whatisbox{
         padding: 10px;
     }
@@ -1745,7 +1803,10 @@
         font-size: 2.3em;
     }
     .akuruAK p{
+        top: 2px; /* Slightly down from top edge on tablet */
+        left: 2px; /* Close to left on tablet */
         font-size: .7em;
+        padding: 1px 2px; /* Minimal padding on tablet */
     }
     .Varganthaksara{
         width: 20px;
@@ -1881,9 +1942,12 @@
         font-size: 1.5em;
     }
     .akuruAK p{
-        top: 3px;
-        left: 3px;
+        top: 2px; /* Very close to top on mobile */
+        left: 2px; /* Very close to left on mobile */
         font-size: .5em;
+        padding: 1px 2px; /* Minimal padding on mobile */
+        background: rgba(0, 0, 0, 0.4); /* Slightly darker background for better visibility on small screens */
+        border-radius: 2px; /* Smaller border radius */
     }
     .Varganthaksara{
         width: 17px;

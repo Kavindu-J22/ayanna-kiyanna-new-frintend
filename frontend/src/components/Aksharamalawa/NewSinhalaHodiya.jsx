@@ -622,7 +622,7 @@ function NewSinhalaHodiya() {
                <div onClick={()=>setLetterBoxActive("Fristbox")}>
                         <div className='backtoWarnalabel'>
                             <div className='backToWarnamala'>
-                                <i class="fa-solid fa-backward"></i>
+                                <i className="fa-solid fa-backward"></i>
                                 <img src={VrnaLet}></img>
                             </div>
                          </div>
@@ -792,7 +792,7 @@ function NewSinhalaHodiya() {
                <div onClick={()=>setLetterBoxActive("Fristbox")}>
                         <div className='backtoWarnalabel'>
                             <div className='backToWarnamala'>
-                                <i class="fa-solid fa-backward"></i>
+                                <i className="fa-solid fa-backward"></i>
                                 <img src={VrnaLet}></img>
                             </div>
                          </div>
@@ -963,7 +963,7 @@ function NewSinhalaHodiya() {
                <div onClick={()=>setLetterBoxActive("Fristbox")}>
                         <div className='backtoWarnalabel'>
                             <div className='backToWarnamala'>
-                                <i class="fa-solid fa-backward"></i>
+                                <i className="fa-solid fa-backward"></i>
                                 <img src={VrnaLet}></img>
                             </div>
                          </div>
@@ -4663,7 +4663,7 @@ function NewSinhalaHodiya() {
             showCa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
 
                        <div className='AakuruwistharamainboxContent contentAlpaa'>
-                       <div className='MyCloseBtn'><a onClick={()=>setShowCa(!showCa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
+                       <div className='MyCloseBtn'><a onClick={()=>setShowCa(!showCa)}><i className="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ච්</h1>
                             <p id='titleP'>'ච්' යන්න. (තාලුජ අඝෝෂ අල්පප්‍රාණ ගාත්‍රාක්ෂරය)</p>
                             <ul>
@@ -4709,7 +4709,7 @@ function NewSinhalaHodiya() {
             showJa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
 
                        <div className='AakuruwistharamainboxContent contentAlpaa'>
-                       <div className='MyCloseBtn'><a onClick={()=>setShowJa(!showJa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
+                       <div className='MyCloseBtn'><a onClick={()=>setShowJa(!showJa)}><i className="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ජ්</h1>
                             <p id='titleP'>'ජ්' යන්න. (තාලුජ ඝෝෂ අල්පප්‍රාණ ගාත්‍රාක්ෂරය)</p>
                             <ul>
