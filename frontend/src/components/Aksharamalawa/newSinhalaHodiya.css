@@ -436,15 +436,58 @@
 .vargaLableBox h2{
     font-family: 'Noto serif Sinhala',sans-serif;
     font-size: 1.3em;
-    font-weight: 700;
+    font-weight: 800;
     transform: rotate(-92deg);
-    color: #000;
-    transition: .4s;
+    color: #2c2c2c;
+    transition: all 0.3s ease;
     cursor: pointer;
+    text-shadow:
+        0 1px 3px rgba(255, 255, 255, 0.7),
+        0 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
+    position: relative;
 }
+
 .vargaLableBox h2:hover{
-    font-size: 1.4em;
-    text-shadow: 0 0 15px rgb(116, 109, 109);
+    transform: rotate(-92deg) scale(1.1);
+    color: #1a1a1a;
+    text-shadow:
+        0 2px 4px rgba(255, 255, 255, 0.8),
+        0 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Tooltip styling */
+.vargaLableBox h2::after{
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%) rotate(92deg);
+    background: rgba(0, 0, 0, 0.95);
+    color: #ffffff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.55em;
+    font-weight: 500;
+    font-family: 'Noto Sans Sinhala', sans-serif;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 5000;
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.3),
+        0 1px 4px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    text-shadow: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.vargaLableBox h2:hover::after{
+    opacity: 1;
+    visibility: visible;
+    bottom: -25px;
 }
 .viyanAkuruMainContainer{
     position: relative;
@@ -1960,7 +2003,32 @@
     .vargaLableBox h2{
         font-family: 'Noto serif Sinhala',sans-serif;
         font-size: 1.2em;
-        font-weight: 600;
+        font-weight: 700;
+    }
+
+    /* Mobile responsive title section for tablet */
+    .NuthanahodiyaMain-MAinTitelbox{
+        min-height: 120px;
+        padding: 18px;
+        margin: 10px;
+        border-radius: 12px;
+    }
+    .NuthanahodiyaMain-MAinTitelbox h1{
+        font-size: 2.8rem;
+        margin-bottom: 6px;
+        line-height: 1.15;
+    }
+    .NuthanahodiyaMain-MAinTitelbox h2{
+        font-size: 1.15em;
+        margin-top: 8px;
+        margin-bottom: 5px;
+        line-height: 1.25;
+    }
+    .NuthanahodiyaMain-MAinTitelbox h2.author-line{
+        font-size: 0.9em;
+        margin-top: 14px;
+        margin-bottom: 3px;
+        line-height: 1.2;
     }
 
     /* Enhanced details sections for tablet */
@@ -2175,6 +2243,37 @@
     .NewnewUlNewThree span{
         font-size: 18px;
         padding: 1px 4px;
+    }
+
+    /* Mobile responsive title section for mobile */
+    .NuthanahodiyaMain-MAinTitelbox{
+        min-height: 110px;
+        padding: 16px;
+        margin: 8px;
+        border-radius: 10px;
+    }
+    .NuthanahodiyaMain-MAinTitelbox h1{
+        font-size: 2.5rem;
+        margin-bottom: 5px;
+        line-height: 1.2;
+    }
+    .NuthanahodiyaMain-MAinTitelbox h2{
+        font-size: 1.05em;
+        margin-top: 7px;
+        margin-bottom: 4px;
+        line-height: 1.3;
+    }
+    .NuthanahodiyaMain-MAinTitelbox h2.author-line{
+        font-size: 0.85em;
+        margin-top: 12px;
+        margin-bottom: 3px;
+        line-height: 1.15;
+    }
+
+    /* Enhanced ස්වර and ව්‍යංජන text for mobile */
+    .vargaLableBox h2{
+        font-size: 1.1em;
+        font-weight: 700;
     }
 
 
@@ -2524,6 +2623,31 @@
         padding: 1px 3px;
     }
 
+    /* Mobile responsive title section for small mobile */
+    .NuthanahodiyaMain-MAinTitelbox{
+        min-height: 100px;
+        padding: 14px;
+        margin: 6px;
+        border-radius: 8px;
+    }
+    .NuthanahodiyaMain-MAinTitelbox h1{
+        font-size: 2.2rem;
+        margin-bottom: 4px;
+        line-height: 1.1;
+    }
+    .NuthanahodiyaMain-MAinTitelbox h2{
+        font-size: 0.95em;
+        margin-top: 6px;
+        margin-bottom: 3px;
+        line-height: 1.2;
+    }
+    .NuthanahodiyaMain-MAinTitelbox h2.author-line{
+        font-size: 0.8em;
+        margin-top: 10px;
+        margin-bottom: 2px;
+        line-height: 1.1;
+    }
+
     /* Enhanced title section for small mobile */
     .NuthanahodiyaMain-MAinTitelbox{
         min-height: 70px; /* Very compact on small mobile */
@@ -2544,10 +2668,85 @@
         margin: 3px 0 1px 0;
     }
 
-    /* Enhanced ස්වර and ව්‍යංජන buttons for small mobile */
+    /* Enhanced ස්වර and ව්‍යංජන text for small mobile */
     .vargaLableBox h2{
         font-size: 0.9em;
-        padding: 8px 4px;
-        border-radius: 4px;
+        font-weight: 700;
     }
+}
+
+/* Login Prompt Dialog Styling */
+.loginPromptContent {
+    background: linear-gradient(135deg, rgba(255, 140, 0, 0.15) 0%, rgba(255, 69, 0, 0.1) 100%);
+    border: 2px solid rgba(255, 140, 0, 0.3);
+    text-align: center;
+    padding: 30px;
+    max-width: 500px;
+    min-height: 350px;
+}
+
+.loginPromptContent h1 {
+    font-size: 4em;
+    margin-bottom: 15px;
+    text-shadow: 0 0 20px rgba(255, 140, 0, 0.5);
+}
+
+.loginPromptContent p {
+    margin: 15px 0;
+    line-height: 1.6;
+    font-size: 0.9em;
+}
+
+.loginPromptContent #titleP {
+    color: #ff8c00;
+    font-size: 1.6em;
+    font-weight: bold;
+    text-shadow: 0 0 15px rgba(255, 140, 0, 0.6);
+    margin-bottom: 20px;
+}
+
+.loginPromptContent #EngP {
+    color: rgb(200, 200, 200);
+    font-style: italic;
+    font-size: 0.85em;
+    margin-top: 20px;
+}
+
+.loginPromptButtons {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.loginBtn {
+    background: linear-gradient(135deg, #ff8c00 0%, #ff6347 100%);
+    color: white;
+    border: none;
+    padding: 15px 35px;
+    font-size: 0.95em;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    font-family: 'Noto Sans Sinhala', sans-serif;
+    letter-spacing: 0.5px;
+    min-width: 160px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loginBtn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 140, 0, 0.4);
+    background: linear-gradient(135deg, #ff9500 0%, #ff4500 100%);
+}
+
+.loginBtn:active {
+    transform: translateY(-1px) scale(1.02);
+    transition: all 0.1s ease;
 }
