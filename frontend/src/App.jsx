@@ -129,16 +129,16 @@ const navItems = [
     name: "අක්ෂර මාලාව",
     icon: <AutoStoriesIcon />,
     subcategories: [
-      { name: "ස්වර", path: "/grammar", icon: <TranslateIcon /> },
-      { name: "ව්‍යංජන", path: "/literature", icon: <LocalLibraryIcon /> },
-      { name: "අකාරාදී පිළිවෙල", path: "/grammar", icon: <TranslateIcon /> },
-      { name: "අක්ෂර වින්‍යාසය", path: "/literature", icon: <LocalLibraryIcon /> },
       {
         name: "සුහුරු අක්ෂර මාලාව",
         path: "/aksharamalawa",
         icon: <AccountTreeIcon />,
         external: true // Add this flag to indicate it's an external link
       },
+      { name: "ස්වර", path: "/grammar", icon: <TranslateIcon /> },
+      { name: "ව්‍යංජන", path: "/literature", icon: <LocalLibraryIcon /> },
+      { name: "අකාරාදී පිළිවෙල", path: "/grammar", icon: <TranslateIcon /> },
+      { name: "අක්ෂර වින්‍යාසය", path: "/literature", icon: <LocalLibraryIcon /> },
       { name: "වර්ණ ගැන්වූ විග්‍රහය පිටපත", path: "/literature", icon: <LocalLibraryIcon /> },
     ],
   },
