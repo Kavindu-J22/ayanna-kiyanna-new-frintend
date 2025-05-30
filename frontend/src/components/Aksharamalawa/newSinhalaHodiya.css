@@ -463,11 +463,11 @@
     bottom: -30px;
     left: 50%;
     transform: translateX(-50%) rotate(92deg);
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(0, 0, 0, 0.637);
     color: #ffffff;
     padding: 4px 8px;
     border-radius: 4px;
-    font-size: 0.55em;
+    font-size: 0.35em;
     font-weight: 500;
     font-family: 'Noto Sans Sinhala', sans-serif;
     white-space: nowrap;
@@ -1438,12 +1438,10 @@
 }
 .SandyaColorbox i{
     font-size: 1.2em;
-    border-radius: 50%;
     opacity: 1;
     color: #000; /* Black color for pen icon */
     width: 30px;
     height: 30px;
-    background: rgba(255, 255, 255, 0.9);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1467,12 +1465,10 @@
 }
 .NamyaColorbox i{
     font-size: 1.2em;
-    border-radius: 50%;
     opacity: 1;
     color: #000; /* Black color for icon */
     width: 30px;
     height: 30px;
-    background: rgba(255, 255, 255, 0.9);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1497,12 +1493,10 @@
 }
 .AnamyaColorbox i{
     font-size: 1.2em;
-    border-radius: 50%;
     opacity: 1;
     color: #000; /* Black color for icon */
     width: 30px;
     height: 30px;
-    background: rgba(255, 255, 255, 0.9);
     display: flex;
     justify-content: center;
     align-items: center;
