@@ -2841,6 +2841,75 @@
     animation: popupSlideOut 0.3s ease-in forwards;
 }
 
+/* Page Download Button - Bottom Right */
+.pageDownloadBtn {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff6b35 100%);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.7em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow:
+        0 3px 10px rgba(255, 107, 53, 0.3),
+        0 2px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    font-family: 'Noto Sans Sinhala', sans-serif;
+    z-index: 100;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pageDownloadBtn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.pageDownloadBtn:hover::before {
+    left: 100%;
+}
+
+.pageDownloadBtn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow:
+        0 5px 15px rgba(255, 107, 53, 0.4),
+        0 3px 10px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #ff7b45 0%, #f8a32e 50%, #ff7b45 100%);
+}
+
+.pageDownloadBtn:active {
+    transform: translateY(-1px) scale(1.02);
+    transition: all 0.1s ease;
+}
+
+.pageDownloadBtn i {
+    font-size: 0.9em;
+    transition: transform 0.3s ease;
+}
+
+.pageDownloadBtn:hover i {
+    transform: translateY(-1px) rotate(3deg);
+}
+
+.pageDownloadBtn span {
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+}
+
 /* Small screen popup adjustments */
 @media (max-height: 700px) {
     .AakuruwistharamainboxContent {
@@ -2887,6 +2956,49 @@
         font-size: 0.7em;
         margin: 8px;
         padding-left: 25px;
+    }
+}
+
+/* Mobile responsive for page download button */
+@media (max-width: 785px) {
+    .pageDownloadBtn {
+        bottom: 10px;
+        right: 45px;
+        padding: 7px 10px;
+        font-size: 0.65em;
+        border-radius: 18px;
+        gap: 5px;
+    }
+
+    .pageDownloadBtn i {
+        font-size: 0.8em;
+    }
+
+    .pageDownloadBtn span {
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 480px) {
+    .pageDownloadBtn {
+        bottom: 20px;
+        right: 45px;
+        padding: 6px 9px;
+        font-size: 0.6em;
+        border-radius: 15px;
+        gap: 4px;
+    }
+
+    .pageDownloadBtn i {
+        font-size: 0.75em;
+    }
+
+    .pageDownloadBtn span {
+        font-size: 0.85em;
+    }
+
+    .pageDownloadBtn:hover {
+        transform: translateY(-1px) scale(1.03);
     }
 }
 

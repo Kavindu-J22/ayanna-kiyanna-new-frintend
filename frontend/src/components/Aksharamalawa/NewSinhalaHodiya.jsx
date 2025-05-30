@@ -32,6 +32,16 @@ function NewSinhalaHodiya() {
         }
     };
 
+    // Download VrnaLet image function
+    const downloadVrnaLet = () => {
+        const link = document.createElement('a');
+        link.href = VrnaLet;
+        link.download = 'VranaLet.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const gototop = () => {
         window.scrollTo({top:0, left:0, behavior: "smooth"});
     };
@@ -5665,6 +5675,12 @@ function NewSinhalaHodiya() {
                 </div>
             </div>
         )}
+
+        {/* Download Button - Page Bottom Right */}
+        <button className="pageDownloadBtn" onClick={downloadVrnaLet} title="සුහුරු සිංහල අක්ෂර මාලාව රූපයක් ලෙස බාගන්න">
+            <i className="fa-solid fa-download"></i>
+            <span>බාගත කරගන්න 📥</span>
+        </button>
 
     </div>
   )
