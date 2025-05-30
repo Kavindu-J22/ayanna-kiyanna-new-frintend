@@ -239,6 +239,11 @@ const AttendanceView = () => {
     if (!isClassMonitor) return false;
 
     // Check if monitor has permission from admin
+    // If adminOnly is true, no monitors have permission
+    if (sheet.monitorPermissions?.adminOnly) {
+      return false;
+    }
+
     const hasPermission = sheet.monitorPermissions?.allMonitors ||
       sheet.monitorPermissions?.selectedMonitors?.some(monitor => {
         // Handle both populated objects and direct IDs
@@ -319,6 +324,11 @@ const AttendanceView = () => {
     }
 
     // Check permissions only for non-updated sheets
+    // If adminOnly is true, no monitors have permission
+    if (sheet.monitorPermissions?.adminOnly) {
+      return 'no_permission';
+    }
+
     const hasPermission = sheet.monitorPermissions?.allMonitors ||
       sheet.monitorPermissions?.selectedMonitors?.some(monitor => {
         // Handle both populated objects and direct IDs

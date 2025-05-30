@@ -309,14 +309,16 @@ const AttendanceEdit = () => {
                 fontWeight: 'medium',
                 color: 'primary.main'
               }}>
-                {formData.monitorPermissions.allMonitors
+                {formData.monitorPermissions.adminOnly
+                  ? "ඔබ සදහා පමණක් අවසර ලබා දී ඇත.(Admin Only)"
+                  : formData.monitorPermissions.allMonitors
                   ? "සියලුම නිරීක්ෂකයින්ට අවසර දී ඇත"
                   : "තෝරාගත් නිරීක්ෂකයින්ට අවසර දී ඇත"}
               </Typography>
             </Box>
 
             {/* Selected Monitors Display */}
-            {!formData.monitorPermissions.allMonitors && (
+            {!formData.monitorPermissions.allMonitors && !formData.monitorPermissions.adminOnly && (
               <Box sx={{ mt: 2 }}>
                 <Typography variant="subtitle2" sx={{
                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
