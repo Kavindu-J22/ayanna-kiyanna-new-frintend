@@ -207,7 +207,7 @@ const ClassManagement = () => {
   const statsCards = [
     { title: 'මුළු පන්ති', value: stats.total, icon: <SchoolIcon />, color: '#667eea' },
     { title: 'සාමාන්‍ය පන්ති', value: stats.normal, icon: <CalendarIcon />, color: '#f093fb' },
-    { title: 'විශේෂ පන්ති', value: stats.special, icon: <TimeIcon />, color: '#a8edea' },
+    { title: 'විශේෂ/අමතර පන්ති', value: stats.special, icon: <TimeIcon />, color: '#a8edea' },
     { title: 'සක්‍රීය පන්ති', value: stats.active, icon: <PeopleIcon />, color: '#ffecd2' },
     { title: 'Hall Classes', value: stats.hallClasses, icon: <HomeIcon />, color: '#ff9a9e' },
     { title: 'Group Classes', value: stats.groupClasses, icon: <GroupsIcon />, color: '#a18cd1' },

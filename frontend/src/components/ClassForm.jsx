@@ -365,7 +365,7 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
                     <MenuItem value="Special">
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <TimeIcon fontSize="small" />
-                        විශේෂ පන්තිය
+                        විශේෂ/අමතර පන්ති
                       </Box>
                     </MenuItem>
                   </Select>

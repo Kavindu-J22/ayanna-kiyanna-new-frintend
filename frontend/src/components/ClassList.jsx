@@ -355,7 +355,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
               >
                 <MenuItem value="">සියල්ල</MenuItem>
                 <MenuItem value="Normal">සාමාන්‍ය</MenuItem>
-                <MenuItem value="Special">විශේෂ</MenuItem>
+                <MenuItem value="Special">විශේෂ/අමතර</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -491,7 +491,7 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={classItem.type === 'Normal' ? 'සාමාන්‍ය' : 'විශේෂ'}
+                        label={classItem.type === 'Normal' ? 'සාමාන්‍ය' : 'විශේෂ/අමතර'}
                         color={getTypeChipColor(classItem.type)}
                         size="small"
                       />
