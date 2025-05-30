@@ -104,19 +104,19 @@ function NewSinhalaHodiya() {
         <div className='NuthanahodiyaMain-MAinTitelbox'>
             <h1>❂ සුහුරු සිංහල අක්ෂර මාලාව ❂</h1>
             <h2>- Smart Sinhala Alphabet -</h2>
-            <h2>❂ නිපැයුම - ජගත් කුමාර ජයසිංහ ❂</h2>
+            <h2 className='author-line'>❂ නිපැයුම - ජගත් කුමාර ජයසිංහ ❂</h2>
             <div className='Visitorbox'>
                 <div className='PU_Units'>
                 <h4>Page Views : </h4>
                 <a href="https://www.hitwebcounter.com" target="_blank">
                 <img src="https://hitwebcounter.com/counter/counter.php?page=10525546&style=0025&nbdigits=5&type=page&initCount=0" title="Counter Widget" Alt="Visit counter For Websites"   border="0" /></a>
                 </div>
-                
+
                 <div className='PU_Units'>
                 <h4>Unique Visitors : </h4>
                 <a href="https://www.hitwebcounter.com" target="_blank">
-                <img src="https://hitwebcounter.com/counter/counter.php?page=10525870&style=0025&nbdigits=5&type=ip&initCount=0" title="Counter Widget" Alt="Visit counter For Websites"   border="0" /></a> 
-                </div>             
+                <img src="https://hitwebcounter.com/counter/counter.php?page=10525870&style=0025&nbdigits=5&type=ip&initCount=0" title="Counter Widget" Alt="Visit counter For Websites"   border="0" /></a>
+                </div>
             </div>
         </div>
         {/* <div className="contactMobilebox">
@@ -135,7 +135,7 @@ function NewSinhalaHodiya() {
                     </div>
                     <div className='mainakurutitleinmobile'>
                         <h2 onClick={()=>setShowSwara(!showSwara)}>✥ ස්වර ✥</h2>
-                    </div>  
+                    </div>
                 <div className='swaraAkuruMaincontainer'>
 
                 <div className='vargaLableBox'>
@@ -169,7 +169,7 @@ function NewSinhalaHodiya() {
                             <div className='akurucontent' onClick={()=>setShowAee(!showAea)}>
                                     <p>04</p>
                                     <h5 id='deergaSware'>ඈ</h5>
-                                </div> 
+                                </div>
                             </div>
                             <div className='akuruAK' id='swaraAkurahodi'>
                             <div className='akurucontent' onClick={()=>setShowE(!showE)}>
@@ -265,7 +265,7 @@ function NewSinhalaHodiya() {
                             </div>
 
                         </div>
-                        
+
 
                     </div>
                     </div>
@@ -273,7 +273,7 @@ function NewSinhalaHodiya() {
 
                 <div className='mainakurutitleinmobile'>
                         <h2 onClick={()=>setShowViyan(!showViyan)}>✥ ව්‍යාංජන ✥</h2>
-                    </div> 
+                    </div>
 
                 <div className='viyanAkuruMainContainer'>
                     <div className='vargaLableBox' id='vargaLableBoxviya'>
@@ -314,9 +314,9 @@ function NewSinhalaHodiya() {
                                         <h2>දන්තජ➠</h2>
                                     </div>
                                     <div className='akuruAK' id='akvrdv' onClick={()=>setShowOshtaja(!showOshtaja)}>
-                                        <h2>ඕෂ්ඨජ➠</h2> 
+                                        <h2>ඕෂ්ඨජ➠</h2>
                                     </div>
-                                    
+
                             </div>
 
                             <div className='Varganthaksara'>
@@ -356,7 +356,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඞ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -391,7 +391,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඤ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -426,7 +426,7 @@ function NewSinhalaHodiya() {
                                             <h5>ණ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -461,7 +461,7 @@ function NewSinhalaHodiya() {
                                             <h5>න</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -496,7 +496,7 @@ function NewSinhalaHodiya() {
                                             <h5>ම</h5>
                                         </div>
                                     </div>
-                        
+
                             </div>
                             </div>
                         </div>
@@ -533,7 +533,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඹ</h5>
                                         </div>
                                 </div>
-                    
+
                         </div>
 
 
@@ -614,7 +614,7 @@ function NewSinhalaHodiya() {
                         </div>
                     </div>
                 </div>
-                    
+
                </div>
                }
 
@@ -637,7 +637,7 @@ function NewSinhalaHodiya() {
                          <h2 onClick={()=>setShowSwara(!showSwara)}>ස්වර</h2>
                          </div>
                          <div className='MainSwaraya'>
-                              
+
                          <div className='swaraAkuruMain'>
 
                               <div className='AkuruColoms'>
@@ -670,7 +670,7 @@ function NewSinhalaHodiya() {
                                    <div className='akurucontent' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                              <p>04</p>
                                              <h5 id='deergaSware'>ඈ</h5>
-                                        </div> 
+                                        </div>
                                    </div>
 
                                    <div className='PointedLeterAnimeBox'>
@@ -779,7 +779,7 @@ function NewSinhalaHodiya() {
                                    </div>
 
                               </div>
-                              
+
 
                          </div>
                          </div>
@@ -807,7 +807,7 @@ function NewSinhalaHodiya() {
                          <h2 onClick={()=>setShowSwara(!showSwara)}>ස්වර</h2>
                          </div>
                          <div className='MainSwaraya'>
-                              
+
                          <div className='swaraAkuruMain'>
 
                               <div className='AkuruColoms'>
@@ -838,7 +838,7 @@ function NewSinhalaHodiya() {
                                    <div className='akurucontent' onClick={()=>setShowAee(!showAee)}>
                                              <p>04</p>
                                              <h5 id='deergaSware'>ඈ</h5>
-                                        </div> 
+                                        </div>
                                    </div></div>
                                    <div className='akuruAK hras' id='swaraAkurahodi'>
                                    <div className='akurucontent' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
@@ -950,7 +950,7 @@ function NewSinhalaHodiya() {
                                    </div></div>
 
                               </div>
-                              
+
 
                          </div>
                          </div>
@@ -1013,9 +1013,9 @@ function NewSinhalaHodiya() {
                                         <h2>දන්තජ➠</h2>
                                     </div>
                                     <div className='akuruAK' id='akvrdv' onClick={()=>setShowOshtaja(!showOshtaja)}>
-                                        <h2>ඕෂ්ඨජ➠</h2> 
+                                        <h2>ඕෂ්ඨජ➠</h2>
                                     </div>
-                                    
+
                             </div>
 
                             <div className='Varganthaksara'>
@@ -1059,7 +1059,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඞ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -1096,7 +1096,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඤ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -1107,7 +1107,7 @@ function NewSinhalaHodiya() {
                                             <h5>ට</h5>
                                         </div>
                                     </div></div>
-                                    
+
                                     <div className='akuruAK noalp' id='vrvr'>
                                     <div className='akurucontent agoshamark' id='mahaprana' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>34</p>
@@ -1135,7 +1135,7 @@ function NewSinhalaHodiya() {
                                             <h5>ණ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -1173,7 +1173,7 @@ function NewSinhalaHodiya() {
                                             <h5>න</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -1212,7 +1212,7 @@ function NewSinhalaHodiya() {
                                             <h5>ම</h5>
                                         </div>
                                     </div>
-                        
+
                             </div>
                             </div>
                         </div>
@@ -1249,7 +1249,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඹ</h5>
                                         </div>
                                 </div>
-                    
+
                         </div>
 
 
@@ -1388,9 +1388,9 @@ function NewSinhalaHodiya() {
                                         <h2>දන්තජ➠</h2>
                                     </div>
                                     <div className='akuruAK' id='akvrdv' onClick={()=>setShowOshtaja(!showOshtaja)}>
-                                        <h2>ඕෂ්ඨජ➠</h2> 
+                                        <h2>ඕෂ්ඨජ➠</h2>
                                     </div>
-                                    
+
                             </div>
 
                             <div className='Varganthaksara'>
@@ -1434,7 +1434,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඞ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -1472,7 +1472,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඤ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -1509,7 +1509,7 @@ function NewSinhalaHodiya() {
                                             <h5>ණ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -1546,7 +1546,7 @@ function NewSinhalaHodiya() {
                                             <h5>න</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -1583,7 +1583,7 @@ function NewSinhalaHodiya() {
                                             <h5>ම</h5>
                                         </div>
                                     </div>
-                        
+
                             </div>
                             </div>
                         </div>
@@ -1620,7 +1620,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඹ</h5>
                                         </div>
                                 </div>
-                    
+
                         </div>
 
 
@@ -1733,7 +1733,7 @@ function NewSinhalaHodiya() {
                                     <h5 id='anLetter'>අං</h5>
                                 </div>
                             </div></div>
-                            
+
                             <div className='akuruAK Novran' id='anahboxAkuru'>
                             <div className='akurucontent agoshamark' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                     <p>20</p>
@@ -1760,9 +1760,9 @@ function NewSinhalaHodiya() {
                                         <h2>දන්තජ➠</h2>
                                     </div>
                                     <div className='akuruAK' id='akvrdv' onClick={()=>setShowOshtaja(!showOshtaja)}>
-                                        <h2>ඕෂ්ඨජ➠</h2> 
+                                        <h2>ඕෂ්ඨජ➠</h2>
                                     </div>
-                                    
+
                             </div>
 
                             <div className='Varganthaksara'>
@@ -1803,7 +1803,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඞ</h5>
                                         </div>
                                     </div></div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -1839,7 +1839,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඤ</h5>
                                         </div>
                                     </div></div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -1875,7 +1875,7 @@ function NewSinhalaHodiya() {
                                             <h5>ණ</h5>
                                         </div>
                                     </div></div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -1911,7 +1911,7 @@ function NewSinhalaHodiya() {
                                             <h5>න</h5>
                                         </div>
                                     </div></div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -1947,7 +1947,7 @@ function NewSinhalaHodiya() {
                                             <h5>ම</h5>
                                         </div>
                                     </div></div>
-                        
+
                             </div>
                             </div>
                         </div>
@@ -1984,7 +1984,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඹ</h5>
                                         </div>
                                 </div>
-                    
+
                         </div>
 
 
@@ -2123,9 +2123,9 @@ function NewSinhalaHodiya() {
                                         <h2>දන්තජ➠</h2>
                                     </div>
                                     <div className='akuruAK' id='akvrdv' onClick={()=>setShowOshtaja(!showOshtaja)}>
-                                        <h2>ඕෂ්ඨජ➠</h2> 
+                                        <h2>ඕෂ්ඨජ➠</h2>
                                     </div>
-                                    
+
                             </div>
 
                             <div className='Varganthaksara' id='vrdisforTitle'>
@@ -2165,7 +2165,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඞ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -2200,7 +2200,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඤ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -2235,7 +2235,7 @@ function NewSinhalaHodiya() {
                                             <h5>ණ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -2270,7 +2270,7 @@ function NewSinhalaHodiya() {
                                             <h5>න</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -2305,7 +2305,7 @@ function NewSinhalaHodiya() {
                                             <h5>ම</h5>
                                         </div>
                                     </div>
-                        
+
                             </div>
                             </div>
                         </div>
@@ -2346,7 +2346,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඹ</h5>
                                         </div>
                                 </div></div>
-                    
+
                         </div>
 
 
@@ -2493,9 +2493,9 @@ function NewSinhalaHodiya() {
                                         <h2>දන්තජ➠</h2>
                                     </div>
                                     <div className='akuruAK' id='akvrdv' onClick={()=>setShowCatNotInc(!showCatNotInc)}>
-                                        <h2>ඕෂ්ඨජ➠</h2> 
+                                        <h2>ඕෂ්ඨජ➠</h2>
                                     </div>
-                                    
+
                             </div>
 
                             <div className='Varganthaksara'>
@@ -2535,7 +2535,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඞ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -2570,7 +2570,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඤ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -2605,7 +2605,7 @@ function NewSinhalaHodiya() {
                                             <h5>ණ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -2640,7 +2640,7 @@ function NewSinhalaHodiya() {
                                             <h5>න</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -2675,7 +2675,7 @@ function NewSinhalaHodiya() {
                                             <h5>ම</h5>
                                         </div>
                                     </div>
-                        
+
                             </div>
                             </div>
                         </div>
@@ -2712,7 +2712,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඹ</h5>
                                         </div>
                                 </div>
-                    
+
                         </div>
 
 
@@ -2857,9 +2857,9 @@ function NewSinhalaHodiya() {
                                         <h2>දන්තජ➠</h2>
                                     </div>
                                     <div className='akuruAK' id='akvrdv' onClick={()=>setShowCatNotInc(!showCatNotInc)}>
-                                        <h2>ඕෂ්ඨජ➠</h2> 
+                                        <h2>ඕෂ්ඨජ➠</h2>
                                     </div>
-                                    
+
                             </div>
 
                             <div className='Varganthaksara'>
@@ -2899,7 +2899,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඞ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -2934,7 +2934,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඤ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -2969,7 +2969,7 @@ function NewSinhalaHodiya() {
                                             <h5>ණ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -3004,7 +3004,7 @@ function NewSinhalaHodiya() {
                                             <h5>න</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -3039,7 +3039,7 @@ function NewSinhalaHodiya() {
                                             <h5>ම</h5>
                                         </div>
                                     </div>
-                        
+
                             </div>
                             </div>
                         </div>
@@ -3076,7 +3076,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඹ</h5>
                                         </div>
                                 </div>
-                    
+
                         </div>
 
 
@@ -3219,9 +3219,9 @@ function NewSinhalaHodiya() {
                                         <h2>දන්තජ➠</h2>
                                     </div>
                                     <div className='akuruAK' id='akvrdv' onClick={()=>setShowOshtaja(!showOshtaja)}>
-                                        <h2>ඕෂ්ඨජ➠</h2> 
+                                        <h2>ඕෂ්ඨජ➠</h2>
                                     </div>
-                                    
+
                             </div>
 
                             <div className='Varganthaksara'>
@@ -3264,7 +3264,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඞ</h5>
                                         </div>
                                     </div></div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -3302,7 +3302,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඤ</h5>
                                         </div>
                                     </div></div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -3340,7 +3340,7 @@ function NewSinhalaHodiya() {
                                             <h5>ණ</h5>
                                         </div>
                                     </div></div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -3378,7 +3378,7 @@ function NewSinhalaHodiya() {
                                             <h5>න</h5>
                                         </div>
                                     </div></div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -3416,7 +3416,7 @@ function NewSinhalaHodiya() {
                                             <h5>ම</h5>
                                         </div>
                                     </div></div>
-                        
+
                             </div>
                             </div>
                         </div>
@@ -3457,7 +3457,7 @@ function NewSinhalaHodiya() {
                                             <h5>ඹ</h5>
                                         </div>
                                 </div></div>
-                    
+
                         </div>
 
 
@@ -3569,7 +3569,7 @@ function NewSinhalaHodiya() {
                     </div>
                     <div className='viyanAkuruMain'>
                          <div className='AkuruColoms' id='anahbox'>
-                         
+
                             <div className='akuruAK notAgosha' id='anahboxAkuru'>
                             <div className='akurucontent notAgosha' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                     <p>19</p>
@@ -3603,9 +3603,9 @@ function NewSinhalaHodiya() {
                                         <h2>දන්තජ➠</h2>
                                     </div>
                                     <div className='akuruAK' id='akvrdv' onClick={()=>setShowOshtaja(!showOshtaja)}>
-                                        <h2>ඕෂ්ඨජ➠</h2> 
+                                        <h2>ඕෂ්ඨජ➠</h2>
                                     </div>
-                                    
+
                             </div>
 
                             <div className='Varganthaksara'>
@@ -3628,28 +3628,28 @@ function NewSinhalaHodiya() {
                                             <h5>ඛ</h5>
                                         </div>
                                     </div></div>
-                                    
+
                                     <div className='akuruAK notAgosha' id='vrvr'>
                                     <div className='akurucontent' id='alpaprana' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>23</p>
                                             <h5>ග</h5>
                                         </div>
                                     </div>
-                                    
+
                                     <div className='akuruAK notAgosha' id='vrvr'>
                                     <div className='akurucontent' id='mahaprana' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>24</p>
                                             <h5>ඝ</h5>
                                         </div>
                                     </div>
-                                    
+
                                     <div className='akuruAK notAgosha' id='vrvr'>
                                     <div className='akurucontent' id='anunasiLetters' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>25</p>
                                             <h5>ඞ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -3667,28 +3667,28 @@ function NewSinhalaHodiya() {
                                             <h5>ඡ</h5>
                                         </div>
                                     </div></div>
-                                    
+
                                     <div className='akuruAK notAgosha' id='vrvr'>
                                     <div className='akurucontent' id='alpaprana' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>29</p>
                                             <h5>ජ</h5>
                                         </div>
                                     </div>
-                                    
+
                                     <div className='akuruAK notAgosha' id='vrvr'>
                                     <div className='akurucontent' id='mahaprana' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>30</p>
                                             <h5>ඣ</h5>
                                         </div>
                                     </div>
-                                    
+
                                     <div className='akuruAK notAgosha' id='vrvr'>
                                     <div className='akurucontent' id='anunasiLetters' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>31</p>
                                             <h5>ඤ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -3706,28 +3706,28 @@ function NewSinhalaHodiya() {
                                             <h5>ඨ</h5>
                                         </div>
                                     </div></div>
-                                    
+
                                     <div className='akuruAK notAgosha' id='vrvr'>
                                     <div className='akurucontent' id='alpaprana' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>35</p>
                                             <h5>ඩ</h5>
                                         </div>
                                     </div>
-                                    
+
                                     <div className='akuruAK notAgosha' id='vrvr'>
                                     <div className='akurucontent' id='mahaprana' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>36</p>
                                             <h5>ඪ</h5>
                                         </div>
                                     </div>
-                                    
+
                                     <div className='akuruAK notAgosha' id='vrvr'>
                                     <div className='akurucontent' id='anunasiLetters' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>37</p>
                                             <h5>ණ</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -3745,28 +3745,28 @@ function NewSinhalaHodiya() {
                                             <h5>ථ</h5>
                                         </div>
                                     </div></div>
-                                   
+
                                     <div className='akuruAK notAgosha' id='vrvr'>
                                     <div className='akurucontent' id='alpaprana' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>41</p>
                                             <h5>ද</h5>
                                         </div>
                                     </div>
-                                    
+
                                     <div className='akuruAK notAgosha' id='vrvr'>
                                     <div className='akurucontent' id='mahaprana' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>42</p>
                                             <h5>ධ</h5>
                                         </div>
                                     </div>
-                                    
+
                                     <div className='akuruAK notAgosha' id='vrvr'>
                                     <div className='akurucontent' id='anunasiLetters' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>43</p>
                                             <h5>න</h5>
                                         </div>
                                     </div>
-                                    
+
 
                             </div>
                             <div className='AkuruColoms'>
@@ -3784,69 +3784,69 @@ function NewSinhalaHodiya() {
                                             <h5>ඵ</h5>
                                         </div>
                                     </div></div>
-                                    
+
                                     <div className='akuruAK notAgosha' id='vrvr'>
                                     <div className='akurucontent' id='alpaprana' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>47</p>
                                             <h5>බ</h5>
                                         </div>
                                     </div>
-                                    
+
                                     <div className='akuruAK notAgosha' id='vrvr'>
                                     <div className='akurucontent' id='mahaprana' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>48</p>
                                             <h5>භ</h5>
                                         </div>
                                     </div>
-                                    
+
                                     <div className='akuruAK notAgosha' id='vrvr'>
                                     <div className='akurucontent' id='anunasiLetters' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>49</p>
                                             <h5>ම</h5>
                                         </div>
                                     </div>
-                        
+
                             </div>
                             </div>
                         </div>
 
                         <div className='AkuruColomsSanjaka'>
-                        
+
                                 <div className='akuruAK notAgosha' id='SanjakaAkuru'>
                                 <div className='akurucontent' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>26</p>
                                             <h5>ඟ</h5>
                                         </div>
                                 </div>
-                                
+
                                 <div className='akuruAK notAgosha' id='SanjakaAkuru' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                 <div className='akurucontent'>
                                             <p>32</p>
                                             <h5>ඦ</h5>
                                         </div>
                                 </div>
-                                
+
                                 <div className='akuruAK notAgosha' id='SanjakaAkuru' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                 <div className='akurucontent'>
                                             <p>38</p>
                                             <h5>ඬ</h5>
                                         </div>
                                 </div>
-                                
+
                                 <div className='akuruAK notAgosha' id='SanjakaAkuru' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                 <div className='akurucontent'>
                                             <p>44</p>
                                             <h5>ඳ</h5>
                                         </div>
                                 </div>
-                                
+
                                 <div className='akuruAK notAgosha' id='SanjakaAkuru' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                 <div className='akurucontent'>
                                             <p>50</p>
                                             <h5>ඹ</h5>
                                         </div>
                                 </div>
-                    
+
                         </div>
 
 
@@ -3859,28 +3859,28 @@ function NewSinhalaHodiya() {
                                             <h5>ද්විජාක්ෂර</h5>
                                         </div>
                             </div>
-                        
+
                             <div className='akuruAK notAgosha'>
                             <div className='akurucontent' id='anthahLetters' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>51</p>
                                             <h5>ය</h5>
                                         </div>
                             </div>
-                            
+
                             <div className='akuruAK notAgosha'>
                             <div className='akurucontent' id='anthahLetters' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>52</p>
                                             <h5>ර</h5>
                                         </div>
                             </div>
-                            
+
                             <div className='akuruAK notAgosha'>
                             <div className='akurucontent' id='anthahLetters' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>53</p>
                                             <h5>ල</h5>
                                         </div>
                             </div>
-                            
+
                             <div className='akuruAK notAgosha'>
                             <div className='akurucontent' id='anthahLetters' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>54</p>
@@ -3910,14 +3910,14 @@ function NewSinhalaHodiya() {
                                             <h5>ස</h5>
                                         </div>
                             </div></div>
-                            
+
                             <div className='akuruAK notAgosha' id='yatamaAkuru' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                             <div className='akurucontent'>
                                             <p>58</p>
                                             <h5>හ</h5>
                                         </div>
                             </div>
-                            
+
                             <div className='akuruAK notAgosha'>
                             <div className='akurucontent' id='anthahLetters' onClick={()=>setShowLetNotInc(!showLetNotInc)}>
                                             <p>59</p>
@@ -4001,15 +4001,15 @@ function NewSinhalaHodiya() {
                     </div>
                     </div>
                 }
-                    
+
 
 
                </div>
-                
+
                     {/* Discriptiop buttons  */}
 
                     <div className='sinhalaAkuruDiscbox'data-aos="fadeInUp">
-                         
+
                          <div className='swarabtnsboxnn'>
                             <div onClick={()=>setLetterBoxActive("hraswaswaraMainBox")} className="listboxes">
                                 <div onClick={gototop} className='cbforborder hColorbox'><span></span></div><div onClick={gototop}><h5>හ්‍රස්ව ස්වර</h5>
@@ -4066,7 +4066,7 @@ function NewSinhalaHodiya() {
                                 <div onClick={gototop} className='cbforborder GooColorbox'></div><div onClick={gototop}><h5>ඝෝෂාක්ෂර</h5>
                                 <p>(ඝෝෂ) 45</p></div>
                             </div>
-                            
+
                          </div>
 
                          <h4>composed by : Jagath Kumara Jayasinghe<br/>Developed by : Kavindu Jayasinghe</h4>
@@ -4081,7 +4081,7 @@ function NewSinhalaHodiya() {
 
         {
             showA && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-                
+
                        <div className='AakuruwistharamainboxContent contentHraswa'>
                         <div className='MyCloseBtn'><a onClick={()=>setShowA(!showA)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>අ</h1>
@@ -4094,16 +4094,16 @@ function NewSinhalaHodiya() {
                             <li>ඝෝෂයකි. (ඝෝෂ අක්ෂර බලන්න)</li>
                             <li>එය නම්‍ය ස්වරයකි (අ ❭ ඇ)*නම්‍ය ස්වර බලන්න.</li>
                             <li>අකාරාදිය පිළිවෙළ අනුව එයට හිමි ස්ථානය අංක 01 වේ. </li>
-                            <li>මෙම ස්වරය ව්‍යඤ්ජන අකුරකට ආරූඪ කළ විට පිල්ලක් නොයෙදේ. (ක් + අ = ක) </li>   
+                            <li>මෙම ස්වරය ව්‍යඤ්ජන අකුරකට ආරූඪ කළ විට පිල්ලක් නොයෙදේ. (ක් + අ = ක) </li>
                            </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showAa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-                
+
                        <div className='AakuruwistharamainboxContent contentDeerga'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowAa(!showAa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ආ</h1>
@@ -4118,13 +4118,13 @@ function NewSinhalaHodiya() {
                             <li>ආ යන්න වෙනුවට ව්‍යඤ්ජන අකුරකට යෙදෙන පිල්ල ඇලපිල්ල ය. (ක් + ආ = කා)</li>
                            </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showAe && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-                
+
                        <div className='AakuruwistharamainboxContent contentHraswa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowAe(!showAe)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඇ</h1>
@@ -4140,19 +4140,19 @@ function NewSinhalaHodiya() {
                             <li>ඇ යන්න වෙනුවට ව්‍යඤ්ජන අකුරකට යෙදෙන පිල්ල ඇදයයි. කෙටි ඇද පිල්ල, ඇක්ම, ඇකාරාංශය යන නම්වලින් ද එය හැඳින්වේ. (ක් + ඇ = කැ)</li>
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showAee && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-                
+
                        <div className='AakuruwistharamainboxContent contentDeerga'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowAee(!showAee)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඈ</h1>
                             <p id='titleP'>'ඈ' යන්න. (කණ්ඨජ ඝෝෂ දීර්ඝ ප්‍රාණාක්ෂර)</p>
                             <ul>
-                            <li>සිංහල අක්ෂර මාලාවට අනන්‍ය අක්ෂරයකි. පෙරදිග භාෂා හෝඩිවල මෙය දක්නට ලැබෙන්නේ සිංහල අක්ෂර මාලාවේ පමණි.</li> 
+                            <li>සිංහල අක්ෂර මාලාවට අනන්‍ය අක්ෂරයකි. පෙරදිග භාෂා හෝඩිවල මෙය දක්නට ලැබෙන්නේ සිංහල අක්ෂර මාලාවේ පමණි.</li>
                             <li>අක්ෂර මාලාවේ අපට හමුවන සිව්වන අකුරයි. </li>
                             <li>එය  ස්වරයකි. </li>
                             <li>එයිනුදු දීර්ඝ ස්වර ගණයට අයත් වේ. </li>
@@ -4162,19 +4162,19 @@ function NewSinhalaHodiya() {
                             <li>ඈ යන්න වෙනුවට ව්‍යඤ්ජන අකුරකට යෙදෙන පිල්ල දීර්ඝ ඇදයයි. (ක් + ඈ = කෑ)</li>
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showE && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-                
+
                        <div className='AakuruwistharamainboxContent contentHraswa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowE(!showE)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඉ</h1>
                             <p id='titleP'>'ඉ' යන්න. (තාලුජ ඝෝෂ හ්‍රස්ව ප්‍රාණාක්ෂර)</p>
                             <ul>
-                            <li>අක්ෂර මාලාවේ අපට හමුවන පස්වන අකුරයි.</li> 
+                            <li>අක්ෂර මාලාවේ අපට හමුවන පස්වන අකුරයි.</li>
                             <li>එය ස්වරයකි. </li>
                             <li>එයිනුදු හ්‍රස්ව ස්වර ගණයට අයත් වේ. </li>
                             <li>එය තාලුජ අක්ෂරයකි. </li>
@@ -4185,19 +4185,19 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showEe && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-                
+
                        <div className='AakuruwistharamainboxContent contentDeerga'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowEe(!showEe)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඊ</h1>
                             <p id='titleP'>'ඊ' යන්න. (තාලුජ ඝෝෂ දීර්ඝ ප්‍රාණාක්ෂර)</p>
                             <ul>
-                            <li>අක්ෂර මාලාවේ අපට හමුවන හයවැනි අකුරයි.</li> 
+                            <li>අක්ෂර මාලාවේ අපට හමුවන හයවැනි අකුරයි.</li>
                             <li>එය  ස්වරයකි. </li>
                             <li>එයිනුදු දීර්ඝ ස්වර ගණයට අයත් වේ. </li>
                             <li>එය තාලුජ අක්ෂරයකි. </li>
@@ -4207,19 +4207,19 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showU && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-                
+
                        <div className='AakuruwistharamainboxContent contentHraswa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowU(!showU)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>උ</h1>
                             <p id='titleP'>'උ' යන්න. (ඕෂ්ඨජ ඝෝෂ හ්‍රස්ව ප්‍රාණාක්ෂර)</p>
                             <ul>
-                            <li>අක්ෂර මාලාවේ අපට හමුවන සත්වැනි අකුරයි.</li> 
+                            <li>අක්ෂර මාලාවේ අපට හමුවන සත්වැනි අකුරයි.</li>
                             <li>එය ස්වරයකි. එයිනුදු හ්‍රස්ව ස්වර ගණයට අයත් වේ. </li>
                             <li> එය ඕෂ්ඨජ අක්ෂරයකි. </li>
                             <li>ඝෝෂයකි. (ඝෝෂ අක්ෂර බලන්න)</li>
@@ -4234,19 +4234,19 @@ function NewSinhalaHodiya() {
                                         <li>ර් + උ = රු - කෙටි ඇද පාපිල්ල</li>
                                    </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showUu && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-                
+
                        <div className='AakuruwistharamainboxContent contentDeerga'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowUu(!showUu)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඌ</h1>
                             <p id='titleP'>'ඌ' යන්න. (ඕෂ්ඨජ ඝෝෂ දීර්ඝ ප්‍රාණාක්ෂර)</p>
                            <ul>
-                           <li>අක්ෂර මාලාවේ අපට හමුවන අටවැනි අකුරයි.</li> 
+                           <li>අක්ෂර මාලාවේ අපට හමුවන අටවැනි අකුරයි.</li>
                            <li>එය ස්වරයකි. එයිනුදු දීර්ඝ ස්වර ගණයට අයත් වේ. </li>
                            <li>එය ඕෂ්ඨජ අක්ෂරයකි. </li>
                            <li>ඝෝෂයකි. (ඝෝෂ අක්ෂර බලන්න)</li>
@@ -4260,19 +4260,19 @@ function NewSinhalaHodiya() {
                                         <li>ළ් + ඌ	= ළුෑ	- දික් ඇද පාපිල්ල</li>
                                    </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showEru && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentHraswa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowEru(!showEru)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඍ</h1>
                             <p id='titleP'>'ඍ' යන්න. (මුර්ධජ ඝෝෂ හ්‍රස්ව ප්‍රාණාක්ෂර)</p>
                             <ul>
-                            <li>අක්ෂර මාලාවේ අපට හමුවන නවවැනි අකුරයි.</li> 
+                            <li>අක්ෂර මාලාවේ අපට හමුවන නවවැනි අකුරයි.</li>
                             <li>එය මාතෘ භාෂාවන් ආශ්‍රයෙන් සිංහල හෝඩියට එක්වූ ස්වරයකි. </li>
                             <li>එයිනුදු හ්‍රස්ව ස්වර ගණයට අයත් වේ. </li>
                             <li>එය මුර්ධජ අක්ෂරයකි. </li>
@@ -4283,19 +4283,19 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showEruu && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-                
+
                        <div className='AakuruwistharamainboxContent contentDeerga'>
                         <div className='MyCloseBtn'><a onClick={()=>setShowEruu(!showEruu)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඎ</h1>
                             <p id='titleP'>'ඎ' යන්න. (මුර්ධජ ඝෝෂ දීර්ඝ ප්‍රාණාක්ෂර)</p>
                             <ul>
-                            <li>අක්ෂර මාලාවේ අපට හමුවන දසවැනි අකුරයි.</li> 
+                            <li>අක්ෂර මාලාවේ අපට හමුවන දසවැනි අකුරයි.</li>
                             <li>එය මාතෘ භාෂාවන් ආශ්‍රයෙන් සිංහල හෝඩියට එක්වූ ස්වරයකි. </li>
                             <li>එයිනුදු දීර්ඝ ස්වර ගණයට අයත් වේ. </li>
                             <li>එය මුර්ධජ අක්ෂරයකි. </li>
@@ -4303,39 +4303,39 @@ function NewSinhalaHodiya() {
                             <li>අකාරාදිය පිළිවෙළ අනුව එයට හිමි ස්ථානය අංක 10 වේ. </li>
                             <li>'ඎ' යන්න වෙනුවට ව්‍යඤ්ජන අකුරකට යෙදෙන පිල්ල ගැටය සහිත ඇලපිලි දෙකයි.</li>
                             <li>(ක් + ඎ = කෲ)</li>
-  
+
                             </ul>
                                     <ul>
                                         <li>(ක් + ඎ = කෲ)</li>
                                    </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showElu && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentHraswa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowElu(!showElu)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඏ</h1>
                             <p id='titleP'>'ඐ' යන්න. (දන්තජ ඝෝෂ හ්‍රස්ව ප්‍රාණාක්ෂර)</p>
                             <ul>
                             <li>අක්ෂර මාලාවේ අපට හමුවන එකොළොස්වැනි අකුරයි. </li>
-                            <li>එය ස්වරයකි. එයිනුදු හ්‍රස්ව ස්වර ගණයට අයත් වේ.</li> 
+                            <li>එය ස්වරයකි. එයිනුදු හ්‍රස්ව ස්වර ගණයට අයත් වේ.</li>
                             <li>එය දන්තජ අක්ෂරයකි. </li>
                             <li>ඝෝෂයකි. (ඝෝෂ අක්ෂර බලන්න)</li>
                             <li>මාතෘ භාෂාවන් ආශ්‍රයෙන් සිංහල භාෂාවට එක් වී ඇති මෙම ස්වරය, අක්ෂර මාලාවේ දක්නට ලැබෙන්නේ වුවද භාෂාවේ එකදු වචනයක හෝ නොයෙදේ. එබැවින් මහාචාර්ය ජේ.බී.දිසානායකයන් සිය සමකාලීන සිංහල හෝඩියේ දී  මෙම අක්ෂරය ඉවත් කර ඇත.</li>
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showEluu && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-                
+
                        <div className='AakuruwistharamainboxContent contentDeerga'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowEluu(!showEluu)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඐ</h1>
@@ -4349,13 +4349,13 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showAea && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-                
+
                        <div className='AakuruwistharamainboxContent contentHraswa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowAea(!showAea)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>එ</h1>
@@ -4372,13 +4372,13 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showAeae && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-                
+
                        <div className='AakuruwistharamainboxContent contentDeerga'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowAeae(!showAeae)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඒ</h1>
@@ -4388,17 +4388,17 @@ function NewSinhalaHodiya() {
                             <li>එය ස්වරයකි. එයිනුදු දීර්ඝ ස්වර ගණයට අයත් වේ. </li>
                             <li>එය කණ්ඨතාලුජ අක්ෂරයකි හෙවත් ද්විජාක්ෂරයකි. </li>
                             <li>ඝෝෂයකි. (ඝෝෂ අක්ෂර බලන්න)</li>
-                            <li>අකාරාදිය පිළිවෙළ අනුව එයට හිමි ස්ථානය අංක 14 වේ.</li> 
+                            <li>අකාරාදිය පිළිවෙළ අනුව එයට හිමි ස්ථානය අංක 14 වේ.</li>
                             <li>'ඒ' යන්න වෙනුවට ව්‍යඤ්ජන අකුරකට යෙදෙන පිලි දෙකකි. එනම් කොම්ඹුව හා දීර්ඝත්ව සළකුණයි. (ක් + ඒ =කේ)</li>
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showAeaei && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentDeerga'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowAeaei(!showAeaei)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඓ</h1>
@@ -4415,20 +4415,20 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showO && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-                
+
                        <div className='AakuruwistharamainboxContent contentHraswa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowO(!showO)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඔ</h1>
                             <p id='titleP'>'ඔ' යන්න. (කණ්ඨෞෂ්ඨජ ඝෝෂ හ්‍රස්ව ප්‍රාණාක්ෂර)</p>
                             <ul>
-                            <li>අක්ෂර මාලාවේ අපට හමුවන දහසය වැනි අකුරයි.</li> 
-                            <li>එය ස්වරයකි. එයිනුදු හ්‍රස්ව ස්වර ගණයට අයත් වේ.</li> 
+                            <li>අක්ෂර මාලාවේ අපට හමුවන දහසය වැනි අකුරයි.</li>
+                            <li>එය ස්වරයකි. එයිනුදු හ්‍රස්ව ස්වර ගණයට අයත් වේ.</li>
                             <li>එය කණ්ඨෞෂ්ඨජ අක්ෂරයකි හෙවත් ද්විජාක්ෂරයකි. </li>
                             <li>ඝෝෂයකි. (ඝෝෂ අක්ෂර බලන්න)</li>
                             <li>නම්‍ය ස්වරයකි. </li>
@@ -4438,13 +4438,13 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showOo && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-                
+
                        <div className='AakuruwistharamainboxContent contentDeerga'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowOo(!showOo)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඕ</h1>
@@ -4459,35 +4459,35 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showOu && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentDeerga'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowOu(!showOu)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඖ</h1>
                             <p id='titleP'>'ඖ' යන්න. (කණ්ඨෞෂ්ඨජ ඝෝෂ දීර්ඝ ප්‍රාණාක්ෂර)</p>
                             <ul>
-                            <li>අක්ෂර මාලාවේ අපට හමුවන අවසාන ස්වරය හෙවත් දහඅට වන  අකුරයි.</li> 
+                            <li>අක්ෂර මාලාවේ අපට හමුවන අවසාන ස්වරය හෙවත් දහඅට වන  අකුරයි.</li>
                             <li>එය ස්වරයකි. එයිනුදු දීර්ඝ ස්වර ගණයට අයත් වේ. </li>
                             <li>එය කණ්ඨෞෂ්ඨජ අක්ෂරයකි හෙවත් ද්විජාක්ෂරයකි. </li>
                             <li>ඝෝෂයකි. (ඝෝෂ අක්ෂර බලන්න)</li>
-                            <li>සංයුක්ත ස්වරයකි. එසේම එය සන්ධ්‍යක්ෂර ගණයට ද අයත්වේ.</li> 
+                            <li>සංයුක්ත ස්වරයකි. එසේම එය සන්ධ්‍යක්ෂර ගණයට ද අයත්වේ.</li>
                             <li>අකාරාදිය පිළිවෙළ අනුව එයට හිමි ස්ථානය අංක 18 වේ. </li>
                             <li>'ඖ' යන්න වෙනුවට ව්‍යඤ්ජන අකුරකට යෙදෙන පිලි වන්නේ කොම්ඹුව හා ගයනුකිත්ත යන දෙකයි. (ක් + ‌ඖ = කෞ)</li>
- 
+
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showAn && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent VarAnuContentt'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowAn(!showAn)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>අං</h1>
@@ -4501,13 +4501,13 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showAh && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentUshh'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowAh(!showAh)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>අඃ</h1>
@@ -4520,13 +4520,13 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showKa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentAlpaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowKa(!showKa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ක්</h1>
@@ -4535,7 +4535,7 @@ function NewSinhalaHodiya() {
                             <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li>
                             <li>ක් + අ = ක (ස්වරයක් ආරූඪ කළ පසු)</li>
                             <li>ව්‍යඤ්ජන මාලාවේ අපට හමුවන මුල් ම හල් අකුරයි. </li>
-                            <li>එය වර්ගාක්ෂරයන්හි ක'වර්ගයේ වර්ගමූල අක්ෂරයයි.</li> 
+                            <li>එය වර්ගාක්ෂරයන්හි ක'වර්ගයේ වර්ගමූල අක්ෂරයයි.</li>
                             <li>එය කණ්ඨජ අක්ෂර ගණයට අයත් වේ.</li>
                             <li>එසේම එය අඝෝෂයකි. </li>
                             <li>අල්පප්‍රාණයකි. </li>
@@ -4543,13 +4543,13 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showKha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentmarapraa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowKha(!showKha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඛ්</h1>
@@ -4561,18 +4561,18 @@ function NewSinhalaHodiya() {
                             <li>ක'වර්ගයට අයත් අකුරකි.</li>
                             <li>මෙය කණ්ඨජ අක්ෂර ගණයට අයත් වේ. </li>
                             <li>අඝෝෂයකි. </li>
-                            <li>මහප්‍රාණයකි.</li> 
+                            <li>මහප්‍රාණයකි.</li>
                             <li>අක්ෂර මාලාවෙහි එයට හිමි ස්ථානය 22 වේ. </li>
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showGa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentAlpaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowGa(!showGa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ග්</h1>
@@ -4588,13 +4588,13 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showGha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentmarapraa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowGha(!showGha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඝ්</h1>
@@ -4603,26 +4603,26 @@ function NewSinhalaHodiya() {
                             <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li>
                             <li>ඝ් + අ = ඝ (ස්වරයක් ආරූඪ කළ පසු)</li>
                             <li>ව්‍යඤ්ජන මාලාවේ ඇති වර්ගාක්ෂරයකි.  </li>
-                            <li>ක'වර්ගයේ අකුරක් වන මෙය කණ්ඨජ අක්ෂර ගණයට අයත් වේ.</li> 
+                            <li>ක'වර්ගයේ අකුරක් වන මෙය කණ්ඨජ අක්ෂර ගණයට අයත් වේ.</li>
                             <li>ඝෝෂයකි. </li>
                             <li>මහප්‍රාණයකි. </li>
                             <li>අක්ෂර මාලාවෙහි එයට හිමි ස්ථානය 24 වේ. </li>
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showXha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent VarAnuContentt'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowXha(!showXha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඞ්</h1>
                             <p id='titleP'>'ඞ්' යන්න. (කණ්ඨජ ඝෝෂ වර්ගාන්ත නාසික්‍ය ගාත්‍රාක්ෂරය)</p>
                             <ul>
-                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li> 
+                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li>
                             <li>ඞ් + අ = ඞ (ස්වරයක් ආරූඪ කළ පසු) </li>
                             <li>ව්‍යඤ්ජන මාලාවේ ඇති වර්ගාක්ෂරයකි. </li>
                             <li>ක'වර්ගයට අයත් වන මෙය ක'වර්ගයේ වර්ගාන්තාක්ෂරයයි. </li>
@@ -4633,13 +4633,13 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showXgha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentSanjakaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowXgha(!showXgha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඟ</h1>
@@ -4655,36 +4655,36 @@ function NewSinhalaHodiya() {
                             <li>මෙය සෑදී ඇත්තේ  ඞ් + ඟ් + අ = ඟ යන පරිදිය.</li>
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showCa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentAlpaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowCa(!showCa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ච්</h1>
                             <p id='titleP'>'ච්' යන්න. (තාලුජ අඝෝෂ අල්පප්‍රාණ ගාත්‍රාක්ෂරය)</p>
                             <ul>
-                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li> 
+                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li>
                             <li>ච් + අ = ච (ස්වරයක් ආරූඪ කළ පසු) </li>
                             <li>ව්‍යඤ්ජන මාලාවේ ඇති වර්ගාක්ෂරයකි.  </li>
                             <li>ච'වර්ගයේ වර්ගමූල අක්ෂරයයි.  </li>
-                            <li>මෙය තාලුජ අක්ෂර ගණයට අයත් වේ.</li> 
+                            <li>මෙය තාලුජ අක්ෂර ගණයට අයත් වේ.</li>
                             <li>අඝෝෂයකි. </li>
                             <li>අල්පප්‍රාණ අක්ෂරයකි. </li>
                             <li>අක්ෂර මාලාවෙහි එයට හිමි ස්ථානය 27 වේ. </li>
- 
+
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showCha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentmarapraa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowCha(!showCha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඡ්</h1>
@@ -4701,19 +4701,19 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showJa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentAlpaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowJa(!showJa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ජ්</h1>
                             <p id='titleP'>'ජ්' යන්න. (තාලුජ ඝෝෂ අල්පප්‍රාණ ගාත්‍රාක්ෂරය)</p>
                             <ul>
-                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li> 
+                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li>
                             <li>ජ් + අ = ජ (ස්වරයක් ආරූඪ කළ පසු) </li>
                             <li>ව්‍යඤ්ජන මාලාවේ ඇති වර්ගාක්ෂරයකි.  </li>
                             <li>ච'වර්ගයේ අකුරකි.</li>
@@ -4723,13 +4723,13 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showJha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentmarapraa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowJha(!showJha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඣ්</h1>
@@ -4745,13 +4745,13 @@ function NewSinhalaHodiya() {
                             <li>අක්ෂර මාලාවෙහි එයට හිමි ස්ථානය 30 වේ. </li>
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showChaha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent VarAnuContentt'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowChaha(!showChaha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඤ්</h1>
@@ -4769,18 +4769,18 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showXJhaha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentSanjakaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowXJhaha(!showXJhaha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඦ</h1>
                             <p id='titleP'>'ඦ' යන්න. (තාලුජ ඝෝෂ අර්ධානුනාසික්‍ය ගාත්‍රාක්ෂරය)</p>
-                            <li>නූතන සිංහල වර්ණ මාලාවට අලුතෙන් ම හඳුන්වාදෙනු ලැබූ අක්ෂරයකි.</li> 
+                            <li>නූතන සිංහල වර්ණ මාලාවට අලුතෙන් ම හඳුන්වාදෙනු ලැබූ අක්ෂරයකි.</li>
                             <li>එය සඤ්ඤක අක්ෂරයකි. </li>
                             <li>තාලුජ අක්ෂර ගණයට අයත් වේ.</li>
                             <li>ඝෝෂයකි. </li>
@@ -4790,13 +4790,13 @@ function NewSinhalaHodiya() {
                             <li>මෙය සෑදී ඇත්තේ  ඤ් + ජ් + අ = ඦ යන පරිදිය.</li>
 
                         </div>
-                        
+
                 </div>
         }
 
 {
             showTa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentAlpaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowTa(!showTa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ට්</h1>
@@ -4813,12 +4813,12 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showTtha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentmarapraa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowTtha(!showTtha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඨ්</h1>
@@ -4831,21 +4831,21 @@ function NewSinhalaHodiya() {
                             <li>එය අඝෝෂයකි. </li>
                             <li>මහප්‍රාණයකි. </li>
                             <li>අක්ෂර මාලාවෙහි එයට හිමි ස්ථානය 34 වේ.</li>
- 
+
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showDa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentAlpaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowDa(!showDa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඩ්</h1>
                             <p id='titleP'>'ඩ්' යන්න. (මුර්ධජ ඝෝෂ අල්පප්‍රාණ ගාත්‍රාක්ෂරය)</p>
                             <ul>
-                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li> 
+                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li>
                             <li> ඩ් + අ = ඩ (ස්වරයක් ආරූඪ කළ පසු) </li>
                             <li>ව්‍යඤ්ජන මාලාවේ ඇති වර්ගාක්ෂරයකි.  </li>
                             <li> ට'වර්ගයේ අකුරකි.</li>
@@ -4853,21 +4853,21 @@ function NewSinhalaHodiya() {
                             <li> ඝෝෂයකි. </li>
                             <li>අල්පප්‍රාණයකි. </li>
                             <li> අක්ෂර මාලාවෙහි එයට හිමි ස්ථානය 35 වේ.</li>
- 
+
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showDdha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentmarapraa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowDdha(!showDdha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඪ්</h1>
                             <p id='titleP'>'ඪ්' යන්න. (මුර්ධජ ඝෝෂ මහප්‍රාණ ගාත්‍රාක්ෂරය)</p>
                             <ul>
-                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li> 
+                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li>
                             <li>ඪ් + අ = ඪ (ස්වරයක් ආරූඪ කළ පසු) </li>
                             <li>ව්‍යඤ්ජන මාලාවේ ඇති වර්ගාක්ෂරයකි.  </li>
                             <li>ට'වර්ගයේ අකුරකි. </li>
@@ -4878,12 +4878,12 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showMna && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent VarAnuContentt'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowMna(!showMna)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ණ්</h1>
@@ -4895,23 +4895,23 @@ function NewSinhalaHodiya() {
                             <li>ට'වර්ගයේ අකුරක් වන මෙය ට'වර්ගයේ වර්ගාන්තාක්ෂරයයි. </li>
                             <li>මුර්ධජ අක්ෂර ගණයට අයත් වේ. </li>
                             <li> ඝෝෂයකි. </li>
-                            <li>එය නාසයට බරව උච්චාරණය කෙරෙන හෙයින් නාසික්‍ය හෙවත් අනුනාසික ගණයට අයත් වේ.</li> 
+                            <li>එය නාසයට බරව උච්චාරණය කෙරෙන හෙයින් නාසික්‍ය හෙවත් අනුනාසික ගණයට අයත් වේ.</li>
                             <li>අක්ෂර මාලාවෙහි එයට හිමි ස්ථානය 37 වේ.</li>
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showMdhaha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentSanjakaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowMdhaha(!showMdhaha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඬ</h1>
                             <p id='titleP'>'ඬ' යන්න. (මුර්ධජ ඝෝෂ අර්ධානුනාසික්‍ය ගාත්‍රාක්ෂරය)</p>
                             <ul>
-                            <li>නූතන සිංහල වර්ණ මාලාවට අලුතෙන් ම හඳුන්වාදෙනු ලැබූ අකුරකි.</li> 
+                            <li>නූතන සිංහල වර්ණ මාලාවට අලුතෙන් ම හඳුන්වාදෙනු ලැබූ අකුරකි.</li>
                             <li>මෙය සඤ්ඤක අක්ෂරයකි. </li>
                             <li>මුර්ධජ අක්ෂර ගණයට අයත් ඝෝෂයකි. </li>
                             <li>අර්ධයක් නාසයට බරව උච්චාරණය කෙරෙන බැවින් එය අර්ධානුනාසික ශබ්දයක් ලෙස හැඳින්වේ. </li>
@@ -4921,21 +4921,21 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showTha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentAlpaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowTha(!showTha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ත්</h1>
                             <p id='titleP'>'ත්' යන්න. (දන්තජ අඝෝෂ අල්පප්‍රාණ ගාත්‍රාක්ෂරය)</p>
                             <ul>
-                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li> 
+                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li>
                             <li> ත් + අ = ත (ස්වරයක් ආරූඪ කළ පසු) </li>
-                            <li>ව්‍යඤ්ජන මාලාවේ ඇති වර්ගාක්ෂරයකි.</li>  
+                            <li>ව්‍යඤ්ජන මාලාවේ ඇති වර්ගාක්ෂරයකි.</li>
                             <li> ත'වර්ගයේ වර්ගමූල අක්ෂරයයි. </li>
                             <li>මුර්ධජ අක්ෂර ගණයට අයත් අඝෝෂයකි. </li>
                             <li>අල්පප්‍රාණයකි. </li>
@@ -4943,18 +4943,18 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showThha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentmarapraa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowThha(!showThha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ථ්</h1>
                             <p id='titleP'>'ථ්' යන්න. (දන්තජ අඝෝෂ මහප්‍රාණ ගාත්‍රාක්ෂරය)</p>
                             <ul>
-                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li> 
+                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li>
                             <li>ථ් + අ = ථ (ස්වරයක් ආරූඪ කළ පසු) </li>
                             <li>ව්‍යඤ්ජන මාලාවේ ඇති වර්ගාක්ෂරයකි.  </li>
                             <li>ත'වර්ගයේ අකුරකි. </li>
@@ -4962,23 +4962,23 @@ function NewSinhalaHodiya() {
                             <li>අඝෝෂයකි. </li>
                             <li>මහප්‍රාණයකි. </li>
                             <li>අක්ෂර මාලාවෙහි එයට හිමි ස්ථානය 40 වේ.</li>
- 
+
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showTDa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentAlpaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowTDa(!showTDa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ද්</h1>
                             <p id='titleP'>'ද්' යන්න. (දන්තජ ඝෝෂ අල්පප්‍රාණ ගාත්‍රාක්ෂරය)</p>
                             <ul>
-                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li> 
+                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li>
                             <li>ද් + අ = ද (ස්වරයක් ආරූඪ කළ පසු) </li>
-                            <li> ව්‍යඤ්ජන මාලාවේ ඇති වර්ගාක්ෂරයකි. </li> 
+                            <li> ව්‍යඤ්ජන මාලාවේ ඇති වර්ගාක්ෂරයකි. </li>
                             <li> ත'වර්ගයේ අකුරකි. </li>
                             <li> දන්තජ අක්ෂර ගණයට අයත් වේ.</li>
                             <li>ඝෝෂයකි. </li>
@@ -4987,12 +4987,12 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showTDdha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentmarapraa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowTDdha(!showTDdha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ධ්</h1>
@@ -5009,12 +5009,12 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showNa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent VarAnuContentt'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowNa(!showNa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>න්</h1>
@@ -5031,12 +5031,12 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showdhaha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentSanjakaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowdhaha(!showdhaha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඳ</h1>
@@ -5048,16 +5048,16 @@ function NewSinhalaHodiya() {
                             <li>අර්ධයක් නාසයට බරව උච්චාරණය කෙරෙන බැවින් එය අර්ධානුනාසික ශබ්දයක් ලෙස හැඳින්වේ. මෙම අකුරෙන් පටන් ගන්නා කිසිඳු වචනයක් භාෂාවේ හමු නොවේ. මෙය කිසිවිටෙකත් වචනයක හල්ව නොයෙදේ. </li>
                             <li>අක්ෂර මාලාවෙහි එයට හිමි ස්ථානය 44 වේ.</li>
                             <li> මෙය සෑදී ඇත්තේ  න් + ද් + අ = ඳ යන පරිදිය.</li>
- 
+
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showPa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentAlpaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowPa(!showPa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ප්</h1>
@@ -5074,12 +5074,12 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showPha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentmarapraa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowPha(!showPha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඵ්</h1>
@@ -5093,21 +5093,21 @@ function NewSinhalaHodiya() {
                             <li> අඝෝෂයකි. </li>
                             <li>මහප්‍රාණයකි. </li>
                             <li> අක්ෂර මාලාවෙහි එයට හිමි ස්ථානය 46 වේ.</li>
- 
+
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showBa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentAlpaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowBa(!showBa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>බ්</h1>
                             <p id='titleP'>'බ්' යන්න. (ඕෂ්ඨජ ඝෝෂ අල්පප්‍රාණ ගාත්‍රාක්ෂරය)</p>
                             <ul>
-                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li> 
+                            <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී.</li>
                             <li>බ් + අ = බ (ස්වරයක් ආරූඪ කළ පසු) </li>
                             <li>ව්‍යඤ්ජන මාලාවේ ඇති වර්ගාක්ෂරයකි.  </li>
                             <li>ප'වර්ගයේ අකුරකි. </li>
@@ -5118,12 +5118,12 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showBha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentmarapraa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowBha(!showBha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>භ්</h1>
@@ -5140,12 +5140,12 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showMa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent VarAnuContentt'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowMa(!showMa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ම්</h1>
@@ -5163,12 +5163,12 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showBhaha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentSanjakaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowBhaha(!showBhaha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඹ</h1>
@@ -5183,14 +5183,14 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 
 {
             showYa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentAnthahh'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowYa(!showYa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ය්</h1>
@@ -5206,12 +5206,12 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showRa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentAnthahh'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowRa(!showRa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ර්</h1>
@@ -5227,12 +5227,12 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showLa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentAnthahh'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowLa(!showLa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ල්</h1>
@@ -5240,20 +5240,20 @@ function NewSinhalaHodiya() {
                             <ul>
                             <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී. </li>
                             <li>ල් + අ = ල (ස්වරයක් ආරූඪ කළ පසු) </li>
-                            <li>අවර්ගාක්ෂර ගණයට අයත් ව්‍යඤ්ජනයකි.</li> 
-                            <li>ස්වරයක් හා ව්‍යඤ්ජනයක් අතර මැද පවත්නා බැවින් අන්තඃස්ථාක්ෂර යන කොටසට හෙවත් අර්ධස්වර ගණයට අයත් වේ.</li> 
+                            <li>අවර්ගාක්ෂර ගණයට අයත් ව්‍යඤ්ජනයකි.</li>
+                            <li>ස්වරයක් හා ව්‍යඤ්ජනයක් අතර මැද පවත්නා බැවින් අන්තඃස්ථාක්ෂර යන කොටසට හෙවත් අර්ධස්වර ගණයට අයත් වේ.</li>
                             <li>උප්පත්ති ස්ථානය අනුව දන්තජ අක්ෂර ගණයට අයත් වේ.</li>
                             <li>ඝෝෂයකි. </li>
                             <li>අක්ෂර මාලාවේ එයට හිමි ස්ථානය වන්නේ 53 යි.</li>
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showWa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentAnthahh'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowWa(!showWa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ව්</h1>
@@ -5270,12 +5270,12 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showSha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentUshh'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowSha(!showSha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ශ්</h1>
@@ -5292,12 +5292,12 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showSsha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentUshh'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowSsha(!showSsha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ෂ්</h1>
@@ -5314,12 +5314,12 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showSa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentUshh'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowSa(!showSa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ස්</h1>
@@ -5336,12 +5336,12 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showha && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentUshh'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowha(!showha)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>හ්</h1>
@@ -5357,12 +5357,12 @@ function NewSinhalaHodiya() {
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showLLa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentAnthahh'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowLLa(!showLLa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ළ්</h1>
@@ -5378,12 +5378,12 @@ function NewSinhalaHodiya() {
 
                            </ul>
                         </div>
-                        
+
                 </div>
         }
         {
             showFa && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentUshh'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowFa(!showFa)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ෆ</h1>
@@ -5392,21 +5392,21 @@ function NewSinhalaHodiya() {
                             <li>සාමාන්‍යයෙන් හල් අකුරක් වශයෙන් පවතී. </li>
                             <li>ෆ් + අ = ෆ (ස්වරයක් ආරූඪ කළ පසු) </li>
                             <li>අවර්ගාක්ෂර ගණයට අයත් ව්‍යඤ්ජනයකි. </li>
-                            <li>නූතන සිංහල අක්ෂර මාලාවට අලුතෙන් ම එක් කෙරුණු මෙය ඉංග්‍රීසි තත්සම වචන සිංහලෙන් ලියා දැක්වීමේ කාලීන අවශ්‍යතාව සලකා අක්ෂර මාලාවට එක් කරන ලද්දකි.</li> 
+                            <li>නූතන සිංහල අක්ෂර මාලාවට අලුතෙන් ම එක් කෙරුණු මෙය ඉංග්‍රීසි තත්සම වචන සිංහලෙන් ලියා දැක්වීමේ කාලීන අවශ්‍යතාව සලකා අක්ෂර මාලාවට එක් කරන ලද්දකි.</li>
                             <li>එය ද උච්චාරණයේ දී උණුසුම් වායු ධාරවක් මුඛයෙන් පිටවන බැවින් ඌෂ්මන් අක්ෂර ගණයට අයත් වේ. </li>
                             <li>අක්ෂර උප්පත්ති ස්ථාන අනුව දන්තෞෂ්ඨජ අක්ෂරයක් වේ.</li>
                             <li>අඝෝෂ ඝර්ෂයකි. </li>
 
                             </ul>
                         </div>
-                        
+
                 </div>
         }
 
 
 {
             showSwara && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent MAINswyawiyaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowSwara(!showSwara)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             {
@@ -5418,9 +5418,9 @@ function NewSinhalaHodiya() {
                             <li>1.	හ්‍රස්ව ස්වර ("හ්‍රස්ව ස්වර" යටතේ වැඩිදුර විස්තර ඇත.)</li>
                             <li>2.	දීර්ඝ ස්වර  ("දීර්ඝ ස්වර" යටතේ වැඩිදුර විස්තර ඇත.)</li>
                             </ul>
-                                    
+
                             <p>යනුවෙන් මූලික කොටස් දෙකකට බෙදා දැක්විය හැකි වේ. ඊට අමතරව ස්වර මාලාවේ දක්නට ලැබෙන තවත් ප්‍රභේදයන් කිහිපයකි. එනම්,</p>
-                            
+
 
                                    <a className='moreStudy' onClick={()=>setSwravisLetterBoxActive("FristSwarabox2")} href='#'>වැඩිදුර අධ්‍යනය කරන්න ➢</a>
                             </div>
@@ -5447,24 +5447,24 @@ function NewSinhalaHodiya() {
                             }
 
                         </div>
-                        
+
                 </div>
         }
         {
             showViyan && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent MAINswyawiyaa'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowViyan(!showViyan)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ව්‍යංජන</h1>
                             <p>භාෂාවේ තනිව හැසිරීමට නොහැකි අක්ෂර විශේෂයකි. මේවා සාමාන්‍යයෙන් පවතින්නේ හල් කිරීම සහිතව ය. හල් කිරීම යනු ශුද්ධ ව්‍යඤ්ජනයක් හෙවත් ස්වරයක් ආරූඪ නොකරන ලද ව්‍යඤ්ජනයක් හඳුනාගැනීමට ඇති මූලික ලක්ෂණයයි. හල් කිරීම සහිතව පවතින බැවින් "හලකුරු" යන්න මෙම අකුරුවලට නමකි. භාෂාවේ තනිව හැසිරීමට නොහැකි බැවින් හෙවත් පණ නැති බැවින් "මළකුරු" යනුවෙන් ද, පවතින්නේ ගතක් හෙවත් ශරීරයක් පමණක් බැවින් "ගතකුරු" හෙවත් "ගාත්‍රාක්ෂර" යනුවෙන් ද මෙම අක්ෂරයෝ සාමාන්‍යයෙන් හැඳින්වෙති. නූතන සිංහල අක්ෂර මාලාවේ ව්‍යඤ්ජන අක්ෂර 42 කි. ඒවා පහත දැක්වේ.</p>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showVargak && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent PinkWargaMaint'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowVargak(!showVargak)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>වර්ගාක්ෂර</h1>
@@ -5478,15 +5478,15 @@ function NewSinhalaHodiya() {
 
                             </ul>
                             <p>නමුත් එකී උප්පත්ති ස්ථානයන් ම පදනම් කරගනිමින් මෑතක දී සිංහල හෝඩියට අලුතෙන් එක් කරන ලද ඟ, ඦ, ඬ, ඳ, ඹ යන අක්ෂර පහද මෙම අක්ෂර ගණයට ම එක් කළ යුතු බව වර්තමාන වියරණ ඇදුරෝ පවසති. මෙහිදී මූලික වශයෙන් ම සැලකිල්ල යොමු වී ඇත්තේ අක්ෂර උපතේ දී සිදුවන ස්පර්ෂ, අස්පර්ෂ භේදයයි. මෙම අක්ෂර තිහම ස්පර්ෂ සේ සලකා එම වර්ගයට ඇතුළත් කර ඇත.( මේ පිළිබඳ දීර්ඝ විස්තරයක් අපගේ වර්ණමාලාව කොටසට ඇතුළත් කර ඇත)</p>
-                                   
+
                         </div>
-                        
+
                 </div>
         }
 
 {
             showKantaja && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentVargasTitle'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowKantaja(!showKantaja)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>කණ්ඨජාක්ෂර</h1>
@@ -5495,115 +5495,115 @@ function NewSinhalaHodiya() {
                                    <ul>
                                         <li>ස්වර		- අ, ආ, ඇ, ඈ</li>
                                         <li>ව්‍යඤ්ජන	- ක, ඛ, ග, ඝ, ඞ, ඟ, හ, (අ)ං, (අ)ඃ</li>
-                    
+
                                    </ul>
                                    <p id='EngP'>The Sinhalese alphabet is one of the South Indian alphabets. It is a so-called “Abugida” alphabet. Its letters originate from the Brahman script, whose oldest documents date back to the 3rd Century B.C. The Sinhalese alphabet comprises 58 letters of which 42 are consonants and 16 vowels.</p>
                         </div>
-                        
+
                 </div>
         }
         {
             showThaluja && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentVargasTitle'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowThaluja(!showThaluja)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>තාලුජාක්ෂර</h1>
                             <p>දිවෙහි මැද තල්ලෙහි ස්පර්ෂ වීමෙන් හෙවත් තල්ල කරා සමීප වීමෙන් ජනිත වන අක්ෂර තාලුජාක්ෂර නම් වේ. තාලුජාක්ෂර පහත පරිදි වේ.</p>
-                        
+
 
                                    <ul>
                                         <li>ස්වර		- ඉ, ඊ</li>
                                         <li>ව්‍යඤ්ජන	- ච, ඡ, ජ, ඣ, ඤ, ඦ, ය, ශ</li>
-                                        
+
                                    </ul>
                                    <p id='EngP'>The Sinhalese alphabet is one of the South Indian alphabets. It is a so-called “Abugida” alphabet. Its letters originate from the Brahman script, whose oldest documents date back to the 3rd Century B.C. The Sinhalese alphabet comprises 58 letters of which 42 are consonants and 16 vowels.</p>
                         </div>
-                        
+
                 </div>
         }
         {
             showMurdaja && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentVargasTitle'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowMurdaja(!showMurdaja)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>මුර්ධජාක්ෂර</h1>
                             <p>දිවෙහි තුඩ හෙවත් දිවෙහි අග මුදුනෙහි ස්පර්ෂ වීමෙන් හෙවත් මුදුන කරා සමීප වීමෙන් ජනිත වන අක්ෂර මුර්ධජාක්ෂර නම් වේ. මුර්ධජාක්ෂර පහත පරිදි වේ.</p>
-                            
+
 
                                    <ul>
                                         <li>ස්වර		- ඍ, ඎ</li>
                                         <li>ව්‍යඤ්ජන	- ට, ඨ, ඩ, ඪ, ණ, ඬ, ර, ළ, ෂ</li>
-                                        
+
                                    </ul>
                                    <p id='EngP'>The Sinhalese alphabet is one of the South Indian alphabets. It is a so-called “Abugida” alphabet. Its letters originate from the Brahman script, whose oldest documents date back to the 3rd Century B.C. The Sinhalese alphabet comprises 58 letters of which 42 are consonants and 16 vowels.</p>
                         </div>
-                        
+
                 </div>
         }
         {
             showDanthaja && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentVargasTitle'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowDanthaja(!showDanthaja)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>දන්තජාක්ෂර</h1>
                             <p>දිවෙහි අග හෙවත් දිව් තුඩ උඩු දත් ඇන්ද සහ උඩු දත් වැටියෙහි ස්පර්ෂ වීමෙන් ජනිත වන අක්ෂර දන්තජාක්ෂර නම් වේ. දන්තජාක්ෂර පහත පරිදි වේ.</p>
-                            
+
 
                                    <ul>
                                         <li>ස්වර		- ඏ, ඐ</li>
                                         <li>ව්‍යඤ්ජන	- ත, ථ, ද, ධ, න, ඳ, ල, ස</li>
-                                        
+
                                    </ul>
                                    <p id='EngP'>The Sinhalese alphabet is one of the South Indian alphabets. It is a so-called “Abugida” alphabet. Its letters originate from the Brahman script, whose oldest documents date back to the 3rd Century B.C. The Sinhalese alphabet comprises 58 letters of which 42 are consonants and 16 vowels.</p>
                         </div>
-                        
+
                 </div>
         }
         {
             showOshtaja && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentVargasTitle'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowOshtaja(!showOshtaja)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                             <h1>ඕෂ්ඨජාක්ෂර</h1>
                             <p>යටි තොල උඩු තොල කරා පැමිණීමෙන් හෙවත් ස්පර්ශ වීමෙන් හට ගන්නා අක්ෂර ඕෂ්ඨජ අක්ෂර නම් වේ. ඕෂ්ඨජාක්ෂර පහත පරිදි වේ.</p>
-                            
+
 
                                    <ul>
                                         <li>ස්වර		- උ, ඌ</li>
                                         <li>ව්‍යඤ්ජන	- ප, ඵ, බ, භ, ම, ඹ</li>
-                                        
+
                                    </ul>
                                    <p id='EngP'>The Sinhalese alphabet is one of the South Indian alphabets. It is a so-called “Abugida” alphabet. Its letters originate from the Brahman script, whose oldest documents date back to the 3rd Century B.C. The Sinhalese alphabet comprises 58 letters of which 42 are consonants and 16 vowels.</p>
                         </div>
-                        
+
                 </div>
         }
 
 {
             showLetNotInc && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent notincludeContent'>
                        <div className='MyOkBtn'><a onClick={()=>setShowLetNotInc(!showLetNotInc)}>OK</a></div>
                             <p>මෙම අක්ෂරය මෙම අක්ෂර කාණ්ඩයට ඇතුලත් නොවේ..!</p>
                             <p>This character is not included in this character category..!</p>
                         </div>
-                        
+
                 </div>
         }
         {
             showCatNotInc && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent notincludeContent'>
                        <div className='MyOkBtn'><a onClick={()=>setShowCatNotInc(!showCatNotInc)}>OK</a></div>
                             <p>මෙම තීරුවේ මෙම අක්ශර ප්‍රවර්ගයට අයත් අක්ශර මේ මොහොතේ අක්රියව පවතී...!</p>
                             <p>The characters belonging to this character category in this column are currently inactive..!</p>
                         </div>
-                        
+
                 </div>
         }
                 {
             showDwijakshara && <div className='akuruwistharamain' id='Aakuruwistharamainbox' data-aos="fadeInUp">
-               
+
                        <div className='AakuruwistharamainboxContent contentVargasTitle'>
                        <div className='MyCloseBtn'><a onClick={()=>setShowDwijakshara(!showDwijakshara)}><i class="fa-solid fa-circle-xmark"></i></a></div>
                         <h1>ද්විජාක්ෂර</h1>
@@ -5612,16 +5612,16 @@ function NewSinhalaHodiya() {
                                         <li>1.	කණ්ඨතාලුජාක්ෂර<br/>කණ්ඨතාලුජාක්ෂර යනු උගුර සහ තල්ල ඇසුරෙන් හටගන්නා අක්ෂරයි. ඊට අයත් වන්නේ "එ, ඒ, ඓ" යන අක්ෂර තුනයි. අතීතයේ දී "ඇ, ඈ" යන ස්වර දෙක ද මෙම ගණයට ඇතුළත් කෙරිණි. නමුත් වත්මන් වියරන ඇදුරෝ එම අක්ෂර කණ්ඨජාක්ර ගණයට ඇතුළත් කරති.</li>
                                         <li>2.	කණ්ඨෞෂ්ඨජ අක්ෂර<br/>උගුර සහ තොල් ඇසුරෙන් හටගන්නා අක්ෂරයි. ඊට අයත් වන්නේ "ඔ, ඕ, ඖ" යන අක්ෂර තුනයි.</li>
                                         <li>3.	දන්තෞෂ්ඨජ අක්ෂර<br/>දත් සහ තොල් ඇසුරෙන් හට ගන්නා අක්ෂරයි. "ව" සහ "ෆ" යන අක්ෂර දෙක මෙම ගණයට අයත් වේ.</li>
-                                        
+
                                    </ul>
                         </div>
-                        
+
                 </div>
         }
 
         </div>
-        
-        
+
+
     </div>
   )
 }
