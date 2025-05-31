@@ -78,6 +78,9 @@ const StudentRegistration = () => {
   const [availableClasses, setAvailableClasses] = useState([]);
   const [useContactForWhatsapp, setUseContactForWhatsapp] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
+  const [showLiteratureWarning, setShowLiteratureWarning] = useState(false);
+  const [isLiteratureOnlyStudent, setIsLiteratureOnlyStudent] = useState(false);
+  const [literatureGradeSelected, setLiteratureGradeSelected] = useState('');
 
   // Form data state
   const [formData, setFormData] = useState({
@@ -366,6 +369,35 @@ const StudentRegistration = () => {
     setError(''); // Clear any previous capacity errors
   };
 
+  // Helper function to check if a class is Literature related
+  const isLiteratureClass = (classItem) => {
+    if (!classItem) return false;
+    const grade = (classItem.grade || '').toLowerCase();
+    const category = (classItem.category || '').toLowerCase();
+    const literatureKeywords = ['lit', 'literature', 'සාහිත්‍ය'];
+
+    return literatureKeywords.some(keyword =>
+      grade.includes(keyword) || category.includes(keyword)
+    );
+  };
+
+  // Helper function to check if selected classes contain Literature
+  const hasLiteratureClasses = () => {
+    return formData.enrolledClasses.some(classId => {
+      const classItem = availableClasses.find(c => c._id === classId);
+      return isLiteratureClass(classItem);
+    });
+  };
+
+  // Helper function to check if ALL selected classes are Literature
+  const isOnlyLiteratureClasses = () => {
+    if (formData.enrolledClasses.length === 0) return false;
+    return formData.enrolledClasses.every(classId => {
+      const classItem = availableClasses.find(c => c._id === classId);
+      return isLiteratureClass(classItem);
+    });
+  };
+
   // Validation functions
   const validateAge = (birthday) => {
     if (!birthday || birthday === '') return false;
@@ -452,9 +484,38 @@ const StudentRegistration = () => {
   };
 
   const handleNext = () => {
+    // Special validation for Academic Information step (step 2)
+    if (activeStep === 2) {
+      // Check if basic validation passes first
+      if (!validateStep(activeStep)) {
+        setError('Please select your grade and at least one class to enroll.');
+        return;
+      }
+
+      // Check for Literature class selection issues
+      const hasLiterature = hasLiteratureClasses();
+      const isOnlyLiterature = isOnlyLiteratureClasses();
+
+      if (hasLiterature && !isOnlyLiterature) {
+        // User has mixed Literature and non-Literature classes
+        setShowLiteratureWarning(true);
+        setError('');
+        return; // Don't proceed to next step
+      }
+
+      // If only Literature classes are selected, check if grade is manually selected
+      if (isOnlyLiterature && !literatureGradeSelected) {
+        setIsLiteratureOnlyStudent(true);
+        setError('');
+        return; // Don't proceed to next step
+      }
+    }
+
     if (validateStep(activeStep)) {
       setActiveStep(prev => prev + 1);
       setError('');
+      setShowLiteratureWarning(false);
+      setIsLiteratureOnlyStudent(false);
     } else {
       // Provide specific error messages based on the step
       switch (activeStep) {
@@ -1197,6 +1258,202 @@ const StudentRegistration = () => {
                       If you need to change it, please inform the admin as the system automatically updates your grade year by year.
                     </Typography>
                   </Alert>
+
+                  {/* Sinhala Literature Notice */}
+                  <Alert
+                    severity="info"
+                    icon={<Info />}
+                    sx={{
+                      mb: 3,
+                      bgcolor: 'rgba(33, 150, 243, 0.1)',
+                      border: '1px solid rgba(33, 150, 243, 0.3)',
+                      '& .MuiAlert-icon': {
+                        color: 'info.main'
+                      }
+                    }}
+                  >
+                    <Typography variant="body2" sx={{
+                      fontWeight: 'bold',
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                      mb: 1
+                    }}>
+                      📚 සිංහල සාහිත්‍ය පන්ති සඳහා වැදගත් සටහන (Important Note for Sinhala Literature Classes)
+                    </Typography>
+                    <Typography variant="body2" sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                      mb: 1
+                    }}>
+                      ඔබට සිංහල සාහිත්‍ය පන්තියක් සමඟ වෙනත් පන්තියකටද ලියාපදිංචි වීමට අවශ්‍ය නම්,
+                      පළමුව ඔබට අවශ්‍ය සිංහල සාහිත්‍ය පන්තිය තෝරන්න.
+                      ඉන්පසු දෙවනුව, ඔබට අවශ්‍ය වෙනත් පන්තිය තෝරන්න.
+                      මන්ද අපි ඔබේ ශ්‍රේණිය ඔබේ අවසාන පන්ති තේරීමෙන් ස්වයංක්‍රීයව ලබා ගන්නා බැවිනි.
+                    </Typography>
+                    <Typography variant="body2" sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                    }}>
+                      ඔබ සිංහල සාහිත්‍ය පන්තියකට පමණක් ලියාපදිංචි වන්නේ නම්, කිසිදු ගැටලුවක් නැත.
+                      පන්ති තේරීමෙන් පසු අපි ඔබේ ශ්‍රේණිය අතින් ලබා ගන්නෙමු.
+                    </Typography>
+                    <Typography variant="caption" sx={{
+                      display: 'block',
+                      mt: 1,
+                      fontStyle: 'italic',
+                      color: 'text.secondary'
+                    }}>
+                      💡 If you need to enroll in Sinhala Literature class along with other classes,
+                      first select the Sinhala Literature class you want to enroll in,
+                      then select your other class. We automatically get your grade from your last class selection.
+                      If you are only enrolling in Sinhala Literature classes, no problem -
+                      we will get your grade manually after class selection.
+                    </Typography>
+                  </Alert>
+
+                  {/* Literature Warning Dialog */}
+                  {showLiteratureWarning && (
+                    <Alert
+                      severity="warning"
+                      icon={<Warning />}
+                      sx={{
+                        mb: 3,
+                        bgcolor: 'rgba(255, 152, 0, 0.1)',
+                        border: '2px solid rgba(255, 152, 0, 0.5)',
+                        '& .MuiAlert-icon': {
+                          color: 'warning.main'
+                        }
+                      }}
+                    >
+                      <Typography variant="body2" sx={{
+                        fontWeight: 'bold',
+                        fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                        mb: 2
+                      }}>
+                        ⚠️ සිංහල සාහිත්‍ය පන්ති තේරීමේ ගැටලුව (Sinhala Literature Class Selection Issue)
+                      </Typography>
+                      <Typography variant="body2" sx={{
+                        fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                        mb: 2
+                      }}>
+                        ඔබ සිංහල සාහිත්‍ය පන්ති සහ වෙනත් පන්ති මිශ්‍ර කර තෝරාගෙන ඇත.
+                        කරුණාකර ඉහත සටහන අනුව නිවැරදි ක්‍රමය අනුගමනය කරන්න:
+                      </Typography>
+                      <Typography variant="body2" sx={{
+                        fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                        mb: 1,
+                        pl: 2
+                      }}>
+                        1️⃣ පළමුව සිංහල සාහිත්‍ය පන්තිය තෝරන්න<br/>
+                        2️⃣ ඉන්පසු වෙනත් පන්තිය තෝරන්න
+                      </Typography>
+                      <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+                        <Button
+                          variant="contained"
+                          color="warning"
+                          size="small"
+                          onClick={() => {
+                            // Clear all selected classes to start fresh
+                            setFormData(prev => ({
+                              ...prev,
+                              enrolledClasses: []
+                            }));
+                            setShowLiteratureWarning(false);
+                          }}
+                          sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                          }}
+                        >
+                          🔄 නැවත ආරම්භ කරන්න (Start Over)
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="warning"
+                          size="small"
+                          onClick={() => setShowLiteratureWarning(false)}
+                          sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                          }}
+                        >
+                          ✅ තේරුම් ගත්තා (Got It)
+                        </Button>
+                      </Box>
+                    </Alert>
+                  )}
+
+                  {/* Literature Only Student Grade Selection */}
+                  {isLiteratureOnlyStudent && (
+                    <Alert
+                      severity="success"
+                      icon={<CheckCircle />}
+                      sx={{
+                        mb: 3,
+                        bgcolor: 'rgba(76, 175, 80, 0.1)',
+                        border: '2px solid rgba(76, 175, 80, 0.5)',
+                        '& .MuiAlert-icon': {
+                          color: 'success.main'
+                        }
+                      }}
+                    >
+                      <Typography variant="body2" sx={{
+                        fontWeight: 'bold',
+                        fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                        mb: 2
+                      }}>
+                        🎓 සිංහල සාහිත්‍ය පන්ති සඳහා ශ්‍රේණිය තෝරන්න (Select Grade for Sinhala Literature Classes)
+                      </Typography>
+                      <Typography variant="body2" sx={{
+                        fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                        mb: 2
+                      }}>
+                        ඔබ සිංහල සාහිත්‍ය පන්ති පමණක් තෝරාගෙන ඇත. කරුණාකර ඔබේ ශ්‍රේණිය තෝරන්න:
+                      </Typography>
+                      <FormControl fullWidth sx={{ mb: 2 }}>
+                        <InputLabel sx={{ fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                          ඔබේ ශ්‍රේණිය තෝරන්න (Select Your Grade)
+                        </InputLabel>
+                        <Select
+                          value={literatureGradeSelected}
+                          onChange={(e) => setLiteratureGradeSelected(e.target.value)}
+                          label="ඔබේ ශ්‍රේණිය තෝරන්න (Select Your Grade)"
+                          sx={{ fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}
+                        >
+                          <MenuItem value="Grade 10">Grade 10 (10 ශ්‍රේණිය)</MenuItem>
+                          <MenuItem value="Grade 11">Grade 11 (11 ශ්‍රේණිය)</MenuItem>
+                          <MenuItem value="A/L">A/L (උසස් පෙළ)</MenuItem>
+                        </Select>
+                      </FormControl>
+                      <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Button
+                          variant="contained"
+                          color="success"
+                          size="small"
+                          disabled={!literatureGradeSelected}
+                          onClick={() => {
+                            // Set the selected grade and proceed
+                            setFormData(prev => ({
+                              ...prev,
+                              selectedGrade: literatureGradeSelected
+                            }));
+                            setIsLiteratureOnlyStudent(false);
+                          }}
+                          sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                          }}
+                        >
+                          ✅ තහවුරු කරන්න (Confirm)
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="success"
+                          size="small"
+                          onClick={() => setIsLiteratureOnlyStudent(false)}
+                          sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                          }}
+                        >
+                          ❌ අවලංගු කරන්න (Cancel)
+                        </Button>
+                      </Box>
+                    </Alert>
+                  )}
 
                   <Grid container spacing={3}>
                     <Grid item xs={12}>
