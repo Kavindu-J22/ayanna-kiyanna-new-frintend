@@ -55,7 +55,8 @@ import {
   Phone,
   WhatsApp,
   Info,
-  Error as ErrorIcon
+  Error as ErrorIcon,
+  Cancel
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -189,10 +190,42 @@ const StudentRegistration = () => {
       setLoadingClasses(true);
       setAvailableClasses([]);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`https://ayanna-kiyanna-new-backend.onrender.com/api/students/available-classes?grade=${grade}`, {
+
+      // Fetch classes for the selected grade for display in the selection area
+      const gradeResponse = await axios.get(`https://ayanna-kiyanna-new-backend.onrender.com/api/students/available-classes?grade=${grade}`, {
         headers: { 'x-auth-token': token }
       });
-      setAvailableClasses(response.data.classes);
+
+      // Also fetch ALL classes to ensure we can display previously selected classes from other grades
+      const allClassesResponse = await axios.get(`https://ayanna-kiyanna-new-backend.onrender.com/api/students/available-classes`, {
+        headers: { 'x-auth-token': token }
+      });
+
+      // Combine both: current grade classes for selection + all classes for display
+      const currentGradeClasses = gradeResponse.data.classes || [];
+      const allClasses = allClassesResponse.data.classes || [];
+
+      // Create a unique set of classes (avoid duplicates)
+      const uniqueClasses = [];
+      const seenIds = new Set();
+
+      // Add current grade classes first
+      currentGradeClasses.forEach(cls => {
+        if (!seenIds.has(cls._id)) {
+          uniqueClasses.push({ ...cls, isCurrentGrade: true });
+          seenIds.add(cls._id);
+        }
+      });
+
+      // Add other classes for display purposes
+      allClasses.forEach(cls => {
+        if (!seenIds.has(cls._id)) {
+          uniqueClasses.push({ ...cls, isCurrentGrade: false });
+          seenIds.add(cls._id);
+        }
+      });
+
+      setAvailableClasses(uniqueClasses);
     } catch (error) {
       console.error('Error fetching classes:', error);
       setError('Failed to fetch available classes. Please try again.');
@@ -1218,7 +1251,7 @@ const StudentRegistration = () => {
                           </Alert>
                         ) : (
                           <Grid container spacing={3}>
-                            {availableClasses.map((classItem) => {
+                            {availableClasses.filter(classItem => classItem.isCurrentGrade).map((classItem) => {
                               const isSelected = formData.enrolledClasses.includes(classItem._id);
                               const enrolledCount = classItem.enrolledCount || (classItem.enrolledStudents ? classItem.enrolledStudents.length : 0);
                               const isAtCapacity = enrolledCount >= classItem.capacity;
@@ -1343,6 +1376,196 @@ const StudentRegistration = () => {
                               );
                             })}
                           </Grid>
+                        )}
+
+                        {/* Selected Classes Display */}
+                        {formData.enrolledClasses.length > 0 && (
+                          <Box sx={{ mt: 4 }}>
+                            <Typography variant="h6" gutterBottom sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              color: 'success.main',
+                              fontWeight: 'bold',
+                              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                            }}>
+                              <CheckCircle sx={{ mr: 1 }} />
+                              {formData.selectedGrade && formData.selectedGrade.toLowerCase().includes('sinhala literature')
+                                ? 'Selected Class (තෝරාගත් පන්තිය)'
+                                : 'Selected Classes (තෝරාගත් පන්ති)'
+                              }
+                            </Typography>
+
+                            <Paper sx={{
+                              p: 3,
+                              background: 'linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 100%)',
+                              border: '2px solid',
+                              borderColor: 'success.main',
+                              borderRadius: 3,
+                              boxShadow: '0 4px 20px rgba(76, 175, 80, 0.2)'
+                            }}>
+                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                                {formData.enrolledClasses.map((classId) => {
+                                  const selectedClass = availableClasses.find(c => c._id === classId);
+
+                                  if (!selectedClass) {
+                                    return (
+                                      <motion.div
+                                        key={classId}
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.8 }}
+                                        transition={{ duration: 0.3 }}
+                                      >
+                                        <Chip
+                                          icon={<School />}
+                                          label={
+                                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', py: 0.5 }}>
+                                              <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'error.main' }}>
+                                                තහවුරු කරගනිමින්..
+                                              </Typography>
+                                              <Typography variant="caption" sx={{ color: 'error.main', fontSize: '0.7rem' }}>
+                                                මදක් රැදී සිටින්න.
+                                              </Typography>
+                                            </Box>
+                                          }
+                                          onDelete={() => {
+                                            // Remove the invalid class ID
+                                            setFormData(prev => ({
+                                              ...prev,
+                                              enrolledClasses: prev.enrolledClasses.filter(id => id !== classId)
+                                            }));
+                                          }}
+                                          deleteIcon={
+                                            <Tooltip title="Remove this invalid class" arrow>
+                                              <Cancel sx={{
+                                                color: 'error.main',
+                                                '&:hover': {
+                                                  color: 'error.dark',
+                                                  transform: 'scale(1.1)'
+                                                },
+                                                transition: 'all 0.2s ease'
+                                              }} />
+                                            </Tooltip>
+                                          }
+                                          sx={{
+                                            height: 'auto',
+                                            minHeight: 60,
+                                            backgroundColor: 'white',
+                                            border: '2px solid',
+                                            borderColor: 'error.main',
+                                            borderRadius: 2,
+                                            boxShadow: '0 2px 8px rgba(244, 67, 54, 0.3)',
+                                            '&:hover': {
+                                              backgroundColor: 'error.50',
+                                              transform: 'translateY(-2px)',
+                                              boxShadow: '0 4px 12px rgba(244, 67, 54, 0.4)'
+                                            },
+                                            '& .MuiChip-label': {
+                                              padding: '8px 12px',
+                                              whiteSpace: 'normal',
+                                              textAlign: 'left'
+                                            },
+                                            '& .MuiChip-deleteIcon': {
+                                              margin: '0 8px 0 0'
+                                            },
+                                            transition: 'all 0.3s ease'
+                                          }}
+                                        />
+                                      </motion.div>
+                                    );
+                                  }
+
+                                  return (
+                                    <motion.div
+                                      key={classId}
+                                      initial={{ opacity: 0, scale: 0.8 }}
+                                      animate={{ opacity: 1, scale: 1 }}
+                                      exit={{ opacity: 0, scale: 0.8 }}
+                                      transition={{ duration: 0.3 }}
+                                    >
+                                      <Chip
+                                        icon={<School />}
+                                        label={
+                                          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', py: 0.5 }}>
+                                            <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'success.dark' }}>
+                                              {selectedClass.grade}
+                                            </Typography>
+                                            <Typography variant="caption" sx={{ color: 'success.main', fontSize: '0.7rem' }}>
+                                              {selectedClass.category} • {selectedClass.date} • {selectedClass.startTime}-{selectedClass.endTime}
+                                            </Typography>
+                                            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem' }}>
+                                              📍 {selectedClass.venue} • 💻 {selectedClass.platform}
+                                            </Typography>
+                                          </Box>
+                                        }
+                                        onDelete={() => handleClassSelection(classId, selectedClass)}
+                                        deleteIcon={
+                                          <Tooltip title="Remove this class" arrow>
+                                            <Cancel sx={{
+                                              color: 'error.main',
+                                              '&:hover': {
+                                                color: 'error.dark',
+                                                transform: 'scale(1.1)'
+                                              },
+                                              transition: 'all 0.2s ease'
+                                            }} />
+                                          </Tooltip>
+                                        }
+                                        sx={{
+                                          height: 'auto',
+                                          minHeight: 60,
+                                          backgroundColor: 'white',
+                                          border: '2px solid',
+                                          borderColor: 'success.main',
+                                          borderRadius: 2,
+                                          boxShadow: '0 2px 8px rgba(76, 175, 80, 0.3)',
+                                          '&:hover': {
+                                            backgroundColor: 'success.50',
+                                            transform: 'translateY(-2px)',
+                                            boxShadow: '0 4px 12px rgba(76, 175, 80, 0.4)'
+                                          },
+                                          '& .MuiChip-label': {
+                                            padding: '8px 12px',
+                                            whiteSpace: 'normal',
+                                            textAlign: 'left'
+                                          },
+                                          '& .MuiChip-deleteIcon': {
+                                            margin: '0 8px 0 0'
+                                          },
+                                          transition: 'all 0.3s ease'
+                                        }}
+                                      />
+                                    </motion.div>
+                                  );
+                                })}
+                              </Box>
+
+                              {/* Summary Information */}
+                              <Box sx={{ mt: 3, pt: 2, borderTop: '1px dashed', borderColor: 'success.main' }}>
+                                <Typography variant="body2" sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  color: 'success.dark',
+                                  fontWeight: 'bold',
+                                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                                }}>
+                                  <Info sx={{ mr: 1, fontSize: 18 }} />
+                                  {formData.selectedGrade && formData.selectedGrade.toLowerCase().includes('sinhala literature')
+                                    ? `You have selected ${formData.enrolledClasses.length} class. Click the ❌ icon to remove it.`
+                                    : `You have selected ${formData.enrolledClasses.length} class${formData.enrolledClasses.length > 1 ? 'es' : ''}. Click the ❌ icon to remove any class.`
+                                  }
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                  display: 'block',
+                                  mt: 1,
+                                  color: 'text.secondary',
+                                  fontStyle: 'italic'
+                                }}>
+                                  💡 You can change your class selection before completing registration
+                                </Typography>
+                              </Box>
+                            </Paper>
+                          </Box>
                         )}
                       </Grid>
                     )}
