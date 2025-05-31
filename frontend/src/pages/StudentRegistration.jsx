@@ -398,6 +398,39 @@ const StudentRegistration = () => {
     });
   };
 
+  // Helper function to check if Literature classes are in correct order (first)
+  const isLiteratureInCorrectOrder = () => {
+    if (formData.enrolledClasses.length === 0) return true;
+
+    const hasLiterature = hasLiteratureClasses();
+    const isOnlyLiterature = isOnlyLiteratureClasses();
+
+    // If only Literature classes, order is correct
+    if (isOnlyLiterature) return true;
+
+    // If no Literature classes, order is correct
+    if (!hasLiterature) return true;
+
+    // If mixed classes, check if Literature classes come first
+    if (hasLiterature && !isOnlyLiterature) {
+      let foundNonLiterature = false;
+
+      for (const classId of formData.enrolledClasses) {
+        const classItem = availableClasses.find(c => c._id === classId);
+        const isLit = isLiteratureClass(classItem);
+
+        if (!isLit) {
+          foundNonLiterature = true;
+        } else if (foundNonLiterature && isLit) {
+          // Found Literature class after non-Literature class - wrong order
+          return false;
+        }
+      }
+    }
+
+    return true;
+  };
+
   // Validation functions
   const validateAge = (birthday) => {
     if (!birthday || birthday === '') return false;
@@ -495,9 +528,10 @@ const StudentRegistration = () => {
       // Check for Literature class selection issues
       const hasLiterature = hasLiteratureClasses();
       const isOnlyLiterature = isOnlyLiteratureClasses();
+      const isCorrectOrder = isLiteratureInCorrectOrder();
 
-      if (hasLiterature && !isOnlyLiterature) {
-        // User has mixed Literature and non-Literature classes
+      if (hasLiterature && !isOnlyLiterature && !isCorrectOrder) {
+        // User has mixed Literature and non-Literature classes in wrong order
         setShowLiteratureWarning(true);
         setError('');
         return; // Don't proceed to next step
