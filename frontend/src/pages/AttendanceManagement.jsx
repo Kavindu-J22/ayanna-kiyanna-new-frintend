@@ -53,7 +53,11 @@ import {
   Close,
   Visibility,
   CalendarToday,
-  TrendingUp
+  TrendingUp,
+  Analytics,
+  BarChart,
+  Timeline,
+  Assessment
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -266,6 +270,46 @@ const AttendanceManagement = () => {
     }
   };
 
+  // Calculate monthly statistics
+  const calculateMonthlyStats = () => {
+    if (attendanceSheets.length === 0) {
+      return {
+        totalSheets: 0,
+        averagePercentage: 0,
+        totalExpected: 0,
+        totalActual: 0,
+        completedSheets: 0
+      };
+    }
+
+    const totalExpected = attendanceSheets.reduce((sum, sheet) => sum + (sheet.expectedPresentCount || 0), 0);
+    const totalActual = attendanceSheets.reduce((sum, sheet) => sum + (sheet.actualPresentCount || 0), 0);
+    const completedSheets = attendanceSheets.filter(sheet => sheet.status === 'Completed').length;
+
+    // Calculate average percentage based on individual sheet percentages
+    const totalPercentage = attendanceSheets.reduce((sum, sheet) => sum + (sheet.attendancePercentage || 0), 0);
+    const averagePercentage = attendanceSheets.length > 0 ? Math.round(totalPercentage / attendanceSheets.length) : 0;
+
+    return {
+      totalSheets: attendanceSheets.length,
+      averagePercentage,
+      totalExpected,
+      totalActual,
+      completedSheets
+    };
+  };
+
+  const monthlyStats = calculateMonthlyStats();
+
+  // Get month name in Sinhala
+  const getMonthNameSinhala = (month) => {
+    const monthNames = [
+      'ජනවාරි', 'පෙබරවාරි', 'මාර්තු', 'අප්‍රේල්', 'මැයි', 'ජූනි',
+      'ජූලි', 'අගෝස්තු', 'සැප්තැම්බර්', 'ඔක්තෝබර්', 'නොවැම්බර්', 'දෙසැම්බර්'
+    ];
+    return monthNames[month - 1] || '';
+  };
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
@@ -420,7 +464,7 @@ const AttendanceManagement = () => {
                   onChange={(e) => setSelectedYear(e.target.value)}
                   SelectProps={{ native: true }}
                 >
-                  {Array.from({ length: 5 }, (_, i) => {
+                  {Array.from({ length: 100 }, (_, i) => {
                     const year = new Date().getFullYear() - 2 + i;
                     return (
                       <option key={year} value={year}>
@@ -433,6 +477,190 @@ const AttendanceManagement = () => {
             </Grid>
           </Paper>
         </motion.div>
+
+        {/* Monthly Statistics */}
+        {attendanceSheets.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <Paper elevation={6} sx={{
+              p: 4,
+              mb: 4,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {/* Background decoration */}
+              <Box sx={{
+                position: 'absolute',
+                top: -50,
+                right: -50,
+                width: 200,
+                height: 200,
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.1)',
+                zIndex: 0
+              }} />
+
+              <Box sx={{ position: 'relative', zIndex: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                  <TrendingUp sx={{ fontSize: 40, color: 'rgba(255, 255, 255, 0.9)' }} />
+                  <Box>
+                    <Typography variant="h5" fontWeight="bold" sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                    }}>
+                      {getMonthNameSinhala(selectedMonth)} {selectedYear} - මාසික සාරාංශය
+                    </Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                      {classData.grade} - {classData.category} පන්තිය සඳහා
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Grid container spacing={3}>
+                  {/* Main Average Percentage - Featured */}
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{
+                      background: 'rgba(255, 255, 255, 0.15)',
+                      borderRadius: 3,
+                      p: 3,
+                      textAlign: 'center',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
+                    }}>
+                      <Typography variant="h6" fontWeight="bold" sx={{
+                        fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                        mb: 2,
+                        opacity: 0.9
+                      }}>
+                        මාසික සාමාන්‍ය ප්‍රතිශතය
+                      </Typography>
+
+                      <Box sx={{ position: 'relative', display: 'inline-flex', mb: 2 }}>
+                        <CircularProgress
+                          variant="determinate"
+                          value={monthlyStats.averagePercentage}
+                          size={120}
+                          thickness={6}
+                          sx={{
+                            color: monthlyStats.averagePercentage >= 80 ? '#4caf50' :
+                                   monthlyStats.averagePercentage >= 60 ? '#ff9800' : '#f44336',
+                            '& .MuiCircularProgress-circle': {
+                              strokeLinecap: 'round',
+                            }
+                          }}
+                        />
+                        <Box sx={{
+                          top: 0,
+                          left: 0,
+                          bottom: 0,
+                          right: 0,
+                          position: 'absolute',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}>
+                          <Typography variant="h3" fontWeight="bold" color="white">
+                            {monthlyStats.averagePercentage}%
+                          </Typography>
+                        </Box>
+                      </Box>
+
+                      <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                        {monthlyStats.totalSheets} පත්‍රිකාවල සාමාන්‍යය
+                      </Typography>
+                    </Box>
+                  </Grid>
+
+                  {/* Additional Statistics */}
+                  <Grid item xs={12} md={6}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={6}>
+                        <Box sx={{
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          borderRadius: 2,
+                          p: 2,
+                          textAlign: 'center'
+                        }}>
+                          <Typography variant="h4" fontWeight="bold">
+                            {monthlyStats.totalSheets}
+                          </Typography>
+                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                            මුළු පත්‍රිකා
+                          </Typography>
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box sx={{
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          borderRadius: 2,
+                          p: 2,
+                          textAlign: 'center'
+                        }}>
+                          <Typography variant="h4" fontWeight="bold">
+                            {monthlyStats.completedSheets}
+                          </Typography>
+                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                            සම්පූර්ණ කළ
+                          </Typography>
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box sx={{
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          borderRadius: 2,
+                          p: 2,
+                          textAlign: 'center'
+                        }}>
+                          <Typography variant="h4" fontWeight="bold" color="#4caf50">
+                            {monthlyStats.totalActual}
+                          </Typography>
+                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                            මුළු පැමිණි
+                          </Typography>
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box sx={{
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          borderRadius: 2,
+                          p: 2,
+                          textAlign: 'center'
+                        }}>
+                          <Typography variant="h4" fontWeight="bold" color="#2196f3">
+                            {monthlyStats.totalExpected}
+                          </Typography>
+                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                            මුළු අපේක්ෂිත
+                          </Typography>
+                        </Box>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                {/* Performance Indicator */}
+                <Box sx={{ mt: 3, textAlign: 'center' }}>
+                  <Typography variant="body1" sx={{
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                    opacity: 0.9
+                  }}>
+                    {monthlyStats.averagePercentage >= 80 ? '🎉 විශිෂ්ට කාර්ය සාධනයක්!' :
+                     monthlyStats.averagePercentage >= 60 ? '👍 හොඳ කාර්ය සාධනයක්!' :
+                     '📈 වැඩිදියුණු කිරීමට ඉඩ ඇත'}
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+          </motion.div>
+        )}
 
         {/* Attendance Sheets Table */}
         <motion.div
