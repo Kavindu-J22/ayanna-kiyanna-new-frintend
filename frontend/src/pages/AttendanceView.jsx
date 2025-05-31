@@ -487,7 +487,7 @@ const AttendanceView = () => {
                   onChange={(e) => setSelectedYear(e.target.value)}
                   SelectProps={{ native: true }}
                 >
-                  {Array.from({ length: 5 }, (_, i) => {
+                  {Array.from({ length: 100 }, (_, i) => {
                     const year = new Date().getFullYear() - 2 + i;
                     return (
                       <option key={year} value={year}>
@@ -502,7 +502,7 @@ const AttendanceView = () => {
         </motion.div>
 
         {/* Student Personal Attendance Statistics */}
-        {userRole === 'student' && !isMonitor && studentAttendanceStats && (
+        {userRole === 'student' && studentAttendanceStats && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -956,9 +956,26 @@ const AttendanceView = () => {
                               >
                                 {student.studentId.firstName?.charAt(0)}
                               </Avatar>
-                              <Typography variant="body2">
-                                {student.studentId.firstName} {student.studentId.lastName}
-                              </Typography>
+                              <Box>
+                                <Typography variant="body2">
+                                  {student.studentId.firstName} {student.studentId.lastName}
+                                  {/* Show (you) label for the current monitor */}
+                                  {isMonitor && student.studentId._id === currentStudent?._id && (
+                                    <Chip
+                                      label="ඔබ"
+                                      size="small"
+                                      color="primary"
+                                      variant="outlined"
+                                      sx={{
+                                        ml: 1,
+                                        fontSize: '0.7rem',
+                                        height: '20px',
+                                        fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                                      }}
+                                    />
+                                  )}
+                                </Typography>
+                              </Box>
                             </Box>
                           </TableCell>
                           <TableCell>
