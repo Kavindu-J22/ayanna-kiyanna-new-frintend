@@ -606,7 +606,7 @@ const AttendanceManagement = () => {
                             {monthlyStats.completedSheets}
                           </Typography>
                           <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                            සම්පූර්ණ කළ
+                            ඇඩ්මින් සම්පූර්ණ කළ
                           </Typography>
                         </Box>
                       </Grid>
