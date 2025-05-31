@@ -155,13 +155,13 @@ const AttendanceManagement = () => {
     try {
       // Validation
       if (!formData.expectedPresentCount || formData.expectedPresentCount <= 0) {
-        alert('කරුණාකර වලංගු අපේක්ෂිත පැමිණ සිසුන් සංඛ්‍යාවක් ඇතුළත් කරන්න');
+        alert('කරුණාකර වලංගු තහවුරු කල පැමිණ සිසුන් සංඛ්‍යාවක් ඇතුළත් කරන්න');
         return;
       }
 
       // Validate expected count doesn't exceed total students
       if (parseInt(formData.expectedPresentCount) > (classData?.enrolledCount || 0)) {
-        alert(`අපේක්ෂිත සංඛ්‍යාව සම්පූර්ණ සිසුන් සංඛ්‍යාවට (${classData?.enrolledCount || 0}) වඩා වැඩි විය නොහැක`);
+        alert(`තහවුරු කල සංඛ්‍යාව සම්පූර්ණ සිසුන් සංඛ්‍යාවට (${classData?.enrolledCount || 0}) වඩා වැඩි විය නොහැක`);
         return;
       }
 
@@ -638,7 +638,7 @@ const AttendanceManagement = () => {
                             {monthlyStats.totalExpected}
                           </Typography>
                           <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                            මුළු අපේක්ෂිත
+                            මුළු තහවුරු කල
                           </Typography>
                         </Box>
                       </Grid>
@@ -691,10 +691,10 @@ const AttendanceManagement = () => {
                           තත්ත්වය
                         </TableCell>
                         <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
-                          අපේක්ෂිත සංඛ්‍යාව
+                          තහවුරු කල සංඛ්‍යාව
                         </TableCell>
                         <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
-                          සැබෑ සංඛ්‍යාව
+                          සටහන් කල සංඛ්‍යාව
                         </TableCell>
                         <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
                           ප්‍රතිශතය
@@ -824,7 +824,7 @@ const AttendanceManagement = () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="අපේක්ෂිත පැමිණ සිසුන් සංඛ්‍යාව"
+                    label="තහවුරු කල පැමිණ සිසුන් සංඛ්‍යාව"
                     type="number"
                     value={formData.expectedPresentCount}
                     onChange={(e) => setFormData({

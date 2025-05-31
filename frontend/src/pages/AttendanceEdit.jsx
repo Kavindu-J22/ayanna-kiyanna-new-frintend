@@ -120,10 +120,12 @@ const AttendanceEdit = () => {
       const token = localStorage.getItem('token');
 
       const payload = {
-        studentAttendance: formData.studentAttendance.map(student => ({
-          studentId: student.studentId._id,
-          status: student.status
-        }))
+        studentAttendance: formData.studentAttendance
+          .filter(student => student.studentId?._id) // Filter out students without valid IDs
+          .map(student => ({
+            studentId: student.studentId._id,
+            status: student.status
+          }))
       };
 
       await axios.put(
@@ -238,7 +240,7 @@ const AttendanceEdit = () => {
               <Grid item xs={12} sm={6} md={3}>
                 <TextField
                   fullWidth
-                  label="අපේක්ෂිත පැමිණ සිසුන් සංඛ්‍යාව"
+                  label="තහවුරු කල පැමිණ සිසුන් සංඛ්‍යාව"
                   value={formData.expectedPresentCount}
                   disabled
                   InputProps={{
@@ -251,7 +253,7 @@ const AttendanceEdit = () => {
               <Grid item xs={12} sm={6} md={3}>
                 <TextField
                   fullWidth
-                  label="සැබෑ පැමිණ සිසුන් සංඛ්‍යාව"
+                  label="සටහන් කල සිසුන් සංඛ්‍යාව"
                   value={presentCount}
                   disabled
                   InputProps={{
@@ -383,7 +385,7 @@ const AttendanceEdit = () => {
               {presentCount !== formData.expectedPresentCount && (
                 <Alert severity="warning" sx={{ mb: 2 }}>
                   <Typography variant="body2">
-                    සැබෑ පැමිණ සිසුන් සංඛ්‍යාව ({presentCount}) අපේක්ෂිත සංඛ්‍යාවට ({formData.expectedPresentCount}) සමාන නොවේ!
+                    සටහන් කල සිසුන් සංඛ්‍යාව ({presentCount}) තහවුරු කල සංඛ්‍යාවට ({formData.expectedPresentCount}) සමාන නොවේ!
                   </Typography>
                 </Alert>
               )}
@@ -411,23 +413,26 @@ const AttendanceEdit = () => {
                 </TableHead>
                 <TableBody>
                   {formData.studentAttendance.map((student) => (
-                    <TableRow key={student.studentId._id} hover>
+                    <TableRow key={student.studentId?._id || student._id} hover>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Avatar
-                            src={student.studentId.profilePicture}
+                            src={student.studentId?.profilePicture}
                             sx={{ width: 32, height: 32 }}
                           >
-                            {student.studentId.firstName?.charAt(0)}
+                            {student.studentId?.firstName?.charAt(0) || '?'}
                           </Avatar>
                           <Typography variant="body2">
-                            {student.studentId.firstName} {student.studentId.lastName}
+                            {student.studentId ?
+                              `${student.studentId.firstName || ''} ${student.studentId.lastName || ''}` :
+                              'පසුව සම්භන්ද වූ සිසුවෙකි'
+                            }
                           </Typography>
                         </Box>
                       </TableCell>
                       <TableCell>
                         <Chip
-                          label={student.studentId.studentId}
+                          label={student.studentId?.studentId || 'ගණනය කිරීම් සදහා "පැමිණ ඇත" ලෙස ගෙන ඇත'}
                           size="small"
                           color="primary"
                           variant="outlined"
@@ -439,7 +444,7 @@ const AttendanceEdit = () => {
                             <RadioGroup
                               row
                               value={student.status}
-                              onChange={(e) => updateStudentAttendance(student.studentId._id, e.target.value)}
+                              onChange={(e) => updateStudentAttendance(student.studentId?._id, e.target.value)}
                             >
                               <FormControlLabel
                                 value="Present"

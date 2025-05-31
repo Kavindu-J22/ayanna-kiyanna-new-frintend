@@ -201,10 +201,12 @@ const AttendanceView = () => {
       const token = localStorage.getItem('token');
 
       const payload = {
-        studentAttendance: attendanceData.map(student => ({
-          studentId: student.studentId._id,
-          status: student.status
-        }))
+        studentAttendance: attendanceData
+          .filter(student => student.studentId?._id) // Filter out students without valid IDs
+          .map(student => ({
+            studentId: student.studentId._id,
+            status: student.status
+          }))
       };
 
       await axios.put(
@@ -714,10 +716,10 @@ const AttendanceView = () => {
                         {isMonitor && (
                           <>
                             <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
-                              අපේක්ෂිත සංඛ්‍යාව
+                              තහවුරු කල සංඛ්‍යාව
                             </TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
-                              සැබෑ සංඛ්‍යාව
+                              සටහන් කල සංඛ්‍යාව
                             </TableCell>
                             <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
                               ක්‍රියාමාර්ග
@@ -763,7 +765,7 @@ const AttendanceView = () => {
                                     />
                                   ) : (
                                     <Typography variant="body2" color="text.secondary">
-                                      මෙදින පන්තියේ ඔබව තවම සලකුණු කර නැත
+                                      මේ දින වන විට ඔබ මෙම පන්තියේ සිසුවෙකු නොවේ.!
                                     </Typography>
                                   )}
                                 </TableCell>
@@ -916,7 +918,7 @@ const AttendanceView = () => {
                     <Typography variant="body2" sx={{
                       fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                     }}>
-                      අපේක්ෂිත පැමිණ සිසුන් සංඛ්‍යාව: <strong>{selectedSheet.expectedPresentCount}</strong>
+                      තහවුරු කල පැමිණ සිසුන් සංඛ්‍යාව: <strong>{selectedSheet.expectedPresentCount}</strong>
                       <br />
                       ඔබ සලකුණු කරන පැමිණ සිසුන් සංඛ්‍යාව මෙම අගයට සමාන විය යුතුය.
                     </Typography>
@@ -926,9 +928,9 @@ const AttendanceView = () => {
                     <Typography variant="body2" sx={{
                       fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                     }}>
-                      අපේක්ෂිත පැමිණ සිසුන් සංඛ්‍යාව: <strong>{selectedSheet.expectedPresentCount}</strong>
+                      තහවුරු කල පැමිණ සිසුන් සංඛ්‍යාව: <strong>{selectedSheet.expectedPresentCount}</strong>
                       <br />
-                      සැබෑ පැමිණ සිසුන් සංඛ්‍යාව: <strong>{selectedSheet.actualPresentCount}</strong>
+                      සටහන් කල සිසුන් සංඛ්‍යාව: <strong>{selectedSheet.actualPresentCount}</strong>
                       <br />
                       {selectedSheet.monitorUpdate?.updatedBy?.toString() === currentStudent?._id.toString()
                         ? 'ඔබ විසින් යාවත්කාලීන කර ඇත'
@@ -955,20 +957,23 @@ const AttendanceView = () => {
                     </TableHead>
                     <TableBody>
                       {attendanceData.map((student) => (
-                        <TableRow key={student.studentId._id}>
+                        <TableRow key={student.studentId?._id || student._id}>
                           <TableCell>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                               <Avatar
-                                src={student.studentId.profilePicture}
+                                src={student.studentId?.profilePicture}
                                 sx={{ width: 32, height: 32 }}
                               >
-                                {student.studentId.firstName?.charAt(0)}
+                                {student.studentId?.firstName?.charAt(0) || '?'}
                               </Avatar>
                               <Box>
                                 <Typography variant="body2">
-                                  {student.studentId.firstName} {student.studentId.lastName}
+                                  {student.studentId ?
+                                    `${student.studentId.firstName || ''} ${student.studentId.lastName || ''}` :
+                                    'පසුව සම්භන්ද වූ සිසුවෙකි'
+                                  }
                                   {/* Show (you) label for the current monitor */}
-                                  {isMonitor && student.studentId._id === currentStudent?._id && (
+                                  {isMonitor && student.studentId?._id === currentStudent?._id && (
                                     <Chip
                                       label="ඔබ"
                                       size="small"
@@ -988,7 +993,7 @@ const AttendanceView = () => {
                           </TableCell>
                           <TableCell>
                             <Chip
-                              label={student.studentId.studentId}
+                              label={student.studentId?.studentId || 'ගණනය කිරීම් සදහා "පැමිණ ඇත" ලෙස ගෙන ඇත'}
                               size="small"
                               color="primary"
                               variant="outlined"
@@ -1000,7 +1005,7 @@ const AttendanceView = () => {
                                 <RadioGroup
                                   row
                                   value={student.status}
-                                  onChange={(e) => updateStudentAttendance(student.studentId._id, e.target.value)}
+                                  onChange={(e) => updateStudentAttendance(student.studentId?._id, e.target.value)}
                                 >
                                   <FormControlLabel
                                     value="Present"
@@ -1045,7 +1050,7 @@ const AttendanceView = () => {
                     <Alert severity="error" sx={{ mt: 1 }}>
                       <Typography variant="body2">
                         පැමිණ ඇති සිසුන් සංඛ්‍යාව ({attendanceData.filter(s => s.status === 'Present').length})
-                        අපේක්ෂිත සංඛ්‍යාවට ({selectedSheet.expectedPresentCount}) සමාන නොවේ!
+                        තහවුරු කල සංඛ්‍යාවට ({selectedSheet.expectedPresentCount}) සමාන නොවේ!
                       </Typography>
                     </Alert>
                   )}
