@@ -940,6 +940,60 @@ const AttendanceView = () => {
                   </Alert>
                 )}
 
+                {/* Check if there are any "පසුව සම්භන්ද වූ සිසුවෙකි" students */}
+                {attendanceData.some(student =>
+                  !student.studentId ||
+                  (student.studentId &&
+                   (`${student.studentId.firstName || ''} ${student.studentId.lastName || ''}`.trim() === ''))
+                ) && (
+                  <Alert
+                    severity="info"
+                    sx={{
+                      mb: 2,
+                      background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
+                      border: '2px solid #4caf50',
+                      borderRadius: 3,
+                      boxShadow: '0 4px 12px rgba(76, 175, 80, 0.15)'
+                    }}
+                  >
+                    <Typography variant="h6" sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                      fontWeight: 'bold',
+                      mb: 1,
+                      color: '#2e7d32',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      fontSize: '1rem'
+                    }}>
+                      🎯 විශේෂ සටහන - පසුව සම්භන්ද වූ සිසුන්
+                    </Typography>
+
+                    <Typography variant="body2" sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                      fontWeight: 'medium',
+                      mb: 1,
+                      color: '#1b5e20',
+                      lineHeight: 1.5
+                    }}>
+                      📋 <strong>මෙම පැමිණීම් පත්‍රිකාවේ "පසුව සම්භන්ද වූ සිසුන්" ද ඇතුළත් වේ.</strong>
+                    </Typography>
+
+                    <Typography variant="body2" sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                      color: '#2e7d32',
+                      lineHeight: 1.4,
+                      fontSize: '0.85rem'
+                    }}>
+                      🔄 <strong>ස්වයංක්‍රීය ගණනය:</strong> පද්ධතිය පසුව එක්වූ සිසුන්ගේ පැමිණීම් විශ්ලේෂණ ස්වයංක්‍රීයව සිදු කරයි.
+                      පහසුව සඳහා ඔවුන් එදින <strong>"පැමිණි සිසුන්"</strong> ලෙස සලකනු ලැබේ.
+                      <br />
+                      ⚠️ <strong>අවවාදය නොසලකන්න:</strong> "සටහන් කළ සිසුන් සංඛ්‍යාව තහවුරු කළ සංඛ්‍යාවට සමාන නොවේ!"
+                      යන අවවාදය මෙම හේතුව නිසා පෙන්විය හැක. <strong>එය නොසලකා හරින්න.</strong>
+                    </Typography>
+                  </Alert>
+                )}
+
                 <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
                   <Table stickyHeader>
                     <TableHead>

@@ -382,6 +382,82 @@ const AttendanceEdit = () => {
                 සිසුන්ගේ පැමිණීම් ({formData.studentAttendance.length})
               </Typography>
 
+              {/* Check if there are any "පසුව සම්භන්ද වූ සිසුවෙකි" students */}
+              {formData.studentAttendance.some(student =>
+                !student.studentId ||
+                (student.studentId &&
+                 (`${student.studentId.firstName || ''} ${student.studentId.lastName || ''}`.trim() === ''))
+              ) && (
+                <Alert
+                  severity="info"
+                  sx={{
+                    mb: 2,
+                    background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
+                    border: '2px solid #4caf50',
+                    borderRadius: 3,
+                    boxShadow: '0 4px 12px rgba(76, 175, 80, 0.15)'
+                  }}
+                >
+                  <Typography variant="h6" sx={{
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                    fontWeight: 'bold',
+                    mb: 2,
+                    color: '#2e7d32',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}>
+                    🎯 විශේෂ සටහන - පසුව සම්භන්ද වූ සිසුන්
+                  </Typography>
+
+                  <Typography variant="body1" sx={{
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                    fontWeight: 'medium',
+                    mb: 2,
+                    color: '#1b5e20',
+                    lineHeight: 1.7
+                  }}>
+                    📋 <strong>මෙම පැමිණීම් පත්‍රිකාවේ "පසුව සම්භන්ද වූ සිසුන්" ද ඇතුළත් වේ.</strong>
+                  </Typography>
+
+                  <Box sx={{
+                    background: 'rgba(255, 255, 255, 0.7)',
+                    borderRadius: 2,
+                    p: 2,
+                    mb: 2,
+                    border: '1px solid rgba(76, 175, 80, 0.3)'
+                  }}>
+                    <Typography variant="body2" sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                      color: '#2e7d32',
+                      lineHeight: 1.6,
+                      mb: 1
+                    }}>
+                      🔄 <strong>ස්වයංක්‍රීය ගණනය කිරීම:</strong> පද්ධතිය පසුව එක්වූ සිසුන්ගේ පැමිණීම් විශ්ලේෂණ ස්වයංක්‍රීයව සිදු කරයි.
+                      පහසුව සඳහා ඔවුන් එදින <strong>"පැමිණි සිසුන්"</strong> ලෙස සලකනු ලැබේ.
+                    </Typography>
+
+                    <Typography variant="body2" sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                      color: '#2e7d32',
+                      lineHeight: 1.6
+                    }}>
+                      ⚠️ <strong>අවවාදය නොසලකන්න:</strong> "සටහන් කළ සිසුන් සංඛ්‍යාව තහවුරු කළ සංඛ්‍යාවට සමාන නොවේ!"
+                      යන අවවාදය මෙම හේතුව නිසා පෙන්විය හැක. <strong>එය නොසලකා හරින්න.</strong>
+                    </Typography>
+                  </Box>
+
+                  <Typography variant="body2" sx={{
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                    color: '#388e3c',
+                    fontStyle: 'italic',
+                    textAlign: 'center'
+                  }}>
+                    💡 මෙය සාමාන්‍ය ක්‍රියාවලියකි. කරුණාකර අවබෝධයෙන් සිටින්න!
+                  </Typography>
+                </Alert>
+              )}
+
               {presentCount !== formData.expectedPresentCount && (
                 <Alert severity="warning" sx={{ mb: 2 }}>
                   <Typography variant="body2">
