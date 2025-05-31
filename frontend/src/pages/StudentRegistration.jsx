@@ -338,9 +338,6 @@ const StudentRegistration = () => {
       return;
     }
 
-    // Check if this is Sinhala Literature grade
-    const isSinhalaLiterature = formData.selectedGrade && formData.selectedGrade.toLowerCase().includes('sinhala literature');
-
     setFormData(prev => {
       const isCurrentlySelected = prev.enrolledClasses.includes(classId);
 
@@ -352,19 +349,18 @@ const StudentRegistration = () => {
         };
       } else {
         // If not selected, add it
-        if (isSinhalaLiterature) {
-          // For Sinhala Literature, allow only one class (replace existing selection)
-          return {
-            ...prev,
-            enrolledClasses: [classId]
-          };
-        } else {
-          // For other grades, allow multiple classes
-          return {
-            ...prev,
-            enrolledClasses: [...prev.enrolledClasses, classId]
-          };
-        }
+        // For all grades, allow only one class per grade - remove any existing classes from the same grade
+        const classesFromSameGrade = prev.enrolledClasses.filter(id => {
+          const existingClass = availableClasses.find(c => c._id === id);
+          return existingClass && existingClass.grade === classItem.grade;
+        });
+
+        // Remove classes from the same grade and add the new one
+        const otherClasses = prev.enrolledClasses.filter(id => !classesFromSameGrade.includes(id));
+        return {
+          ...prev,
+          enrolledClasses: [...otherClasses, classId]
+        };
       }
     });
     setError(''); // Clear any previous capacity errors
@@ -1231,10 +1227,7 @@ const StudentRegistration = () => {
                             Available Classes for {formData.selectedGrade}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            {formData.selectedGrade && formData.selectedGrade.toLowerCase().includes('sinhala literature')
-                              ? 'Select one class you want to enroll in. Check capacity before selecting.'
-                              : 'Select one or more classes you want to enroll in. Check capacity before selecting.'
-                            }
+                            Select one class from this grade. You can select classes from other grades too. Check capacity before selecting.
                           </Typography>
                         </Box>
 
@@ -1389,10 +1382,7 @@ const StudentRegistration = () => {
                               fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                             }}>
                               <CheckCircle sx={{ mr: 1 }} />
-                              {formData.selectedGrade && formData.selectedGrade.toLowerCase().includes('sinhala literature')
-                                ? 'Selected Class (තෝරාගත් පන්තිය)'
-                                : 'Selected Classes (තෝරාගත් පන්ති)'
-                              }
+                              Selected Classes (තෝරාගත් පන්ති)
                             </Typography>
 
                             <Paper sx={{
@@ -1550,10 +1540,7 @@ const StudentRegistration = () => {
                                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                                 }}>
                                   <Info sx={{ mr: 1, fontSize: 18 }} />
-                                  {formData.selectedGrade && formData.selectedGrade.toLowerCase().includes('sinhala literature')
-                                    ? `You have selected ${formData.enrolledClasses.length} class. Click the ❌ icon to remove it.`
-                                    : `You have selected ${formData.enrolledClasses.length} class${formData.enrolledClasses.length > 1 ? 'es' : ''}. Click the ❌ icon to remove any class.`
-                                  }
+                                  You have selected {formData.enrolledClasses.length} class{formData.enrolledClasses.length > 1 ? 'es' : ''}. You can only select one class per grade. Click the ❌ icon to remove any class.
                                 </Typography>
                                 <Typography variant="caption" sx={{
                                   display: 'block',
