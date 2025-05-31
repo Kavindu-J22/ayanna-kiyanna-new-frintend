@@ -991,21 +991,38 @@ const StudentRegistration = () => {
                               handleInputChange('birthday', '');
                             }
                           }}
-                          slotProps={{
-                            textField: {
-                              fullWidth: true,
-                              required: true,
-                              sx: { minWidth: 200 },
-                              error: formData.birthday && !validateAge(formData.birthday),
-                              helperText: formData.birthday && !validateAge(formData.birthday) ? 'ඔබ අවම වශයෙන් වයස අවුරුදු 13ක් විය යුතුය' : 'දිනය තෝරන්න',
-                              InputProps: {
-                                startAdornment: (
-                                  <InputAdornment position="start">
-                                    <CalendarToday sx={{ color: 'text.secondary' }} />
-                                  </InputAdornment>
-                                )
-                              }
-                            }
+                          enableAccessibleFieldDOMStructure={false}
+                          slots={{
+                            textField: (params) => (
+                              <TextField
+                                {...params}
+                                fullWidth
+                                required
+                                sx={{
+                                  minWidth: 200,
+                                  '& .MuiInputBase-root': {
+                                    cursor: 'pointer'
+                                  },
+                                  '& .MuiInputBase-input': {
+                                    cursor: 'pointer',
+                                    caretColor: 'transparent'
+                                  }
+                                }}
+                                error={formData.birthday && !validateAge(formData.birthday)}
+                                helperText={formData.birthday && !validateAge(formData.birthday) ? 'ඔබ අවම වශයෙන් වයස අවුරුදු 13ක් විය යුතුය' : 'දිනය තෝරන්න (Click the "Calender" icon)'}
+                                InputProps={{
+                                  ...params.InputProps,
+                                  readOnly: true,
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      <CalendarToday sx={{ color: 'text.secondary' }} />
+                                    </InputAdornment>
+                                  )
+                                }}
+                                onKeyDown={(e) => e.preventDefault()}
+                                onFocus={(e) => e.target.blur()}
+                              />
+                            )
                           }}
                           maxDate={new Date()}
                           minDate={new Date('1900-01-01')}
@@ -1484,7 +1501,7 @@ const StudentRegistration = () => {
                             Available Classes for {formData.selectedGrade}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            Select one class from this grade. You can select classes from other grades too. Check capacity before selecting.
+                            මෙම ශ්‍රේණියේ පහත පන්ති වලින් ඔබට ඇතුලත් වීමට අවශ්‍ය පන්තිය තෝරන්න. ඔබට අනෙකුත් පන්ති ප්‍රවර්ග වලින් ද තොරාගැනීම් එක බැගින් සිදු කල හැක. මෙම තෝරාගන්නා පන්ති සදහා ඇඩ්මින්ගේ අනුමැතියෙන් පසුව ප්‍රවේශ විය හැකිය.
                           </Typography>
                         </Box>
 
