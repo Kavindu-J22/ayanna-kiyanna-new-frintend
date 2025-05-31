@@ -64,6 +64,7 @@ const AttendanceView = () => {
   const [error, setError] = useState('');
   const [userRole, setUserRole] = useState('');
   const [currentStudent, setCurrentStudent] = useState(null);
+  const [studentAttendanceStats, setStudentAttendanceStats] = useState(null);
 
   // Update attendance dialog states
   const [updateDialog, setUpdateDialog] = useState(false);
@@ -87,8 +88,12 @@ const AttendanceView = () => {
   useEffect(() => {
     if (classData && currentStudent) {
       fetchAttendanceSheets();
+      // Fetch student's personal attendance statistics
+      if (userRole === 'student') {
+        fetchStudentAttendanceStats();
+      }
     }
-  }, [classData, currentStudent, selectedMonth, selectedYear]);
+  }, [classData, currentStudent, selectedMonth, selectedYear, userRole]);
 
   const fetchClassData = async () => {
     try {
@@ -149,6 +154,37 @@ const AttendanceView = () => {
       console.error('Error fetching attendance sheets:', err);
       setError('Failed to load attendance sheets');
     }
+  };
+
+  const fetchStudentAttendanceStats = async () => {
+    if (!currentStudent) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/attendance/student-stats/${currentStudent._id}/${classId}?month=${selectedMonth}&year=${selectedYear}`,
+        { headers: { 'x-auth-token': token } }
+      );
+      setStudentAttendanceStats(response.data.data);
+    } catch (err) {
+      console.error('Error fetching student attendance stats:', err);
+      // Set default stats if API fails
+      setStudentAttendanceStats({
+        totalSheets: 0,
+        presentCount: 0,
+        absentCount: 0,
+        attendancePercentage: 0
+      });
+    }
+  };
+
+  // Get month name in Sinhala
+  const getMonthNameSinhala = (month) => {
+    const monthNames = [
+      'ජනවාරි', 'පෙබරවාරි', 'මාර්තු', 'අප්‍රේල්', 'මැයි', 'ජූනි',
+      'ජූලි', 'අගෝස්තු', 'සැප්තැම්බර්', 'ඔක්තෝබර්', 'නොවැම්බර්', 'දෙසැම්බර්'
+    ];
+    return monthNames[month - 1] || '';
   };
 
   const handleUpdateAttendance = async () => {
@@ -464,6 +500,175 @@ const AttendanceView = () => {
             </Grid>
           </Paper>
         </motion.div>
+
+        {/* Student Personal Attendance Statistics */}
+        {userRole === 'student' && !isMonitor && studentAttendanceStats && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <Paper elevation={6} sx={{
+              p: 4,
+              mb: 4,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+              color: 'white',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {/* Background decoration */}
+              <Box sx={{
+                position: 'absolute',
+                top: -30,
+                left: -30,
+                width: 150,
+                height: 150,
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.1)',
+                zIndex: 0
+              }} />
+
+              <Box sx={{ position: 'relative', zIndex: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                  <People sx={{ fontSize: 40, color: 'rgba(255, 255, 255, 0.9)' }} />
+                  <Box>
+                    <Typography variant="h5" fontWeight="bold" sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                    }}>
+                      මගේ පැමිණීම් තත්ත්වය
+                    </Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                      {getMonthNameSinhala(selectedMonth)} {selectedYear} - {classData.grade} - {classData.category}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Grid container spacing={3}>
+                  {/* Main Personal Percentage - Featured */}
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{
+                      background: 'rgba(255, 255, 255, 0.15)',
+                      borderRadius: 3,
+                      p: 3,
+                      textAlign: 'center',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
+                    }}>
+                      <Typography variant="h6" fontWeight="bold" sx={{
+                        fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                        mb: 2,
+                        opacity: 0.9
+                      }}>
+                        මගේ පැමිණීම් ප්‍රතිශතය
+                      </Typography>
+
+                      <Box sx={{ position: 'relative', display: 'inline-flex', mb: 2 }}>
+                        <CircularProgress
+                          variant="determinate"
+                          value={studentAttendanceStats.attendancePercentage}
+                          size={120}
+                          thickness={6}
+                          sx={{
+                            color: studentAttendanceStats.attendancePercentage >= 80 ? '#4caf50' :
+                                   studentAttendanceStats.attendancePercentage >= 60 ? '#ff9800' : '#f44336',
+                            '& .MuiCircularProgress-circle': {
+                              strokeLinecap: 'round',
+                            }
+                          }}
+                        />
+                        <Box sx={{
+                          top: 0,
+                          left: 0,
+                          bottom: 0,
+                          right: 0,
+                          position: 'absolute',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}>
+                          <Typography variant="h3" fontWeight="bold" color="white">
+                            {studentAttendanceStats.attendancePercentage}%
+                          </Typography>
+                        </Box>
+                      </Box>
+
+                      <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                        {studentAttendanceStats.totalSheets} පත්‍රිකාවලින්
+                      </Typography>
+                    </Box>
+                  </Grid>
+
+                  {/* Personal Statistics */}
+                  <Grid item xs={12} md={6}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={6}>
+                        <Box sx={{
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          borderRadius: 2,
+                          p: 2,
+                          textAlign: 'center'
+                        }}>
+                          <Typography variant="h4" fontWeight="bold" color="#4caf50">
+                            {studentAttendanceStats.presentCount}
+                          </Typography>
+                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                            පැමිණි දින
+                          </Typography>
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box sx={{
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          borderRadius: 2,
+                          p: 2,
+                          textAlign: 'center'
+                        }}>
+                          <Typography variant="h4" fontWeight="bold" color="#f44336">
+                            {studentAttendanceStats.absentCount}
+                          </Typography>
+                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                            නොපැමිණි දින
+                          </Typography>
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={12}>
+                        <Box sx={{
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          borderRadius: 2,
+                          p: 2,
+                          textAlign: 'center'
+                        }}>
+                          <Typography variant="h4" fontWeight="bold">
+                            {studentAttendanceStats.totalSheets}
+                          </Typography>
+                          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                            මුළු පැමිණීම් පත්‍රිකා
+                          </Typography>
+                        </Box>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                {/* Personal Performance Indicator */}
+                <Box sx={{ mt: 3, textAlign: 'center' }}>
+                  <Typography variant="body1" sx={{
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                    opacity: 0.9
+                  }}>
+                    {studentAttendanceStats.attendancePercentage >= 90 ? '🌟 ඉතා විශිෂ්ට! ඔබ නිතරම පන්තියට පැමිණෙනවා!' :
+                     studentAttendanceStats.attendancePercentage >= 80 ? '🎉 විශිෂ්ට! හොඳ පැමිණීම් වාර්තාවක්!' :
+                     studentAttendanceStats.attendancePercentage >= 60 ? '👍 හොඳයි! තව ටිකක් වැඩිදියුණු කරන්න!' :
+                     '📚 වැඩිපුර පන්තියට පැමිණීමට උත්සාහ කරන්න!'}
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+          </motion.div>
+        )}
 
         {/* Attendance Sheets */}
         <motion.div
