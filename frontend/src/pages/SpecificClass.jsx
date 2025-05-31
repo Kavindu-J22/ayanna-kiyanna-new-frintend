@@ -84,6 +84,14 @@ const SpecificClass = () => {
   const [removingMonitor, setRemovingMonitor] = useState('');
   const [confirmingMonitors, setConfirmingMonitors] = useState(false);
 
+  // Student management states
+  const [addStudentDialog, setAddStudentDialog] = useState(false);
+  const [availableStudents, setAvailableStudents] = useState([]);
+  const [loadingAvailableStudents, setLoadingAvailableStudents] = useState(false);
+  const [addingStudent, setAddingStudent] = useState(false);
+  const [removingStudent, setRemovingStudent] = useState('');
+  const [studentSearchTerm, setStudentSearchTerm] = useState('');
+
   useEffect(() => {
     fetchClassData();
     checkUserRole();
@@ -235,6 +243,92 @@ const SpecificClass = () => {
     const value = event.target.value;
     setSearchTerm(value);
     fetchStudents(value);
+  };
+
+  // Student management functions
+  const fetchAvailableStudents = async (search = '') => {
+    try {
+      setLoadingAvailableStudents(true);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/classes/${classId}/available-students`,
+        { headers: { 'x-auth-token': token } }
+      );
+
+      let students = response.data.students;
+
+      // Filter by search term if provided
+      if (search.trim()) {
+        const searchTerm = search.trim().toLowerCase();
+        students = students.filter(student =>
+          student.studentId.toLowerCase().includes(searchTerm) ||
+          student.firstName.toLowerCase().includes(searchTerm) ||
+          student.lastName.toLowerCase().includes(searchTerm) ||
+          (student.fullName && student.fullName.toLowerCase().includes(searchTerm))
+        );
+      }
+
+      setAvailableStudents(students);
+    } catch (err) {
+      console.error('Error fetching available students:', err);
+      alert('Failed to load available students');
+    } finally {
+      setLoadingAvailableStudents(false);
+    }
+  };
+
+  const handleAddStudent = async (studentId) => {
+    try {
+      setAddingStudent(true);
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/classes/${classId}/enroll`,
+        { studentId },
+        { headers: { 'x-auth-token': token } }
+      );
+
+      // Refresh class data and close dialog
+      await fetchClassData();
+      setAddStudentDialog(false);
+      alert('Student enrolled successfully!');
+    } catch (err) {
+      console.error('Error adding student:', err);
+      alert(err.response?.data?.message || 'Failed to enroll student');
+    } finally {
+      setAddingStudent(false);
+    }
+  };
+
+  const handleRemoveStudent = async (studentId) => {
+    if (!window.confirm('Are you sure you want to remove this student from the class?')) {
+      return;
+    }
+
+    try {
+      setRemovingStudent(studentId);
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/classes/${classId}/remove-student`,
+        { studentId },
+        { headers: { 'x-auth-token': token } }
+      );
+
+      // Refresh class data and students list
+      await fetchClassData();
+      await fetchStudents(searchTerm);
+      alert('Student removed successfully!');
+    } catch (err) {
+      console.error('Error removing student:', err);
+      alert(err.response?.data?.message || 'Failed to remove student');
+    } finally {
+      setRemovingStudent('');
+    }
+  };
+
+  const handleOpenAddStudentDialog = () => {
+    setAddStudentDialog(true);
+    setStudentSearchTerm('');
+    fetchAvailableStudents();
   };
 
   if (loading) {
@@ -527,10 +621,36 @@ const SpecificClass = () => {
                           <Typography variant="h6" fontWeight="bold" sx={{
                             fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                           }}>
-                            සිසුන් බලන්න
+                            පන්තියේ සිසුන් ප්‍රගතිය සමග
                           </Typography>
                           <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
-                            ප්‍රගතිය සමඟ
+                            බලන්න / ඉවත් කරන්න
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6} md={4}>
+                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                      <Card sx={{
+                        height: '100%',
+                        background: 'linear-gradient(135deg, #4caf50 0%, #2e7d32 100%)',
+                        color: 'white',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onClick={handleOpenAddStudentDialog}
+                      >
+                        <CardContent sx={{ textAlign: 'center', py: 3 }}>
+                          <PersonAdd sx={{ fontSize: 40, mb: 2 }} />
+                          <Typography variant="h6" fontWeight="bold" sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                          }}>
+                            සිසුන් එක් කරන්න
+                          </Typography>
+                          <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
+                            නව සිසුන් ඇතුල් කරන්න
                           </Typography>
                         </CardContent>
                       </Card>
@@ -1020,26 +1140,59 @@ const SpecificClass = () => {
                           </Typography>
                         </TableCell>
                         <TableCell>
-                          <Button
-                            variant="contained"
-                            size="small"
-                            startIcon={<Visibility />}
-                            sx={{
-                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                              color: 'white',
-                              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-                              fontWeight: 'bold',
-                              textTransform: 'none',
-                              borderRadius: 2,
-                              '&:hover': {
-                                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                                transform: 'scale(1.02)',
-                              },
-                              transition: 'all 0.3s ease'
-                            }}
-                          >
-                            ප්‍රොෆයිලය සහ ප්‍රගතිය
-                          </Button>
+                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            <Button
+                              variant="contained"
+                              size="small"
+                              startIcon={<Visibility />}
+                              sx={{
+                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                color: 'white',
+                                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                                fontWeight: 'bold',
+                                textTransform: 'none',
+                                borderRadius: 2,
+                                fontSize: '0.75rem',
+                                '&:hover': {
+                                  background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                                  transform: 'scale(1.02)',
+                                },
+                                transition: 'all 0.3s ease'
+                              }}
+                            >
+                              ප්‍රොෆයිලය සමග ප්‍රගතිය
+                            </Button>
+                            {isAdmin && (
+                              <Button
+                                variant="contained"
+                                size="small"
+                                startIcon={removingStudent === student._id ? <CircularProgress size={12} /> : <PersonRemove />}
+                                onClick={() => handleRemoveStudent(student._id)}
+                                disabled={removingStudent === student._id}
+                                sx={{
+                                  background: 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)',
+                                  color: 'white',
+                                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                                  fontWeight: 'bold',
+                                  textTransform: 'none',
+                                  borderRadius: 2,
+                                  fontSize: '0.75rem',
+                                  '&:hover': {
+                                    background: 'linear-gradient(135deg, #e53935 0%, #c62828 100%)',
+                                    transform: 'scale(1.02)',
+                                  },
+                                  '&:disabled': {
+                                    background: 'linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%)',
+                                    color: 'white',
+                                    opacity: 0.7
+                                  },
+                                  transition: 'all 0.3s ease'
+                                }}
+                              >
+                                ඉවත් කරන්න
+                              </Button>
+                            )}
+                          </Box>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -1052,6 +1205,156 @@ const SpecificClass = () => {
               </Alert>
             )}
           </DialogContent>
+        </Dialog>
+
+        {/* Add Student Dialog */}
+        <Dialog
+          open={addStudentDialog}
+          onClose={() => setAddStudentDialog(false)}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle sx={{
+            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+            fontWeight: 'bold',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <span>සිසුන් එක් කරන්න</span>
+            <IconButton onClick={() => setAddStudentDialog(false)}>
+              <Close />
+            </IconButton>
+          </DialogTitle>
+          <DialogContent>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              මෙම පන්තියට ලියාපදිංචි නොවූ අනුමත සිසුන්ගෙන් තෝරන්න
+            </Typography>
+
+            {/* Search Field for Student Selection */}
+            <TextField
+              fullWidth
+              placeholder="සිසු ID හෝ නම අනුව සොයන්න..."
+              value={studentSearchTerm}
+              onChange={(e) => {
+                setStudentSearchTerm(e.target.value);
+                fetchAvailableStudents(e.target.value);
+              }}
+              InputProps={{
+                startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />
+              }}
+              sx={{ mb: 3 }}
+            />
+
+            {loadingAvailableStudents ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                <CircularProgress />
+              </Box>
+            ) : availableStudents.length > 0 ? (
+              <TableContainer component={Paper} sx={{ mt: 2, maxHeight: 400 }}>
+                <Table stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                        ප්‍රොෆයිල් පින්තූරය
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                        සිසු ID
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                        නම
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                        ශ්‍රේණිය
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                        පාසල
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                        ක්‍රියාමාර්ග
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {availableStudents.map((student) => (
+                      <TableRow key={student._id} hover>
+                        <TableCell>
+                          <Avatar
+                            src={student.profilePicture}
+                            sx={{ width: 40, height: 40 }}
+                          >
+                            {student.firstName?.charAt(0)}
+                          </Avatar>
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            label={student.studentId}
+                            size="small"
+                            color="primary"
+                            variant="outlined"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2" fontWeight="medium">
+                            {student.firstName} {student.lastName}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2">
+                            {student.selectedGrade}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2">
+                            {student.school}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            startIcon={addingStudent ? <CircularProgress size={12} /> : <PersonAdd />}
+                            onClick={() => handleAddStudent(student._id)}
+                            disabled={addingStudent}
+                            sx={{
+                              background: 'linear-gradient(135deg, #4caf50 0%, #2e7d32 100%)',
+                              color: 'white',
+                              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                              fontWeight: 'bold',
+                              textTransform: 'none',
+                              borderRadius: 2,
+                              fontSize: '0.75rem',
+                              '&:hover': {
+                                background: 'linear-gradient(135deg, #43a047 0%, #1b5e20 100%)',
+                                transform: 'scale(1.02)',
+                              },
+                              '&:disabled': {
+                                background: 'linear-gradient(135deg, #a5d6a7 0%, #81c784 100%)',
+                                color: 'white',
+                                opacity: 0.7
+                              },
+                              transition: 'all 0.3s ease'
+                            }}
+                          >
+                            එක් කරන්න
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : (
+              <Alert severity="info">
+                {studentSearchTerm ? 'සෙවුම සඳහා ප්‍රතිඵල හමු නොවීය' : 'මෙම පන්තියට එක් කළ හැකි සිසුන් නොමැත'}
+              </Alert>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setAddStudentDialog(false)}>
+              අවලංගු කරන්න
+            </Button>
+          </DialogActions>
         </Dialog>
       </Container>
     </Box>

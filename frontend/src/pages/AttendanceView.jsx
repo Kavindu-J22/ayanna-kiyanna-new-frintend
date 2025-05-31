@@ -152,7 +152,15 @@ const AttendanceView = () => {
       setAttendanceSheets(response.data.data || []);
     } catch (err) {
       console.error('Error fetching attendance sheets:', err);
-      setError('Failed to load attendance sheets');
+
+      // Handle specific error cases
+      if (err.response?.status === 404 && err.response?.data?.message?.includes('Student profile not found')) {
+        setError('ඔබගේ සිසු ප්‍රොෆයිලය හමු නොවීය. කරුණාකර පරිපාලකයා සම්බන්ධ කර ගන්න.');
+      } else if (err.response?.status === 404) {
+        setError('පන්තිය හමු නොවීය');
+      } else {
+        setError('පැමිණීම් පත්‍රිකා පූරණය කිරීමේදී දෝෂයක් ඇතිවිය');
+      }
     }
   };
 
@@ -755,7 +763,7 @@ const AttendanceView = () => {
                                     />
                                   ) : (
                                     <Typography variant="body2" color="text.secondary">
-                                      තවම සලකුණු කර නැත
+                                      මෙදින පන්තියේ ඔබව තවම සලකුණු කර නැත
                                     </Typography>
                                   )}
                                 </TableCell>
