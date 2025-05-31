@@ -60,6 +60,9 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 const StudentRegistration = () => {
   const navigate = useNavigate();
@@ -302,12 +305,35 @@ const StudentRegistration = () => {
       return;
     }
 
-    setFormData(prev => ({
-      ...prev,
-      enrolledClasses: prev.enrolledClasses.includes(classId)
-        ? prev.enrolledClasses.filter(id => id !== classId)
-        : [...prev.enrolledClasses, classId]
-    }));
+    // Check if this is Sinhala Literature grade
+    const isSinhalaLiterature = formData.selectedGrade && formData.selectedGrade.toLowerCase().includes('sinhala literature');
+
+    setFormData(prev => {
+      const isCurrentlySelected = prev.enrolledClasses.includes(classId);
+
+      if (isCurrentlySelected) {
+        // If already selected, remove it (deselect)
+        return {
+          ...prev,
+          enrolledClasses: prev.enrolledClasses.filter(id => id !== classId)
+        };
+      } else {
+        // If not selected, add it
+        if (isSinhalaLiterature) {
+          // For Sinhala Literature, allow only one class (replace existing selection)
+          return {
+            ...prev,
+            enrolledClasses: [classId]
+          };
+        } else {
+          // For other grades, allow multiple classes
+          return {
+            ...prev,
+            enrolledClasses: [...prev.enrolledClasses, classId]
+          };
+        }
+      }
+    });
     setError(''); // Clear any previous capacity errors
   };
 
@@ -346,6 +372,13 @@ const StudentRegistration = () => {
     return whatsappRegex.test(number.trim());
   };
 
+  const validateGuardianContact = (number) => {
+    if (!number || typeof number !== 'string') return false;
+    // Sri Lankan phone number validation (10 digits starting with 0)
+    const phoneRegex = /^0[0-9]{9}$/;
+    return phoneRegex.test(number.trim());
+  };
+
   const validateStep = (step) => {
     switch (step) {
       case 0: { // Personal Information
@@ -372,7 +405,8 @@ const StudentRegistration = () => {
       case 1: // Guardian Information
         return (formData.guardianName || '').trim() &&
                (formData.guardianType || '').trim() &&
-               (formData.guardianContact || '').trim();
+               (formData.guardianContact || '').trim() &&
+               validateGuardianContact(formData.guardianContact);
       case 2: // Academic Information
         return (formData.selectedGrade || '').trim() &&
                formData.enrolledClasses &&
@@ -409,7 +443,11 @@ const StudentRegistration = () => {
           }
           break;
         case 1:
-          setError('Please fill in all guardian information fields.');
+          if (!validateGuardianContact(formData.guardianContact)) {
+            setError('Please enter a valid Sri Lankan guardian contact number (10 digits starting with 0).');
+          } else {
+            setError('Please fill in all guardian information fields.');
+          }
           break;
         case 2:
           setError('Please select your grade and at least one class to enroll.');
@@ -849,98 +887,40 @@ const StudentRegistration = () => {
                       </FormControl>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="උපන් දිනය (Birthday)"
-                        type="date"
-                        value={formData.birthday || ''}
-                        onChange={(e) => handleInputChange('birthday', e.target.value)}
-                        slotProps={{
-                          inputLabel: { shrink: true },
-                          input: {
-                            sx: {
-                              cursor: 'pointer',
-                              '&::-webkit-calendar-picker-indicator': {
-                                cursor: 'pointer',
-                                fontSize: '1.2rem',
-                                padding: '4px',
-                                borderRadius: '4px',
-                                position: 'absolute',
-                                right: '8px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                width: '20px',
-                                height: '20px',
-                                opacity: 0,
-                                '&:hover': {
-                                  backgroundColor: 'rgba(25, 118, 210, 0.1)'
-                                }
+                      <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <DatePicker
+                          label="උපන් දිනය (Birthday)"
+                          value={formData.birthday ? new Date(formData.birthday) : null}
+                          onChange={(newValue) => {
+                            if (newValue) {
+                              const year = newValue.getFullYear();
+                              const month = String(newValue.getMonth() + 1).padStart(2, '0');
+                              const day = String(newValue.getDate()).padStart(2, '0');
+                              handleInputChange('birthday', `${year}-${month}-${day}`);
+                            } else {
+                              handleInputChange('birthday', '');
+                            }
+                          }}
+                          slotProps={{
+                            textField: {
+                              fullWidth: true,
+                              required: true,
+                              sx: { minWidth: 200 },
+                              error: formData.birthday && !validateAge(formData.birthday),
+                              helperText: formData.birthday && !validateAge(formData.birthday) ? 'ඔබ අවම වශයෙන් වයස අවුරුදු 13ක් විය යුතුය' : 'දිනය තෝරන්න',
+                              InputProps: {
+                                startAdornment: (
+                                  <InputAdornment position="start">
+                                    <CalendarToday sx={{ color: 'text.secondary' }} />
+                                  </InputAdornment>
+                                )
                               }
                             }
-                          }
-                        }}
-                        required
-                        sx={{
-                          minWidth: 200,
-                          '& .MuiInputBase-root': {
-                            cursor: 'pointer',
-                            position: 'relative'
-                          },
-                          '& .MuiInputBase-input': {
-                            cursor: 'pointer',
-                            paddingRight: '40px !important'
-                          },
-                          '& .MuiInputBase-root::after': {
-                            content: '""',
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            cursor: 'pointer',
-                            zIndex: 1
-                          }
-                        }}
-                        error={formData.birthday && !validateAge(formData.birthday)}
-                        helperText={formData.birthday && !validateAge(formData.birthday) ? 'ඔබ අවම වශයෙන් වයස අවුරුදු 13ක් විය යුතුය' : 'දිනය තෝරන්න'}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <CalendarToday color="primary" sx={{ cursor: 'pointer' }} />
-                            </InputAdornment>
-                          ),
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <CalendarToday
-                                color="primary"
-                                sx={{
-                                  cursor: 'pointer',
-                                  fontSize: '1.2rem',
-                                  '&:hover': {
-                                    color: 'primary.dark'
-                                  }
-                                }}
-                                onClick={(e) => {
-                                  // Find the date input and trigger click
-                                  const dateInput = e.target.closest('.MuiInputBase-root').querySelector('input[type="date"]');
-                                  if (dateInput) {
-                                    dateInput.focus();
-                                    dateInput.showPicker && dateInput.showPicker();
-                                  }
-                                }}
-                              />
-                            </InputAdornment>
-                          ),
-                        }}
-                        onClick={(e) => {
-                          // Make the entire field clickable
-                          const input = e.currentTarget.querySelector('input[type="date"]');
-                          if (input) {
-                            input.focus();
-                            input.showPicker && input.showPicker();
-                          }
-                        }}
-                      />
+                          }}
+                          maxDate={new Date()}
+                          minDate={new Date('1900-01-01')}
+                        />
+                      </LocalizationProvider>
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <TextField
@@ -1116,7 +1096,15 @@ const StudentRegistration = () => {
                         required
                         sx={{ minWidth: 200 }}
                         placeholder="0771234567"
-                        helperText="Guardian's contact number for emergency purposes"
+                        error={formData.guardianContact && !validateGuardianContact(formData.guardianContact)}
+                        helperText={formData.guardianContact && !validateGuardianContact(formData.guardianContact) ? 'Please enter a valid Sri Lankan contact number (10 digits starting with 0)' : "Guardian's contact number for emergency purposes"}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <Phone sx={{ color: 'text.secondary' }} />
+                            </InputAdornment>
+                          )
+                        }}
                       />
                     </Grid>
                   </Grid>
@@ -1210,7 +1198,10 @@ const StudentRegistration = () => {
                             Available Classes for {formData.selectedGrade}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            Select one or more classes you want to enroll in. Check capacity before selecting.
+                            {formData.selectedGrade && formData.selectedGrade.toLowerCase().includes('sinhala literature')
+                              ? 'Select one class you want to enroll in. Check capacity before selecting.'
+                              : 'Select one or more classes you want to enroll in. Check capacity before selecting.'
+                            }
                           </Typography>
                         </Box>
 

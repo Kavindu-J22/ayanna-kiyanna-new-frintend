@@ -32,6 +32,9 @@ import {
   Avatar,
   Alert
 } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import {
   Edit as EditIcon,
   Delete as DeleteIcon,
@@ -58,6 +61,8 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
   const [typeFilter, setTypeFilter] = useState('');
   const [gradeFilter, setGradeFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [dayNameFilter, setDayNameFilter] = useState('');
+  const [specificDateFilter, setSpecificDateFilter] = useState(null);
   const [cleaningSpots, setCleaningSpots] = useState(false);
 
   // View Students Dialog states
@@ -71,6 +76,29 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
 
+  // Helper function to check if a date string is a weekday name
+  const isWeekdayName = (dateString) => {
+    const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return weekdays.includes(dateString);
+  };
+
+  // Helper function to check if a date string is a specific date (YYYY-MM-DD format)
+  const isSpecificDate = (dateString) => {
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    return dateRegex.test(dateString);
+  };
+
+  // Helper function to format date for comparison
+  const formatDateForComparison = (date) => {
+    if (!date) return '';
+    const d = new Date(date);
+    // Use local date to avoid timezone issues
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`; // Returns YYYY-MM-DD format
+  };
+
   // Filter classes based on search and filters
   const filteredClasses = classes.filter(classItem => {
     const matchesSearch =
@@ -83,12 +111,21 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
     const matchesGrade = !gradeFilter || classItem.grade === gradeFilter;
     const matchesCategory = !categoryFilter || classItem.category === categoryFilter;
 
-    return matchesSearch && matchesType && matchesGrade && matchesCategory;
+    // Date filtering logic
+    const matchesDayName = !dayNameFilter || (isWeekdayName(classItem.date) && classItem.date === dayNameFilter);
+    const matchesSpecificDate = !specificDateFilter || (isSpecificDate(classItem.date) && classItem.date === formatDateForComparison(specificDateFilter));
+
+    return matchesSearch && matchesType && matchesGrade && matchesCategory && matchesDayName && matchesSpecificDate;
   });
 
-  // Get unique grades and categories for filter
+  // Get unique grades, categories, and day names for filter
   const uniqueGrades = [...new Set(classes.map(c => c.grade))].sort();
   const uniqueCategories = [...new Set(classes.map(c => c.category).filter(Boolean))].sort();
+  const uniqueDayNames = [...new Set(classes.map(c => c.date).filter(date => isWeekdayName(date)))].sort();
+
+  // Define weekday order for proper sorting
+  const weekdayOrder = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const sortedDayNames = uniqueDayNames.sort((a, b) => weekdayOrder.indexOf(a) - weekdayOrder.indexOf(b));
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -330,7 +367,8 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
       {/* Filters */}
       <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} md={3}>
+          {/* First Row */}
+          <Grid item xs={12} md={2.4}>
             <TextField
               fullWidth
               label="සොයන්න"
@@ -339,19 +377,13 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
               size="small"
             />
           </Grid>
-          <Grid item xs={12} md={2}>
-            <FormControl fullWidth size="small">
+          <Grid item xs={12} md={1.8}>
+            <FormControl fullWidth size="small" sx={{ minWidth: '200px' }}>
               <InputLabel>වර්ගය</InputLabel>
               <Select
                 value={typeFilter}
                 label="වර්ගය"
                 onChange={(e) => setTypeFilter(e.target.value)}
-                sx={{
-                  minWidth: '150px',
-                  '& .MuiOutlinedInput-root': {
-                    minWidth: '150px'
-                  }
-                }}
               >
                 <MenuItem value="">සියල්ල</MenuItem>
                 <MenuItem value="Normal">සාමාන්‍ය</MenuItem>
@@ -359,19 +391,13 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={2}>
-            <FormControl fullWidth size="small">
+          <Grid item xs={12} md={1.8}>
+            <FormControl fullWidth size="small" sx={{ minWidth: '200px' }}>
               <InputLabel>ප්‍රවර්ගය</InputLabel>
               <Select
                 value={categoryFilter}
                 label="ප්‍රවර්ගය"
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                sx={{
-                  minWidth: '150px',
-                  '& .MuiOutlinedInput-root': {
-                    minWidth: '150px'
-                  }
-                }}
               >
                 <MenuItem value="">සියල්ල</MenuItem>
                 {uniqueCategories.map((category) => (
@@ -380,19 +406,13 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={3}>
-            <FormControl fullWidth size="small">
+          <Grid item xs={12} md={2}>
+            <FormControl fullWidth size="small" sx={{ minWidth: '200px' }}>
               <InputLabel>ශ්‍රේණිය</InputLabel>
               <Select
                 value={gradeFilter}
                 label="ශ්‍රේණිය"
                 onChange={(e) => setGradeFilter(e.target.value)}
-                sx={{
-                  minWidth: '150px',
-                  '& .MuiOutlinedInput-root': {
-                    minWidth: '150px'
-                  }
-                }}
               >
                 <MenuItem value="">සියල්ල</MenuItem>
                 {uniqueGrades.map((grade) => (
@@ -401,10 +421,10 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={2}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Typography variant="body2" color="text.secondary">
-                මුළු: {filteredClasses.length}
+          <Grid item xs={12} md={4}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mr: 2 }}>
+                මුළු පන්ති: {filteredClasses.length}
               </Typography>
               <Button
                 variant="contained"
@@ -414,15 +434,69 @@ const ClassList = ({ classes, onEdit, onDelete, onRefresh }) => {
                 onClick={handleCleanAndResetSpots}
                 disabled={cleaningSpots}
                 sx={{
-                  ml: 2,
                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                   fontWeight: 'bold',
                   borderRadius: 2,
                   textTransform: 'none'
                 }}
               >
-                {cleaningSpots ? 'තහවුරු කරමින්...' : 'ඉතිරි ඉඩ ප්‍රමාණ තහවුරු කරන්න'}
+                {cleaningSpots ? 'තහවුරු කරමින්...' : 'පන්ති වල ඉතිරි ඉඩ ප්‍රමාණ තහවුරු කරන්න'}
               </Button>
+            </Box>
+          </Grid>
+
+          {/* Second Row - Date Filters */}
+          <Grid item xs={12} md={3}>
+            <FormControl fullWidth size="small" sx={{ minWidth: '200px' }}>
+              <InputLabel>දින නම (සාමාන්‍ය පන්ති)</InputLabel>
+              <Select
+                value={dayNameFilter}
+                label="දින නම (සාමාන්‍ය පන්ති)"
+                onChange={(e) => setDayNameFilter(e.target.value)}
+              >
+                <MenuItem value="">සියල්ල</MenuItem>
+                {sortedDayNames.map((dayName) => (
+                  <MenuItem key={dayName} value={dayName}>{dayName}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                label="නිශ්චිත දිනය (විශේෂ පන්ති)"
+                value={specificDateFilter}
+                onChange={(newValue) => setSpecificDateFilter(newValue)}
+                slotProps={{
+                  textField: {
+                    size: 'small',
+                    fullWidth: true,
+                    placeholder: 'YYYY-MM-DD',
+                    sx: { minWidth: '200px' }
+                  }
+                }}
+              />
+            </LocalizationProvider>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => {
+                  setDayNameFilter('');
+                  setSpecificDateFilter(null);
+                }}
+                sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                  textTransform: 'none'
+                }}
+              >
+                දින ෆිල්ටර් ඉවත් කරන්න
+              </Button>
+              <Typography variant="caption" color="text.secondary">
+                සාමාන්‍ය පන්ති සඳහා දින නම සහ විශේෂ පන්ති සඳහා නිශ්චිත දිනය භාවිතා කරන්න
+              </Typography>
             </Box>
           </Grid>
         </Grid>
