@@ -34,7 +34,12 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Checkbox
 } from '@mui/material';
 import {
   ArrowBack,
@@ -92,10 +97,36 @@ const SpecificClass = () => {
   const [removingStudent, setRemovingStudent] = useState('');
   const [studentSearchTerm, setStudentSearchTerm] = useState('');
 
+  // Add new state variables after other state declarations
+  const [normalClasses, setNormalClasses] = useState([]);
+  const [selectedClass, setSelectedClass] = useState('');
+  const [selectedStudents, setSelectedStudents] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+  const [bulkAdding, setBulkAdding] = useState(false);
+
   useEffect(() => {
     fetchClassData();
     checkUserRole();
   }, [classId]);
+
+  useEffect(() => {
+    const fetchNormalClasses = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+          'https://ayanna-kiyanna-new-backend.onrender.com/api/classes/normal-classes',
+          { headers: { 'x-auth-token': token } }
+        );
+        setNormalClasses(response.data.classes);
+      } catch (err) {
+        console.error('Error fetching normal classes:', err);
+      }
+    };
+
+    if (addStudentDialog) {
+      fetchNormalClasses();
+    }
+  }, [addStudentDialog]);
 
   const fetchClassData = async () => {
     try {
@@ -246,12 +277,12 @@ const SpecificClass = () => {
   };
 
   // Student management functions
-  const fetchAvailableStudents = async (search = '') => {
+  const fetchAvailableStudents = async (search = '', filterClassId = '') => {
     try {
       setLoadingAvailableStudents(true);
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `https://ayanna-kiyanna-new-backend.onrender.com/api/classes/${classId}/available-students`,
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/classes/${classData._id}/available-students${filterClassId ? `?filterClassId=${filterClassId}` : ''}`,
         { headers: { 'x-auth-token': token } }
       );
 
@@ -329,6 +360,85 @@ const SpecificClass = () => {
     setAddStudentDialog(true);
     setStudentSearchTerm('');
     fetchAvailableStudents();
+  };
+
+  // Add new function to handle class filter change
+  const handleClassFilterChange = async (event) => {
+    const classId = event.target.value;
+    setSelectedClass(classId);
+    setSelectedStudents([]);
+    setSelectAll(false);
+    setStudentSearchTerm('');
+    await fetchAvailableStudents('', classId);
+  };
+
+  // Add new function to handle bulk student addition
+  const handleBulkAddStudents = async () => {
+    if (selectedStudents.length === 0) {
+      alert('Please select at least one student to add');
+      return;
+    }
+
+    if (!window.confirm(`Are you sure you want to add ${selectedStudents.length} students to this class?`)) {
+      return;
+    }
+
+    try {
+      setBulkAdding(true);
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/classes/${classData._id}/bulk-enroll`,
+        { studentIds: selectedStudents },
+        { headers: { 'x-auth-token': token } }
+      );
+
+      if (response.data.results.success.length > 0) {
+        alert(`Successfully added ${response.data.results.success.length} students to the class`);
+        // Refresh class data and close dialog
+        await fetchClassData();
+        setAddStudentDialog(false);
+        setSelectedStudents([]);
+        setSelectAll(false);
+      }
+
+      if (response.data.results.failed.length > 0) {
+        alert(`Failed to add ${response.data.results.failed.length} students. Please check the console for details.`);
+        console.log('Failed enrollments:', response.data.results.failed);
+      }
+    } catch (err) {
+      console.error('Error adding students:', err);
+      alert(err.response?.data?.message || 'Failed to add students');
+    } finally {
+      setBulkAdding(false);
+    }
+  };
+
+  // Add new function to handle individual student selection
+  const handleStudentSelect = (studentId) => {
+    setSelectedStudents(prev => {
+      // If student is already selected, remove it
+      if (prev.includes(studentId)) {
+        const newSelected = prev.filter(id => id !== studentId);
+        setSelectAll(false);
+        return newSelected;
+      }
+      // If student is not selected, add it
+      const newSelected = [...prev, studentId];
+      // Update select all state based on whether all students are now selected
+      setSelectAll(newSelected.length === availableStudents.length);
+      return newSelected;
+    });
+  };
+
+  // Add new function to handle select all
+  const handleSelectAll = (event) => {
+    const checked = event.target.checked;
+    setSelectAll(checked);
+    if (checked) {
+      setSelectedStudents(availableStudents.map(student => student._id));
+    } else {
+      setSelectedStudents([]);
+    }
   };
 
   if (loading) {
@@ -614,7 +724,7 @@ const SpecificClass = () => {
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'
                       }}
-                      onClick={handleViewStudents}
+                        onClick={handleViewStudents}
                       >
                         <CardContent sx={{ textAlign: 'center', py: 3 }}>
                           <Group sx={{ fontSize: 40, mb: 2 }} />
@@ -640,7 +750,7 @@ const SpecificClass = () => {
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'
                       }}
-                      onClick={handleOpenAddStudentDialog}
+                        onClick={handleOpenAddStudentDialog}
                       >
                         <CardContent sx={{ textAlign: 'center', py: 3 }}>
                           <PersonAdd sx={{ fontSize: 40, mb: 2 }} />
@@ -666,7 +776,7 @@ const SpecificClass = () => {
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'
                       }}
-                      onClick={() => navigate(`/attendance-management/${classId}`)}
+                        onClick={() => navigate(`/attendance-management/${classId}`)}
                       >
                         <CardContent sx={{ textAlign: 'center', py: 3 }}>
                           <Assignment sx={{ fontSize: 40, mb: 2 }} />
@@ -815,18 +925,18 @@ const SpecificClass = () => {
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'
                       }}
-                      onClick={() => {
-                        // Check if student is a monitor
-                        const isMonitor = classData.monitors?.some(monitor =>
-                          monitor._id.toString() === currentStudent?._id.toString()
-                        );
+                        onClick={() => {
+                          // Check if student is a monitor
+                          const isMonitor = classData.monitors?.some(monitor =>
+                            monitor._id.toString() === currentStudent?._id.toString()
+                          );
 
-                        if (isMonitor) {
-                          navigate(`/attendance-view/${classId}?monitor=true`);
-                        } else {
-                          navigate(`/attendance-view/${classId}`);
-                        }
-                      }}
+                          if (isMonitor) {
+                            navigate(`/attendance-view/${classId}?monitor=true`);
+                          } else {
+                            navigate(`/attendance-view/${classId}`);
+                          }
+                        }}
                       >
                         <CardContent sx={{ textAlign: 'center', py: 3 }}>
                           <Assignment sx={{ fontSize: 40, mb: 2 }} />
@@ -1210,7 +1320,12 @@ const SpecificClass = () => {
         {/* Add Student Dialog */}
         <Dialog
           open={addStudentDialog}
-          onClose={() => setAddStudentDialog(false)}
+          onClose={() => {
+            setAddStudentDialog(false);
+            setSelectedClass('');
+            setSelectedStudents([]);
+            setSelectAll(false);
+          }}
           maxWidth="md"
           fullWidth
         >
@@ -1222,7 +1337,12 @@ const SpecificClass = () => {
             alignItems: 'center'
           }}>
             <span>සිසුන් එක් කරන්න</span>
-            <IconButton onClick={() => setAddStudentDialog(false)}>
+            <IconButton onClick={() => {
+              setAddStudentDialog(false);
+              setSelectedClass('');
+              setSelectedStudents([]);
+              setSelectAll(false);
+            }}>
               <Close />
             </IconButton>
           </DialogTitle>
@@ -1231,20 +1351,57 @@ const SpecificClass = () => {
               මෙම පන්තියට ලියාපදිංචි නොවූ අනුමත සිසුන්ගෙන් තෝරන්න
             </Typography>
 
-            {/* Search Field for Student Selection */}
+            {/* Class Filter */}
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <InputLabel>පන්තිය අනුව පෙරහන් කරන්න</InputLabel>
+              <Select
+                value={selectedClass}
+                onChange={handleClassFilterChange}
+                label="පන්තිය අනුව පෙරහන් කරන්න"
+              >
+                <MenuItem value="">
+                  <em>සියලුම සිසුන්</em>
+                </MenuItem>
+                {normalClasses.map((classItem) => (
+                  <MenuItem key={classItem._id} value={classItem._id}>
+                    {classItem.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {/* Search Field */}
             <TextField
               fullWidth
               placeholder="සිසු ID හෝ නම අනුව සොයන්න..."
               value={studentSearchTerm}
               onChange={(e) => {
                 setStudentSearchTerm(e.target.value);
-                fetchAvailableStudents(e.target.value);
+                fetchAvailableStudents(e.target.value, selectedClass);
               }}
               InputProps={{
                 startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />
               }}
               sx={{ mb: 3 }}
             />
+
+            {/* Selected Count */}
+            {selectedStudents.length > 0 && (
+              <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" color="primary">
+                  {selectedStudents.length} සිසුන් තෝරා ඇත
+                </Typography>
+                <Button
+                  size="small"
+                  onClick={() => {
+                    setSelectedStudents([]);
+                    setSelectAll(false);
+                  }}
+                >
+                  අහෝසි කරන්න
+                </Button>
+              </Box>
+            )}
 
             {loadingAvailableStudents ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
@@ -1255,6 +1412,13 @@ const SpecificClass = () => {
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow>
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={selectAll}
+                          onChange={handleSelectAll}
+                          indeterminate={selectedStudents.length > 0 && selectedStudents.length < availableStudents.length}
+                        />
+                      </TableCell>
                       <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
                         ප්‍රොෆයිල් පින්තූරය
                       </TableCell>
@@ -1270,15 +1434,26 @@ const SpecificClass = () => {
                       <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
                         පාසල
                       </TableCell>
-                      <TableCell sx={{ fontWeight: 'bold', fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
-                        ක්‍රියාමාර්ග
-                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {availableStudents.map((student) => (
-                      <TableRow key={student._id} hover>
-                        <TableCell>
+                      <TableRow
+                        key={student._id}
+                        hover
+                        selected={selectedStudents.includes(student._id)}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={selectedStudents.includes(student._id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleStudentSelect(student._id);
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell onClick={() => handleStudentSelect(student._id)}>
                           <Avatar
                             src={student.profilePicture}
                             sx={{ width: 40, height: 40 }}
@@ -1286,7 +1461,7 @@ const SpecificClass = () => {
                             {student.firstName?.charAt(0)}
                           </Avatar>
                         </TableCell>
-                        <TableCell>
+                        <TableCell onClick={() => handleStudentSelect(student._id)}>
                           <Chip
                             label={student.studentId}
                             size="small"
@@ -1294,50 +1469,20 @@ const SpecificClass = () => {
                             variant="outlined"
                           />
                         </TableCell>
-                        <TableCell>
+                        <TableCell onClick={() => handleStudentSelect(student._id)}>
                           <Typography variant="body2" fontWeight="medium">
                             {student.firstName} {student.lastName}
                           </Typography>
                         </TableCell>
-                        <TableCell>
+                        <TableCell onClick={() => handleStudentSelect(student._id)}>
                           <Typography variant="body2">
                             {student.selectedGrade}
                           </Typography>
                         </TableCell>
-                        <TableCell>
+                        <TableCell onClick={() => handleStudentSelect(student._id)}>
                           <Typography variant="body2">
                             {student.school}
                           </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            variant="contained"
-                            size="small"
-                            startIcon={addingStudent ? <CircularProgress size={12} /> : <PersonAdd />}
-                            onClick={() => handleAddStudent(student._id)}
-                            disabled={addingStudent}
-                            sx={{
-                              background: 'linear-gradient(135deg, #4caf50 0%, #2e7d32 100%)',
-                              color: 'white',
-                              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-                              fontWeight: 'bold',
-                              textTransform: 'none',
-                              borderRadius: 2,
-                              fontSize: '0.75rem',
-                              '&:hover': {
-                                background: 'linear-gradient(135deg, #43a047 0%, #1b5e20 100%)',
-                                transform: 'scale(1.02)',
-                              },
-                              '&:disabled': {
-                                background: 'linear-gradient(135deg, #a5d6a7 0%, #81c784 100%)',
-                                color: 'white',
-                                opacity: 0.7
-                              },
-                              transition: 'all 0.3s ease'
-                            }}
-                          >
-                            එක් කරන්න
-                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -1350,9 +1495,42 @@ const SpecificClass = () => {
               </Alert>
             )}
           </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setAddStudentDialog(false)}>
+          <DialogActions sx={{ p: 2, gap: 1 }}>
+            <Button
+              onClick={() => {
+                setAddStudentDialog(false);
+                setSelectedClass('');
+                setSelectedStudents([]);
+                setSelectAll(false);
+              }}
+            >
               අවලංගු කරන්න
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleBulkAddStudents}
+              disabled={selectedStudents.length === 0 || bulkAdding}
+              startIcon={bulkAdding ? <CircularProgress size={20} /> : <PersonAdd />}
+              sx={{
+                background: 'linear-gradient(135deg, #4caf50 0%, #2e7d32 100%)',
+                color: 'white',
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                fontWeight: 'bold',
+                textTransform: 'none',
+                borderRadius: 2,
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #43a047 0%, #1b5e20 100%)',
+                  transform: 'scale(1.02)',
+                },
+                '&:disabled': {
+                  background: 'linear-gradient(135deg, #a5d6a7 0%, #81c784 100%)',
+                  color: 'white',
+                  opacity: 0.7
+                },
+                transition: 'all 0.3s ease'
+              }}
+            >
+              {bulkAdding ? 'සිසුන් එකතු කරමින්...' : 'තෝරාගත් සිසුන් එක් කරන්න'}
             </Button>
           </DialogActions>
         </Dialog>
