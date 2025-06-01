@@ -553,47 +553,49 @@ const StudentDashboard = () => {
 
                 {student?.enrolledClasses?.length > 0 ? (
                   <Grid container spacing={3}>
-                    {student.enrolledClasses.map((classItem) => (
-                      <Grid item xs={12} md={6} key={classItem._id}>
-                        <Card sx={{
-                          height: '100%',
-                          border: student.status === 'Approved' ? '2px solid #4caf50' : '2px solid #ff9800'
-                        }}>
-                          <CardContent>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                              <Typography variant="h6">{classItem.grade}</Typography>
-                              <Chip
-                                label={classItem.category}
-                                size="small"
-                                color="primary"
-                              />
-                            </Box>
-                            <Typography color="text.secondary" gutterBottom>
-                              <Schedule sx={{ fontSize: 16, mr: 1 }} />
-                              {classItem.date} • {classItem.startTime} - {classItem.endTime}
-                            </Typography>
-                            <Typography color="text.secondary" gutterBottom>
-                              <LocationOn sx={{ fontSize: 16, mr: 1 }} />
-                              {classItem.venue}
-                            </Typography>
-                            <Typography color="text.secondary" gutterBottom>
-                              Platform: {classItem.platform}
-                            </Typography>
+                    {student.enrolledClasses
+                      .filter(c => c.category !== 'Special Class')
+                      .map((classItem) => (
+                        <Grid item xs={12} md={6} key={classItem._id}>
+                          <Card sx={{
+                            height: '100%',
+                            border: student.status === 'Approved' ? '2px solid #4caf50' : '2px solid #ff9800'
+                          }}>
+                            <CardContent>
+                              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                <Typography variant="h6">{classItem.grade}</Typography>
+                                <Chip
+                                  label={classItem.category}
+                                  size="small"
+                                  color="primary"
+                                />
+                              </Box>
+                              <Typography color="text.secondary" gutterBottom>
+                                <Schedule sx={{ fontSize: 16, mr: 1 }} />
+                                {classItem.date} • {classItem.startTime} - {classItem.endTime}
+                              </Typography>
+                              <Typography color="text.secondary" gutterBottom>
+                                <LocationOn sx={{ fontSize: 16, mr: 1 }} />
+                                {classItem.venue}
+                              </Typography>
+                              <Typography color="text.secondary" gutterBottom>
+                                Platform: {classItem.platform}
+                              </Typography>
 
-                            <Button
-                              variant="contained"
-                              fullWidth
-                              sx={{ mt: 2 }}
-                              disabled={student.status !== 'Approved'}
-                              startIcon={student.status === 'Approved' ? <Visibility /> : <Lock />}
-                              onClick={() => student.status === 'Approved' && navigate(`/class/${classItem._id}`)}
-                            >
-                              {student.status === 'Approved' ? 'Access Class' : 'Pending Approval'}
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                    ))}
+                              <Button
+                                variant="contained"
+                                fullWidth
+                                sx={{ mt: 2 }}
+                                disabled={student.status !== 'Approved'}
+                                startIcon={student.status === 'Approved' ? <Visibility /> : <Lock />}
+                                onClick={() => student.status === 'Approved' && navigate(`/class/${classItem._id}`)}
+                              >
+                                {student.status === 'Approved' ? 'Access Class' : 'Pending Approval'}
+                              </Button>
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                      ))}
                   </Grid>
                 ) : (
                   <Alert severity="info">
@@ -606,7 +608,7 @@ const StudentDashboard = () => {
               <Paper elevation={6} sx={{ p: 3, borderRadius: 3, mb: 4 }}>
                 <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
                   <School sx={{ mr: 1, color: 'warning.main' }} />
-                  Special Classes
+                  Enrolled Special Classes
                 </Typography>
                 <Divider sx={{ mb: 3 }} />
 
