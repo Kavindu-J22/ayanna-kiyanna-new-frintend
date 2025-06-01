@@ -1848,7 +1848,7 @@ const StudentRegistration = () => {
                                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                                 }}>
                                   <Info sx={{ mr: 1, fontSize: 18 }} />
-                                  You have selected {formData.enrolledClasses.length} class{formData.enrolledClasses.length > 1 ? 'es' : ''}. You can only select one class per grade. Click the ❌ icon to remove any class.
+                                  ඔබ පන්ති {formData.enrolledClasses.length}ක් තෝරාගෙන ඇත. ඔබට එක් ශ්‍රේණියකට එක් පන්තියක් පමණක් තෝරාගත හැකිය. ඕනෑම පන්තියක් ඉවත් කිරීමට ❌ අයිකනය ක්ලික් කරන්න.
                                 </Typography>
                                 <Typography variant="caption" sx={{
                                   display: 'block',
@@ -1856,7 +1856,7 @@ const StudentRegistration = () => {
                                   color: 'text.secondary',
                                   fontStyle: 'italic'
                                 }}>
-                                  💡 You can change your class selection before completing registration
+                                  💡 ලියාපදිංචිය සම්පූර්ණ කිරීමට පෙර ඔබට ඔබේ පන්ති තේරීම වෙනස් කළ හැකිය
                                 </Typography>
                               </Box>
                             </Paper>
