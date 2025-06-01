@@ -1848,7 +1848,7 @@ const StudentRegistration = () => {
                                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                                 }}>
                                   <Info sx={{ mr: 1, fontSize: 18 }} />
-                                  ඔබ පන්ති {formData.enrolledClasses.length}ක් තෝරාගෙන ඇත. ඔබට එක් ශ්‍රේණියකට එක් පන්තියක් පමණක් තෝරාගත හැකිය. ඕනෑම පන්තියක් ඉවත් කිරීමට ❌ අයිකනය ක්ලික් කරන්න.
+                                  ඔබ පන්ති {formData.enrolledClasses.length}ක් තෝරාගෙන ඇත. ඔබට එක් ශ්‍රේණියකට එක් පන්තියක් පමණක් තෝරාගත හැකිය. ඕනෑම පන්තියක් ඉවත් කිරීමට ❌ අයිකනය ක්ලික් කරන්න. තවත් පන්ති තෝරාගැනීමට අවශ්‍යනම, ශ්‍රේණියක් තෝරා අවශ්‍ය පන්තිය තෝරන්න.
                                 </Typography>
                                 <Typography variant="caption" sx={{
                                   display: 'block',
