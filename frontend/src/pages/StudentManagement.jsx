@@ -823,7 +823,7 @@ const StudentManagement = () => {
                     <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Name</TableCell>
                     <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Email</TableCell>
                     <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Grade</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Status</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Registration Status</TableCell>
                     <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Payment Role</TableCell>
                     <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Payment Status</TableCell>
                     <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Classes</TableCell>
@@ -1338,7 +1338,7 @@ const StudentManagement = () => {
               </FormControl>
               <TextField
                 fullWidth
-                label="Admin Note"
+                label="Admin Note (Optional)"
                 multiline
                 rows={3}
                 value={adminNote}
@@ -1376,14 +1376,14 @@ const StudentManagement = () => {
                   onChange={(e) => setSelectedPaymentStatus(e.target.value)}
                   label="Payment Status"
                 >
-                  <MenuItem value="admissioned">Admissioned</MenuItem>
-                  <MenuItem value="Paid">Paid</MenuItem>
-                  <MenuItem value="Unpaid">Unpaid</MenuItem>
+                  <MenuItem value="admissioned">Admissioned (අලුත් සිසුවෙකු ලෙස සටහන් කරන්න)</MenuItem>
+                  <MenuItem value="Paid">Paid (ගෙවීම් සිදු කල සිසුවෙකු ලෙස සටහන් කරන්න)</MenuItem>
+                  <MenuItem value="Unpaid">Unpaid (ගෙවීම් සිදු නොකල සිසුවෙකු ලෙස සටහන් කරන්න)</MenuItem>
                 </Select>
               </FormControl>
               <TextField
                 fullWidth
-                label="Admin Note"
+                label="Admin Note (Optional)"
                 multiline
                 rows={3}
                 value={adminNote}
