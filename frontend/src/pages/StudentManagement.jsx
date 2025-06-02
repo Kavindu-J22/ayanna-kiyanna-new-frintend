@@ -1553,11 +1553,13 @@ const StudentManagement = () => {
                         </Box>
                       )}
                     >
-                      {selectedStudent?.enrolledClasses?.map((classItem) => (
-                        <MenuItem key={classItem._id} value={classItem._id}>
-                          {classItem.grade} - {classItem.category} ({classItem.date})
-                        </MenuItem>
-                      ))}
+                      {selectedStudent?.enrolledClasses
+                        ?.filter(classItem => classItem.type === 'Normal')
+                        .map((classItem) => (
+                          <MenuItem key={classItem._id} value={classItem._id}>
+                            {classItem.grade} - {classItem.category} ({classItem.date})
+                          </MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
                 </>
