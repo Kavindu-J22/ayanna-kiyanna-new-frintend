@@ -97,9 +97,10 @@ const StudentManagement = () => {
   const [newStatus, setNewStatus] = useState('');
 
   // Add new state variables
+  const [selectedPaymentRole, setSelectedPaymentRole] = useState('');
+  const [selectedFreeClasses, setSelectedFreeClasses] = useState([]);
   const [showPaymentRoleDialog, setShowPaymentRoleDialog] = useState(false);
   const [showPaymentStatusDialog, setShowPaymentStatusDialog] = useState(false);
-  const [selectedPaymentRole, setSelectedPaymentRole] = useState('');
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState('');
 
   // Add new state variables for payment filters
@@ -414,6 +415,7 @@ const StudentManagement = () => {
   const handleUpdatePaymentRole = (student) => {
     setSelectedStudent(student);
     setSelectedPaymentRole(student.paymentRole);
+    setSelectedFreeClasses(student.freeClasses || []);
     setShowPaymentRoleDialog(true);
     setAdminNote('');
   };
@@ -428,12 +430,19 @@ const StudentManagement = () => {
   const confirmPaymentRoleUpdate = async () => {
     if (!selectedStudent || !selectedPaymentRole) return;
 
+    // Validate free classes selection
+    if (selectedPaymentRole === 'Free Card' && selectedFreeClasses.length === 0) {
+      setError('Please select at least one class for Free Card payment role');
+      return;
+    }
+
     setProcessing(true);
     try {
       const response = await axios.put(
         `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/${selectedStudent._id}/payment-role`,
         {
           paymentRole: selectedPaymentRole,
+          freeClasses: selectedFreeClasses,
           adminNote: adminNote || `Payment role updated from ${selectedStudent.paymentRole} to ${selectedPaymentRole}`
         },
         {
@@ -450,6 +459,7 @@ const StudentManagement = () => {
             ? {
               ...student,
               paymentRole: selectedPaymentRole,
+              freeClasses: selectedFreeClasses,
               adminAction: {
                 actionBy: response.data.student.adminAction.actionBy,
                 actionDate: response.data.student.adminAction.actionDate,
@@ -461,6 +471,7 @@ const StudentManagement = () => {
         setShowPaymentRoleDialog(false);
         setSelectedStudent(null);
         setSelectedPaymentRole('');
+        setSelectedFreeClasses([]);
         setAdminNote('');
         setSuccess('Payment role updated successfully');
         setTimeout(() => setSuccess(''), 3000);
@@ -1148,6 +1159,37 @@ const StudentManagement = () => {
                       </Typography>
                     )}
                   </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="h6" gutterBottom>Payment Information</Typography>
+                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
+                      <Chip
+                        label={selectedStudent.paymentRole}
+                        color={selectedStudent.paymentRole === 'Pay Card' ? 'primary' : 'secondary'}
+                        icon={<CreditCard />}
+                      />
+                      <Chip
+                        label={selectedStudent.paymentStatus}
+                        color={selectedStudent.paymentStatus === 'Paid' ? 'success' : 'warning'}
+                      />
+                    </Box>
+                    {selectedStudent.paymentRole === 'Free Card' && selectedStudent.freeClasses?.length > 0 && (
+                      <Box sx={{ mt: 2 }}>
+                        <Typography variant="subtitle2" gutterBottom>
+                          Free Classes:
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                          {selectedStudent.freeClasses.map((classItem) => (
+                            <Chip
+                              key={classItem._id}
+                              label={`${classItem.grade} - ${classItem.category}`}
+                              color="secondary"
+                              variant="outlined"
+                            />
+                          ))}
+                        </Box>
+                      </Box>
+                    )}
+                  </Grid>
 
                   {/* Class Details Section */}
                   <Grid item xs={12}>
@@ -1443,13 +1485,84 @@ const StudentManagement = () => {
                 <InputLabel>Payment Role</InputLabel>
                 <Select
                   value={selectedPaymentRole}
-                  onChange={(e) => setSelectedPaymentRole(e.target.value)}
+                  onChange={(e) => {
+                    setSelectedPaymentRole(e.target.value);
+                    if (e.target.value === 'Pay Card') {
+                      setSelectedFreeClasses([]);
+                    }
+                  }}
                   label="Payment Role"
                 >
                   <MenuItem value="Pay Card">Pay Card</MenuItem>
                   <MenuItem value="Free Card">Free Card</MenuItem>
                 </Select>
               </FormControl>
+
+              {selectedPaymentRole === 'Free Card' && (
+                <>
+                  <Typography variant="subtitle1" sx={{ mt: 3, mb: 1 }}>
+                    Select Classes for Free Card
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Select the classes that will be free for this student
+                  </Typography>
+
+                  {/* Display currently selected free classes as chips */}
+                  {selectedFreeClasses.length > 0 && (
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Selected Free Classes:
+                      </Typography>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                        {selectedFreeClasses.map((classId) => {
+                          const classItem = selectedStudent?.enrolledClasses?.find(c => c._id === classId);
+                          return classItem ? (
+                            <Chip
+                              key={classId}
+                              label={`${classItem.grade} - ${classItem.category}`}
+                              onDelete={() => setSelectedFreeClasses(prev => prev.filter(id => id !== classId))}
+                              color="primary"
+                              variant="outlined"
+                            />
+                          ) : null;
+                        })}
+                      </Box>
+                    </Box>
+                  )}
+
+                  {/* Display available classes for selection */}
+                  <FormControl fullWidth>
+                    <InputLabel>Select Classes</InputLabel>
+                    <Select
+                      multiple
+                      value={selectedFreeClasses}
+                      onChange={(e) => setSelectedFreeClasses(e.target.value)}
+                      label="Select Classes"
+                      renderValue={(selected) => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {selected.map((classId) => {
+                            const classItem = selectedStudent?.enrolledClasses?.find(c => c._id === classId);
+                            return classItem ? (
+                              <Chip
+                                key={classId}
+                                label={`${classItem.grade} - ${classItem.category}`}
+                                size="small"
+                              />
+                            ) : null;
+                          })}
+                        </Box>
+                      )}
+                    >
+                      {selectedStudent?.enrolledClasses?.map((classItem) => (
+                        <MenuItem key={classItem._id} value={classItem._id}>
+                          {classItem.grade} - {classItem.category} ({classItem.date})
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </>
+              )}
+
               <TextField
                 fullWidth
                 label="Admin Note (Optional)"
@@ -1468,7 +1581,7 @@ const StudentManagement = () => {
                 onClick={confirmPaymentRoleUpdate}
                 variant="contained"
                 color="primary"
-                disabled={processing}
+                disabled={processing || (selectedPaymentRole === 'Free Card' && selectedFreeClasses.length === 0)}
                 startIcon={processing ? <CircularProgress size={20} /> : null}
               >
                 {processing ? 'Updating...' : 'Update'}
