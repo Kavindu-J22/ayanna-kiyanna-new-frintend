@@ -987,27 +987,30 @@ const StudentManagement = () => {
                         />
                       </TableCell>
                       <TableCell>
-                        <Chip
-                          label={student.paymentRole}
-                          color={student.paymentRole === 'Pay Card' ? 'primary' : 'secondary'}
-                          icon={<CreditCard />}
-                          size="small"
-                          onClick={() => handleUpdatePaymentRole(student)}
-                          sx={{ cursor: 'pointer' }}
-                        />
+                      <Chip
+                        label={student.paymentRole === 'Pay Card' ? 'Pay Card Owner' : 'Free Card Owner'}
+                        color={student.paymentRole === 'Pay Card' ? 'primary' : 'secondary'}
+                        icon={<CreditCard />}
+                        size="small"
+                        onClick={() => handleUpdatePaymentRole(student)}
+                        sx={{ cursor: 'pointer' }}
+                      />
                       </TableCell>
                       <TableCell>
-                        <Chip
-                          label={student.paymentStatus}
-                          color={
-                            student.paymentStatus === 'Paid' ? 'success' :
-                              student.paymentStatus === 'Unpaid' ? 'error' : 'warning'
-                          }
-                          icon={<Payment />}
-                          size="small"
-                          onClick={() => handleUpdatePaymentStatus(student)}
-                          sx={{ cursor: 'pointer' }}
-                        />
+                      <Chip
+  label={
+    student.paymentStatus === 'Paid' ? 'ගාස්තු ගෙවා ඇත' :
+    student.paymentStatus === 'Unpaid' ? 'ගාස්තු ගෙවා නැත' : 'නව සිසු කාලය'
+  }
+  color={
+    student.paymentStatus === 'Paid' ? 'success' :
+    student.paymentStatus === 'Unpaid' ? 'error' : 'warning'
+  }
+  icon={<Payment />}
+  size="small"
+  onClick={() => handleUpdatePaymentStatus(student)}
+  sx={{ cursor: 'pointer' }}
+/>
                       </TableCell>
                       <TableCell>
                         {student.enrolledClasses && student.enrolledClasses.length > 0 ? (
