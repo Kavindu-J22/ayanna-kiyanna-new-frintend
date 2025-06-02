@@ -897,7 +897,7 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
                       color="primary"
                     />
                     <Typography>
-                     අයකිරීමක් අවශ්‍ය නැත.
+                      අයකිරීමක් අවශ්‍ය නැත.
                     </Typography>
                   </Box>
                 </FormControl>
