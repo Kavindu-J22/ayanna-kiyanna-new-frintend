@@ -523,6 +523,18 @@ const StudentManagement = () => {
     }
   };
 
+  // Add a function to count active filters
+  const getActiveFiltersCount = () => {
+    let count = 0;
+    if (statusFilter) count++;
+    if (gradeFilter) count++;
+    if (classFilter) count++;
+    if (paymentRoleFilter) count++;
+    if (paymentStatusFilter) count++;
+    if (searchTerm) count++;
+    return count;
+  };
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
@@ -754,10 +766,40 @@ const StudentManagement = () => {
 
           {/* Filters */}
           <Paper elevation={6} sx={{ p: 3, mb: 4, borderRadius: 3 }}>
-            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-              <FilterList sx={{ mr: 1 }} />
-              Filters & Search
-            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
+                <FilterList sx={{ mr: 1 }} />
+                Filters & Search
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Chip
+                  label={`${getActiveFiltersCount()} Active Filters`}
+                  color="primary"
+                  variant="outlined"
+                  sx={{
+                    '& .MuiChip-label': {
+                      fontWeight: 'bold',
+                      fontSize: '0.9rem'
+                    }
+                  }}
+                />
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    setStatusFilter('');
+                    setGradeFilter('');
+                    setClassFilter('');
+                    setPaymentRoleFilter('');
+                    setPaymentStatusFilter('');
+                    setSearchTerm('');
+                  }}
+                  startIcon={<Refresh />}
+                  size="small"
+                >
+                  Clear All
+                </Button>
+              </Box>
+            </Box>
             <Grid container spacing={3}>
               <Grid item xs={12} md={3}>
                 <TextField
@@ -769,10 +811,11 @@ const StudentManagement = () => {
                   InputProps={{
                     startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />
                   }}
+                  sx={{ minWidth: '200px' }}
                 />
               </Grid>
               <Grid item xs={12} md={3}>
-                <FormControl fullWidth>
+                <FormControl fullWidth sx={{ minWidth: '200px' }}>
                   <InputLabel>Registration Status</InputLabel>
                   <Select
                     value={statusFilter}
@@ -787,7 +830,7 @@ const StudentManagement = () => {
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={3}>
-                <FormControl fullWidth>
+                <FormControl fullWidth sx={{ minWidth: '200px' }}>
                   <InputLabel>Grade</InputLabel>
                   <Select
                     value={gradeFilter}
@@ -802,7 +845,7 @@ const StudentManagement = () => {
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={3}>
-                <FormControl fullWidth>
+                <FormControl fullWidth sx={{ minWidth: '200px' }}>
                   <InputLabel>Class</InputLabel>
                   <Select
                     value={classFilter}
@@ -819,7 +862,7 @@ const StudentManagement = () => {
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={3}>
-                <FormControl fullWidth>
+                <FormControl fullWidth sx={{ minWidth: '200px' }}>
                   <InputLabel>Payment Role</InputLabel>
                   <Select
                     value={paymentRoleFilter}
@@ -833,7 +876,7 @@ const StudentManagement = () => {
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={3}>
-                <FormControl fullWidth>
+                <FormControl fullWidth sx={{ minWidth: '200px' }}>
                   <InputLabel>Payment Status</InputLabel>
                   <Select
                     value={paymentStatusFilter}
@@ -846,24 +889,6 @@ const StudentManagement = () => {
                     <MenuItem value="Unpaid">Unpaid (ගෙවීම් සිදු නොකල සිසුවෙකු ලෙස සටහන් කරන්න)</MenuItem>
                   </Select>
                 </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-                  <Button
-                    variant="outlined"
-                    onClick={() => {
-                      setStatusFilter('');
-                      setGradeFilter('');
-                      setClassFilter('');
-                      setPaymentRoleFilter('');
-                      setPaymentStatusFilter('');
-                      setSearchTerm('');
-                    }}
-                    startIcon={<Refresh />}
-                  >
-                    Clear Filters
-                  </Button>
-                </Box>
               </Grid>
             </Grid>
           </Paper>
