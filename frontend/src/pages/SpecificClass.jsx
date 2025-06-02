@@ -1468,7 +1468,7 @@ const SpecificClass = () => {
                 label="පන්තිය අනුව පෙරහන් කරන්න"
               >
                 <MenuItem value="">
-                  <em>සියලුම සිසුන්</em>
+                  <em>ඇතුලත් කල හැකි සියලුම සිසුන්</em>
                 </MenuItem>
                 {normalClasses.map((classItem) => (
                   <MenuItem key={classItem._id} value={classItem._id}>
@@ -1599,7 +1599,7 @@ const SpecificClass = () => {
               </TableContainer>
             ) : (
               <Alert severity="info">
-                {studentSearchTerm ? 'සෙවුම සඳහා ප්‍රතිඵල හමු නොවීය' : 'මෙම පන්තියට එක් කළ හැකි සිසුන් නොමැත'}
+                {studentSearchTerm ? 'සෙවුම සඳහා ප්‍රතිඵල හමු නොවීය' : 'මෙහි මෙම පන්තියට එක් කළ හැකි සිසුන් නොමැත'}
               </Alert>
             )}
           </DialogContent>
