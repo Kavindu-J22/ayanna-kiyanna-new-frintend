@@ -567,6 +567,11 @@ const SpecificClass = () => {
                       Platform: {classData.platform}
                     </Typography>
                   </Grid>
+                  <Grid item xs={12} sm={6}>
+                  <Typography variant="body1" color="text.secondary">
+                    {classData.monthlyFee === 0 ? "Free of charge" : `Monthly Fee Rs: ${classData.monthlyFee} /=`}
+                  </Typography>
+                </Grid>
                 </Grid>
 
                 {classData.specialNote && (

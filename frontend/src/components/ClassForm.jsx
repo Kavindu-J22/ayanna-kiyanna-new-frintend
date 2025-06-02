@@ -15,7 +15,9 @@ import {
   Typography,
   IconButton,
   Autocomplete,
-  Chip
+  Chip,
+  Switch,
+  InputAdornment
 } from '@mui/material';
 import {
   Close as CloseIcon,
@@ -48,7 +50,9 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
     venue: '',
     capacity: '',
     specialNote: '',
-    isActive: true
+    isActive: true,
+    isFreeClass: false,
+    monthlyFee: 0
   });
 
   const [availableGrades, setAvailableGrades] = useState([]);
@@ -89,7 +93,9 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
           venue: editingClass.venue || '',
           capacity: editingClass.capacity || '',
           specialNote: editingClass.specialNote || '',
-          isActive: editingClass.isActive !== undefined ? editingClass.isActive : true
+          isActive: editingClass.isActive !== undefined ? editingClass.isActive : true,
+          isFreeClass: editingClass.isFreeClass !== undefined ? editingClass.isFreeClass : false,
+          monthlyFee: editingClass.monthlyFee || 0
         });
 
         // Handle date for special classes
@@ -164,7 +170,9 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
       venue: '',
       capacity: '',
       specialNote: '',
-      isActive: true
+      isActive: true,
+      isFreeClass: false,
+      monthlyFee: 0
     });
     setSelectedDate(null);
     setCustomGrade('');
@@ -254,6 +262,7 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
     if (!formData.endTime) newErrors.endTime = 'End time is required';
     if (!formData.venue) newErrors.venue = 'Venue is required';
     if (!formData.capacity) newErrors.capacity = 'Capacity is required';
+    if (!formData.isFreeClass && !formData.monthlyFee) newErrors.monthlyFee = 'Monthly fee is required for paid classes';
 
     // Validate location link if provided
     if (formData.locationLink && formData.locationLink.trim()) {
@@ -284,6 +293,14 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
       newErrors.capacity = 'Capacity must be between 1 and 500';
     }
 
+    // Validate monthly fee
+    if (!formData.isFreeClass) {
+      const fee = parseFloat(formData.monthlyFee);
+      if (isNaN(fee) || fee < 0) {
+        newErrors.monthlyFee = 'Monthly fee must be a non-negative number';
+      }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -297,6 +314,15 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
   const handleClose = () => {
     resetForm();
     onClose();
+  };
+
+  const handleFreeClassToggle = (event) => {
+    const isChecked = event.target.checked;
+    setFormData(prev => ({
+      ...prev,
+      isFreeClass: isChecked,
+      monthlyFee: isChecked ? 0 : prev.monthlyFee
+    }));
   };
 
   return (
@@ -861,7 +887,46 @@ const ClassForm = ({ open, onClose, onSubmit, editingClass }) => {
                 </FormControl>
               </Grid>
 
-            {/* 3. THIRD FIELD: Location Link - Full Width */}
+              {/* Free Class Toggle */}
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Switch
+                      checked={formData.isFreeClass}
+                      onChange={handleFreeClassToggle}
+                      color="primary"
+                    />
+                    <Typography>
+                     අයකිරීමක් අවශ්‍ය නැත.
+                    </Typography>
+                  </Box>
+                </FormControl>
+              </Grid>
+
+              {/* Monthly Fee */}
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label="මාසික ගාස්තුව (රු.) *"
+                  type="number"
+                  value={formData.monthlyFee}
+                  onChange={(e) => handleInputChange('monthlyFee', e.target.value)}
+                  error={!!errors.monthlyFee}
+                  helperText={errors.monthlyFee}
+                  disabled={formData.isFreeClass}
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">රු.</InputAdornment>,
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '&:hover fieldset': { borderColor: '#667eea' },
+                      '&.Mui-focused fieldset': { borderColor: '#667eea' }
+                    }
+                  }}
+                />
+              </Grid>
+
+              {/* Location Link */}
               <Grid item xs={12}>
                 <TextField
                   fullWidth
