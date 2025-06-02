@@ -535,6 +535,24 @@ const StudentManagement = () => {
     return count;
   };
 
+  // Add a function to count filtered results
+  const getFilteredResultsCount = () => {
+    return students.filter(student => {
+      const matchesStatus = !statusFilter || student.status === statusFilter;
+      const matchesGrade = !gradeFilter || student.selectedGrade === gradeFilter;
+      const matchesClass = !classFilter || (student.enrolledClasses && student.enrolledClasses.some(cls => cls._id === classFilter));
+      const matchesPaymentRole = !paymentRoleFilter || student.paymentRole === paymentRoleFilter;
+      const matchesPaymentStatus = !paymentStatusFilter || student.paymentStatus === paymentStatusFilter;
+      const matchesSearch = !searchTerm ||
+        student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.studentId?.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesStatus && matchesGrade && matchesClass && matchesPaymentRole && matchesPaymentStatus && matchesSearch;
+    }).length;
+  };
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
@@ -772,17 +790,33 @@ const StudentManagement = () => {
                 Filters & Search
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Chip
-                  label={`${getActiveFiltersCount()} Active Filters`}
-                  color="primary"
-                  variant="outlined"
-                  sx={{
-                    '& .MuiChip-label': {
-                      fontWeight: 'bold',
-                      fontSize: '0.9rem'
-                    }
-                  }}
-                />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Chip
+                    label={`${getActiveFiltersCount()} Active Filters`}
+                    color="primary"
+                    variant="outlined"
+                    sx={{
+                      '& .MuiChip-label': {
+                        fontWeight: 'bold',
+                        fontSize: '0.9rem'
+                      }
+                    }}
+                  />
+                  <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 'medium' }}>
+                    |
+                  </Typography>
+                  <Chip
+                    label={`${getFilteredResultsCount()} Results`}
+                    color="secondary"
+                    variant="outlined"
+                    sx={{
+                      '& .MuiChip-label': {
+                        fontWeight: 'bold',
+                        fontSize: '0.9rem'
+                      }
+                    }}
+                  />
+                </Box>
                 <Button
                   variant="outlined"
                   onClick={() => {
