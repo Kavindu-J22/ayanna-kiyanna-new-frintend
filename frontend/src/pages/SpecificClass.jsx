@@ -709,7 +709,7 @@ const SpecificClass = () => {
         </motion.div>
 
         {/* Special Note Alert - Moved and Styled */}
-        {showSpecialNote && (
+        {showSpecialNote && (userRole === 'admin' || userRole === 'moderator') && (
           <Paper
             elevation={3}
             sx={{
@@ -752,6 +752,54 @@ const SpecificClass = () => {
               }}
             >
               මෙය විශේෂ/අමතර පන්තියකි. ඔබට අවශ්‍යනම් පමණක් මෙම පන්ති වල ද පැමිණීම් කළමනාකරණය, පන්ති ගෙවීම් කළමනාකරණය වැනි කරයුතු සිදුකර හැකිය. එසේත් නැතිනම් දත්ත වල නිරවද්‍යතාවය වෙනුවෙන් මෙම අමතර හෝ විශේෂ පන්තිය සිදු කරන සාමාන්‍ය පන්තියට අදාල ව ඔවුන්ගේ පැමිණීම හා ගෙවීම් සටහන් කරන්න. අවශ්‍යතාවය අනුව ඔබට මෙම විශේෂ/අමතර පන්තියේම ද එම කටයුතු ද ගැටලුවක් නැතිව සිදුකර හැකිය.
+            </Typography>
+          </Paper>
+        )}
+
+        {/* Student Special Note */}
+        {showSpecialNote && userRole === 'student' && (
+          <Paper
+            elevation={3}
+            sx={{
+              mt: 1,
+              p: 3,
+              mb: 2,
+              background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+              borderRadius: 3,
+              border: '1px solid #ffb74d',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
+            <Box sx={{ position: 'absolute', top: 0, right: 0, p: 1 }}>
+              <School sx={{ fontSize: 40, color: 'rgba(255, 183, 77, 0.5)' }} />
+            </Box>
+            <Typography
+              variant="h6"
+              sx={{
+                mb: 2,
+                color: '#e65100',
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                fontWeight: 'bold',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1
+              }}
+            >
+              <Assignment sx={{ color: '#e65100' }} />
+              විශේෂ/අමතර පන්ති තොරතුරු
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                color: '#bf360c',
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                lineHeight: 1.8,
+                position: 'relative',
+                zIndex: 1
+              }}
+            >
+              මෙය ගුරුතුමා විසින් සිදුකල අමතර හෝ විශේෂ පන්තියකි. මෙහි ඔබගේ පැමිණීම හෝ ඔබගේ පන්ති ගෙවීම් පිටු තුල කිසිවක් නොපෙන්වන්නේ නම් එය ගැටලුවන් නොකරගන්න. අදාල පරිදි ගුරුතුමා විසින් එම දත්ත ඔබගේ අදාල සාමාන්‍ය පත්තිය තුල ඇතුලත් කර ඇත. අවශ්‍යනම් ඔබගේ සාමාන්‍ය පන්තියට ඇතුල් වී ඒවා පරීන්ශාකර බලන්න, නැතිනම් එය නෙසලකා හරින්න.
             </Typography>
           </Paper>
         )}
