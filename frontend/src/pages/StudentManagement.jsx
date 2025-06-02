@@ -52,7 +52,9 @@ import {
   LocationOn,
   People,
   Category,
-  Assignment
+  Assignment,
+  Payment,
+  CreditCard
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -93,6 +95,12 @@ const StudentManagement = () => {
   const [selectedOldClass, setSelectedOldClass] = useState('');
   const [selectedNewClass, setSelectedNewClass] = useState('');
   const [newStatus, setNewStatus] = useState('');
+
+  // Add new state variables
+  const [showPaymentRoleDialog, setShowPaymentRoleDialog] = useState(false);
+  const [showPaymentStatusDialog, setShowPaymentStatusDialog] = useState(false);
+  const [selectedPaymentRole, setSelectedPaymentRole] = useState('');
+  const [selectedPaymentStatus, setSelectedPaymentStatus] = useState('');
 
   useEffect(() => {
     loadStudentData();
@@ -389,6 +397,71 @@ const StudentManagement = () => {
       loadStudentData();
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to delete student');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  // Add new handler functions
+  const handleUpdatePaymentRole = (student) => {
+    setSelectedStudent(student);
+    setSelectedPaymentRole(student.paymentRole);
+    setShowPaymentRoleDialog(true);
+    setAdminNote('');
+  };
+
+  const handleUpdatePaymentStatus = (student) => {
+    setSelectedStudent(student);
+    setSelectedPaymentStatus(student.paymentStatus);
+    setShowPaymentStatusDialog(true);
+    setAdminNote('');
+  };
+
+  const confirmPaymentRoleUpdate = async () => {
+    if (!selectedStudent || !selectedPaymentRole) return;
+
+    setProcessing(true);
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/${selectedStudent._id}/payment-role`,
+        {
+          paymentRole: selectedPaymentRole,
+          adminNote
+        },
+        { headers: { 'x-auth-token': token } }
+      );
+
+      setSuccess('Payment role updated successfully');
+      setShowPaymentRoleDialog(false);
+      loadStudentData();
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to update payment role');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const confirmPaymentStatusUpdate = async () => {
+    if (!selectedStudent || !selectedPaymentStatus) return;
+
+    setProcessing(true);
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/${selectedStudent._id}/payment-status`,
+        {
+          paymentStatus: selectedPaymentStatus,
+          adminNote
+        },
+        { headers: { 'x-auth-token': token } }
+      );
+
+      setSuccess('Payment status updated successfully');
+      setShowPaymentStatusDialog(false);
+      loadStudentData();
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to update payment status');
     } finally {
       setProcessing(false);
     }
@@ -703,6 +776,8 @@ const StudentManagement = () => {
                     <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Email</TableCell>
                     <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Grade</TableCell>
                     <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Status</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Payment Role</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Payment Status</TableCell>
                     <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Classes</TableCell>
                     <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Actions</TableCell>
                   </TableRow>
@@ -736,6 +811,29 @@ const StudentManagement = () => {
                           color={getStatusColor(student.status)}
                           icon={getStatusIcon(student.status)}
                           size="small"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={student.paymentRole}
+                          color={student.paymentRole === 'Pay Card' ? 'primary' : 'secondary'}
+                          icon={<CreditCard />}
+                          size="small"
+                          onClick={() => handleUpdatePaymentRole(student)}
+                          sx={{ cursor: 'pointer' }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={student.paymentStatus}
+                          color={
+                            student.paymentStatus === 'Paid' ? 'success' :
+                              student.paymentStatus === 'Unpaid' ? 'error' : 'warning'
+                          }
+                          icon={<Payment />}
+                          size="small"
+                          onClick={() => handleUpdatePaymentStatus(student)}
+                          sx={{ cursor: 'pointer' }}
                         />
                       </TableCell>
                       <TableCell>
@@ -1168,6 +1266,95 @@ const StudentManagement = () => {
                 startIcon={processing ? <CircularProgress size={20} /> : <Delete />}
               >
                 {processing ? 'Deleting...' : 'Delete Student'}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Payment Role Update Dialog */}
+          <Dialog open={showPaymentRoleDialog} onClose={() => setShowPaymentRoleDialog(false)} maxWidth="sm" fullWidth>
+            <DialogTitle>Update Payment Role</DialogTitle>
+            <DialogContent>
+              <Typography gutterBottom>
+                Update payment role for {selectedStudent?.firstName} {selectedStudent?.lastName}
+              </Typography>
+              <FormControl fullWidth sx={{ mt: 2 }}>
+                <InputLabel>Payment Role</InputLabel>
+                <Select
+                  value={selectedPaymentRole}
+                  onChange={(e) => setSelectedPaymentRole(e.target.value)}
+                  label="Payment Role"
+                >
+                  <MenuItem value="Pay Card">Pay Card</MenuItem>
+                  <MenuItem value="Free Card">Free Card</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                fullWidth
+                label="Admin Note"
+                multiline
+                rows={3}
+                value={adminNote}
+                onChange={(e) => setAdminNote(e.target.value)}
+                sx={{ mt: 2 }}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowPaymentRoleDialog(false)} disabled={processing}>
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmPaymentRoleUpdate}
+                variant="contained"
+                color="primary"
+                disabled={processing}
+                startIcon={processing ? <CircularProgress size={20} /> : null}
+              >
+                {processing ? 'Updating...' : 'Update'}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Payment Status Update Dialog */}
+          <Dialog open={showPaymentStatusDialog} onClose={() => setShowPaymentStatusDialog(false)} maxWidth="sm" fullWidth>
+            <DialogTitle>Update Payment Status</DialogTitle>
+            <DialogContent>
+              <Typography gutterBottom>
+                Update payment status for {selectedStudent?.firstName} {selectedStudent?.lastName}
+              </Typography>
+              <FormControl fullWidth sx={{ mt: 2 }}>
+                <InputLabel>Payment Status</InputLabel>
+                <Select
+                  value={selectedPaymentStatus}
+                  onChange={(e) => setSelectedPaymentStatus(e.target.value)}
+                  label="Payment Status"
+                >
+                  <MenuItem value="admissioned">Admissioned</MenuItem>
+                  <MenuItem value="Paid">Paid</MenuItem>
+                  <MenuItem value="Unpaid">Unpaid</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                fullWidth
+                label="Admin Note"
+                multiline
+                rows={3}
+                value={adminNote}
+                onChange={(e) => setAdminNote(e.target.value)}
+                sx={{ mt: 2 }}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowPaymentStatusDialog(false)} disabled={processing}>
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmPaymentStatusUpdate}
+                variant="contained"
+                color="primary"
+                disabled={processing}
+                startIcon={processing ? <CircularProgress size={20} /> : null}
+              >
+                {processing ? 'Updating...' : 'Update'}
               </Button>
             </DialogActions>
           </Dialog>
