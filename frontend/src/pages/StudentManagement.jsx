@@ -102,11 +102,15 @@ const StudentManagement = () => {
   const [selectedPaymentRole, setSelectedPaymentRole] = useState('');
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState('');
 
+  // Add new state variables for payment filters
+  const [paymentRoleFilter, setPaymentRoleFilter] = useState('');
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState('');
+
   useEffect(() => {
     loadStudentData();
     loadAdditionalData();
     loadPendingClassRequestsCount();
-  }, [statusFilter, gradeFilter, classFilter, currentPage]);
+  }, [statusFilter, gradeFilter, classFilter, currentPage, paymentRoleFilter, paymentStatusFilter]);
 
   const loadAdditionalData = async () => {
     try {
@@ -155,17 +159,20 @@ const StudentManagement = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
 
-      // Load students
-      const params = new URLSearchParams({
-        page: currentPage,
-        limit: 10,
-        ...(statusFilter && { status: statusFilter }),
-        ...(gradeFilter && { grade: gradeFilter }),
-        ...(classFilter && { classId: classFilter })
-      });
+      // Build query parameters
+      const params = new URLSearchParams();
+      params.append('page', currentPage);
+      params.append('limit', 10);
+      if (statusFilter) params.append('status', statusFilter);
+      if (gradeFilter) params.append('grade', gradeFilter);
+      if (classFilter) params.append('classId', classFilter);
+      if (paymentRoleFilter) params.append('paymentRole', paymentRoleFilter);
+      if (paymentStatusFilter) params.append('paymentStatus', paymentStatusFilter);
+      if (searchTerm) params.append('search', searchTerm);
 
+      // Load students
       const studentsResponse = await axios.get(
-        `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students?${params}`,
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students?${params.toString()}`,
         { headers: { 'x-auth-token': token } }
       );
       setStudents(studentsResponse.data.students);
@@ -178,6 +185,7 @@ const StudentManagement = () => {
       setStats(statsResponse.data);
 
     } catch (error) {
+      console.error('Error loading student data:', error);
       setError(error.response?.data?.message || 'Failed to load student data');
     } finally {
       setLoading(false);
@@ -765,11 +773,11 @@ const StudentManagement = () => {
               </Grid>
               <Grid item xs={12} md={3}>
                 <FormControl fullWidth>
-                  <InputLabel>Status</InputLabel>
+                  <InputLabel>Registration Status</InputLabel>
                   <Select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    label="Status"
+                    label="Registration Status"
                   >
                     <MenuItem value="">All</MenuItem>
                     <MenuItem value="Pending">Pending</MenuItem>
@@ -809,6 +817,53 @@ const StudentManagement = () => {
                     ))}
                   </Select>
                 </FormControl>
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <FormControl fullWidth>
+                  <InputLabel>Payment Role</InputLabel>
+                  <Select
+                    value={paymentRoleFilter}
+                    onChange={(e) => setPaymentRoleFilter(e.target.value)}
+                    label="Payment Role"
+                  >
+                    <MenuItem value="">All</MenuItem>
+                    <MenuItem value="Pay Card">Pay Card</MenuItem>
+                    <MenuItem value="Free Card">Free Card</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <FormControl fullWidth>
+                  <InputLabel>Payment Status</InputLabel>
+                  <Select
+                    value={paymentStatusFilter}
+                    onChange={(e) => setPaymentStatusFilter(e.target.value)}
+                    label="Payment Status"
+                  >
+                    <MenuItem value="">All</MenuItem>
+                    <MenuItem value="admissioned">Admissioned (අලුත් සිසුවෙකු ලෙස සටහන් කරන්න)</MenuItem>
+                    <MenuItem value="Paid">Paid (ගෙවීම් සිදු කල සිසුවෙකු ලෙස සටහන් කරන්න)</MenuItem>
+                    <MenuItem value="Unpaid">Unpaid (ගෙවීම් සිදු නොකල සිසුවෙකු ලෙස සටහන් කරන්න)</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      setStatusFilter('');
+                      setGradeFilter('');
+                      setClassFilter('');
+                      setPaymentRoleFilter('');
+                      setPaymentStatusFilter('');
+                      setSearchTerm('');
+                    }}
+                    startIcon={<Refresh />}
+                  >
+                    Clear Filters
+                  </Button>
+                </Box>
               </Grid>
             </Grid>
           </Paper>
