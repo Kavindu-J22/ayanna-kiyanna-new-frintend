@@ -104,10 +104,22 @@ const SpecificClass = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [bulkAdding, setBulkAdding] = useState(false);
 
+  // Add new state for special class note
+  const [showSpecialNote, setShowSpecialNote] = useState(false);
+
   useEffect(() => {
     fetchClassData();
     checkUserRole();
   }, [classId]);
+
+  // Add effect to check if class is special
+  useEffect(() => {
+    if (classData && classData.type === 'Special') {
+      setShowSpecialNote(true);
+    } else {
+      setShowSpecialNote(false);
+    }
+  }, [classData]);
 
   useEffect(() => {
     const fetchNormalClasses = async () => {
@@ -499,7 +511,7 @@ const SpecificClass = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Paper elevation={6} sx={{ p: 4, mb: 4, borderRadius: 3 }}>
+          <Paper elevation={6} sx={{ p: 4, mb: 2, borderRadius: 3 }}>
             <Grid container spacing={4}>
               {/* Class Information */}
               <Grid item xs={12} md={8}>
@@ -695,6 +707,54 @@ const SpecificClass = () => {
             </Grid>
           </Paper>
         </motion.div>
+
+        {/* Special Note Alert - Moved and Styled */}
+        {showSpecialNote && (
+          <Paper
+            elevation={3}
+            sx={{
+              mt: 1,
+              p: 3,
+              mb: 2,
+              background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+              borderRadius: 3,
+              border: '1px solid #90caf9',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
+            <Box sx={{ position: 'absolute', top: 0, right: 0, p: 1 }}>
+              <School sx={{ fontSize: 40, color: 'rgba(144, 202, 249, 0.5)' }} />
+            </Box>
+            <Typography
+              variant="h6"
+              sx={{
+                mb: 2,
+                color: '#1976d2',
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                fontWeight: 'bold',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1
+              }}
+            >
+              <Assignment sx={{ color: '#1976d2' }} />
+              විශේෂ/අමතර පන්ති පිලිබද වැදගත් සටහන
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                color: '#0d47a1',
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                lineHeight: 1.8,
+                position: 'relative',
+                zIndex: 1
+              }}
+            >
+              මෙය විශේෂ/අමතර පන්තියකි. ඔබට අවශ්‍යනම් පමණක් මෙම පන්ති වල ද පැමිණීම් කළමනාකරණය, පන්ති ගෙවීම් කළමනාකරණය වැනි කරයුතු සිදුකර හැකිය. එසේත් නැතිනම් දත්ත වල නිරවද්‍යතාවය වෙනුවෙන් මෙම අමතර හෝ විශේෂ පන්තිය සිදු කරන සාමාන්‍ය පන්තියට අදාල ව ඔවුන්ගේ පැමිණීම හා ගෙවීම් සටහන් කරන්න. අවශ්‍යතාවය අනුව ඔබට මෙම විශේෂ/අමතර පන්තියේම ද එම කටයුතු ද ගැටලුවක් නැතිව සිදුකර හැකිය.
+            </Typography>
+          </Paper>
+        )}
 
         {/* Management Buttons Section */}
         <motion.div

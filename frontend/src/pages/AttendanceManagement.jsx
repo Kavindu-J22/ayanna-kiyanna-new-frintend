@@ -363,7 +363,7 @@ const AttendanceManagement = () => {
           <Typography variant="h6" color="text.secondary" sx={{
             fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
           }}>
-            {classData.grade} - {classData.category}
+            {classData.grade} - {classData.category} (<strong>{classData.date}</strong>)
           </Typography>
         </Paper>
 
