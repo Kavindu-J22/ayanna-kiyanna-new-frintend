@@ -422,21 +422,45 @@ const StudentManagement = () => {
 
     setProcessing(true);
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(
+      const response = await axios.put(
         `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/${selectedStudent._id}/payment-role`,
         {
           paymentRole: selectedPaymentRole,
-          adminNote
+          adminNote: adminNote || `Payment role updated from ${selectedStudent.paymentRole} to ${selectedPaymentRole}`
         },
-        { headers: { 'x-auth-token': token } }
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': localStorage.getItem('token')
+          }
+        }
       );
 
-      setSuccess('Payment role updated successfully');
-      setShowPaymentRoleDialog(false);
-      loadStudentData();
+      if (response.data) {
+        setStudents(students.map(student =>
+          student._id === selectedStudent._id
+            ? {
+              ...student,
+              paymentRole: selectedPaymentRole,
+              adminAction: {
+                actionBy: response.data.student.adminAction.actionBy,
+                actionDate: response.data.student.adminAction.actionDate,
+                actionNote: response.data.student.adminAction.actionNote
+              }
+            }
+            : student
+        ));
+        setShowPaymentRoleDialog(false);
+        setSelectedStudent(null);
+        setSelectedPaymentRole('');
+        setAdminNote('');
+        setSuccess('Payment role updated successfully');
+        setTimeout(() => setSuccess(''), 3000);
+      }
     } catch (error) {
-      setError(error.response?.data?.message || 'Failed to update payment role');
+      console.error('Error updating payment role:', error);
+      setError(error.response?.data?.message || 'Error updating payment role');
+      setTimeout(() => setError(''), 3000);
     } finally {
       setProcessing(false);
     }
@@ -447,21 +471,45 @@ const StudentManagement = () => {
 
     setProcessing(true);
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(
+      const response = await axios.put(
         `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/${selectedStudent._id}/payment-status`,
         {
           paymentStatus: selectedPaymentStatus,
-          adminNote
+          adminNote: adminNote || `Payment status updated from ${selectedStudent.paymentStatus} to ${selectedPaymentStatus}`
         },
-        { headers: { 'x-auth-token': token } }
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': localStorage.getItem('token')
+          }
+        }
       );
 
-      setSuccess('Payment status updated successfully');
-      setShowPaymentStatusDialog(false);
-      loadStudentData();
+      if (response.data) {
+        setStudents(students.map(student =>
+          student._id === selectedStudent._id
+            ? {
+              ...student,
+              paymentStatus: selectedPaymentStatus,
+              adminAction: {
+                actionBy: response.data.student.adminAction.actionBy,
+                actionDate: response.data.student.adminAction.actionDate,
+                actionNote: response.data.student.adminAction.actionNote
+              }
+            }
+            : student
+        ));
+        setShowPaymentStatusDialog(false);
+        setSelectedStudent(null);
+        setSelectedPaymentStatus('');
+        setAdminNote('');
+        setSuccess('Payment status updated successfully');
+        setTimeout(() => setSuccess(''), 3000);
+      }
     } catch (error) {
-      setError(error.response?.data?.message || 'Failed to update payment status');
+      console.error('Error updating payment status:', error);
+      setError(error.response?.data?.message || 'Error updating payment status');
+      setTimeout(() => setError(''), 3000);
     } finally {
       setProcessing(false);
     }
