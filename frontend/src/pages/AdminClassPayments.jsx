@@ -62,6 +62,10 @@ const AdminClassPayments = () => {
   const [updateStatusDialog, setUpdateStatusDialog] = useState({ open: false, studentData: null });
   const [newStatus, setNewStatus] = useState('');
 
+  // Payment behavior dialog states
+  const [paymentBehaviorDialog, setPaymentBehaviorDialog] = useState({ open: false, student: null });
+  const [newPaymentStatus, setNewPaymentStatus] = useState('');
+
   const monthNames = [
     'ජනවාරි', 'පෙබරවාරි', 'මාර්තු', 'අප්‍රේල්', 'මැයි', 'ජූනි',
     'ජූලි', 'අගෝස්තු', 'සැප්තැම්බර්', 'ඔක්තෝබර්', 'නොවැම්බර්', 'දෙසැම්බර්'
@@ -204,6 +208,30 @@ const AdminClassPayments = () => {
       setNewStatus('');
       setActionNote('');
       fetchPaymentData();
+    } catch (error) {
+      console.error('Error updating payment status:', error);
+      setError(error.response?.data?.message || 'Error updating payment status');
+    }
+  };
+
+  // Function to update student payment status
+  const handleUpdatePaymentBehavior = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/${paymentBehaviorDialog.student._id}/payment-status`,
+        {
+          paymentStatus: newPaymentStatus,
+          adminNote: `Payment status updated to ${newPaymentStatus} by admin`
+        },
+        { headers: { 'x-auth-token': token } }
+      );
+
+      setSuccess(`Student payment status updated to ${newPaymentStatus} successfully`);
+      setPaymentBehaviorDialog({ open: false, student: null });
+      setNewPaymentStatus('');
+      // Fetch fresh data to get the actual stored values
+      await fetchPaymentData();
     } catch (error) {
       console.error('Error updating payment status:', error);
       setError(error.response?.data?.message || 'Error updating payment status');
@@ -503,6 +531,22 @@ const AdminClassPayments = () => {
 
             {/* All Students Status */}
             <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
+              {/* Smart Note about Payment Status */}
+              <Alert severity="info" sx={{ mb: 3, borderRadius: 2 }}>
+                <Typography variant="body2" sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                  fontWeight: 'bold',
+                  mb: 1
+                }}>
+                  ගෙවීම් තත්ත්වය කළමනාකරණය:
+                </Typography>
+                <Typography variant="body2" sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                }}>
+                  Actions තීරුවේ ඇති ගෙවීම් තත්ත්වය බොත්තමෙන් ඔබට සිසුවාගේ ගෙවීම් තත්ත්වය පිලිබද සටහනක් තබාගත හැක. මෙය ස්වයංක්‍රීයව සිදු නොකරන අතර ඔබගේ පහසුවට සහ අවශ්‍ය වූ විට සිසුවාව දැනුවත් කිරීමට ලබා දී ඇති පහසුකමකි. ඒ මත ක්ලික් කිරීමෙන් ඔබට එය වෙනස් කල හැක.
+                </Typography>
+              </Alert>
+
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6" sx={{
                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
@@ -525,7 +569,6 @@ const AdminClassPayments = () => {
                       <TableCell>Student</TableCell>
                       <TableCell>Attendance</TableCell>
                       <TableCell>Payment Status</TableCell>
-                      <TableCell>Payment Role</TableCell>
                       <TableCell>Actions</TableCell>
                     </TableRow>
                   </TableHead>
@@ -558,15 +601,37 @@ const AdminClassPayments = () => {
                             <Chip label="Not Requested (Unpaid)" color="warning" size="small" />
                           )}
                         </TableCell>
-                        <TableCell>
-                          {studentData.isFreeClass ? (
-                            <Chip label="Free Card Owner" color="success" size="small" />
-                          ) : (
-                            <Chip label="Pay Card Owner" color="default" size="small" />
-                          )}
-                        </TableCell>
+
                         <TableCell>
                           <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            {/* Payment Status Button */}
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              color={
+                                studentData.student?.paymentStatus === 'Paid' ? 'success' :
+                                studentData.student?.paymentStatus === 'Unpaid' ? 'error' :
+                                'primary'
+                              }
+                              onClick={() => {
+                                setPaymentBehaviorDialog({ open: true, student: studentData.student });
+                                setNewPaymentStatus(studentData.student?.paymentStatus || 'admissioned');
+                              }}
+                              sx={{
+                                mb: 1,
+                                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                                fontSize: '0.75rem'
+                              }}
+                            >
+                              {(() => {
+                                const status = studentData.student?.paymentStatus;
+                                if (status === 'Paid') return 'ගෙවා ඇත';
+                                if (status === 'Unpaid') return 'නොගෙවා';
+                                if (status === 'admissioned') return 'ඇතුළත් වී ඇත';
+                                return 'ඇතුළත් වී ඇත'; // default fallback
+                              })()}
+                            </Button>
+
                             {studentData.payment && (
                               <>
                                 <Button
@@ -794,6 +859,95 @@ const AdminClassPayments = () => {
               disabled={!newStatus}
             >
               Update Status
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Payment Behavior Dialog */}
+        <Dialog
+          open={paymentBehaviorDialog.open}
+          onClose={() => setPaymentBehaviorDialog({ open: false, student: null })}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle sx={{
+            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+          }}>
+            ගෙවීම් තත්ත්වය වෙනස් කරන්න
+          </DialogTitle>
+          <DialogContent>
+            {paymentBehaviorDialog.student && (
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="body1" gutterBottom sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                }}>
+                  සිසුවා: <strong>
+                    {getStudentDisplayName(paymentBehaviorDialog.student)}
+                  </strong>
+                </Typography>
+                <Typography variant="body2" color="text.secondary" gutterBottom sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                }}>
+                  වර්තමාන ගෙවීම් තත්ත්වය: <Chip
+                    label={paymentBehaviorDialog.student?.paymentStatus || 'admissioned'}
+                    color={
+                      paymentBehaviorDialog.student?.paymentStatus === 'Paid' ? 'success' :
+                      paymentBehaviorDialog.student?.paymentStatus === 'Unpaid' ? 'error' :
+                      'primary'
+                    }
+                    size="small"
+                  />
+                </Typography>
+
+                <FormControl fullWidth sx={{ mt: 3 }}>
+                  <InputLabel sx={{
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                  }}>
+                    නව ගෙවීම් තත්ත්වය
+                  </InputLabel>
+                  <Select
+                    value={newPaymentStatus}
+                    label="නව ගෙවීම් තත්ත්වය"
+                    onChange={(e) => setNewPaymentStatus(e.target.value)}
+                    sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                    }}
+                  >
+                    <MenuItem value="admissioned">Admissioned (ඇතුළත් වී ඇත)</MenuItem>
+                    <MenuItem value="Paid">Paid (ගෙවා ඇත)</MenuItem>
+                    <MenuItem value="Unpaid">Unpaid (නොගෙවා)</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <Alert severity="info" sx={{ mt: 2, borderRadius: 2 }}>
+                  <Typography variant="body2" sx={{
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                  }}>
+                    මෙම සටහන සිසුවාගේ ගෙවීම් තත්ත්වය පිලිබද ඔබගේ අදහස සදහා පමණි. මෙය ස්වයංක්‍රීයව ගෙවීම් ක්‍රියාවලියට බලපාන්නේ නැත.
+                  </Typography>
+                </Alert>
+              </Box>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setPaymentBehaviorDialog({ open: false, student: null })}
+              sx={{
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+              }}
+            >
+              අවලංගු කරන්න
+            </Button>
+            <Button
+              onClick={handleUpdatePaymentBehavior}
+              color="primary"
+              variant="contained"
+              disabled={!newPaymentStatus}
+              sx={{
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+              }}
+            >
+              යාවත්කාලීන කරන්න
             </Button>
           </DialogActions>
         </Dialog>

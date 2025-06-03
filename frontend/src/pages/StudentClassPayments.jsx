@@ -321,9 +321,34 @@ const StudentClassPayments = () => {
 
                         {/* Attendance-based note */}
                         {!monthData.isFreeClass && getAttendanceNote(monthData) && (
-                          <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                            {getAttendanceNote(monthData)}
-                          </Typography>
+                          <Box sx={{
+                            mt: 2,
+                            p: 1.5,
+                            borderRadius: 2,
+                            background: monthData.attendance.presentDays < 2
+                              ? 'linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%)'
+                              : 'linear-gradient(135deg, #fff3e0 0%, #fef7f0 100%)',
+                            border: monthData.attendance.presentDays < 2
+                              ? '1px solid #4caf50'
+                              : '1px solid #ff9800',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                          }}>
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                fontWeight: 'bold',
+                                color: monthData.attendance.presentDays < 2 ? '#2e7d32' : '#e65100',
+                                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                                fontSize: '0.8rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1
+                              }}
+                            >
+                              {monthData.attendance.presentDays < 2 ? '✅' : '⚠️'}
+                              {getAttendanceNote(monthData)}
+                            </Typography>
+                          </Box>
                         )}
                       </CardContent>
                     </Card>
