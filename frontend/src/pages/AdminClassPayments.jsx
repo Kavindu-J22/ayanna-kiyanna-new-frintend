@@ -553,9 +553,9 @@ const AdminClassPayments = () => {
                               size="small"
                             />
                           ) : studentData.isFreeClass ? (
-                            <Chip label="Not Required" color="default" size="small" />
+                            <Chip label="Not Required (Free)" color="default" size="small" />
                           ) : (
-                            <Chip label="Not Requested" color="warning" size="small" />
+                            <Chip label="Not Requested (Unpaid)" color="warning" size="small" />
                           )}
                         </TableCell>
                         <TableCell>

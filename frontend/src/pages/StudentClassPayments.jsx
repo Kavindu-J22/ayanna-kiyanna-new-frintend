@@ -90,9 +90,9 @@ const StudentClassPayments = () => {
   const getAttendanceNote = (monthData) => {
     const presentDays = monthData.attendance.presentDays;
 
-    if (presentDays >= 0 && presentDays <= 2) {
-      return '🔅 දැනට මෙම මාසයට ගෙවීම අනිවාර්ය නැත';
-    } else if (presentDays > 2) {
+    if (presentDays >= 0 && presentDays < 2) {
+      return '🔅 දැනට ඔබ මෙම මාසයට ගෙවීම අනිවාර්ය නැත';
+    } else if (presentDays >= 2) {
       return '❗මෙම මස සදහා ඔබගේ ගෙවීම අනිවාර්ය යි.';
     }
     return '';
@@ -109,7 +109,7 @@ const StudentClassPayments = () => {
         case 'Approved': return 'අනුමත කර ගෙවා ඇත ✅';
         case 'Rejected':
           // Check if it's overdue for rejected payments
-          if (status === 'past' && monthData.attendance.presentDays > 2) {
+          if (status === 'past' && monthData.attendance.presentDays >= 2) {
             return 'දැන්ම ගෙවීම සිදුකරන්න (ප්‍රමාද වී ඇත)';
           }
           return 'දැන්ම ගෙවීම සිදුකරන්න';
@@ -117,8 +117,8 @@ const StudentClassPayments = () => {
       }
     }
 
-    // Check if payment is overdue (past month with >2 attendance days)
-    if (status === 'past' && monthData.attendance.presentDays > 2) {
+    // Check if payment is overdue (past month with >=2 attendance days)
+    if (status === 'past' && monthData.attendance.presentDays >= 2) {
       return 'දැන්ම ගෙවීම සිදුකරන්න (ප්‍රමාද වී ඇත)';
     }
 
