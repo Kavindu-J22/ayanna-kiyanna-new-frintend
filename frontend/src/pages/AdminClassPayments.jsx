@@ -37,7 +37,8 @@ import {
   CheckCircle,
   Cancel,
   Visibility,
-  SelectAll
+  SelectAll,
+  Search
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -55,8 +56,6 @@ const AdminClassPayments = () => {
   const [actionNote, setActionNote] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-
   // New dialog states
   const [viewRequestDialog, setViewRequestDialog] = useState({ open: false, payment: null });
   const [updateStatusDialog, setUpdateStatusDialog] = useState({ open: false, studentData: null });
@@ -65,6 +64,9 @@ const AdminClassPayments = () => {
   // Payment behavior dialog states
   const [paymentBehaviorDialog, setPaymentBehaviorDialog] = useState({ open: false, student: null });
   const [newPaymentStatus, setNewPaymentStatus] = useState('');
+
+  // Search functionality
+  const [searchTerm, setSearchTerm] = useState('');
 
   const monthNames = [
     'ජනවාරි', 'පෙබරවාරි', 'මාර්තු', 'අප්‍රේල්', 'මැයි', 'ජූනි',
@@ -287,9 +289,9 @@ const AdminClassPayments = () => {
     return 'N/A';
   };
 
-  // Filter students based on search query
+  // Filter students based on search term
   const filteredStudents = paymentData?.allStudentsStatus?.filter(studentData => {
-    if (!searchQuery) return true;
+    if (!searchTerm.trim()) return true;
 
     const displayName = getStudentDisplayName(studentData.student);
     const studentId = studentData.student?.studentId || '';
@@ -297,11 +299,12 @@ const AdminClassPayments = () => {
     const firstName = studentData.student?.firstName || '';
     const lastName = studentData.student?.lastName || '';
 
-    return displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           studentId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           surname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           lastName.toLowerCase().includes(searchQuery.toLowerCase());
+    const searchLower = searchTerm.toLowerCase();
+    return displayName.toLowerCase().includes(searchLower) ||
+           studentId.toLowerCase().includes(searchLower) ||
+           surname.toLowerCase().includes(searchLower) ||
+           firstName.toLowerCase().includes(searchLower) ||
+           lastName.toLowerCase().includes(searchLower);
   }) || [];
 
   if (loading && !paymentData) {
@@ -555,10 +558,13 @@ const AdminClassPayments = () => {
                 </Typography>
                 <TextField
                   size="small"
-                  placeholder="Search by name or Student ID..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  sx={{ minWidth: 250 }}
+                  placeholder="නම හෝ Student ID අනුව සොයන්න..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />
+                  }}
+                  sx={{ minWidth: 300 }}
                 />
               </Box>
 

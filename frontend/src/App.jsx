@@ -97,6 +97,7 @@ import AttendanceAnalytics from './pages/AttendanceAnalytics';
 import StudentClassPayments from './pages/StudentClassPayments';
 import ClassFeePayment from './pages/ClassFeePayment';
 import AdminClassPayments from './pages/AdminClassPayments';
+import AllClassPaymentRequests from './pages/AllClassPaymentRequests';
 import AksharaMalawa from './components/Aksharamalawa/NewSinhalaHodiya'
 
 const mobileDrawerWidth = 280;
@@ -866,6 +867,7 @@ function AppContent() {
               <Route path="/student-class-payments/:classId" element={<StudentClassPayments />} />
               <Route path="/class-payment/:classId/:year/:month" element={<ClassFeePayment />} />
               <Route path="/admin-class-payments/:classId" element={<AdminClassPayments />} />
+              <Route path="/all-class-payment-requests" element={<AllClassPaymentRequests />} />
 
               <Route path="/aksharamalawa" element={<AksharaMalawa />} />
             </Routes>

@@ -499,7 +499,7 @@ const ClassFeePayment = () => {
                         onClick={handleRemoveReceipt}
                         size="small"
                       >
-                        Remove Receipt
+                        Remove
                       </Button>
                       <Button
                         variant="outlined"
@@ -508,7 +508,7 @@ const ClassFeePayment = () => {
                         onClick={() => document.getElementById('receipt-upload').click()}
                         size="small"
                       >
-                        Upload New Receipt
+                        Upload New
                       </Button>
                     </Box>
 
