@@ -91,7 +91,7 @@ const StudentClassPayments = () => {
     const presentDays = monthData.attendance.presentDays;
 
     if (presentDays >= 0 && presentDays <= 2) {
-      return '🔅 දැනට ගෙවීම අනිවාර්ය නැත';
+      return '🔅 දැනට මෙම මාසයට ගෙවීම අනිවාර්ය නැත';
     } else if (presentDays > 2) {
       return '❗මෙම මස සදහා ඔබගේ ගෙවීම අනිවාර්ය යි.';
     }

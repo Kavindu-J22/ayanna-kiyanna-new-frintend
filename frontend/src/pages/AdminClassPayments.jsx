@@ -101,6 +101,33 @@ const AdminClassPayments = () => {
         `https://ayanna-kiyanna-new-backend.onrender.com/api/payments/admin/${classId}/${selectedYear}/${selectedMonth}`,
         { headers: { 'x-auth-token': token } }
       );
+
+      // Debug logging to see the actual data structure
+      console.log('=== PAYMENT DATA RECEIVED ===');
+      console.log('Full response:', response.data);
+
+      if (response.data.paymentRequests && response.data.paymentRequests.length > 0) {
+        console.log('\n=== PAYMENT REQUEST STUDENT DATA ===');
+        const studentData = response.data.paymentRequests[0].studentId;
+        console.log('Student object:', studentData);
+        console.log('firstName:', studentData?.firstName);
+        console.log('lastName:', studentData?.lastName);
+        console.log('surname:', studentData?.surname);
+        console.log('fullName:', studentData?.fullName);
+        console.log('studentId:', studentData?.studentId);
+      }
+
+      if (response.data.allStudentsStatus && response.data.allStudentsStatus.length > 0) {
+        console.log('\n=== ALL STUDENTS STATUS DATA ===');
+        const studentData = response.data.allStudentsStatus[0].student;
+        console.log('Student object:', studentData);
+        console.log('firstName:', studentData?.firstName);
+        console.log('lastName:', studentData?.lastName);
+        console.log('surname:', studentData?.surname);
+        console.log('fullName:', studentData?.fullName);
+        console.log('studentId:', studentData?.studentId);
+      }
+
       setPaymentData(response.data);
     } catch (error) {
       console.error('Error fetching payment data:', error);
@@ -201,18 +228,52 @@ const AdminClassPayments = () => {
     return years;
   };
 
+  // Helper function to get student display name
+  const getStudentDisplayName = (student) => {
+    console.log('Getting display name for student:', student);
+
+    // If fullName exists and is not empty
+    if (student?.fullName && student.fullName.trim() !== '') {
+      return student.fullName;
+    }
+
+    // Try to construct from firstName and lastName
+    if (student?.firstName && student?.lastName) {
+      return `${student.firstName} ${student.lastName}`;
+    }
+
+    // Try individual fields
+    if (student?.firstName) {
+      return student.firstName;
+    }
+
+    if (student?.lastName) {
+      return student.lastName;
+    }
+
+    if (student?.surname) {
+      return student.surname;
+    }
+
+    // Fallback
+    return 'N/A';
+  };
+
   // Filter students based on search query
   const filteredStudents = paymentData?.allStudentsStatus?.filter(studentData => {
     if (!searchQuery) return true;
 
-    const fullName = studentData.student?.fullName ||
-                     (studentData.student?.firstName && studentData.student?.lastName ?
-                      `${studentData.student.firstName} ${studentData.student.lastName}` :
-                      studentData.student?.firstName || studentData.student?.lastName || '');
+    const displayName = getStudentDisplayName(studentData.student);
     const studentId = studentData.student?.studentId || '';
+    const surname = studentData.student?.surname || '';
+    const firstName = studentData.student?.firstName || '';
+    const lastName = studentData.student?.lastName || '';
 
-    return fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           studentId.toLowerCase().includes(searchQuery.toLowerCase());
+    return displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           studentId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           surname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           lastName.toLowerCase().includes(searchQuery.toLowerCase());
   }) || [];
 
   if (loading && !paymentData) {
@@ -376,10 +437,7 @@ const AdminClassPayments = () => {
                           <TableCell>
                             <Box>
                               <Typography variant="body2" fontWeight="bold">
-                                {payment.studentId?.fullName ||
-                                 (payment.studentId?.firstName && payment.studentId?.lastName ?
-                                  `${payment.studentId.firstName} ${payment.studentId.lastName}` :
-                                  payment.studentId?.firstName || payment.studentId?.lastName || 'N/A')}
+                                {getStudentDisplayName(payment.studentId)}
                               </Typography>
                               <Typography variant="caption" color="text.secondary">
                                 {payment.studentId?.studentId || 'N/A'}
@@ -477,10 +535,7 @@ const AdminClassPayments = () => {
                         <TableCell>
                           <Box>
                             <Typography variant="body2" fontWeight="bold">
-                              {studentData.student?.fullName ||
-                               (studentData.student?.firstName && studentData.student?.lastName ?
-                                `${studentData.student.firstName} ${studentData.student.lastName}` :
-                                studentData.student?.firstName || studentData.student?.lastName || 'N/A')}
+                              {getStudentDisplayName(studentData.student)}
                             </Typography>
                             <Typography variant="caption" color="text.secondary">
                               {studentData.student?.studentId || 'N/A'}
@@ -611,10 +666,7 @@ const AdminClassPayments = () => {
                   <Grid item xs={12} sm={6}>
                     <Typography variant="subtitle2" color="text.secondary">Student Name:</Typography>
                     <Typography variant="body1" fontWeight="bold">
-                      {viewRequestDialog.payment.studentId?.fullName ||
-                       (viewRequestDialog.payment.studentId?.firstName && viewRequestDialog.payment.studentId?.lastName ?
-                        `${viewRequestDialog.payment.studentId.firstName} ${viewRequestDialog.payment.studentId.lastName}` :
-                        viewRequestDialog.payment.studentId?.firstName || viewRequestDialog.payment.studentId?.lastName || 'N/A')}
+                      {getStudentDisplayName(viewRequestDialog.payment.studentId)}
                     </Typography>
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -696,10 +748,7 @@ const AdminClassPayments = () => {
               <Box sx={{ mt: 2 }}>
                 <Typography variant="body1" gutterBottom>
                   Student: <strong>
-                    {updateStatusDialog.studentData.student?.fullName ||
-                     (updateStatusDialog.studentData.student?.firstName && updateStatusDialog.studentData.student?.lastName ?
-                      `${updateStatusDialog.studentData.student.firstName} ${updateStatusDialog.studentData.student.lastName}` :
-                      updateStatusDialog.studentData.student?.firstName || updateStatusDialog.studentData.student?.lastName || 'N/A')}
+                    {getStudentDisplayName(updateStatusDialog.studentData.student)}
                   </strong>
                 </Typography>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
