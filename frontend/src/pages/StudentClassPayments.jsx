@@ -87,22 +87,18 @@ const StudentClassPayments = () => {
     }
   };
 
-  const getAttendanceNote = (monthData, status) => {
+  const getAttendanceNote = (monthData) => {
     const presentDays = monthData.attendance.presentDays;
 
     if (presentDays >= 0 && presentDays <= 2) {
-      return 'තවමත් ගෙවීම අනිවාර්ය නැත';
+      return '🔅 දැනට ගෙවීම අනිවාර්ය නැත';
     } else if (presentDays > 2) {
-      if (status === 'past') {
-        return 'මෙම මස සදහා ඔබගේ ගෙවීම අනිවාර්ය යි. (ප්‍රමාද වී ඇත)';
-      } else {
-        return 'මෙම මස සදහා ඔබගේ ගෙවීම අනිවාර්ය යි.';
-      }
+      return '❗මෙම මස සදහා ඔබගේ ගෙවීම අනිවාර්ය යි.';
     }
     return '';
   };
 
-  const getPaymentButtonText = (monthData) => {
+  const getPaymentButtonText = (monthData, status) => {
     if (monthData.isFreeClass) {
       return 'නොමිලේ';
     }
@@ -111,9 +107,19 @@ const StudentClassPayments = () => {
       switch (monthData.payment.status) {
         case 'Pending': return 'අනුමැතිය සඳහා බලාපොරොත්තුවෙන්';
         case 'Approved': return 'අනුමත කර ගෙවා ඇත';
-        case 'Rejected': return 'දැන්ම ගෙවීම සිදුකරන්න';
+        case 'Rejected':
+          // Check if it's overdue for rejected payments
+          if (status === 'past' && monthData.attendance.presentDays > 2) {
+            return 'දැන්ම ගෙවීම සිදුකරන්න (ප්‍රමාද වී ඇත)';
+          }
+          return 'දැන්ම ගෙවීම සිදුකරන්න';
         default: return 'දැන්ම ගෙවීම සිදුකරන්න';
       }
+    }
+
+    // Check if payment is overdue (past month with >2 attendance days)
+    if (status === 'past' && monthData.attendance.presentDays > 2) {
+      return 'දැන්ම ගෙවීම සිදුකරන්න (ප්‍රමාද වී ඇත)';
     }
 
     // Always show payment button for all cases
@@ -240,7 +246,7 @@ const StudentClassPayments = () => {
           <Grid container spacing={3}>
             {paymentData.monthlyStatus.map((monthData, index) => {
               const status = getMonthStatus(monthData);
-              const buttonText = getPaymentButtonText(monthData);
+              const buttonText = getPaymentButtonText(monthData, status);
               const buttonColor = getPaymentButtonColor(monthData);
               
               return (
@@ -314,9 +320,9 @@ const StudentClassPayments = () => {
                         )}
 
                         {/* Attendance-based note */}
-                        {!monthData.isFreeClass && getAttendanceNote(monthData, status) && (
+                        {!monthData.isFreeClass && getAttendanceNote(monthData) && (
                           <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                            {getAttendanceNote(monthData, status)}
+                            {getAttendanceNote(monthData)}
                           </Typography>
                         )}
                       </CardContent>
