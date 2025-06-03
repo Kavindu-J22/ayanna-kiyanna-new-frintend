@@ -90,6 +90,9 @@ const StudentDashboard = () => {
   const [paymentStatuses, setPaymentStatuses] = useState({});
   const [paymentStatusesLoaded, setPaymentStatusesLoaded] = useState(false);
 
+  // Loading States
+  const [accessingClass, setAccessingClass] = useState({});
+
 
 
   useEffect(() => {
@@ -280,6 +283,9 @@ const StudentDashboard = () => {
   // Function to validate payment before allowing class access
   const validateClassAccess = async (classItem) => {
     try {
+      // Set loading state for this specific class
+      setAccessingClass(prev => ({ ...prev, [classItem._id]: true }));
+
       const token = localStorage.getItem('token');
       const currentYear = new Date().getFullYear();
 
@@ -339,14 +345,20 @@ const StudentDashboard = () => {
           await checkPaymentStatuses(student.enrolledClasses);
         }
 
+        // Clear loading state
+        setAccessingClass(prev => ({ ...prev, [classItem._id]: false }));
         return false;
       }
 
       // If no payment issues, allow access
+      // Clear loading state
+      setAccessingClass(prev => ({ ...prev, [classItem._id]: false }));
       return true;
 
     } catch (error) {
       console.error('Error validating class access:', error);
+      // Clear loading state
+      setAccessingClass(prev => ({ ...prev, [classItem._id]: false }));
       // If we can't check payment status, allow access (don't block due to technical issues)
       return true;
     }
@@ -838,9 +850,11 @@ const StudentDashboard = () => {
                                   disabled={
                                     student.status !== 'Approved' ||
                                     paymentStatuses[classItem._id]?.isOverdue ||
-                                    paymentStatuses[classItem._id]?.isRejected
+                                    paymentStatuses[classItem._id]?.isRejected ||
+                                    accessingClass[classItem._id]
                                   }
                                   startIcon={
+                                    accessingClass[classItem._id] ? <CircularProgress size={16} color="inherit" /> :
                                     student.status !== 'Approved' ? <Lock /> :
                                     (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) ? <Warning /> :
                                     <Visibility />
@@ -858,7 +872,8 @@ const StudentDashboard = () => {
                                     }
                                   }}
                                 >
-                                  {student.status !== 'Approved' ? 'Pending Approval' :
+                                  {accessingClass[classItem._id] ? 'Loading...' :
+                                   student.status !== 'Approved' ? 'Pending Approval' :
                                    (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) ? 'Payment Required' :
                                    'Access Class'}
                                 </Button>
@@ -978,9 +993,11 @@ const StudentDashboard = () => {
                                   disabled={
                                     student.status !== 'Approved' ||
                                     paymentStatuses[classItem._id]?.isOverdue ||
-                                    paymentStatuses[classItem._id]?.isRejected
+                                    paymentStatuses[classItem._id]?.isRejected ||
+                                    accessingClass[classItem._id]
                                   }
                                   startIcon={
+                                    accessingClass[classItem._id] ? <CircularProgress size={16} color="inherit" /> :
                                     student.status !== 'Approved' ? <Lock /> :
                                     (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) ? <Warning /> :
                                     <Visibility />
@@ -998,7 +1015,8 @@ const StudentDashboard = () => {
                                     }
                                   }}
                                 >
-                                  {student.status !== 'Approved' ? 'Pending Approval' :
+                                  {accessingClass[classItem._id] ? 'Loading...' :
+                                   student.status !== 'Approved' ? 'Pending Approval' :
                                    (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) ? 'Payment Required' :
                                    'Access Special Class'}
                                 </Button>

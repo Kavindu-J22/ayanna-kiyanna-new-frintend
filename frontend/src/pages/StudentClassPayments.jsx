@@ -87,29 +87,37 @@ const StudentClassPayments = () => {
     }
   };
 
+  const getAttendanceNote = (monthData, status) => {
+    const presentDays = monthData.attendance.presentDays;
+
+    if (presentDays >= 0 && presentDays <= 2) {
+      return 'තවමත් ගෙවීම අනිවාර්ය නැත';
+    } else if (presentDays > 2) {
+      if (status === 'past') {
+        return 'මෙම මස සදහා ඔබගේ ගෙවීම අනිවාර්ය යි. (ප්‍රමාද වී ඇත)';
+      } else {
+        return 'මෙම මස සදහා ඔබගේ ගෙවීම අනිවාර්ය යි.';
+      }
+    }
+    return '';
+  };
+
   const getPaymentButtonText = (monthData) => {
     if (monthData.isFreeClass) {
       return 'නොමිලේ';
     }
-    
+
     if (monthData.payment) {
       switch (monthData.payment.status) {
         case 'Pending': return 'අනුමැතිය සඳහා බලාපොරොත්තුවෙන්';
         case 'Approved': return 'අනුමත කර ගෙවා ඇත';
-        case 'Rejected': return 'ප්‍රතික්ෂේප කර ඇත';
-        default: return 'ගෙවන්න';
+        case 'Rejected': return 'දැන්ම ගෙවීම සිදුකරන්න';
+        default: return 'දැන්ම ගෙවීම සිදුකරන්න';
       }
     }
-    
-    if (!monthData.requiresPayment) {
-      return 'ගෙවීම අවශ්‍ය නැත';
-    }
-    
-    if (monthData.isOverdue) {
-      return 'ගෙවීම ප්‍රමාද වී ඇත';
-    }
-    
-    return 'ගෙවන්න';
+
+    // Always show payment button for all cases
+    return 'දැන්ම ගෙවීම සිදුකරන්න';
   };
 
   const getPaymentButtonColor = (monthData) => {
@@ -124,19 +132,24 @@ const StudentClassPayments = () => {
 
   const handlePaymentClick = (monthData) => {
     const status = getMonthStatus(monthData);
-    
+
     if (status === 'future') {
       return; // No action for future months
     }
-    
+
     if (monthData.isFreeClass) {
       return; // No action for free classes
     }
-    
+
+    if (monthData.payment?.status === 'Approved') {
+      return; // No action for approved payments
+    }
+
+    // Always navigate to payment page for all other cases
     if (monthData.payment && monthData.payment.status === 'Pending') {
       // Navigate to update payment page
       navigate(`/class-payment/${classId}/${monthData.year}/${monthData.month}?update=${monthData.payment._id}`);
-    } else if (monthData.requiresPayment && !monthData.payment) {
+    } else {
       // Navigate to new payment page
       navigate(`/class-payment/${classId}/${monthData.year}/${monthData.month}`);
     }
@@ -300,9 +313,10 @@ const StudentClassPayments = () => {
                           </Button>
                         )}
 
-                        {!monthData.requiresPayment && !monthData.isFreeClass && (
+                        {/* Attendance-based note */}
+                        {!monthData.isFreeClass && getAttendanceNote(monthData, status) && (
                           <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                            මෙම මාසයේ පන්ති ගාස්තු ගෙවීම අනිවාර්ය නොවේ, ඔබ දින 4කට වඩා පන්තියට සහභාගී වී නැත.
+                            {getAttendanceNote(monthData, status)}
                           </Typography>
                         )}
                       </CardContent>

@@ -21,7 +21,10 @@ import {
   CloudUpload,
   AccountBalance,
   Info,
-  Payment
+  Payment,
+  Delete,
+  Visibility,
+  GetApp
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -124,6 +127,28 @@ const ClassFeePayment = () => {
       setError('Error uploading receipt. Please try again.');
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleRemoveReceipt = async () => {
+    try {
+      // If there's a public ID, try to delete from Cloudinary
+      if (formData.receiptPublicId) {
+        // Note: For security, receipt deletion from Cloudinary should be handled by backend
+        console.log('Receipt removed from form, but file remains in Cloudinary for admin review');
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        receiptUrl: '',
+        receiptPublicId: '',
+        receiptFile: null
+      }));
+
+      setSuccess('Receipt removed successfully!');
+    } catch (error) {
+      console.error('Error removing receipt:', error);
+      setError('Error removing receipt. Please try again.');
     }
   };
 
@@ -289,31 +314,109 @@ const ClassFeePayment = () => {
                   ගෙවීම් රිසිට්පත අමුණන්න
                 </Typography>
                 
-                <Box sx={{
-                  border: '2px dashed #ccc',
-                  borderRadius: 2,
-                  p: 3,
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  '&:hover': { borderColor: 'primary.main' }
-                }}>
-                  <input
-                    type="file"
-                    accept="image/*,.pdf"
-                    onChange={(e) => handleFileUpload(e.target.files[0])}
-                    style={{ display: 'none' }}
-                    id="receipt-upload"
-                  />
-                  <label htmlFor="receipt-upload" style={{ cursor: 'pointer' }}>
-                    <CloudUpload sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
-                    <Typography variant="body1">
-                      {uploading ? 'Uploading...' : 'Click to upload receipt (Image or PDF)'}
-                    </Typography>
-                    {formData.receiptUrl && (
-                      <Chip label="Receipt uploaded" color="success" sx={{ mt: 1 }} />
-                    )}
-                  </label>
-                </Box>
+                {/* Display uploaded receipt or upload area */}
+                {formData.receiptUrl ? (
+                  <Card sx={{ p: 2, bgcolor: '#f8f9fa', border: '2px solid #28a745' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                      <Chip label="Receipt Uploaded" color="success" />
+                      <Typography variant="body2" color="text.secondary">
+                        Receipt successfully uploaded
+                      </Typography>
+                    </Box>
+
+                    {/* Receipt Preview */}
+                    <Box sx={{ mb: 2 }}>
+                      {formData.receiptUrl.toLowerCase().includes('.pdf') ? (
+                        <Box sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 2,
+                          p: 2,
+                          bgcolor: '#e3f2fd',
+                          borderRadius: 1
+                        }}>
+                          <GetApp color="primary" />
+                          <Typography variant="body2">PDF Receipt</Typography>
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            startIcon={<Visibility />}
+                            onClick={() => window.open(formData.receiptUrl, '_blank')}
+                          >
+                            View PDF
+                          </Button>
+                        </Box>
+                      ) : (
+                        <Box sx={{ textAlign: 'center' }}>
+                          <img
+                            src={formData.receiptUrl}
+                            alt="Receipt"
+                            style={{
+                              maxWidth: '100%',
+                              maxHeight: '300px',
+                              borderRadius: '8px',
+                              border: '1px solid #ddd'
+                            }}
+                          />
+                        </Box>
+                      )}
+                    </Box>
+
+                    {/* Action Buttons */}
+                    <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        startIcon={<Delete />}
+                        onClick={handleRemoveReceipt}
+                        size="small"
+                      >
+                        Remove Receipt
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        startIcon={<CloudUpload />}
+                        onClick={() => document.getElementById('receipt-upload').click()}
+                        size="small"
+                      >
+                        Upload New Receipt
+                      </Button>
+                    </Box>
+
+                    {/* Hidden file input for re-upload */}
+                    <input
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={(e) => handleFileUpload(e.target.files[0])}
+                      style={{ display: 'none' }}
+                      id="receipt-upload"
+                    />
+                  </Card>
+                ) : (
+                  <Box sx={{
+                    border: '2px dashed #ccc',
+                    borderRadius: 2,
+                    p: 3,
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    '&:hover': { borderColor: 'primary.main' }
+                  }}>
+                    <input
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={(e) => handleFileUpload(e.target.files[0])}
+                      style={{ display: 'none' }}
+                      id="receipt-upload"
+                    />
+                    <label htmlFor="receipt-upload" style={{ cursor: 'pointer' }}>
+                      <CloudUpload sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
+                      <Typography variant="body1">
+                        {uploading ? 'Uploading...' : 'Click to upload receipt (Image or PDF)'}
+                      </Typography>
+                    </label>
+                  </Box>
+                )}
               </Grid>
 
               {/* Additional Note */}

@@ -123,7 +123,7 @@ const AttendanceEdit = () => {
         studentAttendance: formData.studentAttendance
           .filter(student => student.studentId?._id) // Filter out students without valid IDs
           .map(student => ({
-            studentId: student.studentId._id,
+            studentId: student.studentId?._id,
             status: student.status
           }))
       };
@@ -147,11 +147,13 @@ const AttendanceEdit = () => {
   const updateStudentAttendance = (studentId, status) => {
     setFormData(prev => ({
       ...prev,
-      studentAttendance: prev.studentAttendance.map(student =>
-        student.studentId._id === studentId
+      studentAttendance: prev.studentAttendance.map(student => {
+        // Handle both cases: students with valid studentId and "after-joined" students
+        const currentStudentId = student.studentId?._id || student._id;
+        return currentStudentId === studentId
           ? { ...student, status }
-          : student
-      )
+          : student;
+      })
     }));
   };
 
@@ -520,7 +522,7 @@ const AttendanceEdit = () => {
                             <RadioGroup
                               row
                               value={student.status}
-                              onChange={(e) => updateStudentAttendance(student.studentId?._id, e.target.value)}
+                              onChange={(e) => updateStudentAttendance(student.studentId?._id || student._id, e.target.value)}
                             >
                               <FormControlLabel
                                 value="Present"
