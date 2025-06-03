@@ -107,6 +107,18 @@ const SpecificClass = () => {
   // Add new state for special class note
   const [showSpecialNote, setShowSpecialNote] = useState(false);
 
+  // Free Class Dialog State
+  const [freeClassDialog, setFreeClassDialog] = useState(false);
+
+  // Function to handle payment button clicks with free class check
+  const handlePaymentButtonClick = (navigateTo) => {
+    if (classData?.isFreeClass) {
+      setFreeClassDialog(true);
+    } else {
+      navigate(navigateTo);
+    }
+  };
+
   useEffect(() => {
     fetchClassData();
     checkUserRole();
@@ -909,7 +921,7 @@ const SpecificClass = () => {
                   <Grid item xs={12} sm={6} md={4}>
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card
-                        onClick={() => navigate(`/admin-class-payments/${classId}`)}
+                        onClick={() => handlePaymentButtonClick(`/admin-class-payments/${classId}`)}
                         sx={{
                           height: '100%',
                           background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
@@ -1074,7 +1086,7 @@ const SpecificClass = () => {
                   <Grid item xs={12} sm={6} md={4}>
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card
-                        onClick={() => navigate(`/student-class-payments/${classId}`)}
+                        onClick={() => handlePaymentButtonClick(`/student-class-payments/${classId}`)}
                         sx={{
                           height: '100%',
                           background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
@@ -1648,6 +1660,155 @@ const SpecificClass = () => {
               }}
             >
               {bulkAdding ? 'සිසුන් එකතු කරමින්...' : 'තෝරාගත් සිසුන් එක් කරන්න'}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Free Class Dialog */}
+        <Dialog
+          open={freeClassDialog}
+          onClose={() => setFreeClassDialog(false)}
+          maxWidth="sm"
+          fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: 4,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              overflow: 'hidden'
+            }
+          }}
+        >
+          <DialogContent sx={{ textAlign: 'center', py: 4, px: 3 }}>
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            >
+              {/* Free Class Icon */}
+              <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                mb: 3,
+                position: 'relative'
+              }}>
+                <motion.div
+                  animate={{
+                    rotate: [0, 10, -10, 0],
+                    scale: [1, 1.1, 1]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: "reverse"
+                  }}
+                >
+                  <Box sx={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #4CAF50 0%, #81C784 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 8px 32px rgba(76, 175, 80, 0.3)',
+                    border: '3px solid rgba(255, 255, 255, 0.2)'
+                  }}>
+                    <Payment sx={{ fontSize: 40, color: 'white' }} />
+                  </Box>
+                </motion.div>
+              </Box>
+
+              {/* Title */}
+              <Typography variant="h4" fontWeight="bold" sx={{
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                mb: 2,
+                textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+              }}>
+                🎉 නොමිලේ පන්තියක්! 🎉
+              </Typography>
+
+              {/* Message */}
+              <Typography variant="h6" sx={{
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                mb: 3,
+                opacity: 0.9,
+                lineHeight: 1.6
+              }}>
+                මෙම පන්තිය සම්පූර්ණයෙන්ම නොමිලේ පවත්වනු ලබන පන්තියකි!
+              </Typography>
+
+              <Typography variant="body1" sx={{
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                mb: 4,
+                opacity: 0.8,
+                lineHeight: 1.5
+              }}>
+                ඔබට මෙම පන්තිය සදහා කිසිදු ගෙවීමක් කිරීමට අවශ්‍ය නැත.
+                ගෙවීම් කළමනාකරණ පිටුවට ප්‍රවේශ වීමට අවශ්‍ය නැත.
+              </Typography>
+
+              {/* Decorative Elements */}
+              <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: 2,
+                mb: 3,
+                opacity: 0.7
+              }}>
+                <motion.span
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
+                  style={{ fontSize: '2rem' }}
+                >
+                  ✨
+                </motion.span>
+                <motion.span
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+                  style={{ fontSize: '2rem' }}
+                >
+                  🎓
+                </motion.span>
+                <motion.span
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
+                  style={{ fontSize: '2rem' }}
+                >
+                  ✨
+                </motion.span>
+              </Box>
+            </motion.div>
+          </DialogContent>
+
+          <DialogActions sx={{
+            justifyContent: 'center',
+            pb: 3,
+            background: 'rgba(255, 255, 255, 0.1)'
+          }}>
+            <Button
+              onClick={() => setFreeClassDialog(false)}
+              variant="contained"
+              size="large"
+              sx={{
+                background: 'linear-gradient(135deg, #4CAF50 0%, #81C784 100%)',
+                color: 'white',
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                fontWeight: 'bold',
+                px: 4,
+                py: 1.5,
+                borderRadius: 3,
+                fontSize: '1.1rem',
+                boxShadow: '0 4px 16px rgba(76, 175, 80, 0.4)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #45a049 0%, #75c478 100%)',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 6px 20px rgba(76, 175, 80, 0.5)'
+                },
+                transition: 'all 0.3s ease'
+              }}
+            >
+              තේරුම් ගත්තා! 👍
             </Button>
           </DialogActions>
         </Dialog>
