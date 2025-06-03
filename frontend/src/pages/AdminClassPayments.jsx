@@ -402,7 +402,7 @@ const AdminClassPayments = () => {
                       <TableCell>Student</TableCell>
                       <TableCell>Attendance</TableCell>
                       <TableCell>Payment Status</TableCell>
-                      <TableCell>Free Class</TableCell>
+                      <TableCell>Payment Role</TableCell>
                       <TableCell>Actions</TableCell>
                     </TableRow>
                   </TableHead>
@@ -437,9 +437,9 @@ const AdminClassPayments = () => {
                         </TableCell>
                         <TableCell>
                           {studentData.isFreeClass ? (
-                            <Chip label="Free" color="success" size="small" />
+                            <Chip label="Free Card Owner" color="success" size="small" />
                           ) : (
-                            <Chip label="Paid" color="default" size="small" />
+                            <Chip label="Pay Card Owner" color="default" size="small" />
                           )}
                         </TableCell>
                         <TableCell>
