@@ -547,15 +547,15 @@ const AdminClassPayments = () => {
                         </TableCell>
                         <TableCell>
                           {studentData.payment ? (
-                            <Chip 
+                            <Chip
                               label={studentData.payment.status}
                               color={getStatusColor(studentData.payment.status)}
                               size="small"
                             />
-                          ) : studentData.requiresPayment ? (
-                            <Chip label="Not Requested" color="warning" size="small" />
-                          ) : (
+                          ) : studentData.isFreeClass ? (
                             <Chip label="Not Required" color="default" size="small" />
+                          ) : (
+                            <Chip label="Not Requested" color="warning" size="small" />
                           )}
                         </TableCell>
                         <TableCell>

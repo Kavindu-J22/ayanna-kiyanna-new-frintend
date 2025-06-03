@@ -105,8 +105,8 @@ const StudentClassPayments = () => {
 
     if (monthData.payment) {
       switch (monthData.payment.status) {
-        case 'Pending': return 'අනුමැතිය සඳහා බලාපොරොත්තුවෙන්';
-        case 'Approved': return 'අනුමත කර ගෙවා ඇත';
+        case 'Pending': return 'අනුමැතිය බලාපොරොත්තුවෙන් (වෙනස් කරන්න)';
+        case 'Approved': return 'අනුමත කර ගෙවා ඇත ✅';
         case 'Rejected':
           // Check if it's overdue for rejected payments
           if (status === 'past' && monthData.attendance.presentDays > 2) {
@@ -315,7 +315,7 @@ const StudentClassPayments = () => {
                               fontWeight: 'bold'
                             }}
                           >
-                            ඉදිරියේදී
+                            ඉදිරියේදී ⏳
                           </Button>
                         )}
 
