@@ -14,7 +14,10 @@ import {
   CircularProgress,
   IconButton,
   Divider,
-  Chip
+  Chip,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails
 } from '@mui/material';
 import {
   ArrowBack,
@@ -24,7 +27,13 @@ import {
   Payment,
   Delete,
   Visibility,
-  GetApp
+  GetApp,
+  ExpandMore,
+  MonetizationOn,
+  Warning,
+  CameraAlt,
+  Description,
+  HelpOutline
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -299,6 +308,125 @@ const ClassFeePayment = () => {
 
           <Alert severity="info" sx={{ mt: 2 }}>
             ඔබේ මාසික පන්ති ගාස්තුව ඉහත බැංකු ගිණුමට ගෙවා, ගෙවීම් රිසිට්පත (රූපයක් හෝ PDF) අමුණන්න.
+          </Alert>
+        </Paper>
+
+        {/* Smart Notes Section */}
+        <Paper elevation={3} sx={{ p: 3, mb: 3, borderRadius: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+            <HelpOutline color="primary" />
+            <Typography variant="h6" fontWeight="bold" sx={{
+              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+            }}>
+              ගෙවීම් උපදෙස් සහ විශේෂ අවස්ථා
+            </Typography>
+          </Box>
+
+          <Grid container spacing={2}>
+            {/* Cash Payment Scenario */}
+            <Grid item xs={12} md={6}>
+              <Accordion sx={{ borderRadius: 2, '&:before': { display: 'none' } }}>
+                <AccordionSummary
+                  expandIcon={<ExpandMore />}
+                  sx={{
+                    bgcolor: '#e8f5e8',
+                    borderRadius: '8px 8px 0 0',
+                    '&.Mui-expanded': { borderRadius: '8px 8px 0 0' }
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <MonetizationOn color="success" />
+                    <Typography variant="subtitle1" fontWeight="bold" sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                    }}>
+                      මුදල් අතින් ගෙවීම
+                    </Typography>
+                  </Box>
+                </AccordionSummary>
+                <AccordionDetails sx={{ bgcolor: '#f9f9f9' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
+                    <CameraAlt color="primary" sx={{ mt: 0.5 }} />
+                    <Box>
+                      <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold' }}>
+                        මුදල් අතින් ගෙවන්නේ නම්:
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • ඔබේ පැහැදිලි ඡායාරූපයක් හෝ ගෙවන්නාගේ ඡායාරූපයක් අමුණන්න
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • අමතර සටහනේ "මුදල් අතින් ගෙවීම" ලෙස සඳහන් කරන්න
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        • ගෙවන්නාගේ නම සහ සම්බන්ධතාව සඳහන් කරන්න
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Alert severity="success" sx={{ fontSize: '0.875rem' }}>
+                    <strong>උදාහරණය:</strong> "මුදල් අතින් ගෙවීම - මගේ මව විසින් ගෙවන ලදී (නම: සිරිමාලි පෙරේරා)"
+                  </Alert>
+                </AccordionDetails>
+              </Accordion>
+            </Grid>
+
+            {/* Payment Difficulty Scenario */}
+            <Grid item xs={12} md={6}>
+              <Accordion sx={{ borderRadius: 2, '&:before': { display: 'none' } }}>
+                <AccordionSummary
+                  expandIcon={<ExpandMore />}
+                  sx={{
+                    bgcolor: '#fff3e0',
+                    borderRadius: '8px 8px 0 0',
+                    '&.Mui-expanded': { borderRadius: '8px 8px 0 0' }
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Warning color="warning" />
+                    <Typography variant="subtitle1" fontWeight="bold" sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                    }}>
+                      ගෙවීමේ අපහසුතාව
+                    </Typography>
+                  </Box>
+                </AccordionSummary>
+                <AccordionDetails sx={{ bgcolor: '#f9f9f9' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
+                    <Description color="primary" sx={{ mt: 0.5 }} />
+                    <Box>
+                      <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold' }}>
+                        ගෙවීමට අපහසුතාවයක් ඇත්නම්:
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        •  ඔබේ පැහැදිලි ඡායාරූපයක් හෝ හේතුවට අදාල ඡායාරූපයක් හෝ ලේඛනයක් අමුණන්න
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • අමතර සටහනේ හේතුව පැහැදිලිව සඳහන් කරන්න
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        • අපගේ පරිපාලන කණ්ඩායම ඔබට උපකාර කරනු ඇත
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Alert severity="warning" sx={{ fontSize: '0.875rem' }}>
+                    <strong>උදාහරණය:</strong> "මෙම මාසයේ ගෙවීමට අපහසුතාවයක් ඇත - පවුලේ රෝගී තත්ත්වයක් හේතුවෙන්"
+                  </Alert>
+                </AccordionDetails>
+              </Accordion>
+            </Grid>
+          </Grid>
+
+          <Divider sx={{ my: 3 }} />
+
+          <Alert severity="info" sx={{ bgcolor: '#e3f2fd' }}>
+            <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+              වැදගත් සටහන:
+            </Typography>
+            <Typography variant="body2">
+              • සියලුම ගෙවීම් ඉල්ලීම් පරිපාලන කණ්ඩායම විසින් සමාලෝචනය කරනු ලැබේ
+              <br />
+              • ගෙවීම් තහවුරු කිරීමට දින 2-3ක් ගත විය හැක
+              <br />
+              • ගෙවීම් සම්බන්ධයෙන් ගැටළුවක් ඇත්නම් අපගේ කාර්යාලයට සම්බන්ධ වන්න
+            </Typography>
           </Alert>
         </Paper>
 
