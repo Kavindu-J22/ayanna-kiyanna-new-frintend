@@ -402,40 +402,51 @@ const AdminClassPayments = () => {
                 }}>
                   ගෙවීම් ඉල්ලීම් ({monthNames[selectedMonth - 1]} {selectedYear})
                 </Typography>
-                
-                {paymentData.paymentRequests.length > 0 && (
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button
-                      variant="outlined"
-                      startIcon={<SelectAll />}
-                      onClick={handleSelectAll}
-                      size="small"
-                    >
-                      {selectedPayments.length === paymentData.paymentRequests.length ? 'Deselect All' : 'Select All'}
-                    </Button>
-                    {selectedPayments.length > 0 && (
-                      <>
-                        <Button
-                          variant="contained"
-                          color="success"
-                          onClick={() => setProcessDialog({ open: true, action: 'Approved', paymentId: null })}
-                          size="small"
-                        >
-                          Approve Selected ({selectedPayments.length})
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="error"
-                          onClick={() => setProcessDialog({ open: true, action: 'Rejected', paymentId: null })}
-                          size="small"
-                        >
-                          Reject Selected ({selectedPayments.length})
-                        </Button>
-                      </>
-                    )}
-                  </Box>
-                )}
+
+                <TextField
+                  size="small"
+                  placeholder="නම හෝ Student ID අනුව සොයන්න..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />
+                  }}
+                  sx={{ minWidth: 300 }}
+                />
               </Box>
+
+              {paymentData.paymentRequests.length > 0 && (
+                <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<SelectAll />}
+                    onClick={handleSelectAll}
+                    size="small"
+                  >
+                    {selectedPayments.length === paymentData.paymentRequests.length ? 'Deselect All' : 'Select All'}
+                  </Button>
+                  {selectedPayments.length > 0 && (
+                    <>
+                      <Button
+                        variant="contained"
+                        color="success"
+                        onClick={() => setProcessDialog({ open: true, action: 'Approved', paymentId: null })}
+                        size="small"
+                      >
+                        Approve Selected ({selectedPayments.length})
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => setProcessDialog({ open: true, action: 'Rejected', paymentId: null })}
+                        size="small"
+                      >
+                        Reject Selected ({selectedPayments.length})
+                      </Button>
+                    </>
+                  )}
+                </Box>
+              )}
 
               {paymentData.paymentRequests.length > 0 ? (
                 <TableContainer>
@@ -457,7 +468,14 @@ const AdminClassPayments = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {paymentData.paymentRequests.map((payment) => (
+                      {paymentData.paymentRequests.filter(payment => {
+                        if (!searchTerm.trim()) return true;
+                        const displayName = getStudentDisplayName(payment.studentId);
+                        const studentId = payment.studentId?.studentId || '';
+                        const searchLower = searchTerm.toLowerCase();
+                        return displayName.toLowerCase().includes(searchLower) ||
+                               studentId.toLowerCase().includes(searchLower);
+                      }).map((payment) => (
                         <TableRow key={payment._id}>
                           <TableCell padding="checkbox">
                             <Checkbox

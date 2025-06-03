@@ -39,6 +39,7 @@ import {
   Visibility,
   CheckCircle,
   Cancel,
+  Delete,
   School,
   Person,
   CalendarToday,
@@ -68,6 +69,7 @@ const AllClassPaymentRequests = () => {
   // Dialog states
   const [viewDialog, setViewDialog] = useState({ open: false, payment: null });
   const [actionDialog, setActionDialog] = useState({ open: false, payment: null, action: '' });
+  const [deleteDialog, setDeleteDialog] = useState({ open: false, payment: null });
   const [actionNote, setActionNote] = useState('');
 
   // Available classes for filter
@@ -118,7 +120,7 @@ const AllClassPaymentRequests = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        'https://ayanna-kiyanna-new-backend.onrender.com/api/admin/classes',
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/classes',
         { headers: { 'x-auth-token': token } }
       );
       setClasses(response.data || []);
@@ -201,6 +203,23 @@ const AllClassPaymentRequests = () => {
     } catch (error) {
       console.error('Error updating payment status:', error);
       setError('ගෙවීම් තත්ත්වය යාවත්කාලීන කිරීමේදී දෝෂයක් ඇති විය');
+    }
+  };
+
+  const handleDeletePayment = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/payment-requests/${deleteDialog.payment._id}`,
+        { headers: { 'x-auth-token': token } }
+      );
+
+      setSuccess('ගෙවීම් ඉල්ලීම සාර්ථකව ඉවත් කරන ලදී');
+      setDeleteDialog({ open: false, payment: null });
+      fetchPaymentRequests();
+    } catch (error) {
+      console.error('Error deleting payment request:', error);
+      setError('ගෙවීම් ඉල්ලීම ඉවත් කිරීමේදී දෝෂයක් ඇති විය');
     }
   };
 
@@ -600,6 +619,15 @@ const AllClassPaymentRequests = () => {
                               </Tooltip>
                             </>
                           )}
+                          <Tooltip title="ඉවත් කරන්න">
+                            <IconButton
+                              size="small"
+                              color="error"
+                              onClick={() => setDeleteDialog({ open: true, payment: request })}
+                            >
+                              <Delete />
+                            </IconButton>
+                          </Tooltip>
                         </Box>
                       </TableCell>
                     </TableRow>
@@ -762,6 +790,58 @@ const AllClassPaymentRequests = () => {
               }}
             >
               {actionDialog.action === 'approved' ? 'අනුමත කරන්න' : 'ප්‍රතික්ෂේප කරන්න'}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog
+          open={deleteDialog.open}
+          onClose={() => setDeleteDialog({ open: false, payment: null })}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle sx={{
+            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+            color: 'error.main'
+          }}>
+            ගෙවීම් ඉල්ලීම ඉවත් කරන්න
+          </DialogTitle>
+          <DialogContent>
+            <Typography variant="body1" sx={{ mb: 2, fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+              ඔබට මෙම ගෙවීම් ඉල්ලීම ස්ථිරවම ඉවත් කිරීමට අවශ්‍යද? මෙම ක්‍රියාමාර්ගය ආපසු හැරවිය නොහැක.
+            </Typography>
+
+            {deleteDialog.payment && (
+              <Box sx={{ p: 2, bgcolor: 'error.50', borderRadius: 1, border: '1px solid', borderColor: 'error.200' }}>
+                <Typography variant="body2">
+                  <strong>සිසුවා:</strong> {deleteDialog.payment.student?.fullName}
+                </Typography>
+                <Typography variant="body2">
+                  <strong>පන්තිය:</strong> {deleteDialog.payment.class?.grade} - {deleteDialog.payment.class?.category}
+                </Typography>
+                <Typography variant="body2">
+                  <strong>මාසය:</strong> {monthNames[deleteDialog.payment.month - 1]} {deleteDialog.payment.year}
+                </Typography>
+                <Typography variant="body2">
+                  <strong>තත්ත්වය:</strong> {getStatusText(deleteDialog.payment.status)}
+                </Typography>
+              </Box>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDeleteDialog({ open: false, payment: null })}>
+              අවලංගු කරන්න
+            </Button>
+            <Button
+              onClick={handleDeletePayment}
+              variant="contained"
+              color="error"
+              sx={{
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+              }}
+            >
+              ඉවත් කරන්න
             </Button>
           </DialogActions>
         </Dialog>

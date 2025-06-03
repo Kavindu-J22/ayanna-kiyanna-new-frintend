@@ -110,9 +110,9 @@ const StudentClassPayments = () => {
         case 'Rejected':
           // Check if it's overdue for rejected payments
           if (status === 'past' && monthData.attendance.presentDays >= 2) {
-            return 'දැන්ම ගෙවීම සිදුකරන්න (ප්‍රමාද වී ඇත)';
+            return 'දැන්ම ගෙවීම සිදුකරන්න (ප්‍රතික්ෂේප වී ඇත - ප්‍රමාද වී ඇත)';
           }
-          return 'දැන්ම ගෙවීම සිදුකරන්න';
+          return 'දැන්ම ගෙවීම සිදුකරන්න (ප්‍රතික්ෂේප වී ඇත)';
         default: return 'දැන්ම ගෙවීම සිදුකරන්න';
       }
     }

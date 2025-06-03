@@ -1220,6 +1220,16 @@ const StudentDashboard = () => {
                 <Button
                   fullWidth
                   variant="outlined"
+                  startIcon={<Payment />}
+                  sx={{ mb: 2, fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}
+                  onClick={() => navigate('/my-payment-requests')}
+                >
+                  මගේ ගෙවීම් ඉල්ලීම්
+                </Button>
+
+                <Button
+                  fullWidth
+                  variant="outlined"
                   startIcon={<DashboardIcon />}
                   onClick={() => navigate('/')}
                 >
