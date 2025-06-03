@@ -203,7 +203,7 @@ const AdminClassPayments = () => {
         { headers: { 'x-auth-token': token } }
       );
 
-      setSuccess(`Payment status updated to ${newStatus} successfully`);
+      setSuccess(`Payments & Behavior status updated to ${newStatus} successfully`);
       setUpdateStatusDialog({ open: false, studentData: null });
       setNewStatus('');
       setActionNote('');
@@ -222,12 +222,12 @@ const AdminClassPayments = () => {
         `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/${paymentBehaviorDialog.student._id}/payment-status`,
         {
           paymentStatus: newPaymentStatus,
-          adminNote: `Payment status updated to ${newPaymentStatus} by admin`
+          adminNote: `Payments & Behavior status updated by admin`
         },
         { headers: { 'x-auth-token': token } }
       );
 
-      setSuccess(`Student payment status updated to ${newPaymentStatus} successfully`);
+      setSuccess(`Student payments & behavior status updated successfully`);
       setPaymentBehaviorDialog({ open: false, student: null });
       setNewPaymentStatus('');
       // Fetch fresh data to get the actual stored values
@@ -543,7 +543,7 @@ const AdminClassPayments = () => {
                 <Typography variant="body2" sx={{
                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                 }}>
-                  Actions තීරුවේ ඇති ගෙවීම් තත්ත්වය බොත්තමෙන් ඔබට සිසුවාගේ ගෙවීම් තත්ත්වය පිලිබද සටහනක් තබාගත හැක. මෙය ස්වයංක්‍රීයව සිදු නොකරන අතර ඔබගේ පහසුවට සහ අවශ්‍ය වූ විට සිසුවාව දැනුවත් කිරීමට ලබා දී ඇති පහසුකමකි. ඒ මත ක්ලික් කිරීමෙන් ඔබට එය වෙනස් කල හැක.
+                  <strong>Actions තීරුවේ ඇති ගෙවීම් තත්ත්වය සහ හැසිරීම පිළිබද දක්වන සටහන</strong> බොත්තමෙන් ඔබට සිසුවාගේ ගෙවීම් තත්ත්වය පිලිබද සටහනක් තබාගත හැක. මෙය ස්වයංක්‍රීයව සිදු නොකරන අතර ඔබගේ පහසුවට සහ <strong>අවශ්‍ය වූ විට සිසුවාව දැනුවත් කිරීමට ලබා දී ඇති පහසුකමකි</strong>. ඒ මත ක්ලික් කිරීමෙන් ඔබට එය වෙනස් කල හැක.
                 </Typography>
               </Alert>
 
@@ -625,10 +625,10 @@ const AdminClassPayments = () => {
                             >
                               {(() => {
                                 const status = studentData.student?.paymentStatus;
-                                if (status === 'Paid') return 'ගෙවා ඇත';
-                                if (status === 'Unpaid') return 'නොගෙවා';
-                                if (status === 'admissioned') return 'ඇතුළත් වී ඇත';
-                                return 'ඇතුළත් වී ඇත'; // default fallback
+                                if (status === 'Paid') return 'ඉතා හොදයි';
+                                if (status === 'Unpaid') return 'සැලකිළිමත් විය යුතුයි';
+                                if (status === 'admissioned') return 'හොදයි, ගැටලුවක් නැත';
+                                return 'හොදයි, ගැටලුවක් නැත'; // default fallback
                               })()}
                             </Button>
 
@@ -873,7 +873,7 @@ const AdminClassPayments = () => {
           <DialogTitle sx={{
             fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
           }}>
-            ගෙවීම් තත්ත්වය වෙනස් කරන්න
+            ගෙවීම් තත්ත්වය සහ හැසිරීම පිළිබද සටහන වෙනස් කරන්න
           </DialogTitle>
           <DialogContent>
             {paymentBehaviorDialog.student && (
@@ -888,15 +888,19 @@ const AdminClassPayments = () => {
                 <Typography variant="body2" color="text.secondary" gutterBottom sx={{
                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                 }}>
-                  වර්තමාන ගෙවීම් තත්ත්වය: <Chip
-                    label={paymentBehaviorDialog.student?.paymentStatus || 'admissioned'}
-                    color={
-                      paymentBehaviorDialog.student?.paymentStatus === 'Paid' ? 'success' :
-                      paymentBehaviorDialog.student?.paymentStatus === 'Unpaid' ? 'error' :
-                      'primary'
-                    }
-                    size="small"
-                  />
+                  වර්තමාන තත්ත්වය: <Chip
+                  label={
+                    paymentBehaviorDialog.student?.paymentStatus === 'Paid' ? 'ඉතා හොදයි' :
+                    paymentBehaviorDialog.student?.paymentStatus === 'Unpaid' ? 'සැලකිළිමත් විය යුතුයි' :
+                    'හොදයි, ගැටලුවක් නැත'  // Default for 'admissioned' or when undefined
+                  }
+                  color={
+                    paymentBehaviorDialog.student?.paymentStatus === 'Paid' ? 'success' :
+                    paymentBehaviorDialog.student?.paymentStatus === 'Unpaid' ? 'error' :
+                    'primary'  // Default color for 'admissioned' or when undefined
+                  }
+                  size="small"
+                />
                 </Typography>
 
                 <FormControl fullWidth sx={{ mt: 3 }}>
@@ -913,9 +917,9 @@ const AdminClassPayments = () => {
                       fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                     }}
                   >
-                    <MenuItem value="admissioned">Admissioned (ඇතුළත් වී ඇත)</MenuItem>
-                    <MenuItem value="Paid">Paid (ගෙවා ඇත)</MenuItem>
-                    <MenuItem value="Unpaid">Unpaid (නොගෙවා)</MenuItem>
+                    <MenuItem value="admissioned">හොදයි, ගැටලුවක් නැත</MenuItem>
+                    <MenuItem value="Paid">ඉතා හොදයි</MenuItem>
+                    <MenuItem value="Unpaid">සැලකිළිමත් විය යුතුයි</MenuItem>
                   </Select>
                 </FormControl>
 
@@ -923,7 +927,7 @@ const AdminClassPayments = () => {
                   <Typography variant="body2" sx={{
                     fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                   }}>
-                    මෙම සටහන සිසුවාගේ ගෙවීම් තත්ත්වය පිලිබද ඔබගේ අදහස සදහා පමණි. මෙය ස්වයංක්‍රීයව ගෙවීම් ක්‍රියාවලියට බලපාන්නේ නැත.
+                    මෙම සටහන සිසුවාගේ ගෙවීම් තත්ත්වය සහ හැසිරීම පිලිබද ඔබගේ අදහස සදහා පමණි. මෙය ස්වයංක්‍රීයව ගෙවීම් ක්‍රියාවලියට බලපාන්නේ නැත.
                   </Typography>
                 </Alert>
               </Box>

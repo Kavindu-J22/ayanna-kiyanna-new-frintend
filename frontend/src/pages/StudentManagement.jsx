@@ -56,6 +56,7 @@ import {
   Payment,
   CreditCard
 } from '@mui/icons-material';
+import { FaPerson } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -494,7 +495,7 @@ const StudentManagement = () => {
         `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/${selectedStudent._id}/payment-status`,
         {
           paymentStatus: selectedPaymentStatus,
-          adminNote: adminNote || `Payment status updated from ${selectedStudent.paymentStatus} to ${selectedPaymentStatus}`
+          adminNote: adminNote || `Payments & Behavior status updated`
         },
         {
           headers: {
@@ -522,12 +523,12 @@ const StudentManagement = () => {
         setSelectedStudent(null);
         setSelectedPaymentStatus('');
         setAdminNote('');
-        setSuccess('Payment status updated successfully');
+        setSuccess('Payments & Behavior status updated successfully');
         setTimeout(() => setSuccess(''), 3000);
       }
     } catch (error) {
-      console.error('Error updating payment status:', error);
-      setError(error.response?.data?.message || 'Error updating payment status');
+      console.error('Error updating Payments & Behavior status:', error);
+      setError(error.response?.data?.message || 'Error updating Payments & Behavior status');
       setTimeout(() => setError(''), 3000);
     } finally {
       setProcessing(false);
@@ -922,16 +923,16 @@ const StudentManagement = () => {
               </Grid>
               <Grid item xs={12} md={3}>
                 <FormControl fullWidth sx={{ minWidth: '200px' }}>
-                  <InputLabel>Payment Status</InputLabel>
+                  <InputLabel>Payments & Behavior Status</InputLabel>
                   <Select
                     value={paymentStatusFilter}
                     onChange={(e) => setPaymentStatusFilter(e.target.value)}
-                    label="Payment Status"
+                    label="Payments & Behavior Status"
                   >
                     <MenuItem value="">All</MenuItem>
-                    <MenuItem value="admissioned">Admissioned (අලුත් සිසුවෙකු ලෙස සටහන් කරන්න)</MenuItem>
-                    <MenuItem value="Paid">Paid (ගෙවීම් සිදු කල සිසුවෙකු ලෙස සටහන් කරන්න)</MenuItem>
-                    <MenuItem value="Unpaid">Unpaid (ගෙවීම් සිදු නොකල සිසුවෙකු ලෙස සටහන් කරන්න)</MenuItem>
+                    <MenuItem value="admissioned">හොදයි, ගැටලුවක් නැත, සිසුන්</MenuItem>
+                    <MenuItem value="Paid">ඉතා හොදයි, සිසුන්</MenuItem>
+                    <MenuItem value="Unpaid">සැලකිළිමත් විය යුතු, සිසුන්</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -950,7 +951,7 @@ const StudentManagement = () => {
                     <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Grade</TableCell>
                     <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Registration Status</TableCell>
                     <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Payment Role</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Payment Status</TableCell>
+                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Payments & Behavior</TableCell>
                     <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Classes</TableCell>
                     <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Actions</TableCell>
                   </TableRow>
@@ -998,19 +999,19 @@ const StudentManagement = () => {
                       </TableCell>
                       <TableCell>
                       <Chip
-  label={
-    student.paymentStatus === 'Paid' ? 'ගාස්තු ගෙවා ඇත' :
-    student.paymentStatus === 'Unpaid' ? 'ගාස්තු ගෙවා නැත' : 'නව සිසු කාලය'
-  }
-  color={
-    student.paymentStatus === 'Paid' ? 'success' :
-    student.paymentStatus === 'Unpaid' ? 'error' : 'warning'
-  }
-  icon={<Payment />}
-  size="small"
-  onClick={() => handleUpdatePaymentStatus(student)}
-  sx={{ cursor: 'pointer' }}
-/>
+                        label={
+                          student.paymentStatus === 'Paid' ? 'ඉතා හොදයි' :
+                          student.paymentStatus === 'Unpaid' ? 'සැලකිලිමත් විය යුතුයි' : 'හොදයි,ගැටලුවක් නැත'
+                        }
+                        color={
+                          student.paymentStatus === 'Paid' ? 'success' :
+                          student.paymentStatus === 'Unpaid' ? 'error' : 'warning'
+                        }
+                        icon={<FaPerson />}
+                        size="small"
+                        onClick={() => handleUpdatePaymentStatus(student)}
+                        sx={{ cursor: 'pointer' }}
+                      />
                       </TableCell>
                       <TableCell>
                         {student.enrolledClasses && student.enrolledClasses.length > 0 ? (
@@ -1163,7 +1164,7 @@ const StudentManagement = () => {
                     )}
                   </Grid>
                   <Grid item xs={12}>
-                    <Typography variant="h6" gutterBottom>Payment Information</Typography>
+                    <Typography variant="h6" gutterBottom>Payments & Behavior Information</Typography>
                     <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
                       <Chip
                         label={selectedStudent.paymentRole}
@@ -1171,9 +1172,18 @@ const StudentManagement = () => {
                         icon={<CreditCard />}
                       />
                       <Chip
-                        label={selectedStudent.paymentStatus}
-                        color={selectedStudent.paymentStatus === 'Paid' ? 'success' : 'warning'}
-                      />
+                      label={
+                        selectedStudent.paymentStatus === 'Paid' ? 'ඉතා හොදයි' :
+                        selectedStudent.paymentStatus === 'admissioned' ? 'හොදයි, ගැටලුවක් නැත' :
+                        selectedStudent.paymentStatus === 'Unpaid' ? 'සැලකිළිමත් විය යුතුයි' :
+                        selectedStudent.paymentStatus
+                      }
+                      color={
+                        selectedStudent.paymentStatus === 'Paid' ? 'success' :
+                        selectedStudent.paymentStatus === 'admissioned' ? 'primary' : // or any other color you prefer
+                        'warning'
+                      }
+                    />
                     </Box>
                     {selectedStudent.paymentRole === 'Free Card' && selectedStudent.freeClasses?.length > 0 && (
                       <Box sx={{ mt: 2 }}>
@@ -1596,21 +1606,21 @@ const StudentManagement = () => {
 
           {/* Payment Status Update Dialog */}
           <Dialog open={showPaymentStatusDialog} onClose={() => setShowPaymentStatusDialog(false)} maxWidth="sm" fullWidth>
-            <DialogTitle>Update Payment Status</DialogTitle>
+            <DialogTitle>Update Payments & Behavior Status</DialogTitle>
             <DialogContent>
               <Typography gutterBottom>
-                Update payment status for {selectedStudent?.firstName} {selectedStudent?.lastName}
+                Update Payments & Behavior status for {selectedStudent?.firstName} {selectedStudent?.lastName}
               </Typography>
               <FormControl fullWidth sx={{ mt: 2 }}>
-                <InputLabel>Payment Status</InputLabel>
+                <InputLabel>Payments & Behavior Status</InputLabel>
                 <Select
                   value={selectedPaymentStatus}
                   onChange={(e) => setSelectedPaymentStatus(e.target.value)}
-                  label="Payment Status"
+                  label="Payments & Behavior"
                 >
-                  <MenuItem value="admissioned">Admissioned (අලුත් සිසුවෙකු ලෙස සටහන් කරන්න)</MenuItem>
-                  <MenuItem value="Paid">Paid (ගෙවීම් සිදු කල සිසුවෙකු ලෙස සටහන් කරන්න)</MenuItem>
-                  <MenuItem value="Unpaid">Unpaid (ගෙවීම් සිදු නොකල සිසුවෙකු ලෙස සටහන් කරන්න)</MenuItem>
+                  <MenuItem value="admissioned">හොදයි, ගැටලුවක් නැත</MenuItem>
+                  <MenuItem value="Paid">ඉතා හොදයි</MenuItem>
+                  <MenuItem value="Unpaid">සැලකිළිමත් විය යුතුයි !</MenuItem>
                 </Select>
               </FormControl>
               <TextField
