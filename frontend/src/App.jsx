@@ -94,6 +94,9 @@ import AttendanceManagement from './pages/AttendanceManagement';
 import AttendanceView from './pages/AttendanceView';
 import AttendanceEdit from './pages/AttendanceEdit';
 import AttendanceAnalytics from './pages/AttendanceAnalytics';
+import StudentClassPayments from './pages/StudentClassPayments';
+import ClassFeePayment from './pages/ClassFeePayment';
+import AdminClassPayments from './pages/AdminClassPayments';
 import AksharaMalawa from './components/Aksharamalawa/NewSinhalaHodiya'
 
 const mobileDrawerWidth = 280;
@@ -860,6 +863,9 @@ function AppContent() {
               <Route path="/attendance-view/:classId" element={<AttendanceView />} />
               <Route path="/attendance-edit/:id" element={<AttendanceEdit />} />
               <Route path="/attendance-analytics" element={<AttendanceAnalytics />} />
+              <Route path="/student-class-payments/:classId" element={<StudentClassPayments />} />
+              <Route path="/class-payment/:classId/:year/:month" element={<ClassFeePayment />} />
+              <Route path="/admin-class-payments/:classId" element={<AdminClassPayments />} />
 
               <Route path="/aksharamalawa" element={<AksharaMalawa />} />
             </Routes>

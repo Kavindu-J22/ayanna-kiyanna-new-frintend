@@ -44,7 +44,10 @@ import {
   LocationOn,
   AccessTime,
   Group,
-  Delete
+  Delete,
+  Warning,
+  Payment,
+  Refresh as RefreshIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -82,6 +85,12 @@ const StudentDashboard = () => {
   const [availableGrades, setAvailableGrades] = useState([]);
   const [selectedGrade, setSelectedGrade] = useState('');
   const [loadingGrades, setLoadingGrades] = useState(false);
+
+  // Payment Status States
+  const [paymentStatuses, setPaymentStatuses] = useState({});
+  const [paymentStatusesLoaded, setPaymentStatusesLoaded] = useState(false);
+
+
 
   useEffect(() => {
     const checkUserAccess = async () => {
@@ -135,6 +144,22 @@ const StudentDashboard = () => {
     }
   }, [authenticated]);
 
+  // Check payment statuses when student data is available
+  useEffect(() => {
+    if (student && student.enrolledClasses && student.enrolledClasses.length > 0) {
+      console.log('Checking payment statuses for enrolled classes:', student.enrolledClasses.length);
+      checkPaymentStatuses(student.enrolledClasses);
+    }
+  }, [student]);
+
+  // Also check payment statuses when authenticated and student data changes
+  useEffect(() => {
+    if (authenticated && student && student.enrolledClasses && student.enrolledClasses.length > 0) {
+      console.log('Re-checking payment statuses after authentication:', student.enrolledClasses.length);
+      checkPaymentStatuses(student.enrolledClasses);
+    }
+  }, [authenticated, student?.enrolledClasses]);
+
 
 
   const loadAdditionalData = async () => {
@@ -169,6 +194,172 @@ const StudentDashboard = () => {
     }
   };
 
+  const checkPaymentStatuses = async (enrolledClasses) => {
+    if (!enrolledClasses || enrolledClasses.length === 0) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const currentYear = new Date().getFullYear();
+      const currentMonth = new Date().getMonth() + 1;
+      const statuses = {};
+
+      // Check payment status for each enrolled class
+      for (const classItem of enrolledClasses) {
+        try {
+          const response = await axios.get(
+            `https://ayanna-kiyanna-new-backend.onrender.com/api/payments/student/${classItem._id}/${currentYear}`,
+            { headers: { 'x-auth-token': token } }
+          );
+
+          const monthlyStatus = response.data.monthlyStatus;
+
+          // Check all months for overdue or rejected payments, not just current month
+          let hasOverduePayment = false;
+          let hasRejectedPayment = false;
+          let currentMonthRequiresPayment = false;
+          let currentMonthPaymentStatus = null;
+
+          monthlyStatus.forEach(monthData => {
+            // Check for overdue payments (past months that require payment but don't have approved payment)
+            if (monthData.isOverdue) {
+              hasOverduePayment = true;
+            }
+
+            // Check for rejected payments in any month
+            if (monthData.payment?.status === 'Rejected') {
+              hasRejectedPayment = true;
+            }
+
+            // Get current month specific data
+            if (monthData.month === currentMonth) {
+              currentMonthRequiresPayment = monthData.requiresPayment;
+              currentMonthPaymentStatus = monthData.payment?.status || null;
+            }
+          });
+
+          statuses[classItem._id] = {
+            isOverdue: hasOverduePayment,
+            isRejected: hasRejectedPayment,
+            requiresPayment: currentMonthRequiresPayment,
+            isFreeClass: monthlyStatus[0]?.isFreeClass || false,
+            paymentStatus: currentMonthPaymentStatus
+          };
+
+          // Debug logging
+          console.log(`Payment status for class ${classItem._id} (${classItem.grade}):`, {
+            hasOverduePayment,
+            hasRejectedPayment,
+            currentMonthRequiresPayment,
+            currentMonthPaymentStatus,
+            monthlyStatusCount: monthlyStatus.length,
+            allMonthsData: monthlyStatus
+          });
+        } catch (error) {
+          console.error(`Error checking payment status for class ${classItem._id}:`, error);
+          // Set default status if error occurs (allow access if we can't check payment status)
+          statuses[classItem._id] = {
+            isOverdue: false,
+            isRejected: false,
+            requiresPayment: false,
+            isFreeClass: false,
+            paymentStatus: null,
+            error: true
+          };
+        }
+      }
+
+      setPaymentStatuses(statuses);
+      setPaymentStatusesLoaded(true);
+      console.log('Final payment statuses:', statuses);
+    } catch (error) {
+      console.error('Error checking payment statuses:', error);
+      setPaymentStatusesLoaded(true); // Set loaded even on error to prevent infinite loading
+    }
+  };
+
+  // Function to validate payment before allowing class access
+  const validateClassAccess = async (classItem) => {
+    try {
+      const token = localStorage.getItem('token');
+      const currentYear = new Date().getFullYear();
+
+      console.log('Validating class access for:', classItem.grade);
+
+      const response = await axios.get(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/payments/student/${classItem._id}/${currentYear}`,
+        { headers: { 'x-auth-token': token } }
+      );
+
+      const monthlyStatus = response.data.monthlyStatus;
+
+      // Check for any payment issues
+      let hasOverduePayment = false;
+      let hasRejectedPayment = false;
+      let overdueMonths = [];
+      let rejectedMonths = [];
+
+      monthlyStatus.forEach(monthData => {
+        if (monthData.isOverdue) {
+          hasOverduePayment = true;
+          overdueMonths.push(monthData.month);
+        }
+
+        if (monthData.payment?.status === 'Rejected') {
+          hasRejectedPayment = true;
+          rejectedMonths.push(monthData.month);
+        }
+      });
+
+      // If there are payment issues, show error dialog and prevent access
+      if (hasOverduePayment || hasRejectedPayment) {
+        // Show payment issue message
+        alert(
+          `පන්තියට ප්‍රවේශ වීමට පෙර ගෙවීම් ගැටළු විසඳන්න:\n\n${
+            hasOverduePayment ? `⚠️ ප්‍රමාද වූ ගෙවීම්: ${overdueMonths.map(m => `${m} මාසය`).join(', ')}\n` : ''
+          }${
+            hasRejectedPayment ? `❌ ප්‍රතික්ෂේප වූ ගෙවීම්: ${rejectedMonths.map(m => `${m} මාසය`).join(', ')}\n` : ''
+          }\nගෙවීම් කළමනාකරණය සඳහා "Pay Now" බොත්තම ක්ලික් කරන්න.`
+        );
+
+        // Refresh payment status and update UI to show the payment issues
+        console.log('Refreshing payment status after payment issue detected');
+
+        // Update payment status for this specific class
+        const updatedStatuses = { ...paymentStatuses };
+        updatedStatuses[classItem._id] = {
+          ...updatedStatuses[classItem._id],
+          isOverdue: hasOverduePayment,
+          isRejected: hasRejectedPayment,
+          accessBlocked: true // Add flag to show access is blocked
+        };
+        setPaymentStatuses(updatedStatuses);
+
+        // Also refresh all payment statuses to ensure UI is up to date
+        if (student && student.enrolledClasses) {
+          await checkPaymentStatuses(student.enrolledClasses);
+        }
+
+        return false;
+      }
+
+      // If no payment issues, allow access
+      return true;
+
+    } catch (error) {
+      console.error('Error validating class access:', error);
+      // If we can't check payment status, allow access (don't block due to technical issues)
+      return true;
+    }
+  };
+
+  // Function to refresh payment statuses for all classes
+  const refreshPaymentStatuses = async () => {
+    if (student && student.enrolledClasses && student.enrolledClasses.length > 0) {
+      console.log('Manually refreshing payment statuses...');
+      await checkPaymentStatuses(student.enrolledClasses);
+    }
+  };
+
   const handleStudentLogin = async () => {
     if (!studentPassword) {
       setPasswordError('Please enter your student password');
@@ -193,6 +384,11 @@ const StudentDashboard = () => {
 
       // Load additional data separately with error handling
       await loadAdditionalData();
+
+      // Check payment statuses for enrolled classes
+      if (response.data.student.enrolledClasses) {
+        await checkPaymentStatuses(response.data.student.enrolledClasses);
+      }
     } catch (error) {
       setPasswordError(error.response?.data?.message || 'Invalid student password');
     } finally {
@@ -517,12 +713,32 @@ const StudentDashboard = () => {
                 </Avatar>
               </Grid>
               <Grid item xs>
-                <Typography variant="h4" component="h1" gutterBottom sx={{
-                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-                  fontWeight: 'bold'
-                }}>
-                  Student Dashboard
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Typography variant="h4" component="h1" gutterBottom sx={{
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                    fontWeight: 'bold',
+                    mb: 0
+                  }}>
+                    Student Dashboard
+                  </Typography>
+                    <IconButton
+                      onClick={refreshPaymentStatuses}
+                      color="primary"
+                      title="Refresh Payment Status"
+                      size="small"  // This makes the button smaller
+                      sx={{
+                        bgcolor: 'primary.light',
+                        color: 'white',
+                        '&:hover': { bgcolor: 'primary.main' },
+                        p: 0.5,  // Reduced padding
+                        '& svg': {
+                          fontSize: '1rem'  // Smaller icon size
+                        }
+                      }}
+                    >
+                      <RefreshIcon fontSize="inherit" />
+                    </IconButton>
+                </Box>
                 <Typography variant="h6" color="text.secondary">
                   Welcome back, {student?.firstName} {student?.lastName}
                 </Typography>
@@ -559,16 +775,37 @@ const StudentDashboard = () => {
                         <Grid item xs={12} md={6} key={classItem._id}>
                           <Card sx={{
                             height: '100%',
-                            border: student.status === 'Approved' ? '2px solid #4caf50' : '2px solid #ff9800'
+                            border: student.status === 'Approved' ?
+                              (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected ?
+                                '2px solid #f44336' : '2px solid #4caf50') :
+                              '2px solid #ff9800'
                           }}>
                             <CardContent>
                               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                                 <Typography variant="h6">{classItem.grade}</Typography>
-                                <Chip
-                                  label={classItem.category}
-                                  size="small"
-                                  color="primary"
-                                />
+                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                  <Chip
+                                    label={classItem.category}
+                                    size="small"
+                                    color="primary"
+                                  />
+                                  {paymentStatuses[classItem._id]?.isOverdue && (
+                                    <Chip
+                                      label="Payment Overdue"
+                                      size="small"
+                                      color="error"
+                                      icon={<Warning />}
+                                    />
+                                  )}
+                                  {paymentStatuses[classItem._id]?.isRejected && (
+                                    <Chip
+                                      label="Payment Rejected"
+                                      size="small"
+                                      color="error"
+                                      icon={<Warning />}
+                                    />
+                                  )}
+                                </Box>
                               </Box>
                               <Typography color="text.secondary" gutterBottom>
                                 <Schedule sx={{ fontSize: 16, mr: 1 }} />
@@ -582,16 +819,62 @@ const StudentDashboard = () => {
                                 Platform: {classItem.platform}
                               </Typography>
 
-                              <Button
-                                variant="contained"
-                                fullWidth
-                                sx={{ mt: 2 }}
-                                disabled={student.status !== 'Approved'}
-                                startIcon={student.status === 'Approved' ? <Visibility /> : <Lock />}
-                                onClick={() => student.status === 'Approved' && navigate(`/class/${classItem._id}`)}
-                              >
-                                {student.status === 'Approved' ? 'Access Class' : 'Pending Approval'}
-                              </Button>
+                              {/* Payment Warning Notice */}
+                              {(paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) && (
+                                <Alert severity="warning" sx={{ mt: 2, mb: 2 }}>
+                                  <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                    {paymentStatuses[classItem._id]?.isOverdue ? 'ගෙවීම ප්‍රමාද වී ඇත!' : 'ගෙවීම ප්‍රතික්ෂේප කර ඇත!'}
+                                  </Typography>
+                                  <Typography variant="caption">
+                                    පන්තියට ප්‍රවේශ වීමට පෙර ගෙවීම සම්පූර්ණ කරන්න.
+                                  </Typography>
+                                </Alert>
+                              )}
+
+                              <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                                <Button
+                                  variant="contained"
+                                  fullWidth
+                                  disabled={
+                                    student.status !== 'Approved' ||
+                                    paymentStatuses[classItem._id]?.isOverdue ||
+                                    paymentStatuses[classItem._id]?.isRejected
+                                  }
+                                  startIcon={
+                                    student.status !== 'Approved' ? <Lock /> :
+                                    (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) ? <Warning /> :
+                                    <Visibility />
+                                  }
+                                  onClick={async () => {
+                                    if (student.status !== 'Approved') {
+                                      alert('Your student account is not yet approved. Please wait for admin approval.');
+                                      return;
+                                    }
+
+                                    // Validate payment status before allowing access
+                                    const canAccess = await validateClassAccess(classItem);
+                                    if (canAccess) {
+                                      navigate(`/class/${classItem._id}`);
+                                    }
+                                  }}
+                                >
+                                  {student.status !== 'Approved' ? 'Pending Approval' :
+                                   (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) ? 'Payment Required' :
+                                   'Access Class'}
+                                </Button>
+
+                                {(paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) && (
+                                  <Button
+                                    variant="outlined"
+                                    color="error"
+                                    startIcon={<Payment />}
+                                    onClick={() => navigate(`/student-class-payments/${classItem._id}`)}
+                                    sx={{ minWidth: 'auto', px: 2 }}
+                                  >
+                                    Pay Now
+                                  </Button>
+                                )}
+                              </Box>
                             </CardContent>
                           </Card>
                         </Grid>
@@ -621,7 +904,8 @@ const StudentDashboard = () => {
                           <Card sx={{
                             height: '100%',
                             border: '2px solid',
-                            borderColor: 'warning.main',
+                            borderColor: paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected ?
+                              'error.main' : 'warning.main',
                             background: 'linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%)',
                             '&:hover': {
                               transform: 'translateY(-4px)',
@@ -632,12 +916,30 @@ const StudentDashboard = () => {
                             <CardContent>
                               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                                 <Typography variant="h6" sx={{ color: 'warning.dark' }}>{classItem.grade}</Typography>
-                                <Chip
-                                  label="Special Class"
-                                  size="small"
-                                  color="warning"
-                                  sx={{ fontWeight: 'bold' }}
-                                />
+                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                  <Chip
+                                    label="Special Class"
+                                    size="small"
+                                    color="warning"
+                                    sx={{ fontWeight: 'bold' }}
+                                  />
+                                  {paymentStatuses[classItem._id]?.isOverdue && (
+                                    <Chip
+                                      label="Payment Overdue"
+                                      size="small"
+                                      color="error"
+                                      icon={<Warning />}
+                                    />
+                                  )}
+                                  {paymentStatuses[classItem._id]?.isRejected && (
+                                    <Chip
+                                      label="Payment Rejected"
+                                      size="small"
+                                      color="error"
+                                      icon={<Warning />}
+                                    />
+                                  )}
+                                </Box>
                               </Box>
                               <Typography color="text.secondary" gutterBottom>
                                 <Schedule sx={{ fontSize: 16, mr: 1, color: 'warning.main' }} />
@@ -651,22 +953,68 @@ const StudentDashboard = () => {
                                 Platform: {classItem.platform}
                               </Typography>
 
-                              <Button
-                                variant="contained"
-                                fullWidth
-                                sx={{
-                                  mt: 2,
-                                  bgcolor: 'warning.main',
-                                  '&:hover': {
-                                    bgcolor: 'warning.dark'
+                              {/* Payment Warning Notice */}
+                              {(paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) && (
+                                <Alert severity="warning" sx={{ mt: 2, mb: 2 }}>
+                                  <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                    {paymentStatuses[classItem._id]?.isOverdue ? 'ගෙවීම ප්‍රමාද වී ඇත!' : 'ගෙවීම ප්‍රතික්ෂේප කර ඇත!'}
+                                  </Typography>
+                                  <Typography variant="caption">
+                                    පන්තියට ප්‍රවේශ වීමට පෙර ගෙවීම සම්පූර්ණ කරන්න.
+                                  </Typography>
+                                </Alert>
+                              )}
+
+                              <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                                <Button
+                                  variant="contained"
+                                  fullWidth
+                                  sx={{
+                                    bgcolor: 'warning.main',
+                                    '&:hover': {
+                                      bgcolor: 'warning.dark'
+                                    }
+                                  }}
+                                  disabled={
+                                    student.status !== 'Approved' ||
+                                    paymentStatuses[classItem._id]?.isOverdue ||
+                                    paymentStatuses[classItem._id]?.isRejected
                                   }
-                                }}
-                                disabled={student.status !== 'Approved'}
-                                startIcon={student.status === 'Approved' ? <Visibility /> : <Lock />}
-                                onClick={() => student.status === 'Approved' && navigate(`/class/${classItem._id}`)}
-                              >
-                                {student.status === 'Approved' ? 'Access Special Class' : 'Pending Approval'}
-                              </Button>
+                                  startIcon={
+                                    student.status !== 'Approved' ? <Lock /> :
+                                    (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) ? <Warning /> :
+                                    <Visibility />
+                                  }
+                                  onClick={async () => {
+                                    if (student.status !== 'Approved') {
+                                      alert('Your student account is not yet approved. Please wait for admin approval.');
+                                      return;
+                                    }
+
+                                    // Validate payment status before allowing access
+                                    const canAccess = await validateClassAccess(classItem);
+                                    if (canAccess) {
+                                      navigate(`/class/${classItem._id}`);
+                                    }
+                                  }}
+                                >
+                                  {student.status !== 'Approved' ? 'Pending Approval' :
+                                   (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) ? 'Payment Required' :
+                                   'Access Special Class'}
+                                </Button>
+
+                                {(paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) && (
+                                  <Button
+                                    variant="outlined"
+                                    color="error"
+                                    startIcon={<Payment />}
+                                    onClick={() => navigate(`/student-class-payments/${classItem._id}`)}
+                                    sx={{ minWidth: 'auto', px: 2 }}
+                                  >
+                                    Pay Now
+                                  </Button>
+                                )}
+                              </Box>
                             </CardContent>
                           </Card>
                         </Grid>

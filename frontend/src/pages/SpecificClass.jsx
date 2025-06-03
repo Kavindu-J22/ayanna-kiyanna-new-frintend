@@ -908,13 +908,15 @@ const SpecificClass = () => {
 
                   <Grid item xs={12} sm={6} md={4}>
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                      <Card sx={{
-                        height: '100%',
-                        background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-                        color: '#333',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease'
-                      }}>
+                      <Card
+                        onClick={() => navigate(`/admin-class-payments/${classId}`)}
+                        sx={{
+                          height: '100%',
+                          background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                          color: '#333',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease'
+                        }}>
                         <CardContent sx={{ textAlign: 'center', py: 3 }}>
                           <Payment sx={{ fontSize: 40, mb: 2 }} />
                           <Typography variant="h6" fontWeight="bold" sx={{
@@ -1071,13 +1073,15 @@ const SpecificClass = () => {
 
                   <Grid item xs={12} sm={6} md={4}>
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                      <Card sx={{
-                        height: '100%',
-                        background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-                        color: '#333',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease'
-                      }}>
+                      <Card
+                        onClick={() => navigate(`/student-class-payments/${classId}`)}
+                        sx={{
+                          height: '100%',
+                          background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                          color: '#333',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease'
+                        }}>
                         <CardContent sx={{ textAlign: 'center', py: 3 }}>
                           <Payment sx={{ fontSize: 40, mb: 2 }} />
                           <Typography variant="h6" fontWeight="bold" sx={{
