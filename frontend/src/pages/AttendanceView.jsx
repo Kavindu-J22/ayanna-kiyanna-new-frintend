@@ -44,7 +44,8 @@ import {
   Visibility,
   CalendarToday,
   TrendingUp,
-  People
+  People,
+  Search
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -71,6 +72,7 @@ const AttendanceView = () => {
   const [selectedSheet, setSelectedSheet] = useState(null);
   const [attendanceData, setAttendanceData] = useState([]);
   const [updateLoading, setUpdateLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Pagination
   const [page, setPage] = useState(0);
@@ -232,8 +234,22 @@ const AttendanceView = () => {
   const openUpdateDialog = (sheet) => {
     setSelectedSheet(sheet);
     setAttendanceData(sheet.studentAttendance || []);
+    setSearchTerm(''); // Reset search when opening dialog
     setUpdateDialog(true);
   };
+
+  // Filter students based on search term
+  const filteredAttendanceData = attendanceData.filter(student => {
+    if (!searchTerm) return true;
+
+    const studentName = student.studentId
+      ? `${student.studentId.firstName || ''} ${student.studentId.lastName || ''}`.trim()
+      : '';
+    const studentId = student.studentId?.studentId || '';
+
+    return studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           studentId.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const isViewOnlyMode = (sheet) => {
     return !canUpdateSheet(sheet) && canViewFullSheet(sheet);
@@ -994,6 +1010,18 @@ const AttendanceView = () => {
                   </Alert>
                 )}
 
+                {/* Search Field */}
+                <TextField
+                  fullWidth
+                  placeholder="සිසු ID හෝ නම අනුව සොයන්න..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />
+                  }}
+                  sx={{ mb: 3 }}
+                />
+
                 <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
                   <Table stickyHeader>
                     <TableHead>
@@ -1010,7 +1038,7 @@ const AttendanceView = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {attendanceData.map((student) => (
+                      {filteredAttendanceData.map((student) => (
                         <TableRow key={student.studentId?._id || student._id}>
                           <TableCell>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

@@ -38,7 +38,8 @@ import {
   People,
   Assignment,
   CheckCircle,
-  Cancel
+  Cancel,
+  Search
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -57,6 +58,7 @@ const AttendanceEdit = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [userRole, setUserRole] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Form states
   const [formData, setFormData] = useState({
@@ -193,6 +195,19 @@ const AttendanceEdit = () => {
   const isAdmin = userRole === 'admin' || userRole === 'moderator';
   const canEdit = isAdmin && isEditMode;
   const presentCount = formData.studentAttendance.filter(s => s.status === 'Present').length;
+
+  // Filter students based on search term
+  const filteredStudents = formData.studentAttendance.filter(student => {
+    if (!searchTerm) return true;
+
+    const studentName = student.studentId
+      ? `${student.studentId.firstName || ''} ${student.studentId.lastName || ''}`.trim()
+      : '';
+    const studentId = student.studentId?.studentId || '';
+
+    return studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           studentId.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   return (
     <Box sx={{
@@ -384,6 +399,18 @@ const AttendanceEdit = () => {
                 සිසුන්ගේ පැමිණීම් ({formData.studentAttendance.length})
               </Typography>
 
+              {/* Search Field */}
+              <TextField
+                fullWidth
+                placeholder="සිසු ID හෝ නම අනුව සොයන්න..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />
+                }}
+                sx={{ mb: 3 }}
+              />
+
               {/* Check if there are any "පසුව සම්භන්ද වූ සිසුවෙකි" students */}
               {formData.studentAttendance.some(student =>
                 !student.studentId ||
@@ -490,7 +517,7 @@ const AttendanceEdit = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {formData.studentAttendance.map((student) => (
+                  {filteredStudents.map((student) => (
                     <TableRow key={student.studentId?._id || student._id} hover>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
