@@ -93,7 +93,11 @@ const StudentDashboard = () => {
   // Loading States
   const [accessingClass, setAccessingClass] = useState({});
 
-
+  // Month names in Sinhala
+  const monthNames = [
+    'ජනවාරි', 'පෙබරවාරි', 'මාර්තු', 'අප්‍රේල්', 'මැයි', 'ජූනි',
+    'ජූලි', 'අගෝස්තු', 'සැප්තැම්බර්', 'ඔක්තෝබර්', 'නොවැම්බර්', 'දෙසැම්බර්'
+  ];
 
   useEffect(() => {
     const checkUserAccess = async () => {
@@ -321,9 +325,9 @@ const StudentDashboard = () => {
         // Show payment issue message
         alert(
           `පන්තියට ප්‍රවේශ වීමට පෙර ගෙවීම් ගැටළු විසඳන්න:\n\n${
-            hasOverduePayment ? `⚠️ ප්‍රමාද වූ ගෙවීම්: ${overdueMonths.map(m => `${m} මාසය`).join(', ')}\n` : ''
+            hasOverduePayment ? `⚠️ ප්‍රමාද වූ ගෙවීම් මාස : ${overdueMonths.map(m => monthNames[m - 1]).join(', ')}\n` : ''
           }${
-            hasRejectedPayment ? `❌ ප්‍රතික්ෂේප වූ ගෙවීම්: ${rejectedMonths.map(m => `${m} මාසය`).join(', ')}\n` : ''
+            hasRejectedPayment ? `❌ ප්‍රතික්ෂේප වූ ගෙවීම් මාස : ${rejectedMonths.map(m => monthNames[m - 1]).join(', ')}\n` : ''
           }\nගෙවීම් කළමනාකරණය සඳහා "Pay Now" බොත්තම ක්ලික් කරන්න.`
         );
 
