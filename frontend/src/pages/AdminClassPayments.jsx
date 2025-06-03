@@ -56,6 +56,11 @@ const AdminClassPayments = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // New dialog states
+  const [viewRequestDialog, setViewRequestDialog] = useState({ open: false, payment: null });
+  const [updateStatusDialog, setUpdateStatusDialog] = useState({ open: false, studentData: null });
+  const [newStatus, setNewStatus] = useState('');
+
   const monthNames = [
     'ජනවාරි', 'පෙබරවාරි', 'මාර්තු', 'අප්‍රේල්', 'මැයි', 'ජූනි',
     'ජූලි', 'අගෝස්තු', 'සැප්තැම්බර්', 'ඔක්තෝබර්', 'නොවැම්බර්', 'දෙසැම්බර්'
@@ -128,7 +133,7 @@ const AdminClassPayments = () => {
   const handleProcessPayment = async (action, paymentId = null) => {
     try {
       const token = localStorage.getItem('token');
-      
+
       if (paymentId) {
         // Process single payment
         await axios.put(
@@ -153,6 +158,27 @@ const AdminClassPayments = () => {
     } catch (error) {
       console.error('Error processing payment:', error);
       setError(error.response?.data?.message || 'Error processing payment');
+    }
+  };
+
+  // Function to update payment status for existing payments
+  const handleUpdatePaymentStatus = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/payments/admin/${updateStatusDialog.studentData.payment._id}/process`,
+        { action: newStatus, actionNote },
+        { headers: { 'x-auth-token': token } }
+      );
+
+      setSuccess(`Payment status updated to ${newStatus} successfully`);
+      setUpdateStatusDialog({ open: false, studentData: null });
+      setNewStatus('');
+      setActionNote('');
+      fetchPaymentData();
+    } catch (error) {
+      console.error('Error updating payment status:', error);
+      setError(error.response?.data?.message || 'Error updating payment status');
     }
   };
 
@@ -335,10 +361,10 @@ const AdminClassPayments = () => {
                           <TableCell>
                             <Box>
                               <Typography variant="body2" fontWeight="bold">
-                                {payment.studentId.fullName}
+                                {payment.studentId?.fullName || payment.studentId?.firstName + ' ' + payment.studentId?.lastName || 'N/A'}
                               </Typography>
                               <Typography variant="caption" color="text.secondary">
-                                {payment.studentId.studentId}
+                                {payment.studentId?.studentId || 'N/A'}
                               </Typography>
                             </Box>
                           </TableCell>
@@ -350,12 +376,22 @@ const AdminClassPayments = () => {
                             {new Date(payment.createdAt).toLocaleDateString()}
                           </TableCell>
                           <TableCell>
-                            <Box sx={{ display: 'flex', gap: 1 }}>
+                            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                startIcon={<Visibility />}
+                                onClick={() => setViewRequestDialog({ open: true, payment })}
+                                sx={{ mb: 1 }}
+                              >
+                                View Request
+                              </Button>
                               <Button
                                 size="small"
                                 variant="contained"
                                 color="success"
                                 onClick={() => setProcessDialog({ open: true, action: 'Approved', paymentId: payment._id })}
+                                sx={{ mb: 1 }}
                               >
                                 Approve
                               </Button>
@@ -364,6 +400,7 @@ const AdminClassPayments = () => {
                                 variant="contained"
                                 color="error"
                                 onClick={() => setProcessDialog({ open: true, action: 'Rejected', paymentId: payment._id })}
+                                sx={{ mb: 1 }}
                               >
                                 Reject
                               </Button>
@@ -372,6 +409,7 @@ const AdminClassPayments = () => {
                                 variant="outlined"
                                 startIcon={<Visibility />}
                                 onClick={() => window.open(payment.receiptUrl, '_blank')}
+                                sx={{ mb: 1 }}
                               >
                                 View Receipt
                               </Button>
@@ -412,10 +450,10 @@ const AdminClassPayments = () => {
                         <TableCell>
                           <Box>
                             <Typography variant="body2" fontWeight="bold">
-                              {studentData.student.fullName}
+                              {studentData.student?.fullName || studentData.student?.firstName + ' ' + studentData.student?.lastName || 'N/A'}
                             </Typography>
                             <Typography variant="caption" color="text.secondary">
-                              {studentData.student.studentId}
+                              {studentData.student?.studentId || 'N/A'}
                             </Typography>
                           </Box>
                         </TableCell>
@@ -443,16 +481,33 @@ const AdminClassPayments = () => {
                           )}
                         </TableCell>
                         <TableCell>
-                          {studentData.payment && (
-                            <Button
-                              size="small"
-                              variant="outlined"
-                              startIcon={<Visibility />}
-                              onClick={() => window.open(studentData.payment.receiptUrl, '_blank')}
-                            >
-                              View Receipt
-                            </Button>
-                          )}
+                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            {studentData.payment && (
+                              <>
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  startIcon={<Visibility />}
+                                  onClick={() => window.open(studentData.payment.receiptUrl, '_blank')}
+                                  sx={{ mb: 1 }}
+                                >
+                                  View Receipt
+                                </Button>
+                                <Button
+                                  size="small"
+                                  variant="contained"
+                                  color="primary"
+                                  onClick={() => {
+                                    setUpdateStatusDialog({ open: true, studentData });
+                                    setNewStatus(studentData.payment.status);
+                                  }}
+                                  sx={{ mb: 1 }}
+                                >
+                                  Update Status
+                                </Button>
+                              </>
+                            )}
+                          </Box>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -492,12 +547,157 @@ const AdminClassPayments = () => {
             <Button onClick={() => setProcessDialog({ open: false, action: '', paymentId: null })}>
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={() => handleProcessPayment(processDialog.action, processDialog.paymentId)}
               color={processDialog.action === 'Approved' ? 'success' : 'error'}
               variant="contained"
             >
               {processDialog.action}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* View Request Dialog */}
+        <Dialog
+          open={viewRequestDialog.open}
+          onClose={() => setViewRequestDialog({ open: false, payment: null })}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle>Payment Request Details</DialogTitle>
+          <DialogContent>
+            {viewRequestDialog.payment && (
+              <Box sx={{ mt: 2 }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary">Student Name:</Typography>
+                    <Typography variant="body1" fontWeight="bold">
+                      {viewRequestDialog.payment.studentId?.fullName || 'N/A'}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary">Student ID:</Typography>
+                    <Typography variant="body1">
+                      {viewRequestDialog.payment.studentId?.studentId || 'N/A'}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary">Amount:</Typography>
+                    <Typography variant="body1">Rs. {viewRequestDialog.payment.amount}/=</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary">Attendance:</Typography>
+                    <Typography variant="body1">
+                      {viewRequestDialog.payment.attendanceData?.presentDays || 0}/{viewRequestDialog.payment.attendanceData?.totalClassDays || 0}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary">Submitted Date:</Typography>
+                    <Typography variant="body1">
+                      {new Date(viewRequestDialog.payment.createdAt).toLocaleDateString()}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary">Status:</Typography>
+                    <Chip
+                      label={viewRequestDialog.payment.status}
+                      color={getStatusColor(viewRequestDialog.payment.status)}
+                      size="small"
+                    />
+                  </Grid>
+                  {viewRequestDialog.payment.additionalNote && (
+                    <Grid item xs={12}>
+                      <Typography variant="subtitle2" color="text.secondary">Additional Note:</Typography>
+                      <Typography variant="body1" sx={{
+                        bgcolor: 'grey.100',
+                        p: 2,
+                        borderRadius: 1,
+                        mt: 1,
+                        fontStyle: 'italic'
+                      }}>
+                        {viewRequestDialog.payment.additionalNote}
+                      </Typography>
+                    </Grid>
+                  )}
+                  <Grid item xs={12}>
+                    <Typography variant="subtitle2" color="text.secondary">Receipt:</Typography>
+                    <Button
+                      variant="outlined"
+                      startIcon={<Visibility />}
+                      onClick={() => window.open(viewRequestDialog.payment.receiptUrl, '_blank')}
+                      sx={{ mt: 1 }}
+                    >
+                      View Receipt
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Box>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setViewRequestDialog({ open: false, payment: null })}>
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Update Payment Status Dialog */}
+        <Dialog
+          open={updateStatusDialog.open}
+          onClose={() => setUpdateStatusDialog({ open: false, studentData: null })}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>Update Payment Status</DialogTitle>
+          <DialogContent>
+            {updateStatusDialog.studentData && (
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="body1" gutterBottom>
+                  Student: <strong>{updateStatusDialog.studentData.student?.fullName || 'N/A'}</strong>
+                </Typography>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Current Status: <Chip
+                    label={updateStatusDialog.studentData.payment?.status || 'N/A'}
+                    color={getStatusColor(updateStatusDialog.studentData.payment?.status)}
+                    size="small"
+                  />
+                </Typography>
+
+                <FormControl fullWidth sx={{ mt: 3 }}>
+                  <InputLabel>New Status</InputLabel>
+                  <Select
+                    value={newStatus}
+                    label="New Status"
+                    onChange={(e) => setNewStatus(e.target.value)}
+                  >
+                    <MenuItem value="Approved">Approved</MenuItem>
+                    <MenuItem value="Rejected">Rejected</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={3}
+                  label="Action Note (Optional)"
+                  value={actionNote}
+                  onChange={(e) => setActionNote(e.target.value)}
+                  sx={{ mt: 2 }}
+                />
+              </Box>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setUpdateStatusDialog({ open: false, studentData: null })}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleUpdatePaymentStatus}
+              color="primary"
+              variant="contained"
+              disabled={!newStatus}
+            >
+              Update Status
             </Button>
           </DialogActions>
         </Dialog>
