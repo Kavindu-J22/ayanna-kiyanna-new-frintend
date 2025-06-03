@@ -47,7 +47,7 @@ const AdminClassPayments = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Default to current month
   const [classData, setClassData] = useState(null);
   const [paymentData, setPaymentData] = useState(null);
   const [selectedPayments, setSelectedPayments] = useState([]);
@@ -55,6 +55,7 @@ const AdminClassPayments = () => {
   const [actionNote, setActionNote] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // New dialog states
   const [viewRequestDialog, setViewRequestDialog] = useState({ open: false, payment: null });
@@ -199,6 +200,20 @@ const AdminClassPayments = () => {
     }
     return years;
   };
+
+  // Filter students based on search query
+  const filteredStudents = paymentData?.allStudentsStatus?.filter(studentData => {
+    if (!searchQuery) return true;
+
+    const fullName = studentData.student?.fullName ||
+                     (studentData.student?.firstName && studentData.student?.lastName ?
+                      `${studentData.student.firstName} ${studentData.student.lastName}` :
+                      studentData.student?.firstName || studentData.student?.lastName || '');
+    const studentId = studentData.student?.studentId || '';
+
+    return fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           studentId.toLowerCase().includes(searchQuery.toLowerCase());
+  }) || [];
 
   if (loading && !paymentData) {
     return (
@@ -361,7 +376,10 @@ const AdminClassPayments = () => {
                           <TableCell>
                             <Box>
                               <Typography variant="body2" fontWeight="bold">
-                                {payment.studentId?.fullName || payment.studentId?.firstName + ' ' + payment.studentId?.lastName || 'N/A'}
+                                {payment.studentId?.fullName ||
+                                 (payment.studentId?.firstName && payment.studentId?.lastName ?
+                                  `${payment.studentId.firstName} ${payment.studentId.lastName}` :
+                                  payment.studentId?.firstName || payment.studentId?.lastName || 'N/A')}
                               </Typography>
                               <Typography variant="caption" color="text.secondary">
                                 {payment.studentId?.studentId || 'N/A'}
@@ -427,11 +445,20 @@ const AdminClassPayments = () => {
 
             {/* All Students Status */}
             <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
-              <Typography variant="h6" gutterBottom sx={{
-                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-              }}>
-                සියලුම සිසුන්ගේ ගෙවීම් තත්ත්වය
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6" sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                }}>
+                  සියලුම සිසුන්ගේ ගෙවීම් තත්ත්වය
+                </Typography>
+                <TextField
+                  size="small"
+                  placeholder="Search by name or Student ID..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  sx={{ minWidth: 250 }}
+                />
+              </Box>
 
               <TableContainer>
                 <Table>
@@ -445,12 +472,15 @@ const AdminClassPayments = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {paymentData.allStudentsStatus.map((studentData) => (
+                    {filteredStudents.map((studentData) => (
                       <TableRow key={studentData.student._id}>
                         <TableCell>
                           <Box>
                             <Typography variant="body2" fontWeight="bold">
-                              {studentData.student?.fullName || studentData.student?.firstName + ' ' + studentData.student?.lastName || 'N/A'}
+                              {studentData.student?.fullName ||
+                               (studentData.student?.firstName && studentData.student?.lastName ?
+                                `${studentData.student.firstName} ${studentData.student.lastName}` :
+                                studentData.student?.firstName || studentData.student?.lastName || 'N/A')}
                             </Typography>
                             <Typography variant="caption" color="text.secondary">
                               {studentData.student?.studentId || 'N/A'}
@@ -484,6 +514,15 @@ const AdminClassPayments = () => {
                           <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                             {studentData.payment && (
                               <>
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  startIcon={<Visibility />}
+                                  onClick={() => setViewRequestDialog({ open: true, payment: studentData.payment })}
+                                  sx={{ mb: 1 }}
+                                >
+                                  View Request
+                                </Button>
                                 <Button
                                   size="small"
                                   variant="outlined"
@@ -572,7 +611,10 @@ const AdminClassPayments = () => {
                   <Grid item xs={12} sm={6}>
                     <Typography variant="subtitle2" color="text.secondary">Student Name:</Typography>
                     <Typography variant="body1" fontWeight="bold">
-                      {viewRequestDialog.payment.studentId?.fullName || 'N/A'}
+                      {viewRequestDialog.payment.studentId?.fullName ||
+                       (viewRequestDialog.payment.studentId?.firstName && viewRequestDialog.payment.studentId?.lastName ?
+                        `${viewRequestDialog.payment.studentId.firstName} ${viewRequestDialog.payment.studentId.lastName}` :
+                        viewRequestDialog.payment.studentId?.firstName || viewRequestDialog.payment.studentId?.lastName || 'N/A')}
                     </Typography>
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -653,7 +695,12 @@ const AdminClassPayments = () => {
             {updateStatusDialog.studentData && (
               <Box sx={{ mt: 2 }}>
                 <Typography variant="body1" gutterBottom>
-                  Student: <strong>{updateStatusDialog.studentData.student?.fullName || 'N/A'}</strong>
+                  Student: <strong>
+                    {updateStatusDialog.studentData.student?.fullName ||
+                     (updateStatusDialog.studentData.student?.firstName && updateStatusDialog.studentData.student?.lastName ?
+                      `${updateStatusDialog.studentData.student.firstName} ${updateStatusDialog.studentData.student.lastName}` :
+                      updateStatusDialog.studentData.student?.firstName || updateStatusDialog.studentData.student?.lastName || 'N/A')}
+                  </strong>
                 </Typography>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   Current Status: <Chip
