@@ -540,7 +540,7 @@ const ClassFeePayment = () => {
                     <label htmlFor="receipt-upload" style={{ cursor: 'pointer' }}>
                       <CloudUpload sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
                       <Typography variant="body1">
-                        {uploading ? 'Uploading...' : 'Click to upload receipt (Image or PDF)'}
+                        {uploading ? 'Uploading...' : 'Click to upload receipt or Other (Image or PDF)'}
                       </Typography>
                     </label>
                   </Box>
