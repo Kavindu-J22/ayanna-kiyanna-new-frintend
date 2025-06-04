@@ -29,7 +29,8 @@ import {
   IconButton,
   Tooltip,
   Badge,
-  Divider
+  Divider,
+  Avatar
 } from '@mui/material';
 import {
   School,
@@ -54,7 +55,8 @@ import {
   Category,
   Assignment,
   Payment,
-  CreditCard
+  CreditCard,
+  Email
 } from '@mui/icons-material';
 import { FaPerson } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
@@ -939,117 +941,253 @@ const StudentManagement = () => {
             </Grid>
           </Paper>
 
-          {/* Students Table */}
-          <Paper elevation={6} sx={{ borderRadius: 3 }}>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow sx={{ backgroundColor: 'primary.main' }}>
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Student ID</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Name</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Email</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Grade</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Registration Status</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Payment Role</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Payments & Behavior</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Classes</TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {students.filter(student => {
-                    const matchesStatus = !statusFilter || student.status === statusFilter;
-                    const matchesGrade = !gradeFilter || student.selectedGrade === gradeFilter;
-                    const matchesClass = !classFilter || (student.enrolledClasses && student.enrolledClasses.some(cls => cls._id === classFilter));
-                    const matchesSearch = !searchTerm ||
-                      student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                      student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                      student.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                      student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                      student.studentId?.toLowerCase().includes(searchTerm.toLowerCase());
-                    return matchesStatus && matchesGrade && matchesClass && matchesSearch;
-                  }).map((student) => (
-                    <TableRow key={student._id} hover>
-                      <TableCell>{student.studentId}</TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Person sx={{ mr: 1, color: 'primary.main' }} />
-                          {student.firstName} {student.lastName}
-                        </Box>
-                      </TableCell>
-                      <TableCell>{student.email}</TableCell>
-                      <TableCell>{student.selectedGrade}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={student.status}
-                          color={getStatusColor(student.status)}
-                          icon={getStatusIcon(student.status)}
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell>
-                      <Chip
-                        label={student.paymentRole === 'Pay Card' ? 'Pay Card Owner' : 'Free Card Owner'}
-                        color={student.paymentRole === 'Pay Card' ? 'primary' : 'secondary'}
-                        icon={<CreditCard />}
-                        size="small"
-                        onClick={() => handleUpdatePaymentRole(student)}
-                        sx={{ cursor: 'pointer' }}
-                      />
-                      </TableCell>
-                      <TableCell>
-                      <Chip
-                        label={
-                          student.paymentStatus === 'Paid' ? 'ඉතා හොදයි' :
-                          student.paymentStatus === 'Unpaid' ? 'සැලකිලිමත් විය යුතුයි' : 'හොදයි,ගැටලුවක් නැත'
+          {/* Students Grid */}
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="h6" sx={{
+              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+              fontWeight: 'bold',
+              mb: 2,
+              display: 'flex',
+              alignItems: 'center'
+            }}>
+              <Group sx={{ mr: 1 }} />
+              සිසුන්ගේ ලැයිස්තුව (Students List) - {students.filter(student => {
+                const matchesStatus = !statusFilter || student.status === statusFilter;
+                const matchesGrade = !gradeFilter || student.selectedGrade === gradeFilter;
+                const matchesClass = !classFilter || (student.enrolledClasses && student.enrolledClasses.some(cls => cls._id === classFilter));
+                const matchesSearch = !searchTerm ||
+                  student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  student.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  student.studentId?.toLowerCase().includes(searchTerm.toLowerCase());
+                return matchesStatus && matchesGrade && matchesClass && matchesSearch;
+              }).length} Students
+            </Typography>
+
+            <Grid container spacing={3}>
+              {students.filter(student => {
+                const matchesStatus = !statusFilter || student.status === statusFilter;
+                const matchesGrade = !gradeFilter || student.selectedGrade === gradeFilter;
+                const matchesClass = !classFilter || (student.enrolledClasses && student.enrolledClasses.some(cls => cls._id === classFilter));
+                const matchesSearch = !searchTerm ||
+                  student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  student.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  student.studentId?.toLowerCase().includes(searchTerm.toLowerCase());
+                return matchesStatus && matchesGrade && matchesClass && matchesSearch;
+              }).map((student) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={student._id}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    whileHover={{ y: -5 }}
+                  >
+                    <Card
+                      elevation={6}
+                      sx={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        borderRadius: 3,
+                        overflow: 'hidden',
+                        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                        border: '2px solid',
+                        borderColor: student.status === 'Approved' ? 'success.light' :
+                                   student.status === 'Pending' ? 'warning.light' : 'error.light',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          boxShadow: 12,
+                          transform: 'translateY(-2px)',
+                          borderColor: 'primary.main'
                         }
-                        color={
-                          student.paymentStatus === 'Paid' ? 'success' :
-                          student.paymentStatus === 'Unpaid' ? 'error' : 'warning'
-                        }
-                        icon={<FaPerson />}
-                        size="small"
-                        onClick={() => handleUpdatePaymentStatus(student)}
-                        sx={{ cursor: 'pointer' }}
-                      />
-                      </TableCell>
-                      <TableCell>
-                        {student.enrolledClasses && student.enrolledClasses.length > 0 ? (
-                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                            {student.enrolledClasses.slice(0, 2).map((classItem, index) => (
-                              <Chip
-                                key={index}
-                                label={`${classItem.grade} - ${classItem.category}`}
-                                size="small"
-                                variant="outlined"
-                                color="primary"
-                                onDelete={() => handleRemoveFromClass(student, classItem._id)}
-                                deleteIcon={<RemoveCircle />}
+                      }}
+                    >
+                      {/* Header Section */}
+                      <Box sx={{
+                        background: student.status === 'Approved'
+                          ? 'linear-gradient(135deg, #4caf50 0%, #66bb6a 100%)'
+                          : student.status === 'Pending'
+                          ? 'linear-gradient(135deg, #ff9800 0%, #ffb74d 100%)'
+                          : 'linear-gradient(135deg, #f44336 0%, #ef5350 100%)',
+                        color: 'white',
+                        p: 2,
+                        position: 'relative'
+                      }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                          <Avatar
+                            sx={{
+                              width: 50,
+                              height: 50,
+                              bgcolor: 'rgba(255,255,255,0.2)',
+                              mr: 2,
+                              border: '2px solid rgba(255,255,255,0.3)'
+                            }}
+                          >
+                            {student.profilePicture ? (
+                              <img
+                                src={student.profilePicture}
+                                alt={student.firstName}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                               />
-                            ))}
-                            {student.enrolledClasses.length > 2 && (
-                              <Chip
-                                label={`+${student.enrolledClasses.length - 2} more`}
-                                size="small"
-                                variant="outlined"
-                              />
+                            ) : (
+                              <Person sx={{ fontSize: 30 }} />
                             )}
+                          </Avatar>
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="h6" sx={{
+                              fontWeight: 'bold',
+                              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                              fontSize: '1.1rem',
+                              lineHeight: 1.2
+                            }}>
+                              {student.firstName} {student.lastName}
+                            </Typography>
+                            <Typography variant="body2" sx={{
+                              opacity: 0.9,
+                              fontWeight: 'bold',
+                              fontSize: '0.9rem'
+                            }}>
+                              ID: {student.studentId}
+                            </Typography>
                           </Box>
-                        ) : (
-                          <Typography variant="body2" color="text.secondary">
-                            No classes
+                        </Box>
+
+                        {/* Status Chip */}
+                        <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
+                          <Chip
+                            label={student.status}
+                            icon={getStatusIcon(student.status)}
+                            size="small"
+                            sx={{
+                              bgcolor: 'rgba(255,255,255,0.2)',
+                              color: 'white',
+                              fontWeight: 'bold',
+                              '& .MuiChip-icon': { color: 'white' }
+                            }}
+                          />
+                        </Box>
+                      </Box>
+
+                      {/* Card Content */}
+                      <CardContent sx={{ flexGrow: 1, p: 2 }}>
+                        {/* Basic Info */}
+                        <Box sx={{ mb: 2 }}>
+                          <Typography variant="body2" color="text.secondary" sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            mb: 0.5
+                          }}>
+                            <Email sx={{ mr: 1, fontSize: 16 }} />
+                            {student.email}
                           </Typography>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                          <Typography variant="body2" color="text.secondary" sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            mb: 0.5
+                          }}>
+                            <School sx={{ mr: 1, fontSize: 16 }} />
+                            Grade: {student.selectedGrade}
+                          </Typography>
+                        </Box>
+
+                        {/* Payment Information */}
+                        <Box sx={{ mb: 2 }}>
+                          <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold' }}>
+                            Payment & Behavior Information
+                          </Typography>
+                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            <Chip
+                              label={student.paymentRole === 'Pay Card' ? 'Pay Card Owner' : 'Free Card Owner'}
+                              color={student.paymentRole === 'Pay Card' ? 'primary' : 'secondary'}
+                              icon={<CreditCard />}
+                              size="small"
+                              onClick={() => handleUpdatePaymentRole(student)}
+                              sx={{ cursor: 'pointer', alignSelf: 'flex-start' }}
+                            />
+                            <Chip
+                              label={
+                                student.paymentStatus === 'Paid' ? 'ඉතා හොදයි' :
+                                student.paymentStatus === 'Unpaid' ? 'සැලකිලිමත් විය යුතුයි' : 'හොදයි,ගැටලුවක් නැත'
+                              }
+                              color={
+                                student.paymentStatus === 'Paid' ? 'success' :
+                                student.paymentStatus === 'Unpaid' ? 'error' : 'warning'
+                              }
+                              icon={<FaPerson />}
+                              size="small"
+                              onClick={() => handleUpdatePaymentStatus(student)}
+                              sx={{
+                                cursor: 'pointer',
+                                alignSelf: 'flex-start',
+                                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                              }}
+                            />
+                          </Box>
+                        </Box>
+
+                        {/* Enrolled Classes */}
+                        <Box sx={{ mb: 2 }}>
+                          <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold' }}>
+                            Enrolled Classes ({student.enrolledClasses?.length || 0})
+                          </Typography>
+                          {student.enrolledClasses && student.enrolledClasses.length > 0 ? (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                              {student.enrolledClasses.slice(0, 2).map((classItem, index) => (
+                                <Chip
+                                  key={index}
+                                  label={`${classItem.grade} - ${classItem.category}`}
+                                  size="small"
+                                  variant="outlined"
+                                  color="primary"
+                                  onDelete={() => handleRemoveFromClass(student, classItem._id)}
+                                  deleteIcon={<RemoveCircle />}
+                                  sx={{ fontSize: '0.7rem' }}
+                                />
+                              ))}
+                              {student.enrolledClasses.length > 2 && (
+                                <Chip
+                                  label={`+${student.enrolledClasses.length - 2} more`}
+                                  size="small"
+                                  variant="outlined"
+                                  sx={{ fontSize: '0.7rem' }}
+                                />
+                              )}
+                            </Box>
+                          ) : (
+                            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                              No classes enrolled
+                            </Typography>
+                          )}
+                        </Box>
+                      </CardContent>
+
+                      {/* Action Buttons */}
+                      <Box sx={{
+                        p: 2,
+                        pt: 0,
+                        borderTop: '1px solid',
+                        borderColor: 'divider',
+                        bgcolor: 'grey.50'
+                      }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
+                          Quick Actions
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, justifyContent: 'center' }}>
                           <Tooltip title="View Details">
                             <IconButton
                               size="small"
                               onClick={() => handleViewDetails(student)}
                               color="primary"
+                              sx={{
+                                bgcolor: 'primary.light',
+                                color: 'white',
+                                '&:hover': { bgcolor: 'primary.main' }
+                              }}
                             >
-                              <Visibility />
+                              <Visibility fontSize="small" />
                             </IconButton>
                           </Tooltip>
 
@@ -1058,8 +1196,13 @@ const StudentManagement = () => {
                               size="small"
                               onClick={() => handleSendMessage(student)}
                               color="info"
+                              sx={{
+                                bgcolor: 'info.light',
+                                color: 'white',
+                                '&:hover': { bgcolor: 'info.main' }
+                              }}
                             >
-                              <Message />
+                              <Message fontSize="small" />
                             </IconButton>
                           </Tooltip>
 
@@ -1069,8 +1212,13 @@ const StudentManagement = () => {
                                 size="small"
                                 onClick={() => handleChangeClass(student)}
                                 color="warning"
+                                sx={{
+                                  bgcolor: 'warning.light',
+                                  color: 'white',
+                                  '&:hover': { bgcolor: 'warning.main' }
+                                }}
                               >
-                                <SwapHoriz />
+                                <SwapHoriz fontSize="small" />
                               </IconButton>
                             </Tooltip>
                           )}
@@ -1082,8 +1230,13 @@ const StudentManagement = () => {
                                   size="small"
                                   onClick={() => handleStudentAction(student, 'approve')}
                                   color="success"
+                                  sx={{
+                                    bgcolor: 'success.light',
+                                    color: 'white',
+                                    '&:hover': { bgcolor: 'success.main' }
+                                  }}
                                 >
-                                  <CheckCircle />
+                                  <CheckCircle fontSize="small" />
                                 </IconButton>
                               </Tooltip>
                               <Tooltip title="Reject">
@@ -1091,21 +1244,31 @@ const StudentManagement = () => {
                                   size="small"
                                   onClick={() => handleStudentAction(student, 'reject')}
                                   color="error"
+                                  sx={{
+                                    bgcolor: 'error.light',
+                                    color: 'white',
+                                    '&:hover': { bgcolor: 'error.main' }
+                                  }}
                                 >
-                                  <Cancel />
+                                  <Cancel fontSize="small" />
                                 </IconButton>
                               </Tooltip>
                             </>
                           )}
 
                           {student.status === 'Approved' && (
-                            <Tooltip title="Change to hold Sudent">
+                            <Tooltip title="Change to hold Student">
                               <IconButton
                                 size="small"
                                 onClick={() => handleStatusChange(student, 'Pending')}
                                 color="warning"
+                                sx={{
+                                  bgcolor: 'orange',
+                                  color: 'white',
+                                  '&:hover': { bgcolor: 'darkorange' }
+                                }}
                               >
-                                <Pending />
+                                <Pending fontSize="small" />
                               </IconButton>
                             </Tooltip>
                           )}
@@ -1115,18 +1278,50 @@ const StudentManagement = () => {
                               size="small"
                               onClick={() => handleDeleteStudent(student)}
                               color="error"
+                              sx={{
+                                bgcolor: 'error.main',
+                                color: 'white',
+                                '&:hover': { bgcolor: 'error.dark' }
+                              }}
                             >
-                              <Delete />
+                              <Delete fontSize="small" />
                             </IconButton>
                           </Tooltip>
                         </Box>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
+                      </Box>
+                    </Card>
+                  </motion.div>
+                </Grid>
+              ))}
+            </Grid>
+
+            {/* No Students Found Message */}
+            {students.filter(student => {
+              const matchesStatus = !statusFilter || student.status === statusFilter;
+              const matchesGrade = !gradeFilter || student.selectedGrade === gradeFilter;
+              const matchesClass = !classFilter || (student.enrolledClasses && student.enrolledClasses.some(cls => cls._id === classFilter));
+              const matchesSearch = !searchTerm ||
+                student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                student.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                student.studentId?.toLowerCase().includes(searchTerm.toLowerCase());
+              return matchesStatus && matchesGrade && matchesClass && matchesSearch;
+            }).length === 0 && (
+              <Paper elevation={3} sx={{ p: 4, textAlign: 'center', mt: 3, borderRadius: 3 }}>
+                <School sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
+                <Typography variant="h6" color="text.secondary" sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                  mb: 1
+                }}>
+                  සිසුන් හමු නොවීය (No Students Found)
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Please adjust your search criteria or filters to find students.
+                </Typography>
+              </Paper>
+            )}
+          </Box>
 
           {/* Student Details Dialog */}
           <Dialog open={showDetailsDialog} onClose={() => setShowDetailsDialog(false)} maxWidth="lg" fullWidth>
