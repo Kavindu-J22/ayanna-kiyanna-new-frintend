@@ -769,6 +769,24 @@ const AllClassPaymentRequests = () => {
                               <Delete />
                             </IconButton>
                           </Tooltip>
+
+                          <Tooltip title="පන්තියේ පිටුවට">
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              onClick={() => window.open(`/admin-class-payments/${request.class?._id}`, '_blank')}
+                              sx={{
+                                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                                fontSize: '0.75rem',
+                                minWidth: 'auto',
+                                px: 1,
+                                py: 0.5,
+                                ml: 1
+                              }}
+                            >
+                              පන්තියේ පිටුවට
+                            </Button>
+                          </Tooltip>
                         </Box>
                       </TableCell>
                     </TableRow>

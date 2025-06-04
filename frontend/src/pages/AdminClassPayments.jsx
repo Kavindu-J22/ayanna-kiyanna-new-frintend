@@ -45,7 +45,10 @@ import {
   People,
   Warning,
   MonetizationOn,
-  Badge
+  Badge,
+  HourglassEmpty,
+  PersonOff,
+  Block
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -363,82 +366,229 @@ const AdminClassPayments = () => {
     <meta charset="UTF-8">
     <title>පන්ති ගෙවීම් වාර්තාව</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .summary { background: #f5f5f5; padding: 15px; margin: 20px 0; border-radius: 5px; }
-        .student-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        .student-table th, .student-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        .student-table th { background-color: #4CAF50; color: white; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.8em;
+            opacity: 0.9;
+        }
+        .header h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.4em;
+            opacity: 0.8;
+        }
+        .header p {
+            margin: 0;
+            font-size: 1.2em;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+        }
+        .summary {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 15px;
+            border: 2px solid #dee2e6;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .summary h3 {
+            text-align: center;
+            color: #495057;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .summary-item {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border-left: 5px solid #4CAF50;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .summary-item.income { border-left-color: #4CAF50; }
+        .summary-item.paid { border-left-color: #2196F3; }
+        .summary-item.pending { border-left-color: #FF9800; }
+        .summary-item.rejected { border-left-color: #F44336; }
+        .summary-item.not-requested { border-left-color: #9E9E9E; }
+        .summary-item.total { border-left-color: #9C27B0; }
+        .summary-label {
+            font-weight: bold;
+            color: #495057;
+            font-size: 1.1em;
+        }
+        .summary-value {
+            font-weight: bold;
+            font-size: 1.3em;
+            color: #212529;
+        }
+        .summary-value.income { color: #4CAF50; }
+        .summary-value.paid { color: #2196F3; }
+        .summary-value.pending { color: #FF9800; }
+        .summary-value.rejected { color: #F44336; }
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .student-table th, .student-table td {
+            border: 1px solid #e0e0e0;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        .student-table th {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        .student-table tr:nth-child(even) { background-color: #f8f9fa; }
+        .student-table tr:hover { background-color: #e3f2fd; }
         .status-approved { color: #4CAF50; font-weight: bold; }
         .status-pending { color: #FF9800; font-weight: bold; }
         .status-rejected { color: #F44336; font-weight: bold; }
         .status-not-requested { color: #9E9E9E; font-weight: bold; }
-        .low-attendance { background-color: #FFF3E0; }
+        .low-attendance { background-color: #FFF3E0 !important; }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+        .footer p {
+            margin: 5px 0;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>පන්ති ගෙවීම් වාර්තාව</h1>
-        <h2>${reportData.classInfo.grade} - ${reportData.classInfo.category}</h2>
-        <h3>${reportData.period.month} ${reportData.period.year}</h3>
-        <p>මාසික ගාස්තුව: Rs. ${reportData.classInfo.monthlyFee}/=</p>
-    </div>
+    <div class="container">
+        <div class="header">
+            <h1>පන්ති ගෙවීම් වාර්තාව</h1>
+            <h2>${reportData.classInfo.grade} - ${reportData.classInfo.category}</h2>
+            <h3>${reportData.period.month} ${reportData.period.year}</h3>
+            <p>මාසික ගාස්තුව: Rs. ${reportData.classInfo.monthlyFee}/=</p>
+        </div>
 
-    <div class="summary">
-        <h3>සාරාංශය</h3>
-        <table style="width: 100%;">
-            <tr><td><strong>මුළු ආදායම:</strong></td><td>Rs. ${monthlySummary.totalIncome.toLocaleString()}/=</td></tr>
-            <tr><td><strong>ගෙවීම් සිදු කළ සිසුන්:</strong></td><td>${monthlySummary.paidStudentCount}</td></tr>
-            <tr><td><strong>ගෙවීම් ඉල්ලීම් නොකළ සිසුන්:</strong></td><td>${monthlySummary.notRequestedCount}</td></tr>
-            <tr><td><strong>ගෙවීම් අවශ්‍ය නොවන සිසුන්:</strong></td><td>${monthlySummary.notRequiredCount}</td></tr>
-            <tr><td><strong>අඩු පැමිණීමක් ඇති සිසුන්:</strong></td><td>${monthlySummary.lowAttendanceCount}</td></tr>
-            <tr><td><strong>මුළු සිසුන්:</strong></td><td>${monthlySummary.totalStudents}</td></tr>
-            <tr><td><strong>බලාපොරොත්තුවෙන්:</strong></td><td>${monthlySummary.pendingCount}</td></tr>
-            <tr><td><strong>ප්‍රතික්ෂේප කළ:</strong></td><td>${monthlySummary.rejectedCount}</td></tr>
-        </table>
-    </div>
+        <div class="summary">
+            <h3>සාරාංශය</h3>
+            <div class="summary-grid">
+                <div class="summary-item income">
+                    <span class="summary-label">ලැබී ඇති ආදායම:</span>
+                    <span class="summary-value income">Rs. ${monthlySummary.totalIncome.toLocaleString()}/=</span>
+                </div>
+                <div class="summary-item paid">
+                    <span class="summary-label">ගෙවීම් සිදු කළ සිසුන්:</span>
+                    <span class="summary-value paid">${monthlySummary.paidStudentCount}</span>
+                </div>
+                <div class="summary-item pending">
+                    <span class="summary-label">බලාපොරොත්තුවෙන්:</span>
+                    <span class="summary-value pending">${monthlySummary.pendingCount}</span>
+                </div>
+                <div class="summary-item rejected">
+                    <span class="summary-label">ප්‍රතික්ෂේප කළ:</span>
+                    <span class="summary-value rejected">${monthlySummary.rejectedCount}</span>
+                </div>
+                <div class="summary-item not-requested">
+                    <span class="summary-label">ගෙවීම් ඉල්ලීම් නොකළ සිසුන්:</span>
+                    <span class="summary-value">${monthlySummary.notRequestedCount}</span>
+                </div>
+                <div class="summary-item total">
+                    <span class="summary-label">මුළු සිසුන්:</span>
+                    <span class="summary-value">${monthlySummary.totalStudents}</span>
+                </div>
+            </div>
+        </div>
 
-    <h3>සිසුන්ගේ විස්තර</h3>
-    <table class="student-table">
-        <thead>
-            <tr>
-                <th>සිසුවාගේ නම</th>
-                <th>Student ID</th>
-                <th>පැමිණීම</th>
-                <th>ගෙවීම් තත්ත්වය</th>
-                <th>ගෙවීම් ප්‍රමාණය</th>
-                <th>සටහන්</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${reportData.allStudents.map(student => {
-              const isLowAttendance = student.attendance?.presentDays < 2;
-              const paymentStatus = student.payment ?
-                (student.payment.status.toLowerCase() === 'approved' ? 'අනුමත' :
-                 student.payment.status.toLowerCase() === 'pending' ? 'බලාපොරොත්තුවෙන්' :
-                 student.payment.status.toLowerCase() === 'rejected' ? 'ප්‍රතික්ෂේප' : 'නොදන්නා') :
-                (student.requiresPayment ? 'ගෙවීම් ඉල්ලීම නොකළ' : 'ගෙවීම අවශ්‍ය නැත');
-
-              const statusClass = student.payment ?
-                `status-${student.payment.status.toLowerCase()}` : 'status-not-requested';
-
-              return `
-                <tr ${isLowAttendance ? 'class="low-attendance"' : ''}>
-                    <td>${getStudentDisplayName(student.student)}</td>
-                    <td>${student.student?.studentId || 'N/A'}</td>
-                    <td>${student.attendance?.presentDays || 0}/${student.attendance?.totalClassDays || 0}${isLowAttendance ? ' (අඩු)' : ''}</td>
-                    <td class="${statusClass}">${paymentStatus}</td>
-                    <td>${student.payment ? `Rs. ${student.payment.amount}/=` : '-'}</td>
-                    <td>${student.payment?.additionalNote || '-'}</td>
+        <h3 style="color: #495057; margin-top: 40px; margin-bottom: 20px;">සිසුන්ගේ විස්තර</h3>
+        <table class="student-table">
+            <thead>
+                <tr>
+                    <th>සිසුවාගේ නම</th>
+                    <th>Student ID</th>
+                    <th>පැමිණීම</th>
+                    <th>ගෙවීම් තත්ත්වය</th>
+                    <th>ගෙවීම් ප්‍රමාණය</th>
+                    <th>සටහන්</th>
                 </tr>
-              `;
-            }).join('')}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                ${reportData.allStudents.map(student => {
+                  const isLowAttendance = student.attendance?.presentDays < 2;
+                  const paymentStatus = student.payment ?
+                    (student.payment.status.toLowerCase() === 'approved' ? 'අනුමත' :
+                     student.payment.status.toLowerCase() === 'pending' ? 'බලාපොරොත්තුවෙන්' :
+                     student.payment.status.toLowerCase() === 'rejected' ? 'ප්‍රතික්ෂේප' : 'නොදන්නා') :
+                    (student.requiresPayment ? 'ගෙවීම් ඉල්ලීම නොකළ' : 'ගෙවීම අවශ්‍ය නැත');
 
-    <div style="margin-top: 30px; text-align: center; color: #666;">
-        <p>වාර්තාව ජනනය කළ දිනය: ${new Date().toLocaleDateString('si-LK')}</p>
-        <p>වාර්තාව ජනනය කළ වේලාව: ${new Date().toLocaleTimeString('si-LK')}</p>
+                  const statusClass = student.payment ?
+                    `status-${student.payment.status.toLowerCase()}` : 'status-not-requested';
+
+                  return `
+                    <tr ${isLowAttendance ? 'class="low-attendance"' : ''}>
+                        <td>${getStudentDisplayName(student.student)}</td>
+                        <td>${student.student?.studentId || 'N/A'}</td>
+                        <td>${student.attendance?.presentDays || 0}/${student.attendance?.totalClassDays || 0}${isLowAttendance ? ' (අඩු)' : ''}</td>
+                        <td class="${statusClass}">${paymentStatus}</td>
+                        <td>${student.payment ? `Rs. ${student.payment.amount}/=` : '-'}</td>
+                        <td>${student.payment?.additionalNote || '-'}</td>
+                    </tr>
+                  `;
+                }).join('')}
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <p><strong>වාර්තාව ජනනය කළ දිනය:</strong> ${new Date().toLocaleDateString('si-LK')}</p>
+            <p><strong>වාර්තාව ජනනය කළ වේලාව:</strong> ${new Date().toLocaleTimeString('si-LK')}</p>
+            <p style="margin-top: 15px; font-style: italic;">ආයන්න කියන්න ගුරු සේවා ආයතනය</p>
+        </div>
     </div>
 </body>
 </html>
