@@ -48,9 +48,7 @@ const ClassFeePayment = () => {
   const [classData, setClassData] = useState(null);
   const [existingPayment, setExistingPayment] = useState(null);
   const [formData, setFormData] = useState({
-    receiptFile: null,
-    receiptUrl: '',
-    receiptPublicId: '',
+    attachments: [], // Array to store multiple attachments
     additionalNote: ''
   });
   const [uploading, setUploading] = useState(false);
@@ -94,10 +92,33 @@ const ClassFeePayment = () => {
       const monthData = response.data.monthlyStatus.find(m => m.month === parseInt(month));
       if (monthData && monthData.payment) {
         setExistingPayment(monthData.payment);
+
+        // Load existing attachments
+        let existingAttachments = [];
+
+        // Check if payment has multiple attachments (new format)
+        if (monthData.payment.attachments && monthData.payment.attachments.length > 0) {
+          existingAttachments = monthData.payment.attachments.map((attachment, index) => ({
+            url: attachment.url,
+            publicId: attachment.publicId,
+            name: attachment.name || `Attachment ${index + 1}`,
+            type: attachment.type || (attachment.url.includes('.pdf') ? 'pdf' : 'image')
+          }));
+        }
+        // Fallback to single receipt (backward compatibility)
+        else if (monthData.payment.receiptUrl) {
+          existingAttachments.push({
+            url: monthData.payment.receiptUrl,
+            publicId: monthData.payment.receiptPublicId,
+            name: 'Receipt/Evidence',
+            type: monthData.payment.receiptUrl.includes('.pdf') ? 'pdf' : 'image'
+          });
+        }
+
+        console.log('Loaded existing attachments:', existingAttachments);
+
         setFormData({
-          receiptFile: null,
-          receiptUrl: monthData.payment.receiptUrl,
-          receiptPublicId: monthData.payment.receiptPublicId,
+          attachments: existingAttachments,
           additionalNote: monthData.payment.additionalNote || ''
         });
       }
@@ -109,34 +130,54 @@ const ClassFeePayment = () => {
   const handleFileUpload = async (file) => {
     if (!file) return;
 
+    // Check if maximum 2 attachments limit is reached
+    if (formData.attachments.length >= 2) {
+      setError('ඔබට උපරිම ගොනු 2ක් පමණක් අමුණා ගත හැක');
+      return;
+    }
+
     setUploading(true);
     setError('');
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', 'ml_default');
-      formData.append('cloud_name', 'dl9k5qoae');
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
+      uploadFormData.append('upload_preset', 'ml_default');
+      uploadFormData.append('cloud_name', 'dl9k5qoae');
 
       const response = await axios.post(
         'https://api.cloudinary.com/v1_1/dl9k5qoae/auto/upload',
-        formData
+        uploadFormData
       );
+
+      const newAttachment = {
+        url: response.data.secure_url,
+        publicId: response.data.public_id,
+        name: file.name,
+        type: file.type.includes('pdf') ? 'pdf' : 'image',
+        size: file.size
+      };
 
       setFormData(prev => ({
         ...prev,
-        receiptUrl: response.data.secure_url,
-        receiptPublicId: response.data.public_id,
-        receiptFile: file
+        attachments: [...prev.attachments, newAttachment]
       }));
 
-      setSuccess('Receipt/Evidence uploaded successfully!');
+      setSuccess('ගොනුව සාර්ථකව අමුණා ගන්නා ලදී!');
     } catch (error) {
       console.error('Error uploading file:', error);
-      setError('Error uploading receipt. Please try again.');
+      setError('ගොනුව අමුණා ගැනීමේදී දෝෂයක් ඇති විය. කරුණාකර නැවත උත්සාහ කරන්න.');
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleRemoveAttachment = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      attachments: prev.attachments.filter((_, i) => i !== index)
+    }));
+    setSuccess('ගොනුව ඉවත් කරන ලදී');
   };
 
   const handleRemoveReceipt = async () => {
@@ -163,9 +204,9 @@ const ClassFeePayment = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!formData.receiptUrl) {
-      setError('Please upload a receipt/evidence');
+
+    if (formData.attachments.length === 0) {
+      setError('කරුණාකර ගෙවීම් රිසිට්පතක් හෝ සාක්ශියක් අමුණන්න');
       return;
     }
 
@@ -175,31 +216,41 @@ const ClassFeePayment = () => {
 
     try {
       const token = localStorage.getItem('token');
+      // Prepare attachments data for backend
+      const attachmentsData = formData.attachments.map(att => ({
+        url: att.url,
+        publicId: att.publicId,
+        name: att.name,
+        type: att.type
+      }));
+
       const submitData = {
         classId,
         year: parseInt(year),
         month: parseInt(month),
         amount: classData.monthlyFee,
-        receiptUrl: formData.receiptUrl,
-        receiptPublicId: formData.receiptPublicId,
+        attachments: attachmentsData,
+        // Keep backward compatibility with single receipt
+        receiptUrl: attachmentsData[0]?.url || '',
+        receiptPublicId: attachmentsData[0]?.publicId || '',
         additionalNote: formData.additionalNote
       };
 
-      let response;
       if (updatePaymentId) {
         // Update existing payment
-        response = await axios.put(
+        await axios.put(
           `https://ayanna-kiyanna-new-backend.onrender.com/api/payments/${updatePaymentId}`,
           {
-            receiptUrl: formData.receiptUrl,
-            receiptPublicId: formData.receiptPublicId,
+            attachments: attachmentsData,
+            receiptUrl: attachmentsData[0]?.url || '',
+            receiptPublicId: attachmentsData[0]?.publicId || '',
             additionalNote: formData.additionalNote
           },
           { headers: { 'x-auth-token': token } }
         );
       } else {
         // Submit new payment
-        response = await axios.post(
+        await axios.post(
           'https://ayanna-kiyanna-new-backend.onrender.com/api/payments/submit',
           submitData,
           { headers: { 'x-auth-token': token } }
@@ -434,113 +485,148 @@ const ClassFeePayment = () => {
         <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
           <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
-              {/* Receipt Upload */}
+              {/* Attachments Upload */}
               <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom sx={{
-                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-                }}>
-                  ගෙවීම් රිසිට්පත හෝ අදාල සාක්ශිය අමුණන්න
-                </Typography>
-                
-                {/* Display uploaded receipt or upload area */}
-                {formData.receiptUrl ? (
-                  <Card sx={{ p: 2, bgcolor: '#f8f9fa', border: '2px solid #28a745' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                      <Chip label="Receipt Uploaded" color="success" />
-                      <Typography variant="body2" color="text.secondary">
-                        Receipt/Evidence successfully uploaded
-                      </Typography>
-                    </Box>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h6" gutterBottom sx={{
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}>
+                    <CloudUpload />
+                    ගෙවීම් රිසිට්පත හෝ අදාල සාක්ශි අමුණන්න (උපරිම 2ක්)
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    ඔබට රූප (JPG, PNG) හෝ PDF ගොනු අමුණා ගත හැක. උපරිම ගොනු 2ක් පමණි.
+                  </Typography>
+                </Box>
 
-                    {/* Receipt Preview */}
-                    <Box sx={{ mb: 2 }}>
-                      {formData.receiptUrl.toLowerCase().includes('.pdf') ? (
-                        <Box sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 2,
-                          p: 2,
-                          bgcolor: '#e3f2fd',
-                          borderRadius: 1
-                        }}>
-                          <GetApp color="primary" />
-                          <Typography variant="body2">PDF Receipt/Evidence</Typography>
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            startIcon={<Visibility />}
-                            onClick={() => window.open(formData.receiptUrl, '_blank')}
-                          >
-                            View PDF
-                          </Button>
-                        </Box>
-                      ) : (
-                        <Box sx={{ textAlign: 'center' }}>
-                          <img
-                            src={formData.receiptUrl}
-                            alt="Receipt"
-                            style={{
-                              maxWidth: '100%',
-                              maxHeight: '300px',
-                              borderRadius: '8px',
-                              border: '1px solid #ddd'
-                            }}
-                          />
-                        </Box>
-                      )}
-                    </Box>
+                {/* Display uploaded attachments */}
+                {formData.attachments.length > 0 && (
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant="subtitle1" sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                      mb: 2,
+                      fontWeight: 'bold'
+                    }}>
+                      අමුණා ගත් ගොනු:
+                    </Typography>
+                    <Grid container spacing={2}>
+                      {formData.attachments.map((attachment, index) => (
+                        <Grid item xs={12} sm={6} key={index}>
+                          <Card sx={{
+                            p: 2,
+                            bgcolor: 'success.50',
+                            border: '2px solid',
+                            borderColor: 'success.200',
+                            position: 'relative'
+                          }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                              <Chip
+                                label={`ගොනුව ${index + 1}`}
+                                color="success"
+                                size="small"
+                              />
+                              <Typography variant="body2" color="text.secondary">
+                                {attachment.type === 'pdf' ? 'PDF ගොනුව' : 'රූපය'}
+                              </Typography>
+                            </Box>
 
-                    {/* Action Buttons */}
-                    <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        startIcon={<Delete />}
-                        onClick={handleRemoveReceipt}
-                        size="small"
-                      >
-                        Remove
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        startIcon={<CloudUpload />}
-                        onClick={() => document.getElementById('receipt-upload').click()}
-                        size="small"
-                      >
-                        Upload New
-                      </Button>
-                    </Box>
+                            {/* Attachment Preview */}
+                            <Box sx={{ mb: 2 }}>
+                              {attachment.type === 'pdf' ? (
+                                <Box sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 2,
+                                  p: 2,
+                                  bgcolor: '#e3f2fd',
+                                  borderRadius: 1
+                                }}>
+                                  <GetApp color="primary" />
+                                  <Typography variant="body2">{attachment.name}</Typography>
+                                  <Button
+                                    size="small"
+                                    variant="outlined"
+                                    startIcon={<Visibility />}
+                                    onClick={() => window.open(attachment.url, '_blank')}
+                                  >
+                                    බලන්න
+                                  </Button>
+                                </Box>
+                              ) : (
+                                <Box sx={{ textAlign: 'center' }}>
+                                  <img
+                                    src={attachment.url}
+                                    alt={attachment.name}
+                                    style={{
+                                      maxWidth: '100%',
+                                      maxHeight: '200px',
+                                      borderRadius: '8px',
+                                      border: '1px solid #ddd'
+                                    }}
+                                  />
+                                </Box>
+                              )}
+                            </Box>
 
-                    {/* Hidden file input for re-upload */}
-                    <input
-                      type="file"
-                      accept="image/*,.pdf"
-                      onChange={(e) => handleFileUpload(e.target.files[0])}
-                      style={{ display: 'none' }}
-                      id="receipt-upload"
-                    />
-                  </Card>
-                ) : (
+                            {/* Action Buttons */}
+                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                              <Button
+                                variant="outlined"
+                                color="error"
+                                startIcon={<Delete />}
+                                onClick={() => handleRemoveAttachment(index)}
+                                size="small"
+                              >
+                                ඉවත් කරන්න
+                              </Button>
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                startIcon={<Visibility />}
+                                onClick={() => window.open(attachment.url, '_blank')}
+                                size="small"
+                              >
+                                බලන්න
+                              </Button>
+                            </Box>
+                          </Card>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Box>
+                )}
+
+                {/* Upload Area */}
+                {formData.attachments.length < 2 && (
                   <Box sx={{
                     border: '2px dashed #ccc',
                     borderRadius: 2,
                     p: 3,
                     textAlign: 'center',
                     cursor: 'pointer',
-                    '&:hover': { borderColor: 'primary.main' }
+                    '&:hover': { borderColor: 'primary.main' },
+                    bgcolor: formData.attachments.length === 0 ? 'grey.50' : 'info.50'
                   }}>
                     <input
                       type="file"
                       accept="image/*,.pdf"
                       onChange={(e) => handleFileUpload(e.target.files[0])}
                       style={{ display: 'none' }}
-                      id="receipt-upload"
+                      id="attachment-upload"
                     />
-                    <label htmlFor="receipt-upload" style={{ cursor: 'pointer' }}>
+                    <label htmlFor="attachment-upload" style={{ cursor: 'pointer' }}>
                       <CloudUpload sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
-                      <Typography variant="body1">
-                        {uploading ? 'Uploading...' : 'Click to upload receipt or Evidence (Image or PDF)'}
+                      <Typography variant="body1" sx={{ fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                        {uploading ? 'ගොනුව අමුණමින්...' :
+                         formData.attachments.length === 0 ?
+                         'ගෙවීම් රිසිට්පත හෝ සාක්ශිය අමුණන්න (රූප හෝ PDF)' :
+                         'අමතර ගොනුවක් අමුණන්න (විකල්ප)'}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {formData.attachments.length}/2 ගොනු අමුණා ගන්නා ලදී
                       </Typography>
                     </label>
                   </Box>
@@ -580,7 +666,7 @@ const ClassFeePayment = () => {
                   fullWidth
                   variant="contained"
                   size="large"
-                  disabled={loading || uploading || !formData.receiptUrl}
+                  disabled={loading || uploading || formData.attachments.length === 0}
                   sx={{
                     py: 2,
                     fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',

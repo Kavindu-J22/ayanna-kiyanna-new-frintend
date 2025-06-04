@@ -45,7 +45,11 @@ import {
   CalendarToday,
   AttachMoney,
   TrendingUp,
-  PendingActions
+  PendingActions,
+  Info,
+  Assessment,
+  BarChart,
+  PieChart
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -80,7 +84,9 @@ const AllClassPaymentRequests = () => {
     total: 0,
     pending: 0,
     approved: 0,
-    rejected: 0
+    rejected: 0,
+    totalIncome: 0,
+    selectedMonthIncome: 0
   });
 
   const monthNames = [
@@ -95,6 +101,7 @@ const AllClassPaymentRequests = () => {
 
   useEffect(() => {
     applyFilters();
+    calculateStats(paymentRequests);
   }, [paymentRequests, searchTerm, statusFilter, classFilter, monthFilter, yearFilter]);
 
   const fetchPaymentRequests = async () => {
@@ -132,11 +139,26 @@ const AllClassPaymentRequests = () => {
   };
 
   const calculateStats = (requests) => {
+    const approvedRequests = requests.filter(r => r.status.toLowerCase() === 'approved');
+    const totalIncome = approvedRequests.reduce((sum, request) => sum + (request.amount || 0), 0);
+
+    // Calculate selected month income using payment month/year fields
+    let selectedMonthIncome = 0;
+    if (monthFilter && yearFilter) {
+      const selectedMonthApproved = approvedRequests.filter(request => {
+        return request.month === parseInt(monthFilter) &&
+               request.year === parseInt(yearFilter);
+      });
+      selectedMonthIncome = selectedMonthApproved.reduce((sum, request) => sum + (request.amount || 0), 0);
+    }
+
     const stats = {
       total: requests.length,
       pending: requests.filter(r => r.status.toLowerCase() === 'pending').length,
-      approved: requests.filter(r => r.status.toLowerCase() === 'approved').length,
-      rejected: requests.filter(r => r.status.toLowerCase() === 'rejected').length
+      approved: approvedRequests.length,
+      rejected: requests.filter(r => r.status.toLowerCase() === 'rejected').length,
+      totalIncome,
+      selectedMonthIncome
     };
     setStats(stats);
   };
@@ -167,20 +189,14 @@ const AllClassPaymentRequests = () => {
       filtered = filtered.filter(request => request.class?._id === classFilter);
     }
 
-    // Month filter
+    // Month filter - use payment month field instead of createdAt
     if (monthFilter) {
-      filtered = filtered.filter(request => {
-        const requestDate = new Date(request.createdAt);
-        return requestDate.getMonth() + 1 === parseInt(monthFilter);
-      });
+      filtered = filtered.filter(request => request.month === parseInt(monthFilter));
     }
 
-    // Year filter
+    // Year filter - use payment year field instead of createdAt
     if (yearFilter) {
-      filtered = filtered.filter(request => {
-        const requestDate = new Date(request.createdAt);
-        return requestDate.getFullYear() === parseInt(yearFilter);
-      });
+      filtered = filtered.filter(request => request.year === parseInt(yearFilter));
     }
 
     setFilteredRequests(filtered);
@@ -343,7 +359,7 @@ const AllClassPaymentRequests = () => {
 
           {/* Statistics Cards */}
           <Grid container spacing={2} sx={{ mb: 3 }}>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={2.4}>
               <motion.div whileHover={{ scale: 1.02 }}>
                 <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
                   <CardContent sx={{ textAlign: 'center', py: 2 }}>
@@ -356,7 +372,7 @@ const AllClassPaymentRequests = () => {
                 </Card>
               </motion.div>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={2.4}>
               <motion.div whileHover={{ scale: 1.02 }}>
                 <Card sx={{ background: 'linear-gradient(135deg, #ffa726 0%, #ff9800 100%)', color: 'white' }}>
                   <CardContent sx={{ textAlign: 'center', py: 2 }}>
@@ -369,7 +385,7 @@ const AllClassPaymentRequests = () => {
                 </Card>
               </motion.div>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={2.4}>
               <motion.div whileHover={{ scale: 1.02 }}>
                 <Card sx={{ background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)', color: 'white' }}>
                   <CardContent sx={{ textAlign: 'center', py: 2 }}>
@@ -382,7 +398,7 @@ const AllClassPaymentRequests = () => {
                 </Card>
               </motion.div>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={2.4}>
               <motion.div whileHover={{ scale: 1.02 }}>
                 <Card sx={{ background: 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)', color: 'white' }}>
                   <CardContent sx={{ textAlign: 'center', py: 2 }}>
@@ -395,7 +411,58 @@ const AllClassPaymentRequests = () => {
                 </Card>
               </motion.div>
             </Grid>
+            <Grid item xs={12} sm={6} md={2.4}>
+              <motion.div whileHover={{ scale: 1.02 }}>
+                <Card sx={{ background: 'linear-gradient(135deg, #9c27b0 0%, #673ab7 100%)', color: 'white' }}>
+                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
+                    <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', mx: 'auto', mb: 1 }}>
+                      <TrendingUp />
+                    </Avatar>
+                    <Typography variant="h5" fontWeight="bold">Rs. {stats.totalIncome.toLocaleString()}</Typography>
+                    <Typography variant="body2">මුළු ආදායම</Typography>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Grid>
           </Grid>
+
+          {/* Selected Month Income Card */}
+          {monthFilter && yearFilter && (
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={12} md={6}>
+                <motion.div whileHover={{ scale: 1.02 }}>
+                  <Card sx={{ background: 'linear-gradient(135deg, #ff5722 0%, #e64a19 100%)', color: 'white' }}>
+                    <CardContent sx={{ textAlign: 'center', py: 3 }}>
+                      <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', mx: 'auto', mb: 2, width: 56, height: 56 }}>
+                        <Assessment />
+                      </Avatar>
+                      <Typography variant="h4" fontWeight="bold">Rs. {stats.selectedMonthIncome.toLocaleString()}</Typography>
+                      <Typography variant="h6">
+                        {monthNames[monthFilter - 1]} {yearFilter} ආදායම
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <motion.div whileHover={{ scale: 1.02 }}>
+                  <Card sx={{ background: 'linear-gradient(135deg, #607d8b 0%, #455a64 100%)', color: 'white' }}>
+                    <CardContent sx={{ textAlign: 'center', py: 3 }}>
+                      <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', mx: 'auto', mb: 2, width: 56, height: 56 }}>
+                        <BarChart />
+                      </Avatar>
+                      <Typography variant="h4" fontWeight="bold">
+                        {((stats.selectedMonthIncome / stats.totalIncome) * 100 || 0).toFixed(1)}%
+                      </Typography>
+                      <Typography variant="h6">
+                        මුළු ආදායමෙන් ප්‍රතිශතය
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </Grid>
+            </Grid>
+          )}
         </Paper>
 
         {/* Filters Section */}
@@ -427,7 +494,7 @@ const AllClassPaymentRequests = () => {
 
             {/* Status Filter */}
             <Grid item xs={12} md={2}>
-              <FormControl fullWidth size="small">
+              <FormControl fullWidth size="small" sx={{ minWidth: 200 }}>
                 <InputLabel>තත්ත්වය</InputLabel>
                 <Select
                   value={statusFilter}
@@ -444,7 +511,7 @@ const AllClassPaymentRequests = () => {
 
             {/* Class Filter */}
             <Grid item xs={12} md={3}>
-              <FormControl fullWidth size="small">
+              <FormControl fullWidth size="small" sx={{ minWidth: 200 }}>
                 <InputLabel>පන්තිය</InputLabel>
                 <Select
                   value={classFilter}
@@ -465,7 +532,7 @@ const AllClassPaymentRequests = () => {
 
             {/* Month Filter */}
             <Grid item xs={12} md={2}>
-              <FormControl fullWidth size="small">
+              <FormControl fullWidth size="small" sx={{ minWidth: 200 }}>
                 <InputLabel>මාසය</InputLabel>
                 <Select
                   value={monthFilter}
@@ -484,7 +551,7 @@ const AllClassPaymentRequests = () => {
 
             {/* Year Filter */}
             <Grid item xs={12} md={2}>
-              <FormControl fullWidth size="small">
+              <FormControl fullWidth size="small" sx={{ minWidth: 200 }}>
                 <InputLabel>වර්ෂය</InputLabel>
                 <Select
                   value={yearFilter}
@@ -518,6 +585,20 @@ const AllClassPaymentRequests = () => {
             >
               පෙරහන් ඉවත් කරන්න
             </Button>
+          </Box>
+
+          {/* Smart Note */}
+          <Box sx={{ mt: 3, p: 2, bgcolor: 'info.50', borderRadius: 2, border: '1px solid', borderColor: 'info.200' }}>
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+              <Info sx={{ color: 'info.main', mt: 0.5 }} />
+              <Typography variant="body2" sx={{
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                color: 'info.dark',
+                lineHeight: 1.6
+              }}>
+                <strong>වැදගත් සටහන:</strong> අනුමත කරනලද හෝ ප්‍රතික්ශේප කරන ලද ගෙවීම් ඉල්ලීම් වල තත්වය නැවත වෙනස් කිරීමට අවශ්‍යනම් අදාල පන්තිය වෙත ඇතුල්වී (පන්ති කලමණාකරනය ඔස්සේ) එහි පන්ති ගාස්තු ගෙවීම් වල අදාල ඉල්ලීම පරීක්ශා කර බලා ඔබට එය වෙනස් කර හැක. මෙම පිටුව තුල එයට ඔබට අවස්තාව ලබා දී නැත්තේ ගෙවීම් දත්ත වල ආරක්ශාව සහ නිරවද්‍යතාවය පවත්වා ගැනීම වෙනුවෙන් බව කරුනාවෙන් සලකන්න.
+              </Typography>
+            </Box>
           </Box>
         </Paper>
 
@@ -758,16 +839,37 @@ const AllClassPaymentRequests = () => {
                     {formatDate(viewDialog.payment.createdAt)}
                   </Typography>
 
-                  {viewDialog.payment.receiptUrl && (
+                  {/* Display attachments or single receipt */}
+                  {(viewDialog.payment.attachments?.length > 0 || viewDialog.payment.receiptUrl) && (
                     <>
-                      <Typography variant="subtitle2" color="text.secondary">ගෙවීම් රිසිට්පත:</Typography>
-                      <Button
-                        variant="outlined"
-                        onClick={() => window.open(viewDialog.payment.receiptUrl, '_blank')}
-                        sx={{ mt: 1, mb: 2 }}
-                      >
-                        රිසිට්පත බලන්න
-                      </Button>
+                      <Typography variant="subtitle2" color="text.secondary">ගෙවීම් රිසිට්පත/සාක්ශි:</Typography>
+                      <Box sx={{ mt: 1, mb: 2 }}>
+                        {viewDialog.payment.attachments?.length > 0 ? (
+                          // Display multiple attachments
+                          <Grid container spacing={1}>
+                            {viewDialog.payment.attachments.map((attachment, index) => (
+                              <Grid item key={index}>
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  onClick={() => window.open(attachment.url, '_blank')}
+                                  sx={{ mr: 1, mb: 1 }}
+                                >
+                                  {attachment.type === 'pdf' ? 'PDF' : 'රූපය'} {index + 1}
+                                </Button>
+                              </Grid>
+                            ))}
+                          </Grid>
+                        ) : (
+                          // Display single receipt (backward compatibility)
+                          <Button
+                            variant="outlined"
+                            onClick={() => window.open(viewDialog.payment.receiptUrl, '_blank')}
+                          >
+                            රිසිට්පත බලන්න
+                          </Button>
+                        )}
+                      </Box>
                     </>
                   )}
 

@@ -38,7 +38,14 @@ import {
   Cancel,
   Visibility,
   SelectAll,
-  Search
+  Search,
+  PictureAsPdf,
+  Assessment,
+  TrendingUp,
+  People,
+  Warning,
+  MonetizationOn,
+  Badge
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -289,6 +296,159 @@ const AdminClassPayments = () => {
     return 'N/A';
   };
 
+  // Calculate summary statistics for selected month
+  const calculateMonthlySummary = () => {
+    if (!paymentData) return null;
+
+    const approvedPayments = paymentData.paymentRequests?.filter(p =>
+      p.status && p.status.toLowerCase() === 'approved'
+    ) || [];
+
+    const totalIncome = approvedPayments.reduce((sum, payment) => sum + (payment.amount || 0), 0);
+    const paidStudentCount = approvedPayments.length;
+
+    const allStudents = paymentData.allStudentsStatus || [];
+    const notRequestedCount = allStudents.filter(s => !s.payment && s.requiresPayment).length;
+    const notRequiredCount = allStudents.filter(s => !s.requiresPayment).length;
+    const lowAttendanceCount = allStudents.filter(s => s.attendance?.presentDays < 2).length;
+
+    return {
+      totalIncome,
+      paidStudentCount,
+      notRequestedCount,
+      notRequiredCount,
+      lowAttendanceCount,
+      totalStudents: allStudents.length,
+      pendingCount: paymentData.paymentRequests?.filter(p => p.status && p.status.toLowerCase() === 'pending').length || 0,
+      rejectedCount: paymentData.paymentRequests?.filter(p => p.status && p.status.toLowerCase() === 'rejected').length || 0
+    };
+  };
+
+  const monthlySummary = calculateMonthlySummary();
+
+  // Enhanced PDF generation function
+  const generatePDFReport = () => {
+    if (!monthlySummary || !paymentData) return;
+
+    const reportData = {
+      classInfo: {
+        grade: classData?.grade,
+        category: classData?.category,
+        monthlyFee: classData?.monthlyFee
+      },
+      period: {
+        month: monthNames[selectedMonth - 1],
+        year: selectedYear
+      },
+      summary: monthlySummary,
+      paymentRequests: paymentData.paymentRequests,
+      allStudents: paymentData.allStudentsStatus
+    };
+
+    // Create detailed HTML content for PDF
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>පන්ති ගෙවීම් වාර්තාව</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .summary { background: #f5f5f5; padding: 15px; margin: 20px 0; border-radius: 5px; }
+        .student-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .student-table th, .student-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .student-table th { background-color: #4CAF50; color: white; }
+        .status-approved { color: #4CAF50; font-weight: bold; }
+        .status-pending { color: #FF9800; font-weight: bold; }
+        .status-rejected { color: #F44336; font-weight: bold; }
+        .status-not-requested { color: #9E9E9E; font-weight: bold; }
+        .low-attendance { background-color: #FFF3E0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>පන්ති ගෙවීම් වාර්තාව</h1>
+        <h2>${reportData.classInfo.grade} - ${reportData.classInfo.category}</h2>
+        <h3>${reportData.period.month} ${reportData.period.year}</h3>
+        <p>මාසික ගාස්තුව: Rs. ${reportData.classInfo.monthlyFee}/=</p>
+    </div>
+
+    <div class="summary">
+        <h3>සාරාංශය</h3>
+        <table style="width: 100%;">
+            <tr><td><strong>මුළු ආදායම:</strong></td><td>Rs. ${monthlySummary.totalIncome.toLocaleString()}/=</td></tr>
+            <tr><td><strong>ගෙවීම් සිදු කළ සිසුන්:</strong></td><td>${monthlySummary.paidStudentCount}</td></tr>
+            <tr><td><strong>ගෙවීම් ඉල්ලීම් නොකළ සිසුන්:</strong></td><td>${monthlySummary.notRequestedCount}</td></tr>
+            <tr><td><strong>ගෙවීම් අවශ්‍ය නොවන සිසුන්:</strong></td><td>${monthlySummary.notRequiredCount}</td></tr>
+            <tr><td><strong>අඩු පැමිණීමක් ඇති සිසුන්:</strong></td><td>${monthlySummary.lowAttendanceCount}</td></tr>
+            <tr><td><strong>මුළු සිසුන්:</strong></td><td>${monthlySummary.totalStudents}</td></tr>
+            <tr><td><strong>බලාපොරොත්තුවෙන්:</strong></td><td>${monthlySummary.pendingCount}</td></tr>
+            <tr><td><strong>ප්‍රතික්ෂේප කළ:</strong></td><td>${monthlySummary.rejectedCount}</td></tr>
+        </table>
+    </div>
+
+    <h3>සිසුන්ගේ විස්තර</h3>
+    <table class="student-table">
+        <thead>
+            <tr>
+                <th>සිසුවාගේ නම</th>
+                <th>Student ID</th>
+                <th>පැමිණීම</th>
+                <th>ගෙවීම් තත්ත්වය</th>
+                <th>ගෙවීම් ප්‍රමාණය</th>
+                <th>සටහන්</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${reportData.allStudents.map(student => {
+              const isLowAttendance = student.attendance?.presentDays < 2;
+              const paymentStatus = student.payment ?
+                (student.payment.status.toLowerCase() === 'approved' ? 'අනුමත' :
+                 student.payment.status.toLowerCase() === 'pending' ? 'බලාපොරොත්තුවෙන්' :
+                 student.payment.status.toLowerCase() === 'rejected' ? 'ප්‍රතික්ෂේප' : 'නොදන්නා') :
+                (student.requiresPayment ? 'ගෙවීම් ඉල්ලීම නොකළ' : 'ගෙවීම අවශ්‍ය නැත');
+
+              const statusClass = student.payment ?
+                `status-${student.payment.status.toLowerCase()}` : 'status-not-requested';
+
+              return `
+                <tr ${isLowAttendance ? 'class="low-attendance"' : ''}>
+                    <td>${getStudentDisplayName(student.student)}</td>
+                    <td>${student.student?.studentId || 'N/A'}</td>
+                    <td>${student.attendance?.presentDays || 0}/${student.attendance?.totalClassDays || 0}${isLowAttendance ? ' (අඩු)' : ''}</td>
+                    <td class="${statusClass}">${paymentStatus}</td>
+                    <td>${student.payment ? `Rs. ${student.payment.amount}/=` : '-'}</td>
+                    <td>${student.payment?.additionalNote || '-'}</td>
+                </tr>
+              `;
+            }).join('')}
+        </tbody>
+    </table>
+
+    <div style="margin-top: 30px; text-align: center; color: #666;">
+        <p>වාර්තාව ජනනය කළ දිනය: ${new Date().toLocaleDateString('si-LK')}</p>
+        <p>වාර්තාව ජනනය කළ වේලාව: ${new Date().toLocaleTimeString('si-LK')}</p>
+    </div>
+</body>
+</html>
+    `;
+
+    // Create and download HTML file (can be opened as PDF)
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `payment-report-${reportData.classInfo.grade}-${reportData.period.month}-${reportData.period.year}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    // Show success message
+    alert('වාර්තාව සාර්ථකව බාගන්නා ලදී! HTML ගොනුව ඔබගේ බ්‍රවුසරයේ විවෘත කර Print > Save as PDF භාවිතා කරන්න.');
+  };
+
   // Filter students based on search term
   const filteredStudents = paymentData?.allStudentsStatus?.filter(studentData => {
     if (!searchTerm.trim()) return true;
@@ -390,6 +550,127 @@ const AdminClassPayments = () => {
             ))}
           </Grid>
         </Paper>
+
+        {/* Monthly Summary Statistics */}
+        {selectedMonth && paymentData && monthlySummary && (
+          <Paper elevation={3} sx={{ p: 3, mb: 3, borderRadius: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h6" sx={{
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+              }}>
+                {monthNames[selectedMonth - 1]} {selectedYear} - සාරාංශය
+              </Typography>
+              <Button
+                variant="contained"
+                startIcon={<PictureAsPdf />}
+                onClick={generatePDFReport}
+                sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                }}
+              >
+                වාර්තාව බාගන්න
+              </Button>
+            </Box>
+
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card sx={{ background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)', color: 'white' }}>
+                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
+                    <MonetizationOn sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h5" fontWeight="bold">
+                      Rs. {monthlySummary.totalIncome.toLocaleString()}
+                    </Typography>
+                    <Typography variant="body2">මුළු ආදායම</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={3}>
+                <Card sx={{ background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)', color: 'white' }}>
+                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
+                    <CheckCircle sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h5" fontWeight="bold">
+                      {monthlySummary.paidStudentCount}
+                    </Typography>
+                    <Typography variant="body2">ගෙවීම් සිදු කළ සිසුන්</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={3}>
+                <Card sx={{ background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)', color: 'white' }}>
+                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
+                    <Warning sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h5" fontWeight="bold">
+                      {monthlySummary.notRequestedCount}
+                    </Typography>
+                    <Typography variant="body2">ගෙවීම් ඉල්ලීම් නොකළ</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={3}>
+                <Card sx={{ background: 'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)', color: 'white' }}>
+                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
+                    <People sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h5" fontWeight="bold">
+                      {monthlySummary.totalStudents}
+                    </Typography>
+                    <Typography variant="body2">මුළු සිසුන්</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={3}>
+                <Card sx={{ background: 'linear-gradient(135deg, #607d8b 0%, #455a64 100%)', color: 'white' }}>
+                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
+                    <TrendingUp sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h5" fontWeight="bold">
+                      {monthlySummary.notRequiredCount}
+                    </Typography>
+                    <Typography variant="body2">ගෙවීම් අවශ්‍ය නොවන</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={3}>
+                <Card sx={{ background: 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)', color: 'white' }}>
+                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
+                    <Assessment sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h5" fontWeight="bold">
+                      {monthlySummary.lowAttendanceCount}
+                    </Typography>
+                    <Typography variant="body2">අඩු පැමිණීම</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={3}>
+                <Card sx={{ background: 'linear-gradient(135deg, #ff5722 0%, #e64a19 100%)', color: 'white' }}>
+                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
+                    <Payment sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h5" fontWeight="bold">
+                      {monthlySummary.pendingCount}
+                    </Typography>
+                    <Typography variant="body2">බලාපොරොත්තුවෙන්</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={3}>
+                <Card sx={{ background: 'linear-gradient(135deg, #795548 0%, #5d4037 100%)', color: 'white' }}>
+                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
+                    <Cancel sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h5" fontWeight="bold">
+                      {monthlySummary.rejectedCount}
+                    </Typography>
+                    <Typography variant="body2">ප්‍රතික්ෂේප කළ</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+          </Paper>
+        )}
 
         {/* Payment Management */}
         {selectedMonth && paymentData && (
@@ -529,15 +810,33 @@ const AdminClassPayments = () => {
                               >
                                 Reject
                               </Button>
-                              <Button
-                                size="small"
-                                variant="outlined"
-                                startIcon={<Visibility />}
-                                onClick={() => window.open(payment.receiptUrl, '_blank')}
-                                sx={{ mb: 1 }}
-                              >
-                                View Receipt
-                              </Button>
+                              {/* View Receipt/Attachments Button */}
+                              {payment.attachments?.length > 0 ? (
+                                <Box sx={{ mb: 1 }}>
+                                  {payment.attachments.map((attachment, index) => (
+                                    <Button
+                                      key={index}
+                                      size="small"
+                                      variant="outlined"
+                                      startIcon={<Visibility />}
+                                      onClick={() => window.open(attachment.url, '_blank')}
+                                      sx={{ mr: 1, mb: 0.5 }}
+                                    >
+                                      {attachment.type === 'pdf' ? 'PDF' : 'Image'} {index + 1}
+                                    </Button>
+                                  ))}
+                                </Box>
+                              ) : (
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  startIcon={<Visibility />}
+                                  onClick={() => window.open(payment.receiptUrl, '_blank')}
+                                  sx={{ mb: 1 }}
+                                >
+                                  View Receipt
+                                </Button>
+                              )}
                             </Box>
                           </TableCell>
                         </TableRow>
@@ -610,7 +909,25 @@ const AdminClassPayments = () => {
                           </Box>
                         </TableCell>
                         <TableCell>
-                          {studentData.attendance.presentDays}/{studentData.attendance.totalClassDays}
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Typography variant="body2">
+                              {studentData.attendance.presentDays}/{studentData.attendance.totalClassDays}
+                            </Typography>
+                            {studentData.attendance.presentDays < 2 && (
+                              <Chip
+                                label="ගෙවීම අනිවාර්ය  නැත"
+                                size="small"
+                                sx={{
+                                  bgcolor: 'info.100',
+                                  color: 'info.dark',
+                                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                                  fontSize: '0.7rem',
+                                  height: '20px'
+                                }}
+                                icon={<Badge sx={{ fontSize: '14px' }} />}
+                              />
+                            )}
+                          </Box>
                         </TableCell>
                         <TableCell>
                           {studentData.payment ? (
@@ -667,15 +984,33 @@ const AdminClassPayments = () => {
                                 >
                                   View Request
                                 </Button>
-                                <Button
-                                  size="small"
-                                  variant="outlined"
-                                  startIcon={<Visibility />}
-                                  onClick={() => window.open(studentData.payment.receiptUrl, '_blank')}
-                                  sx={{ mb: 1 }}
-                                >
-                                  View Receipt
-                                </Button>
+                                {/* View Receipt/Attachments */}
+                                {studentData.payment.attachments?.length > 0 ? (
+                                  <Box sx={{ mb: 1 }}>
+                                    {studentData.payment.attachments.map((attachment, index) => (
+                                      <Button
+                                        key={index}
+                                        size="small"
+                                        variant="outlined"
+                                        startIcon={<Visibility />}
+                                        onClick={() => window.open(attachment.url, '_blank')}
+                                        sx={{ mr: 1, mb: 0.5 }}
+                                      >
+                                        {attachment.type === 'pdf' ? 'PDF' : 'Image'} {index + 1}
+                                      </Button>
+                                    ))}
+                                  </Box>
+                                ) : (
+                                  <Button
+                                    size="small"
+                                    variant="outlined"
+                                    startIcon={<Visibility />}
+                                    onClick={() => window.open(studentData.payment.receiptUrl, '_blank')}
+                                    sx={{ mb: 1 }}
+                                  >
+                                    View Receipt
+                                  </Button>
+                                )}
                                 <Button
                                   size="small"
                                   variant="contained"
@@ -803,15 +1138,36 @@ const AdminClassPayments = () => {
                     </Grid>
                   )}
                   <Grid item xs={12}>
-                    <Typography variant="subtitle2" color="text.secondary">Receipt:</Typography>
-                    <Button
-                      variant="outlined"
-                      startIcon={<Visibility />}
-                      onClick={() => window.open(viewRequestDialog.payment.receiptUrl, '_blank')}
-                      sx={{ mt: 1 }}
-                    >
-                      View Receipt
-                    </Button>
+                    <Typography variant="subtitle2" color="text.secondary">Receipt/Attachments:</Typography>
+                    <Box sx={{ mt: 1 }}>
+                      {viewRequestDialog.payment.attachments?.length > 0 ? (
+                        // Display multiple attachments
+                        <Grid container spacing={1}>
+                          {viewRequestDialog.payment.attachments.map((attachment, index) => (
+                            <Grid item key={index}>
+                              <Button
+                                variant="outlined"
+                                size="small"
+                                startIcon={<Visibility />}
+                                onClick={() => window.open(attachment.url, '_blank')}
+                                sx={{ mr: 1, mb: 1 }}
+                              >
+                                {attachment.type === 'pdf' ? 'PDF' : 'Image'} {index + 1}
+                              </Button>
+                            </Grid>
+                          ))}
+                        </Grid>
+                      ) : (
+                        // Display single receipt (backward compatibility)
+                        <Button
+                          variant="outlined"
+                          startIcon={<Visibility />}
+                          onClick={() => window.open(viewRequestDialog.payment.receiptUrl, '_blank')}
+                        >
+                          View Receipt
+                        </Button>
+                      )}
+                    </Box>
                   </Grid>
                 </Grid>
               </Box>

@@ -434,16 +434,37 @@ const MyPaymentRequests = () => {
                 <Grid item xs={12}>
                   <Divider sx={{ my: 2 }} />
 
-                  {viewDialog.payment.receiptUrl && (
+                  {/* Display attachments or single receipt */}
+                  {(viewDialog.payment.attachments?.length > 0 || viewDialog.payment.receiptUrl) && (
                     <>
-                      <Typography variant="subtitle2" color="text.secondary">ගෙවීම් රිසිට්පත:</Typography>
-                      <Button
-                        variant="outlined"
-                        onClick={() => window.open(viewDialog.payment.receiptUrl, '_blank')}
-                        sx={{ mt: 1, mb: 2 }}
-                      >
-                        රිසිට්පත බලන්න
-                      </Button>
+                      <Typography variant="subtitle2" color="text.secondary">ගෙවීම් රිසිට්පත/සාක්ශි:</Typography>
+                      <Box sx={{ mt: 1, mb: 2 }}>
+                        {viewDialog.payment.attachments?.length > 0 ? (
+                          // Display multiple attachments
+                          <Grid container spacing={1}>
+                            {viewDialog.payment.attachments.map((attachment, index) => (
+                              <Grid item key={index}>
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  onClick={() => window.open(attachment.url, '_blank')}
+                                  sx={{ mr: 1, mb: 1 }}
+                                >
+                                  {attachment.type === 'pdf' ? 'PDF' : 'රූපය'} {index + 1}
+                                </Button>
+                              </Grid>
+                            ))}
+                          </Grid>
+                        ) : (
+                          // Display single receipt (backward compatibility)
+                          <Button
+                            variant="outlined"
+                            onClick={() => window.open(viewDialog.payment.receiptUrl, '_blank')}
+                          >
+                            රිසිට්පත බලන්න
+                          </Button>
+                        )}
+                      </Box>
                     </>
                   )}
 
