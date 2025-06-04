@@ -15,7 +15,8 @@ import {
   Select,
   MenuItem,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Button
 } from '@mui/material';
 import {
   ArrowBack,
@@ -307,8 +308,8 @@ const AttendanceAnalytics = () => {
               {analyticsData.classWiseData?.length > 0 ? (
                 analyticsData.classWiseData.map((classData) => (
                   <Grid item xs={12} sm={6} md={4} key={classData._id}>
-                    <Card sx={{ height: '100%' }}>
-                      <CardContent>
+                    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                      <CardContent sx={{ flexGrow: 1 }}>
                         <Typography variant="h6" fontWeight="bold" color="primary">
                           {classData.className || 'Unknown Class'}
                         </Typography>
@@ -321,9 +322,23 @@ const AttendanceAnalytics = () => {
                         }>
                           {Math.round(classData.averageAttendance || 0)}%
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" color="text.secondary" sx={{ mb: 2 }}>
                           සාමාන්‍ය පැමිණීම
                         </Typography>
+
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          fullWidth
+                          onClick={() => navigate(`/attendance-management/${classData._id}`)}
+                          sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                            fontSize: '0.875rem',
+                            mt: 'auto'
+                          }}
+                        >
+                          මාසය අනුව අධ්‍යනය කරන්න
+                        </Button>
                       </CardContent>
                     </Card>
                   </Grid>
