@@ -56,11 +56,14 @@ import {
   Assignment,
   Payment,
   CreditCard,
-  Email
+  Email,
+  ContentCopy,
+  CheckCircleOutline,
+  Info,
+  ArrowRightAlt
 } from '@mui/icons-material';
 import { FaPerson } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import axios from 'axios';
 
 const StudentManagement = () => {
@@ -586,11 +589,7 @@ const StudentManagement = () => {
       py: 4
     }}>
       <Container maxWidth="xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
+        <Box>
           {/* Header */}
           <Paper elevation={8} sx={{ p: 3, mb: 4, borderRadius: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -945,543 +944,783 @@ const StudentManagement = () => {
             </Grid>
           </Paper>
 
-          {/* Students Grid */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h6" sx={{
-              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-              fontWeight: 'bold',
-              mb: 2,
-              display: 'flex',
-              alignItems: 'center'
-            }}>
-              <Group sx={{ mr: 1 }} />
-              සිසුන්ගේ ලැයිස්තුව (Students List) - {students.filter(student => {
-                const matchesStatus = !statusFilter || student.status === statusFilter;
-                const matchesGrade = !gradeFilter || student.selectedGrade === gradeFilter;
-                const matchesClass = !classFilter || (student.enrolledClasses && student.enrolledClasses.some(cls => cls._id === classFilter));
-                const matchesSearch = !searchTerm ||
-                  student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  student.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  student.studentId?.toLowerCase().includes(searchTerm.toLowerCase());
-                return matchesStatus && matchesGrade && matchesClass && matchesSearch;
-              }).length} Students
-            </Typography>
+{/* Students Grid */}
+<Box sx={{ mb: 3 }}>
+  <Typography variant="h6" sx={{
+    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+    fontWeight: 'bold',
+    mb: 2,
+    display: 'flex',
+    alignItems: 'center',
+    color: 'text.primary',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    position: 'relative',
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      bottom: -8,
+      left: 0,
+      width: '100%',
+      height: 3,
+      background: 'linear-gradient(90deg, #3f51b5 0%,rgb(37, 98, 148) 100%)',
+      borderRadius: 3
+    }
+  }}>
+    <Group sx={{ 
+      mr: 1.5,
+      color: 'primary.main',
+      fontSize: '1.5rem'
+    }} />
+    සිසුන්ගේ ලැයිස්තුව (Students List) - {students.filter(student => {
+      const matchesStatus = !statusFilter || student.status === statusFilter;
+      const matchesGrade = !gradeFilter || student.selectedGrade === gradeFilter;
+      const matchesClass = !classFilter || (student.enrolledClasses && student.enrolledClasses.some(cls => cls._id === classFilter));
+      const matchesSearch = !searchTerm ||
+        student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.studentId?.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesStatus && matchesGrade && matchesClass && matchesSearch;
+    }).length} Students
+  </Typography>
 
-            <Grid container spacing={3}>
-              {students.filter(student => {
-                const matchesStatus = !statusFilter || student.status === statusFilter;
-                const matchesGrade = !gradeFilter || student.selectedGrade === gradeFilter;
-                const matchesClass = !classFilter || (student.enrolledClasses && student.enrolledClasses.some(cls => cls._id === classFilter));
-                const matchesSearch = !searchTerm ||
-                  student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  student.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  student.studentId?.toLowerCase().includes(searchTerm.toLowerCase());
-                return matchesStatus && matchesGrade && matchesClass && matchesSearch;
-              }).map((student) => (
-                <Grid item xs={12} sm={6} md={3} lg={3} key={student._id}>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    whileHover={{ y: -5 }}
-                  >
-                    <Card
-                      elevation={6}
+  <Grid container spacing={3}>
+    {students.filter(student => {
+      const matchesStatus = !statusFilter || student.status === statusFilter;
+      const matchesGrade = !gradeFilter || student.selectedGrade === gradeFilter;
+      const matchesClass = !classFilter || (student.enrolledClasses && student.enrolledClasses.some(cls => cls._id === classFilter));
+      const matchesSearch = !searchTerm ||
+        student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.studentId?.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesStatus && matchesGrade && matchesClass && matchesSearch;
+    }).map((student) => (
+      <Grid item xs={12} sm={6} md={4} lg={3} key={student._id}>
+        <Card
+          elevation={8}
+          sx={{
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            borderRadius: 3,
+            overflow: 'hidden',
+            background: 'linear-gradient(145deg, #ffffff 0%, #f5f7fa 100%)',
+            borderLeft: '5px solid',
+            borderColor: student.status === 'Approved' ? '#4caf50' :
+                       student.status === 'Pending' ? '#ff9800' : '#f44336',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+            transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+            '&:hover': {
+              boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+              transform: 'translateY(-5px)',
+              borderLeftWidth: 8,
+              borderColor: 'rgba(75, 72, 72, 0.97)'
+            }
+          }}
+        >
+          {/* Header Section */}
+          <Box sx={{
+            background: student.status === 'Approved'
+              ? 'linear-gradient(135deg, #388e3c 0%, #4caf50 100%)'
+              : student.status === 'Pending'
+              ? 'linear-gradient(135deg, #f57c00 0%, #ff9800 100%)'
+              : 'linear-gradient(135deg, #d32f2f 0%, #f44336 100%)',
+            color: 'white',
+            p: 2,
+            position: 'relative',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+          }}>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              mb: 1,
+              position: 'relative',
+              zIndex: 1
+            }}>
+              <Avatar
+                sx={{
+                  width: 56,
+                  height: 56,
+                  bgcolor: 'rgba(255,255,255,0.25)',
+                  mr: 2,
+                  border: '3px solid rgba(255,255,255,0.35)',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'scale(1.1)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                  }
+                }}
+              >
+                {student.profilePicture ? (
+                  <img
+                    src={student.profilePicture}
+                    alt={student.firstName}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  <Person sx={{ fontSize: 32 }} />
+                )}
+              </Avatar>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h6" sx={{
+                  fontWeight: 'bold',
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                  fontSize: '1.15rem',
+                  lineHeight: 1.2,
+                  textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                }}>
+                  {student.firstName} {student.lastName}
+                </Typography>
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  cursor: 'pointer',
+                  p: 0.5,
+                  borderRadius: 1,
+                  '&:hover': {
+                    backgroundColor: 'rgba(255,255,255,0.25)',
+                    transform: 'scale(1.03)'
+                  },
+                  transition: 'all 0.2s ease',
+                  width: 'fit-content'
+                }}
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(student.studentId);
+                    setSuccess(`✅ Student ID "${student.studentId}" copied successfully!`);
+                    setTimeout(() => setSuccess(''), 3000);
+                  } catch (err) {
+                    setError('Failed to copy Student ID');
+                    setTimeout(() => setError(''), 2000);
+                  }
+                }}
+                >
+                  <Typography variant="body2" sx={{
+                    opacity: 0.95,
+                    fontWeight: 'bold',
+                    fontSize: '0.85rem',
+                    letterSpacing: '0.5px'
+                  }}>
+                    ID: {student.studentId}
+                  </Typography>
+                  <Tooltip title="Click to copy Student ID" arrow>
+                    <ContentCopy sx={{
+                      fontSize: 16,
+                      opacity: 0.8,
+                      '&:hover': { opacity: 1 }
+                    }} />
+                  </Tooltip>
+                </Box>
+              </Box>
+            </Box>
+
+            {/* Status Chip */}
+            <Box sx={{ 
+              position: 'absolute', 
+              top: 12, 
+              right: 12,
+              zIndex: 2
+            }}>
+              <Chip
+                label={student.status}
+                icon={getStatusIcon(student.status)}
+                size="small"
+                sx={{
+                  bgcolor: 'rgba(255,255,255,0.25)',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  fontSize: '0.7rem',
+                  height: 24,
+                  '& .MuiChip-icon': { 
+                    color: 'white',
+                    fontSize: '0.9rem',
+                    ml: 0.5
+                  },
+                  boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                }}
+              />
+            </Box>
+            
+            {/* Decorative elements */}
+            <Box sx={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: '40%',
+              height: '100%',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%)',
+              clipPath: 'polygon(100% 0, 0% 100%, 100% 100%)'
+            }} />
+          </Box>
+
+          {/* Card Content */}
+          <CardContent sx={{ 
+            flexGrow: 1, 
+            p: 2.5,
+            background: 'linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%)'
+          }}>
+            {/* Basic Info */}
+            <Box sx={{ 
+              mb: 2.5,
+              p: 1.5,
+              borderRadius: 2,
+              background: 'rgba(245, 245, 245, 0.5)',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)'
+            }}>
+              <Typography variant="body2" sx={{
+                display: 'flex',
+                alignItems: 'center',
+                mb: 1.5,
+                color: 'text.secondary',
+                fontSize: '0.85rem'
+              }}>
+                <Email sx={{ 
+                  mr: 1.5, 
+                  fontSize: 18,
+                  color: 'primary.main'
+                }} />
+                <Box sx={{ 
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}>
+                  {student.email}
+                </Box>
+              </Typography>
+              <Typography variant="body2" sx={{
+                display: 'flex',
+                alignItems: 'center',
+                mb: 1.5,
+                color: 'text.secondary',
+                fontSize: '0.85rem'
+              }}>
+                <School sx={{ 
+                  mr: 1.5, 
+                  fontSize: 18,
+                  color: 'secondary.main'
+                }} />
+                Grade: {student.selectedGrade}
+              </Typography>
+              <Typography variant="body2" sx={{
+                display: 'flex',
+                alignItems: 'center',
+                color: 'text.secondary',
+                fontSize: '0.85rem'
+              }}>
+                <Info sx={{ 
+                  mr: 1.5, 
+                  fontSize: 18,
+                  color: 'text.secondary'
+                }} />
+                {student.currentStudent}
+              </Typography>
+            </Box>
+
+            {/* Payment Information */}
+            <Box sx={{ 
+              mb: 2.5,
+              p: 1.5,
+              borderRadius: 2,
+              background: 'rgba(245, 245, 245, 0.5)',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)'
+            }}>
+              <Typography variant="subtitle2" sx={{ 
+                mb: 1.5, 
+                fontWeight: 'bold',
+                color: 'text.primary',
+                display: 'flex',
+                alignItems: 'center',
+                '&::before': {
+                  content: '""',
+                  display: 'inline-block',
+                  width: 4,
+                  height: 16,
+                  backgroundColor: 'primary.main',
+                  borderRadius: 2,
+                  mr: 1
+                }
+              }}>
+                Payment & Behavior Information
+              </Typography>
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: 1.5
+              }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 1,
+                  flexWrap: 'wrap'
+                }}>
+                  <Chip
+                    label={student.paymentRole === 'Pay Card' ? 'Pay Card Owner' : 'Free Card Owner'}
+                    color={student.paymentRole === 'Pay Card' ? 'primary' : 'secondary'}
+                    icon={<CreditCard sx={{ fontSize: 16 }} />}
+                    size="small"
+                    onClick={() => handleUpdatePaymentRole(student)}
+                    sx={{ 
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                      fontSize: '0.7rem',
+                      height: 26,
+                      '&:hover': {
+                        transform: 'scale(1.05)'
+                      },
+                      transition: 'all 0.2s ease'
+                    }}
+                  />
+                  <Typography variant="caption" sx={{
+                    fontSize: '0.65rem',
+                    color: 'primary.main',
+                    fontWeight: 'bold',
+                    background: 'linear-gradient(45deg,rgb(42, 112, 168) 30%,rgb(20, 55, 63) 90%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}>
+                    👈
+                    Click to change
+                  </Typography>
+                </Box>
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 1,
+                  flexWrap: 'wrap'
+                }}>
+                  <Chip
+                    label={
+                      student.paymentStatus === 'Paid' ? 'ඉතා හොදයි' :
+                      student.paymentStatus === 'Unpaid' ? 'සැලකිලිමත් විය යුතුයි' : 'හොදයි,ගැටලුවක් නැත'
+                    }
+                    color={
+                      student.paymentStatus === 'Paid' ? 'success' :
+                      student.paymentStatus === 'Unpaid' ? 'error' : 'warning'
+                    }
+                    icon={<FaPerson />}
+                    size="small"
+                    onClick={() => handleUpdatePaymentStatus(student)}
+                    sx={{
+                      cursor: 'pointer',
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                      fontWeight: 'bold',
+                      fontSize: '0.7rem',
+                      height: 26,
+                      '&:hover': {
+                        transform: 'scale(1.05)'
+                      },
+                      transition: 'all 0.2s ease'
+                    }}
+                  />
+                  <Typography variant="caption" sx={{
+                    fontSize: '0.65rem',
+                    color: 'success.main',
+                    fontWeight: 'bold',
+                    background: 'linear-gradient(45deg,rgb(62, 141, 65) 30%,rgb(63, 88, 34) 90%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}>
+                    👈
+                    Click to change
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+
+            {/* Enrolled Classes */}
+            <Box sx={{ 
+              mb: 1,
+              p: 1.5,
+              borderRadius: 2,
+              background: 'rgba(184, 176, 176, 0.5)',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)'
+            }}>
+              <Typography variant="subtitle2" sx={{ 
+                mb: 1.5, 
+                fontWeight: 'bold',
+                color: 'text.primary',
+                display: 'flex',
+                alignItems: 'center',
+                '&::before': {
+                  content: '""',
+                  display: 'inline-block',
+                  width: 4,
+                  height: 16,
+                  backgroundColor: 'secondary.main',
+                  borderRadius: 2,
+                  mr: 1
+                }
+              }}>
+                Enrolled Classes ({student.enrolledClasses?.length || 0})
+              </Typography>
+              {student.enrolledClasses && student.enrolledClasses.length > 0 ? (
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexWrap: 'wrap', 
+                  gap: 0.75,
+                  alignItems: 'center'
+                }}>
+                  {student.enrolledClasses.slice(0, 2).map((classItem, index) => (
+                    <Chip
+                      key={index}
+                      label={`${classItem.grade} - ${classItem.category}`}
+                      size="small"
+                      variant="outlined"
+                      color="primary"
+                      onClick={(e) => {
+                        if (e.target.closest('.MuiChip-deleteIcon')) {
+                          return;
+                        }
+                        navigate(`/class/${classItem._id}`);
+                      }}
+                      onDelete={(e) => {
+                        e.stopPropagation();
+                        handleRemoveFromClass(student, classItem._id);
+                      }}
+                      deleteIcon={<RemoveCircle sx={{ fontSize: 16 }} />}
                       sx={{
-                        height: 520, // Fixed height for all cards
-                        width: '100%', // Fixed width
-                        display: 'flex',
-                        flexDirection: 'column',
-                        borderRadius: 3,
-                        overflow: 'hidden',
-                        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
-                        border: '2px solid',
-                        borderColor: student.status === 'Approved' ? 'success.light' :
-                                   student.status === 'Pending' ? 'warning.light' : 'error.light',
-                        transition: 'all 0.3s ease',
+                        fontSize: '0.65rem',
+                        cursor: 'pointer',
+                        height: 24,
                         '&:hover': {
-                          boxShadow: 12,
-                          transform: 'translateY(-2px)',
-                          borderColor: 'primary.main'
+                          backgroundColor: 'primary.light',
+                          color: 'white',
+                          boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                        },
+                        transition: 'all 0.2s ease'
+                      }}
+                    />
+                  ))}
+                  {student.enrolledClasses.length > 2 && (
+                    <Chip
+                      label={`+${student.enrolledClasses.length - 2} more`}
+                      size="small"
+                      variant="outlined"
+                      sx={{ 
+                        fontSize: '0.65rem',
+                        height: 24,
+                        '&:hover': {
+                          backgroundColor: 'action.hover'
                         }
                       }}
-                    >
-                      {/* Header Section */}
-                      <Box sx={{
-                        background: student.status === 'Approved'
-                          ? 'linear-gradient(135deg, #4caf50 0%, #66bb6a 100%)'
-                          : student.status === 'Pending'
-                          ? 'linear-gradient(135deg, #ff9800 0%, #ffb74d 100%)'
-                          : 'linear-gradient(135deg, #f44336 0%, #ef5350 100%)',
+                      onClick={() => handleViewDetails(student)}
+                    />
+                  )}
+                </Box>
+              ) : (
+                <Typography variant="body2" sx={{ 
+                  fontStyle: 'italic',
+                  color: 'text.disabled',
+                  fontSize: '0.8rem',
+                  textAlign: 'center',
+                  py: 0.5
+                }}>
+                  No classes enrolled
+                </Typography>
+              )}
+            </Box>
+          </CardContent>
+
+          {/* Action Buttons */}
+          <Box sx={{
+            p: 2,
+            pt: 1.5,
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            background: 'linear-gradient(135deg, #f5f7fa 0%, #e6e9f0 100%)',
+            borderBottomLeftRadius: 8,
+            borderBottomRightRadius: 8
+          }}>
+            <Typography variant="caption" sx={{
+              mb: 1.5,
+              display: 'block',
+              fontWeight: 'bold',
+              color: 'primary.dark',
+              textAlign: 'center',
+              fontSize: '0.7rem',
+              letterSpacing: '0.5px',
+              textTransform: 'uppercase'
+            }}>
+              ⚡ Quick Actions
+            </Typography>
+
+            {/* Primary Actions Row */}
+            <Box sx={{
+              display: 'flex',
+              gap: 1,
+              justifyContent: 'center',
+              mb: 1.5,
+              flexWrap: 'wrap'
+            }}>
+              <Tooltip title="View Full Details" arrow>
+                <Button
+                  size="small"
+                  onClick={() => handleViewDetails(student)}
+                  startIcon={<Visibility sx={{ fontSize: 18 }} />}
+                  sx={{
+                    bgcolor: 'primary.main',
+                    color: 'white',
+                    minWidth: 'auto',
+                    px: 1.5,
+                    py: 0.5,
+                    fontSize: '0.7rem',
+                    fontWeight: 'bold',
+                    borderRadius: 1,
+                    '&:hover': {
+                      bgcolor: 'primary.dark',
+                      transform: 'scale(1.05)',
+                      boxShadow: '0 3px 10px rgba(63, 81, 181, 0.3)'
+                    },
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  View
+                </Button>
+              </Tooltip>
+
+              <Tooltip title="Send Message" arrow>
+                <Button
+                  size="small"
+                  onClick={() => handleSendMessage(student)}
+                  startIcon={<Message sx={{ fontSize: 18 }} />}
+                  sx={{
+                    bgcolor: 'info.main',
+                    color: 'white',
+                    minWidth: 'auto',
+                    px: 1.5,
+                    py: 0.5,
+                    fontSize: '0.7rem',
+                    fontWeight: 'bold',
+                    borderRadius: 1,
+                    '&:hover': {
+                      bgcolor: 'info.dark',
+                      transform: 'scale(1.05)',
+                      boxShadow: '0 3px 10px rgba(2, 136, 209, 0.3)'
+                    },
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  Message
+                </Button>
+              </Tooltip>
+
+              {student.status === 'Approved' && (
+                <Tooltip title="Change Class" arrow>
+                  <Button
+                    size="small"
+                    onClick={() => handleChangeClass(student)}
+                    startIcon={<SwapHoriz sx={{ fontSize: 18 }} />}
+                    sx={{
+                      bgcolor: 'warning.main',
+                      color: 'white',
+                      minWidth: 'auto',
+                      px: 1.5,
+                      py: 0.5,
+                      fontSize: '0.7rem',
+                      fontWeight: 'bold',
+                      borderRadius: 1,
+                      '&:hover': {
+                        bgcolor: 'warning.dark',
+                        transform: 'scale(1.05)',
+                        boxShadow: '0 3px 10px rgba(255, 152, 0, 0.3)'
+                      },
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    Change
+                  </Button>
+                </Tooltip>
+              )}
+            </Box>
+
+            {/* Status Actions Row */}
+            <Box sx={{
+              display: 'flex',
+              gap: 0.75,
+              justifyContent: 'center',
+              flexWrap: 'wrap'
+            }}>
+              {student.status === 'Pending' && (
+                <>
+                  <Tooltip title="Approve Student" arrow>
+                    <Button
+                      size="small"
+                      onClick={() => handleStudentAction(student, 'approve')}
+                      startIcon={<CheckCircle sx={{ fontSize: 16 }} />}
+                      sx={{
+                        bgcolor: 'success.main',
                         color: 'white',
-                        p: 2,
-                        position: 'relative'
-                      }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                          <Avatar
-                            sx={{
-                              width: 50,
-                              height: 50,
-                              bgcolor: 'rgba(255,255,255,0.2)',
-                              mr: 2,
-                              border: '2px solid rgba(255,255,255,0.3)'
-                            }}
-                          >
-                            {student.profilePicture ? (
-                              <img
-                                src={student.profilePicture}
-                                alt={student.firstName}
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                              />
-                            ) : (
-                              <Person sx={{ fontSize: 30 }} />
-                            )}
-                          </Avatar>
-                          <Box sx={{ flex: 1 }}>
-                            <Typography variant="h6" sx={{
-                              fontWeight: 'bold',
-                              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-                              fontSize: '1.1rem',
-                              lineHeight: 1.2
-                            }}>
-                              {student.firstName} {student.lastName}
-                            </Typography>
-                            <Box sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 0.5,
-                              cursor: 'pointer',
-                              '&:hover': { opacity: 0.8 }
-                            }}
-                            onClick={() => {
-                              navigator.clipboard.writeText(student.studentId);
-                              setSuccess(`Student ID ${student.studentId} copied to clipboard!`);
-                              setTimeout(() => setSuccess(''), 2000);
-                            }}
-                            >
-                              <Typography variant="body2" sx={{
-                                opacity: 0.9,
-                                fontWeight: 'bold',
-                                fontSize: '0.9rem'
-                              }}>
-                                ID: {student.studentId}
-                              </Typography>
-                              <Tooltip title="Click to copy Student ID">
-                                <Box sx={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  opacity: 0.7,
-                                  '&:hover': { opacity: 1 }
-                                }}>
-                                  📋
-                                </Box>
-                              </Tooltip>
-                            </Box>
-                          </Box>
-                        </Box>
+                        minWidth: 'auto',
+                        px: 1,
+                        py: 0.25,
+                        fontSize: '0.65rem',
+                        fontWeight: 'bold',
+                        borderRadius: 1,
+                        '&:hover': {
+                          bgcolor: 'success.dark',
+                          transform: 'scale(1.05)',
+                          boxShadow: '0 3px 8px rgba(46, 125, 50, 0.3)'
+                        },
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      Approve
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="Reject Student" arrow>
+                    <Button
+                      size="small"
+                      onClick={() => handleStudentAction(student, 'reject')}
+                      startIcon={<Cancel sx={{ fontSize: 16 }} />}
+                      sx={{
+                        bgcolor: 'error.main',
+                        color: 'white',
+                        minWidth: 'auto',
+                        px: 1,
+                        py: 0.25,
+                        fontSize: '0.65rem',
+                        fontWeight: 'bold',
+                        borderRadius: 1,
+                        '&:hover': {
+                          bgcolor: 'error.dark',
+                          transform: 'scale(1.05)',
+                          boxShadow: '0 3px 8px rgba(211, 47, 47, 0.3)'
+                        },
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      Reject
+                    </Button>
+                  </Tooltip>
+                </>
+              )}
 
-                        {/* Status Chip */}
-                        <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
-                          <Chip
-                            label={student.status}
-                            icon={getStatusIcon(student.status)}
-                            size="small"
-                            sx={{
-                              bgcolor: 'rgba(255,255,255,0.2)',
-                              color: 'white',
-                              fontWeight: 'bold',
-                              '& .MuiChip-icon': { color: 'white' }
-                            }}
-                          />
-                        </Box>
-                      </Box>
+              {student.status === 'Approved' && (
+                <Tooltip title="Hold Student" arrow>
+                  <Button
+                    size="small"
+                    onClick={() => handleStatusChange(student, 'Pending')}
+                    startIcon={<Pending sx={{ fontSize: 16 }} />}
+                    sx={{
+                      bgcolor: '#ff9100',
+                      color: 'white',
+                      minWidth: 'auto',
+                      px: 1,
+                      py: 0.25,
+                      fontSize: '0.65rem',
+                      fontWeight: 'bold',
+                      borderRadius: 1,
+                      '&:hover': {
+                        bgcolor: '#ff6d00',
+                        transform: 'scale(1.05)',
+                        boxShadow: '0 3px 8px rgba(255, 109, 0, 0.3)'
+                      },
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    Hold
+                  </Button>
+                </Tooltip>
+              )}
 
-                      {/* Card Content */}
-                      <CardContent sx={{ flexGrow: 1, p: 2 }}>
-                        {/* Basic Info */}
-                        <Box sx={{ mb: 2 }}>
-                          <Typography variant="body2" color="text.secondary" sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            mb: 0.5
-                          }}>
-                            <Email sx={{ mr: 1, fontSize: 16 }} />
-                            {student.email}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary" sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            mb: 0.5
-                          }}>
-                            <School sx={{ mr: 1, fontSize: 16 }} />
-                            Grade: {student.selectedGrade}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary" sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            mb: 0.5
-                          }}>
-                            {student.currentStudent}
-                          </Typography>
-                        </Box>
+              {student.status === 'Rejected' && (
+                <>
+                  <Tooltip title="Approve Student" arrow>
+                    <Button
+                      size="small"
+                      onClick={() => handleStatusChange(student, 'Approved')}
+                      startIcon={<CheckCircle sx={{ fontSize: 16 }} />}
+                      sx={{
+                        bgcolor: 'success.main',
+                        color: 'white',
+                        minWidth: 'auto',
+                        px: 1,
+                        py: 0.25,
+                        fontSize: '0.65rem',
+                        fontWeight: 'bold',
+                        borderRadius: 1,
+                        '&:hover': {
+                          bgcolor: 'success.dark',
+                          transform: 'scale(1.05)',
+                          boxShadow: '0 3px 8px rgba(46, 125, 50, 0.3)'
+                        },
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      Approve
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="Move to Pending" arrow>
+                    <Button
+                      size="small"
+                      onClick={() => handleStatusChange(student, 'Pending')}
+                      startIcon={<Pending sx={{ fontSize: 16 }} />}
+                      sx={{
+                        bgcolor: '#ff9100',
+                        color: 'white',
+                        minWidth: 'auto',
+                        px: 1,
+                        py: 0.25,
+                        fontSize: '0.65rem',
+                        fontWeight: 'bold',
+                        borderRadius: 1,
+                        '&:hover': {
+                          bgcolor: '#ff6d00',
+                          transform: 'scale(1.05)',
+                          boxShadow: '0 3px 8px rgba(255, 109, 0, 0.3)'
+                        },
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      Pending
+                    </Button>
+                  </Tooltip>
+                </>
+              )}
 
-                        {/* Payment Information */}
-                        <Box sx={{ mb: 2 }}>
-                          <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold' }}>
-                            Payment & Behavior Information
-                          </Typography>
-                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Typography variant="caption" sx={{
-                                fontSize: '0.7rem',
-                                color: 'primary.main',
-                                fontWeight: 'bold',
-                                background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent',
-                                '&::after': {
-                                  content: '"👉"',
-                                  marginLeft: '4px'
-                                }
-                              }}>
-                                Click to change
-                              </Typography>
-                              <Chip
-                                label={student.paymentRole === 'Pay Card' ? 'Pay Card Owner' : 'Free Card Owner'}
-                                color={student.paymentRole === 'Pay Card' ? 'primary' : 'secondary'}
-                                icon={<CreditCard />}
-                                size="small"
-                                onClick={() => handleUpdatePaymentRole(student)}
-                                sx={{ cursor: 'pointer' }}
-                              />
-                            </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Typography variant="caption" sx={{
-                                fontSize: '0.7rem',
-                                color: 'success.main',
-                                fontWeight: 'bold',
-                                background: 'linear-gradient(45deg, #4CAF50 30%, #8BC34A 90%)',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent',
-                                '&::after': {
-                                  content: '"👉"',
-                                  marginLeft: '4px'
-                                }
-                              }}>
-                                Click to change
-                              </Typography>
-                              <Chip
-                                label={
-                                  student.paymentStatus === 'Paid' ? 'ඉතා හොදයි' :
-                                  student.paymentStatus === 'Unpaid' ? 'සැලකිලිමත් විය යුතුයි' : 'හොදයි,ගැටලුවක් නැත'
-                                }
-                                color={
-                                  student.paymentStatus === 'Paid' ? 'success' :
-                                  student.paymentStatus === 'Unpaid' ? 'error' : 'warning'
-                                }
-                                icon={<FaPerson />}
-                                size="small"
-                                onClick={() => handleUpdatePaymentStatus(student)}
-                                sx={{
-                                  cursor: 'pointer',
-                                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-                                }}
-                              />
-                            </Box>
-                          </Box>
-                        </Box>
-
-                        {/* Enrolled Classes */}
-                        <Box sx={{ mb: 2 }}>
-                          <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold' }}>
-                            Enrolled Classes ({student.enrolledClasses?.length || 0})
-                          </Typography>
-                          {student.enrolledClasses && student.enrolledClasses.length > 0 ? (
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                              {student.enrolledClasses.slice(0, 2).map((classItem, index) => (
-                                <Chip
-                                  key={index}
-                                  label={`${classItem.grade} - ${classItem.category}`}
-                                  size="small"
-                                  variant="outlined"
-                                  color="primary"
-                                  onClick={(e) => {
-                                    // Check if the click is on the delete icon
-                                    if (e.target.closest('.MuiChip-deleteIcon')) {
-                                      return; // Let the onDelete handle it
-                                    }
-                                    // Navigate to class page
-                                    navigate(`/class/${classItem._id}`);
-                                  }}
-                                  onDelete={(e) => {
-                                    e.stopPropagation(); // Prevent navigation when deleting
-                                    handleRemoveFromClass(student, classItem._id);
-                                  }}
-                                  deleteIcon={<RemoveCircle />}
-                                  sx={{
-                                    fontSize: '0.7rem',
-                                    cursor: 'pointer',
-                                    '&:hover': {
-                                      backgroundColor: 'primary.light',
-                                      color: 'white'
-                                    }
-                                  }}
-                                />
-                              ))}
-                              {student.enrolledClasses.length > 2 && (
-                                <Chip
-                                  label={`+${student.enrolledClasses.length - 2} more`}
-                                  size="small"
-                                  variant="outlined"
-                                  sx={{ fontSize: '0.7rem' }}
-                                  onClick={() => handleViewDetails(student)}
-                                />
-                              )}
-                            </Box>
-                          ) : (
-                            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-                              No classes enrolled
-                            </Typography>
-                          )}
-                        </Box>
-                      </CardContent>
-
-                      {/* Action Buttons */}
-                      <Box sx={{
-                        p: 2,
-                        pt: 1,
-                        borderTop: '2px solid',
-                        borderColor: 'primary.light',
-                        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-                        borderBottomLeftRadius: 3,
-                        borderBottomRightRadius: 3
-                      }}>
-                        <Typography variant="caption" sx={{
-                          mb: 1.5,
-                          display: 'block',
-                          fontWeight: 'bold',
-                          color: 'primary.main',
-                          textAlign: 'center',
-                          fontSize: '0.75rem'
-                        }}>
-                          ⚡ Quick Actions
-                        </Typography>
-
-                        {/* Primary Actions Row */}
-                        <Box sx={{
-                          display: 'flex',
-                          gap: 1.5,
-                          justifyContent: 'center',
-                          mb: 1
-                        }}>
-                          <Tooltip title="View Full Details" arrow>
-                            <IconButton
-                              size="small"
-                              onClick={() => handleViewDetails(student)}
-                              sx={{
-                                bgcolor: 'primary.main',
-                                color: 'white',
-                                width: 32,
-                                height: 32,
-                                '&:hover': {
-                                  bgcolor: 'primary.dark',
-                                  transform: 'scale(1.1)'
-                                },
-                                transition: 'all 0.2s ease'
-                              }}
-                            >
-                              <Visibility fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-
-                          <Tooltip title="Send Message" arrow>
-                            <IconButton
-                              size="small"
-                              onClick={() => handleSendMessage(student)}
-                              sx={{
-                                bgcolor: 'info.main',
-                                color: 'white',
-                                width: 32,
-                                height: 32,
-                                '&:hover': {
-                                  bgcolor: 'info.dark',
-                                  transform: 'scale(1.1)'
-                                },
-                                transition: 'all 0.2s ease'
-                              }}
-                            >
-                              <Message fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-
-                          {student.status === 'Approved' && (
-                            <Tooltip title="Change Class" arrow>
-                              <IconButton
-                                size="small"
-                                onClick={() => handleChangeClass(student)}
-                                sx={{
-                                  bgcolor: 'warning.main',
-                                  color: 'white',
-                                  width: 32,
-                                  height: 32,
-                                  '&:hover': {
-                                    bgcolor: 'warning.dark',
-                                    transform: 'scale(1.1)'
-                                  },
-                                  transition: 'all 0.2s ease'
-                                }}
-                              >
-                                <SwapHoriz fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                        </Box>
-
-                        {/* Status Actions Row */}
-                        <Box sx={{
-                          display: 'flex',
-                          gap: 1,
-                          justifyContent: 'center',
-                          flexWrap: 'wrap'
-                        }}>
-                          {student.status === 'Pending' && (
-                            <>
-                              <Tooltip title="✅ Approve Student" arrow>
-                                <IconButton
-                                  size="small"
-                                  onClick={() => handleStudentAction(student, 'approve')}
-                                  sx={{
-                                    bgcolor: 'success.main',
-                                    color: 'white',
-                                    width: 30,
-                                    height: 30,
-                                    '&:hover': {
-                                      bgcolor: 'success.dark',
-                                      transform: 'scale(1.1)'
-                                    },
-                                    transition: 'all 0.2s ease'
-                                  }}
-                                >
-                                  <CheckCircle fontSize="small" />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip title="❌ Reject Student" arrow>
-                                <IconButton
-                                  size="small"
-                                  onClick={() => handleStudentAction(student, 'reject')}
-                                  sx={{
-                                    bgcolor: 'error.main',
-                                    color: 'white',
-                                    width: 30,
-                                    height: 30,
-                                    '&:hover': {
-                                      bgcolor: 'error.dark',
-                                      transform: 'scale(1.1)'
-                                    },
-                                    transition: 'all 0.2s ease'
-                                  }}
-                                >
-                                  <Cancel fontSize="small" />
-                                </IconButton>
-                              </Tooltip>
-                            </>
-                          )}
-
-                          {student.status === 'Approved' && (
-                            <Tooltip title="⏸️ Hold Student" arrow>
-                              <IconButton
-                                size="small"
-                                onClick={() => handleStatusChange(student, 'Pending')}
-                                sx={{
-                                  bgcolor: 'orange',
-                                  color: 'white',
-                                  width: 30,
-                                  height: 30,
-                                  '&:hover': {
-                                    bgcolor: 'darkorange',
-                                    transform: 'scale(1.1)'
-                                  },
-                                  transition: 'all 0.2s ease'
-                                }}
-                              >
-                                <Pending fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-
-                          {student.status === 'Rejected' && (
-                            <>
-                              <Tooltip title="✅ Approve Student" arrow>
-                                <IconButton
-                                  size="small"
-                                  onClick={() => handleStatusChange(student, 'Approved')}
-                                  sx={{
-                                    bgcolor: 'success.main',
-                                    color: 'white',
-                                    width: 30,
-                                    height: 30,
-                                    '&:hover': {
-                                      bgcolor: 'success.dark',
-                                      transform: 'scale(1.1)'
-                                    },
-                                    transition: 'all 0.2s ease'
-                                  }}
-                                >
-                                  <CheckCircle fontSize="small" />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip title="⏸️ Move to Pending" arrow>
-                                <IconButton
-                                  size="small"
-                                  onClick={() => handleStatusChange(student, 'Pending')}
-                                  sx={{
-                                    bgcolor: 'orange',
-                                    color: 'white',
-                                    width: 30,
-                                    height: 30,
-                                    '&:hover': {
-                                      bgcolor: 'darkorange',
-                                      transform: 'scale(1.1)'
-                                    },
-                                    transition: 'all 0.2s ease'
-                                  }}
-                                >
-                                  <Pending fontSize="small" />
-                                </IconButton>
-                              </Tooltip>
-                            </>
-                          )}
-
-                          <Tooltip title="🗑️ Delete Student" arrow>
-                            <IconButton
-                              size="small"
-                              onClick={() => handleDeleteStudent(student)}
-                              sx={{
-                                bgcolor: 'error.dark',
-                                color: 'white',
-                                width: 30,
-                                height: 30,
-                                '&:hover': {
-                                  bgcolor: '#c62828',
-                                  transform: 'scale(1.1)'
-                                },
-                                transition: 'all 0.2s ease'
-                              }}
-                            >
-                              <Delete fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                        </Box>
-                      </Box>
-                    </Card>
-                  </motion.div>
-                </Grid>
-              ))}
-            </Grid>
+              <Tooltip title="Delete Student" arrow>
+                <Button
+                  size="small"
+                  onClick={() => handleDeleteStudent(student)}
+                  startIcon={<Delete sx={{ fontSize: 16 }} />}
+                  sx={{
+                    bgcolor: '#d32f2f',
+                    color: 'white',
+                    minWidth: 'auto',
+                    px: 1,
+                    py: 0.25,
+                    fontSize: '0.65rem',
+                    fontWeight: 'bold',
+                    borderRadius: 1,
+                    '&:hover': {
+                      bgcolor: '#b71c1c',
+                      transform: 'scale(1.05)',
+                      boxShadow: '0 3px 8px rgba(183, 28, 28, 0.3)'
+                    },
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  Delete
+                </Button>
+              </Tooltip>
+            </Box>
+          </Box>
+        </Card>
+      </Grid>
+    ))}
+  </Grid>
 
             {/* No Students Found Message */}
             {students.filter(student => {
@@ -1512,40 +1751,139 @@ const StudentManagement = () => {
           </Box>
 
           {/* Student Details Dialog */}
-          <Dialog open={showDetailsDialog} onClose={() => setShowDetailsDialog(false)} maxWidth="lg" fullWidth>
-            <DialogTitle>
+          <Dialog
+            open={showDetailsDialog}
+            onClose={() => setShowDetailsDialog(false)}
+            maxWidth="lg"
+            fullWidth
+            PaperProps={{
+              sx: {
+                borderRadius: 4,
+                background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.15)'
+              }
+            }}
+          >
+            <DialogTitle sx={{
+              background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+              color: 'white',
+              textAlign: 'center',
+              py: 3,
+              fontSize: '1.5rem',
+              fontWeight: 'bold'
+            }}>
+              <Person sx={{ mr: 1, fontSize: 30 }} />
               Student Details - {selectedStudent?.studentId}
             </DialogTitle>
-            <DialogContent>
+            <DialogContent sx={{ p: 4 }}>
               {selectedStudent && (
-                <Grid container spacing={3}>
+                <Grid container spacing={4}>
+                  {/* Personal Information Card */}
                   <Grid item xs={12} md={6}>
-                    <Typography variant="h6" gutterBottom>Personal Information</Typography>
-                    <Typography><strong>Name:</strong> {selectedStudent.firstName} {selectedStudent.lastName}</Typography>
-                    <Typography><strong>Email:</strong> {selectedStudent.email}</Typography>
-                    <Typography><strong>Contact:</strong> {selectedStudent.contactNumber}</Typography>
-                    <Typography><strong>School:</strong> {selectedStudent.school}</Typography>
-                    <Typography><strong>Grade:</strong> {selectedStudent.selectedGrade}</Typography>
-                    <Typography>{selectedStudent.currentStudent}</Typography>
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <Typography variant="h6" gutterBottom>Guardian Information</Typography>
-                    <Typography><strong>Guardian:</strong> {selectedStudent.guardianName}</Typography>
-                    <Typography><strong>Type:</strong> {selectedStudent.guardianType}</Typography>
-                    <Typography><strong>Contact:</strong> {selectedStudent.guardianContact}</Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="h6" gutterBottom>Status Information</Typography>
-                    <Chip
-                      label={selectedStudent.status}
-                      color={getStatusColor(selectedStudent.status)}
-                      icon={getStatusIcon(selectedStudent.status)}
-                    />
-                    {selectedStudent.adminAction?.actionNote && (
-                      <Typography sx={{ mt: 1 }}>
-                        <strong>Admin Note:</strong> {selectedStudent.adminAction.actionNote}
+                    <Paper elevation={3} sx={{
+                      p: 3,
+                      borderRadius: 3,
+                      background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+                      border: '2px solid #2196f3'
+                    }}>
+                      <Typography variant="h6" gutterBottom sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: 'primary.main',
+                        fontWeight: 'bold'
+                      }}>
+                        <Person sx={{ mr: 1 }} />
+                        Personal Information
                       </Typography>
-                    )}
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                        <Typography variant="body1">
+                          <strong>Name:</strong> {selectedStudent.firstName} {selectedStudent.lastName}
+                        </Typography>
+                        <Typography variant="body1">
+                          <strong>Email:</strong> {selectedStudent.email}
+                        </Typography>
+                        <Typography variant="body1">
+                          <strong>Contact:</strong> {selectedStudent.contactNumber}
+                        </Typography>
+                        <Typography variant="body1">
+                          <strong>School:</strong> {selectedStudent.school}
+                        </Typography>
+                        <Typography variant="body1">
+                          <strong>Grade:</strong> {selectedStudent.selectedGrade}
+                        </Typography>
+                        <Typography variant="body1">{selectedStudent.currentStudent}</Typography>
+                      </Box>
+                    </Paper>
+                  </Grid>
+
+                  {/* Guardian Information Card */}
+                  <Grid item xs={12} md={6}>
+                    <Paper elevation={3} sx={{
+                      p: 3,
+                      borderRadius: 3,
+                      background: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
+                      border: '2px solid #9c27b0'
+                    }}>
+                      <Typography variant="h6" gutterBottom sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: 'secondary.main',
+                        fontWeight: 'bold'
+                      }}>
+                        <Group sx={{ mr: 1 }} />
+                        Guardian Information
+                      </Typography>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                        <Typography variant="body1">
+                          <strong>Guardian:</strong> {selectedStudent.guardianName}
+                        </Typography>
+                        <Typography variant="body1">
+                          <strong>Type:</strong> {selectedStudent.guardianType}
+                        </Typography>
+                        <Typography variant="body1">
+                          <strong>Contact:</strong> {selectedStudent.guardianContact}
+                        </Typography>
+                      </Box>
+                    </Paper>
+                  </Grid>
+
+                  {/* Status Information Card */}
+                  <Grid item xs={12}>
+                    <Paper elevation={3} sx={{
+                      p: 3,
+                      borderRadius: 3,
+                      background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
+                      border: '2px solid #4caf50'
+                    }}>
+                      <Typography variant="h6" gutterBottom sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: 'success.main',
+                        fontWeight: 'bold'
+                      }}>
+                        <Assignment sx={{ mr: 1 }} />
+                        Status Information
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Chip
+                          label={selectedStudent.status}
+                          color={getStatusColor(selectedStudent.status)}
+                          icon={getStatusIcon(selectedStudent.status)}
+                          size="large"
+                          sx={{ fontSize: '1rem', py: 2 }}
+                        />
+                        {selectedStudent.adminAction?.actionNote && (
+                          <Typography variant="body1" sx={{
+                            bgcolor: 'rgba(255,255,255,0.7)',
+                            p: 1,
+                            borderRadius: 1,
+                            border: '1px solid #ddd'
+                          }}>
+                            <strong>Admin Note:</strong> {selectedStudent.adminAction.actionNote}
+                          </Typography>
+                        )}
+                      </Box>
+                    </Paper>
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="h6" gutterBottom>Payments & Behavior Information</Typography>
@@ -1590,66 +1928,192 @@ const StudentManagement = () => {
 
                   {/* Class Details Section */}
                   <Grid item xs={12}>
-                    <Divider sx={{ my: 2 }} />
-                    <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Class sx={{ mr: 1 }} />
-                      Enrolled Classes ({selectedStudent.enrolledClasses?.length || 0})
-                    </Typography>
-                    {selectedStudent.enrolledClasses && selectedStudent.enrolledClasses.length > 0 ? (
-                      <Grid container spacing={2}>
-                        {selectedStudent.enrolledClasses.map((classItem, index) => {
-                          // Use the calculated fields from backend
-                          const capacity = classItem.capacity || 0;
-                          const enrolledCount = classItem.enrolledCount || 0;
-                          const availableSpots = classItem.availableSpots || 0;
-
-                          return (
-                            <Grid item xs={12} md={6} key={index}>
-                              <Paper elevation={2} sx={{ p: 2, borderRadius: 2, border: '1px solid #e0e0e0' }}>
-                                <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
-                                  <Category sx={{ mr: 1, fontSize: 20 }} />
-                                  {classItem.category}
-                                </Typography>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                  <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <School sx={{ mr: 1, fontSize: 16, color: 'primary.main' }} />
-                                    <strong>Grade:</strong> {classItem.grade}
-                                  </Typography>
-                                  <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <Schedule sx={{ mr: 1, fontSize: 16, color: 'primary.main' }} />
-                                    <strong>Time:</strong> {classItem.startTime} - {classItem.endTime}
-                                  </Typography>
-                                  <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <LocationOn sx={{ mr: 1, fontSize: 16, color: 'primary.main' }} />
-                                    <strong>Venue:</strong> {classItem.venue}
-                                  </Typography>
-                                  <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <People sx={{ mr: 1, fontSize: 16, color: 'primary.main' }} />
-                                    <strong>Available Spots:</strong> {availableSpots} / {capacity} (Enrolled: {enrolledCount})
-                                  </Typography>
-                                  <Typography variant="body2">
-                                    <strong>Platform:</strong> {classItem.platform || 'Physical'}
-                                  </Typography>
-                                  <Typography variant="body2">
-                                    <strong>Day:</strong> {classItem.date}
-                                  </Typography>
-                                </Box>
-                              </Paper>
-                            </Grid>
-                          );
-                        })}
-                      </Grid>
-                    ) : (
-                      <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-                        No classes enrolled yet.
+                    <Paper elevation={3} sx={{
+                      p: 3,
+                      borderRadius: 3,
+                      background: 'linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%)',
+                      border: '2px solid #ff9800'
+                    }}>
+                      <Typography variant="h6" gutterBottom sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: 'warning.dark',
+                        fontWeight: 'bold',
+                        mb: 3
+                      }}>
+                        <Class sx={{ mr: 1 }} />
+                        Enrolled Classes ({selectedStudent.enrolledClasses?.length || 0})
                       </Typography>
-                    )}
+                      {selectedStudent.enrolledClasses && selectedStudent.enrolledClasses.length > 0 ? (
+                        <Grid container spacing={3}>
+                          {selectedStudent.enrolledClasses.map((classItem, index) => {
+                            // Use the calculated fields from backend
+                            const capacity = classItem.capacity || 0;
+                            const enrolledCount = classItem.enrolledCount || 0;
+                            const availableSpots = classItem.availableSpots || 0;
+
+                            return (
+                              <Grid item xs={12} md={6} key={index}>
+                                <Paper
+                                  elevation={4}
+                                  sx={{
+                                    p: 3,
+                                    borderRadius: 3,
+                                    border: '2px solid #e0e0e0',
+                                    background: 'linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%)',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    '&:hover': {
+                                      transform: 'translateY(-4px)',
+                                      boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                                      borderColor: 'primary.main'
+                                    }
+                                  }}
+                                  onClick={() => navigate(`/class/${classItem._id}`)}
+                                >
+                                  {/* Class Header with Actions */}
+                                  <Box sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    mb: 2
+                                  }}>
+                                    <Typography variant="subtitle1" fontWeight="bold" sx={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      color: 'primary.main'
+                                    }}>
+                                      <Category sx={{ mr: 1, fontSize: 20 }} />
+                                      {classItem.category}
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                      <Tooltip title="Navigate to Class Page" arrow>
+                                        <IconButton
+                                          size="small"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate(`/class/${classItem._id}`);
+                                          }}
+                                          sx={{
+                                            bgcolor: 'primary.main',
+                                            color: 'white',
+                                            '&:hover': { bgcolor: 'primary.dark' }
+                                          }}
+                                        >
+                                          <Visibility fontSize="small" />
+                                        </IconButton>
+                                      </Tooltip>
+                                      <Tooltip title="Remove from Class" arrow>
+                                        <IconButton
+                                          size="small"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleRemoveFromClass(selectedStudent, classItem._id);
+                                          }}
+                                          sx={{
+                                            bgcolor: 'error.main',
+                                            color: 'white',
+                                            '&:hover': { bgcolor: 'error.dark' }
+                                          }}
+                                        >
+                                          <RemoveCircle fontSize="small" />
+                                        </IconButton>
+                                      </Tooltip>
+                                    </Box>
+                                  </Box>
+
+                                  {/* Class Details */}
+                                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                                    <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
+                                      <School sx={{ mr: 1, fontSize: 16, color: 'primary.main' }} />
+                                      <strong>Grade:</strong> {classItem.grade}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
+                                      <Schedule sx={{ mr: 1, fontSize: 16, color: 'primary.main' }} />
+                                      <strong>Time:</strong> {classItem.startTime} - {classItem.endTime}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
+                                      <LocationOn sx={{ mr: 1, fontSize: 16, color: 'primary.main' }} />
+                                      <strong>Venue:</strong> {classItem.venue}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
+                                      <People sx={{ mr: 1, fontSize: 16, color: 'primary.main' }} />
+                                      <strong>Available Spots:</strong> {availableSpots} / {capacity} (Enrolled: {enrolledCount})
+                                    </Typography>
+                                    <Typography variant="body2">
+                                      <strong>Platform:</strong> {classItem.platform || 'Physical'}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                      <strong>Day:</strong> {classItem.date}
+                                    </Typography>
+                                  </Box>
+
+                                  {/* Click to navigate hint */}
+                                  <Box sx={{
+                                    mt: 2,
+                                    pt: 2,
+                                    borderTop: '1px solid #e0e0e0',
+                                    textAlign: 'center'
+                                  }}>
+                                    <Typography variant="caption" color="text.secondary" sx={{
+                                      fontStyle: 'italic',
+                                      fontSize: '0.7rem'
+                                    }}>
+                                      Click card to navigate to class page
+                                    </Typography>
+                                  </Box>
+                                </Paper>
+                              </Grid>
+                            );
+                          })}
+                        </Grid>
+                      ) : (
+                        <Box sx={{
+                          textAlign: 'center',
+                          py: 4,
+                          bgcolor: 'rgba(255,255,255,0.7)',
+                          borderRadius: 2
+                        }}>
+                          <Class sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
+                          <Typography variant="h6" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                            No classes enrolled yet
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Student hasn't enrolled in any classes
+                          </Typography>
+                        </Box>
+                      )}
+                    </Paper>
                   </Grid>
                 </Grid>
               )}
             </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setShowDetailsDialog(false)}>Close</Button>
+            <DialogActions sx={{
+              p: 3,
+              background: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)',
+              borderTop: '2px solid #ddd'
+            }}>
+              <Button
+                onClick={() => setShowDetailsDialog(false)}
+                variant="contained"
+                size="large"
+                startIcon={<CheckCircleOutline />}
+                sx={{
+                  bgcolor: 'primary.main',
+                  color: 'white',
+                  px: 4,
+                  py: 1,
+                  borderRadius: 3,
+                  fontWeight: 'bold',
+                  '&:hover': {
+                    bgcolor: 'primary.dark',
+                    transform: 'scale(1.05)'
+                  },
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                Close Details
+              </Button>
             </DialogActions>
           </Dialog>
 
@@ -2032,7 +2496,7 @@ const StudentManagement = () => {
               </Button>
             </DialogActions>
           </Dialog>
-        </motion.div>
+        </Box>
       </Container>
     </Box>
   );
