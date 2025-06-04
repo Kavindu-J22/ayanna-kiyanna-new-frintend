@@ -987,7 +987,10 @@ const StudentManagement = () => {
     }).length} Students
   </Typography>
 
-  <Grid container spacing={3}>
+  <Grid container spacing={3} sx={{
+    display: 'flex',
+    alignItems: 'stretch' // Ensure all grid items stretch to same height
+  }}>
     {students.filter(student => {
       const matchesStatus = !statusFilter || student.status === statusFilter;
       const matchesGrade = !gradeFilter || student.selectedGrade === gradeFilter;
@@ -1000,13 +1003,20 @@ const StudentManagement = () => {
         student.studentId?.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesStatus && matchesGrade && matchesClass && matchesSearch;
     }).map((student) => (
-      <Grid item xs={12} sm={6} md={4} lg={3} key={student._id}>
+      <Grid item xs={12} sm={6} md={3} lg={3} key={student._id} sx={{
+        display: 'flex', // Make grid item a flex container
+        minWidth: 0 // Prevent flex item from overflowing
+      }}>
         <Card
           elevation={8}
           sx={{
-            height: '100%',
+            width: '100%', // Take full width of grid item
+            minWidth: 350, // Set minimum width for consistency
+            maxWidth: 350, // Set maximum width for consistency
+            height: 'auto',
             display: 'flex',
             flexDirection: 'column',
+            mx: 'auto', // Center the card
             borderRadius: 3,
             overflow: 'hidden',
             background: 'linear-gradient(145deg, #ffffff 0%, #f5f7fa 100%)',
