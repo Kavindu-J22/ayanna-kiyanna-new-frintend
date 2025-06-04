@@ -62,6 +62,7 @@ import {
   Info,
   ArrowRightAlt
 } from '@mui/icons-material';
+import { CgProfile } from "react-icons/cg";
 import { FaPerson } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -1487,6 +1488,31 @@ const StudentManagement = () => {
                   }}
                 >
                   View
+                </Button>
+              </Tooltip>
+
+              <Tooltip title="View Student Profile" arrow>
+                <Button
+                  size="small"
+                  startIcon={<CgProfile sx={{ fontSize: 18 }} />}
+                  sx={{
+                    bgcolor: 'rgb(71, 63, 181)',
+                    color: 'white',
+                    minWidth: 'auto',
+                    px: 1.5,
+                    py: 0.5,
+                    fontSize: '0.7rem',
+                    fontWeight: 'bold',
+                    borderRadius: 1,
+                    '&:hover': {
+                      bgcolor: 'primary.dark',
+                      transform: 'scale(1.05)',
+                      boxShadow: '0 3px 10px rgba(63, 81, 181, 0.3)'
+                    },
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  Profile
                 </Button>
               </Tooltip>
 
