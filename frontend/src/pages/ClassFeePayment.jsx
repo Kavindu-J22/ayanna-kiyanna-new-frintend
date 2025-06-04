@@ -439,7 +439,7 @@ const ClassFeePayment = () => {
                 <Typography variant="h6" gutterBottom sx={{
                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                 }}>
-                  ගෙවීම් රිසිට්පත අමුණන්න
+                  ගෙවීම් රිසිට්පත හෝ අදාල සාක්ශිය අමුණන්න
                 </Typography>
                 
                 {/* Display uploaded receipt or upload area */}

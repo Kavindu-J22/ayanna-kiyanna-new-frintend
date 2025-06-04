@@ -337,7 +337,7 @@ const AllClassPaymentRequests = () => {
             <Typography variant="h4" fontWeight="bold" sx={{
               fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
             }}>
-              සියලුම පන්ති ගෙවීම් ඉල්ලීම්
+              සියලුම පන්ති ගෙවීම්
             </Typography>
           </Box>
 
