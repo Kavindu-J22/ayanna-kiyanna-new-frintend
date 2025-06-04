@@ -1120,6 +1120,13 @@ const StudentManagement = () => {
                             <School sx={{ mr: 1, fontSize: 16 }} />
                             Grade: {student.selectedGrade}
                           </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            mb: 0.5
+                          }}>
+                            {student.currentStudent}
+                          </Typography>
                         </Box>
 
                         {/* Payment Information */}
@@ -1519,6 +1526,7 @@ const StudentManagement = () => {
                     <Typography><strong>Contact:</strong> {selectedStudent.contactNumber}</Typography>
                     <Typography><strong>School:</strong> {selectedStudent.school}</Typography>
                     <Typography><strong>Grade:</strong> {selectedStudent.selectedGrade}</Typography>
+                    <Typography>{selectedStudent.currentStudent}</Typography>
                   </Grid>
                   <Grid item xs={12} md={6}>
                     <Typography variant="h6" gutterBottom>Guardian Information</Typography>
