@@ -298,22 +298,32 @@ const AdminClassPayments = () => {
 
   // Calculate summary statistics for selected month
   const calculateMonthlySummary = () => {
-    if (!paymentData) return null;
-
-    const approvedPayments = paymentData.paymentRequests?.filter(p =>
-      p.status && p.status.toLowerCase() === 'approved'
-    ) || [];
-
-    const totalIncome = approvedPayments.reduce((sum, payment) => sum + (payment.amount || 0), 0);
-    const paidStudentCount = approvedPayments.length;
+    if (!paymentData || !classData) return null;
 
     const allStudents = paymentData.allStudentsStatus || [];
+
+    // Count approved payments from allStudentsStatus (සියලුම සිසුන්ගේ ගෙවීම් තත්ත්වය)
+    const approvedStudents = allStudents.filter(s =>
+      s.payment && s.payment.status && s.payment.status.toLowerCase() === 'approved'
+    );
+
+    const paidStudentCount = approvedStudents.length;
+    // Calculate total income: approved count * class monthly fee
+    const totalIncome = paidStudentCount * (classData.monthlyFee || 0);
+    const alltotalIncome = allStudents.length * (classData.monthlyFee || 0);
+
+    const actualyneedtoPayStudents = allStudents.length - (allStudents.filter(s => !s.requiresPayment).length);
+
     const notRequestedCount = allStudents.filter(s => !s.payment && s.requiresPayment).length;
+    const alltotalActualIncome = (allStudents.length - (allStudents.filter(s => !s.requiresPayment).length)) * (classData.monthlyFee || 0);
     const notRequiredCount = allStudents.filter(s => !s.requiresPayment).length;
     const lowAttendanceCount = allStudents.filter(s => s.attendance?.presentDays < 2).length;
 
     return {
       totalIncome,
+      alltotalIncome,
+      alltotalActualIncome,
+      actualyneedtoPayStudents,
       paidStudentCount,
       notRequestedCount,
       notRequiredCount,
@@ -580,31 +590,31 @@ const AdminClassPayments = () => {
                     <Typography variant="h5" fontWeight="bold">
                       Rs. {monthlySummary.totalIncome.toLocaleString()}
                     </Typography>
-                    <Typography variant="body2">මුළු ආදායම</Typography>
+                    <Typography variant="body2">ලැබී ඇති ආදායම</Typography>
                   </CardContent>
                 </Card>
               </Grid>
 
               <Grid item xs={12} sm={6} md={3}>
-                <Card sx={{ background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)', color: 'white' }}>
+                <Card sx={{ background: 'linear-gradient(135deg, #4caf50 0%,rgb(56, 96, 142) 100%)', color: 'white' }}>
                   <CardContent sx={{ textAlign: 'center', py: 2 }}>
-                    <CheckCircle sx={{ fontSize: 40, mb: 1 }} />
+                    <MonetizationOn sx={{ fontSize: 40, mb: 1 }} />
                     <Typography variant="h5" fontWeight="bold">
-                      {monthlySummary.paidStudentCount}
+                      Rs. {monthlySummary.alltotalActualIncome.toLocaleString()}
                     </Typography>
-                    <Typography variant="body2">ගෙවීම් සිදු කළ සිසුන්</Typography>
+                    <Typography variant="body2">අනිවාර්යයෙන් ලැබිය යුතු මුලු ආදායම</Typography>
                   </CardContent>
                 </Card>
               </Grid>
 
               <Grid item xs={12} sm={6} md={3}>
-                <Card sx={{ background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)', color: 'white' }}>
+                <Card sx={{ background: 'linear-gradient(135deg, #4caf50 0%,rgb(142, 108, 56) 100%)', color: 'white' }}>
                   <CardContent sx={{ textAlign: 'center', py: 2 }}>
-                    <Warning sx={{ fontSize: 40, mb: 1 }} />
+                    <MonetizationOn sx={{ fontSize: 40, mb: 1 }} />
                     <Typography variant="h5" fontWeight="bold">
-                      {monthlySummary.notRequestedCount}
+                      Rs. {monthlySummary.alltotalIncome.toLocaleString()}
                     </Typography>
-                    <Typography variant="body2">ගෙවීම් ඉල්ලීම් නොකළ</Typography>
+                    <Typography variant="body2">සියල්ල හැර ලැබිය යුතු මුලු ආදායම</Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -616,10 +626,48 @@ const AdminClassPayments = () => {
                     <Typography variant="h5" fontWeight="bold">
                       {monthlySummary.totalStudents}
                     </Typography>
-                    <Typography variant="body2">මුළු සිසුන්</Typography>
+                    <Typography variant="body2">මුළු සිසුන් ගණන</Typography>
                   </CardContent>
                 </Card>
               </Grid>
+
+              <Grid item xs={12} sm={6} md={3}>
+                <Card sx={{ background: 'linear-gradient(135deg, #2196f3 0%,rgb(210, 25, 210) 100%)', color: 'white' }}>
+                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
+                    <CheckCircle sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h5" fontWeight="bold">
+                      {monthlySummary.actualyneedtoPayStudents}
+                    </Typography>
+                    <Typography variant="body2">අනිවාර්යයෙන්ම ගෙවීම් සිදු කල යුතු සිසුන් ගණන</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={3}>
+                <Card sx={{ background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)', color: 'white' }}>
+                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
+                    <CheckCircle sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h5" fontWeight="bold">
+                      {monthlySummary.paidStudentCount}
+                    </Typography>
+                    <Typography variant="body2">ගෙවීම් සිදු කළ සිසුන් ගණන</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={3}>
+                <Card sx={{ background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)', color: 'white' }}>
+                  <CardContent sx={{ textAlign: 'center', py: 2 }}>
+                    <Warning sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="h5" fontWeight="bold">
+                      {monthlySummary.notRequestedCount}
+                    </Typography>
+                    <Typography variant="body2">ගෙවීම් ඉල්ලීම් නොකළ සිසුන් ගණන</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              
 
               <Grid item xs={12} sm={6} md={3}>
                 <Card sx={{ background: 'linear-gradient(135deg, #607d8b 0%, #455a64 100%)', color: 'white' }}>
@@ -628,7 +676,7 @@ const AdminClassPayments = () => {
                     <Typography variant="h5" fontWeight="bold">
                       {monthlySummary.notRequiredCount}
                     </Typography>
-                    <Typography variant="body2">ගෙවීම් අවශ්‍ය නොවන</Typography>
+                    <Typography variant="body2">ගෙවීම් අනවශ්‍ය සහ අනිවාර්ය නොවන ගණන </Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -640,7 +688,7 @@ const AdminClassPayments = () => {
                     <Typography variant="h5" fontWeight="bold">
                       {monthlySummary.lowAttendanceCount}
                     </Typography>
-                    <Typography variant="body2">අඩු පැමිණීම</Typography>
+                    <Typography variant="body2">අඩු පැමිණීම නිසා ගෙවීම අනිවාර්ය නොවන ගණන</Typography>
                   </CardContent>
                 </Card>
               </Grid>
