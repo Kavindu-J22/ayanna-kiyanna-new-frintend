@@ -138,6 +138,10 @@ const StudentManagement = () => {
     }
   };
 
+  const defaultGrades = ["Grade 6", "Grade 7", "Grade 8", "Grade 9", "Other"];
+
+  const allGrades = [...new Set([...defaultGrades, ...availableGrades])];
+
   const loadPendingClassRequestsCount = async () => {
     try {
       setClassRequestsLoading(true);
@@ -878,20 +882,20 @@ const StudentManagement = () => {
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={3}>
-                <FormControl fullWidth sx={{ minWidth: '200px' }}>
-                  <InputLabel>Grade</InputLabel>
-                  <Select
-                    value={gradeFilter}
-                    onChange={(e) => setGradeFilter(e.target.value)}
-                    label="Grade"
-                  >
-                    <MenuItem value="">All Grades</MenuItem>
-                    {availableGrades.map((grade) => (
-                      <MenuItem key={grade} value={grade}>{grade}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
+              <FormControl fullWidth sx={{ minWidth: '200px' }}>
+                <InputLabel>Grade</InputLabel>
+                <Select
+                  value={gradeFilter}
+                  onChange={(e) => setGradeFilter(e.target.value)}
+                  label="Grade"
+                >
+                  <MenuItem value="">All Grades</MenuItem>
+                  {allGrades.map((grade) => (
+                    <MenuItem key={grade} value={grade}>{grade}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
               <Grid item xs={12} md={3}>
                 <FormControl fullWidth sx={{ minWidth: '200px' }}>
                   <InputLabel>Class</InputLabel>
@@ -978,7 +982,7 @@ const StudentManagement = () => {
                   student.studentId?.toLowerCase().includes(searchTerm.toLowerCase());
                 return matchesStatus && matchesGrade && matchesClass && matchesSearch;
               }).map((student) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={student._id}>
+                <Grid item xs={12} sm={6} md={3} lg={3} key={student._id}>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -988,7 +992,8 @@ const StudentManagement = () => {
                     <Card
                       elevation={6}
                       sx={{
-                        height: '100%',
+                        height: 520, // Fixed height for all cards
+                        width: '100%', // Fixed width
                         display: 'flex',
                         flexDirection: 'column',
                         borderRadius: 3,
@@ -1045,13 +1050,37 @@ const StudentManagement = () => {
                             }}>
                               {student.firstName} {student.lastName}
                             </Typography>
-                            <Typography variant="body2" sx={{
-                              opacity: 0.9,
-                              fontWeight: 'bold',
-                              fontSize: '0.9rem'
-                            }}>
-                              ID: {student.studentId}
-                            </Typography>
+                            <Box sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 0.5,
+                              cursor: 'pointer',
+                              '&:hover': { opacity: 0.8 }
+                            }}
+                            onClick={() => {
+                              navigator.clipboard.writeText(student.studentId);
+                              setSuccess(`Student ID ${student.studentId} copied to clipboard!`);
+                              setTimeout(() => setSuccess(''), 2000);
+                            }}
+                            >
+                              <Typography variant="body2" sx={{
+                                opacity: 0.9,
+                                fontWeight: 'bold',
+                                fontSize: '0.9rem'
+                              }}>
+                                ID: {student.studentId}
+                              </Typography>
+                              <Tooltip title="Click to copy Student ID">
+                                <Box sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  opacity: 0.7,
+                                  '&:hover': { opacity: 1 }
+                                }}>
+                                  📋
+                                </Box>
+                              </Tooltip>
+                            </Box>
                           </Box>
                         </Box>
 
@@ -1099,32 +1128,63 @@ const StudentManagement = () => {
                             Payment & Behavior Information
                           </Typography>
                           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                            <Chip
-                              label={student.paymentRole === 'Pay Card' ? 'Pay Card Owner' : 'Free Card Owner'}
-                              color={student.paymentRole === 'Pay Card' ? 'primary' : 'secondary'}
-                              icon={<CreditCard />}
-                              size="small"
-                              onClick={() => handleUpdatePaymentRole(student)}
-                              sx={{ cursor: 'pointer', alignSelf: 'flex-start' }}
-                            />
-                            <Chip
-                              label={
-                                student.paymentStatus === 'Paid' ? 'ඉතා හොදයි' :
-                                student.paymentStatus === 'Unpaid' ? 'සැලකිලිමත් විය යුතුයි' : 'හොදයි,ගැටලුවක් නැත'
-                              }
-                              color={
-                                student.paymentStatus === 'Paid' ? 'success' :
-                                student.paymentStatus === 'Unpaid' ? 'error' : 'warning'
-                              }
-                              icon={<FaPerson />}
-                              size="small"
-                              onClick={() => handleUpdatePaymentStatus(student)}
-                              sx={{
-                                cursor: 'pointer',
-                                alignSelf: 'flex-start',
-                                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-                              }}
-                            />
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Typography variant="caption" sx={{
+                                fontSize: '0.7rem',
+                                color: 'primary.main',
+                                fontWeight: 'bold',
+                                background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                '&::after': {
+                                  content: '"👉"',
+                                  marginLeft: '4px'
+                                }
+                              }}>
+                                Click to change
+                              </Typography>
+                              <Chip
+                                label={student.paymentRole === 'Pay Card' ? 'Pay Card Owner' : 'Free Card Owner'}
+                                color={student.paymentRole === 'Pay Card' ? 'primary' : 'secondary'}
+                                icon={<CreditCard />}
+                                size="small"
+                                onClick={() => handleUpdatePaymentRole(student)}
+                                sx={{ cursor: 'pointer' }}
+                              />
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Typography variant="caption" sx={{
+                                fontSize: '0.7rem',
+                                color: 'success.main',
+                                fontWeight: 'bold',
+                                background: 'linear-gradient(45deg, #4CAF50 30%, #8BC34A 90%)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                '&::after': {
+                                  content: '"👉"',
+                                  marginLeft: '4px'
+                                }
+                              }}>
+                                Click to change
+                              </Typography>
+                              <Chip
+                                label={
+                                  student.paymentStatus === 'Paid' ? 'ඉතා හොදයි' :
+                                  student.paymentStatus === 'Unpaid' ? 'සැලකිලිමත් විය යුතුයි' : 'හොදයි,ගැටලුවක් නැත'
+                                }
+                                color={
+                                  student.paymentStatus === 'Paid' ? 'success' :
+                                  student.paymentStatus === 'Unpaid' ? 'error' : 'warning'
+                                }
+                                icon={<FaPerson />}
+                                size="small"
+                                onClick={() => handleUpdatePaymentStatus(student)}
+                                sx={{
+                                  cursor: 'pointer',
+                                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                                }}
+                              />
+                            </Box>
                           </Box>
                         </Box>
 
@@ -1142,9 +1202,27 @@ const StudentManagement = () => {
                                   size="small"
                                   variant="outlined"
                                   color="primary"
-                                  onDelete={() => handleRemoveFromClass(student, classItem._id)}
+                                  onClick={(e) => {
+                                    // Check if the click is on the delete icon
+                                    if (e.target.closest('.MuiChip-deleteIcon')) {
+                                      return; // Let the onDelete handle it
+                                    }
+                                    // Navigate to class page
+                                    navigate(`/class/${classItem._id}`);
+                                  }}
+                                  onDelete={(e) => {
+                                    e.stopPropagation(); // Prevent navigation when deleting
+                                    handleRemoveFromClass(student, classItem._id);
+                                  }}
                                   deleteIcon={<RemoveCircle />}
-                                  sx={{ fontSize: '0.7rem' }}
+                                  sx={{
+                                    fontSize: '0.7rem',
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                      backgroundColor: 'primary.light',
+                                      color: 'white'
+                                    }
+                                  }}
                                 />
                               ))}
                               {student.enrolledClasses.length > 2 && (
@@ -1153,6 +1231,7 @@ const StudentManagement = () => {
                                   size="small"
                                   variant="outlined"
                                   sx={{ fontSize: '0.7rem' }}
+                                  onClick={() => handleViewDetails(student)}
                                 />
                               )}
                             </Box>
@@ -1167,39 +1246,65 @@ const StudentManagement = () => {
                       {/* Action Buttons */}
                       <Box sx={{
                         p: 2,
-                        pt: 0,
-                        borderTop: '1px solid',
-                        borderColor: 'divider',
-                        bgcolor: 'grey.50'
+                        pt: 1,
+                        borderTop: '2px solid',
+                        borderColor: 'primary.light',
+                        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                        borderBottomLeftRadius: 3,
+                        borderBottomRightRadius: 3
                       }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
-                          Quick Actions
+                        <Typography variant="caption" sx={{
+                          mb: 1.5,
+                          display: 'block',
+                          fontWeight: 'bold',
+                          color: 'primary.main',
+                          textAlign: 'center',
+                          fontSize: '0.75rem'
+                        }}>
+                          ⚡ Quick Actions
                         </Typography>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, justifyContent: 'center' }}>
-                          <Tooltip title="View Details">
+
+                        {/* Primary Actions Row */}
+                        <Box sx={{
+                          display: 'flex',
+                          gap: 1.5,
+                          justifyContent: 'center',
+                          mb: 1
+                        }}>
+                          <Tooltip title="View Full Details" arrow>
                             <IconButton
                               size="small"
                               onClick={() => handleViewDetails(student)}
-                              color="primary"
                               sx={{
-                                bgcolor: 'primary.light',
+                                bgcolor: 'primary.main',
                                 color: 'white',
-                                '&:hover': { bgcolor: 'primary.main' }
+                                width: 32,
+                                height: 32,
+                                '&:hover': {
+                                  bgcolor: 'primary.dark',
+                                  transform: 'scale(1.1)'
+                                },
+                                transition: 'all 0.2s ease'
                               }}
                             >
                               <Visibility fontSize="small" />
                             </IconButton>
                           </Tooltip>
 
-                          <Tooltip title="Send Message">
+                          <Tooltip title="Send Message" arrow>
                             <IconButton
                               size="small"
                               onClick={() => handleSendMessage(student)}
-                              color="info"
                               sx={{
-                                bgcolor: 'info.light',
+                                bgcolor: 'info.main',
                                 color: 'white',
-                                '&:hover': { bgcolor: 'info.main' }
+                                width: 32,
+                                height: 32,
+                                '&:hover': {
+                                  bgcolor: 'info.dark',
+                                  transform: 'scale(1.1)'
+                                },
+                                transition: 'all 0.2s ease'
                               }}
                             >
                               <Message fontSize="small" />
@@ -1207,47 +1312,70 @@ const StudentManagement = () => {
                           </Tooltip>
 
                           {student.status === 'Approved' && (
-                            <Tooltip title="Change Class">
+                            <Tooltip title="Change Class" arrow>
                               <IconButton
                                 size="small"
                                 onClick={() => handleChangeClass(student)}
-                                color="warning"
                                 sx={{
-                                  bgcolor: 'warning.light',
+                                  bgcolor: 'warning.main',
                                   color: 'white',
-                                  '&:hover': { bgcolor: 'warning.main' }
+                                  width: 32,
+                                  height: 32,
+                                  '&:hover': {
+                                    bgcolor: 'warning.dark',
+                                    transform: 'scale(1.1)'
+                                  },
+                                  transition: 'all 0.2s ease'
                                 }}
                               >
                                 <SwapHoriz fontSize="small" />
                               </IconButton>
                             </Tooltip>
                           )}
+                        </Box>
 
+                        {/* Status Actions Row */}
+                        <Box sx={{
+                          display: 'flex',
+                          gap: 1,
+                          justifyContent: 'center',
+                          flexWrap: 'wrap'
+                        }}>
                           {student.status === 'Pending' && (
                             <>
-                              <Tooltip title="Approve">
+                              <Tooltip title="✅ Approve Student" arrow>
                                 <IconButton
                                   size="small"
                                   onClick={() => handleStudentAction(student, 'approve')}
-                                  color="success"
                                   sx={{
-                                    bgcolor: 'success.light',
+                                    bgcolor: 'success.main',
                                     color: 'white',
-                                    '&:hover': { bgcolor: 'success.main' }
+                                    width: 30,
+                                    height: 30,
+                                    '&:hover': {
+                                      bgcolor: 'success.dark',
+                                      transform: 'scale(1.1)'
+                                    },
+                                    transition: 'all 0.2s ease'
                                   }}
                                 >
                                   <CheckCircle fontSize="small" />
                                 </IconButton>
                               </Tooltip>
-                              <Tooltip title="Reject">
+                              <Tooltip title="❌ Reject Student" arrow>
                                 <IconButton
                                   size="small"
                                   onClick={() => handleStudentAction(student, 'reject')}
-                                  color="error"
                                   sx={{
-                                    bgcolor: 'error.light',
+                                    bgcolor: 'error.main',
                                     color: 'white',
-                                    '&:hover': { bgcolor: 'error.main' }
+                                    width: 30,
+                                    height: 30,
+                                    '&:hover': {
+                                      bgcolor: 'error.dark',
+                                      transform: 'scale(1.1)'
+                                    },
+                                    transition: 'all 0.2s ease'
                                   }}
                                 >
                                   <Cancel fontSize="small" />
@@ -1257,15 +1385,20 @@ const StudentManagement = () => {
                           )}
 
                           {student.status === 'Approved' && (
-                            <Tooltip title="Change to hold Student">
+                            <Tooltip title="⏸️ Hold Student" arrow>
                               <IconButton
                                 size="small"
                                 onClick={() => handleStatusChange(student, 'Pending')}
-                                color="warning"
                                 sx={{
                                   bgcolor: 'orange',
                                   color: 'white',
-                                  '&:hover': { bgcolor: 'darkorange' }
+                                  width: 30,
+                                  height: 30,
+                                  '&:hover': {
+                                    bgcolor: 'darkorange',
+                                    transform: 'scale(1.1)'
+                                  },
+                                  transition: 'all 0.2s ease'
                                 }}
                               >
                                 <Pending fontSize="small" />
@@ -1273,15 +1406,63 @@ const StudentManagement = () => {
                             </Tooltip>
                           )}
 
-                          <Tooltip title="Delete Student">
+                          {student.status === 'Rejected' && (
+                            <>
+                              <Tooltip title="✅ Approve Student" arrow>
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleStatusChange(student, 'Approved')}
+                                  sx={{
+                                    bgcolor: 'success.main',
+                                    color: 'white',
+                                    width: 30,
+                                    height: 30,
+                                    '&:hover': {
+                                      bgcolor: 'success.dark',
+                                      transform: 'scale(1.1)'
+                                    },
+                                    transition: 'all 0.2s ease'
+                                  }}
+                                >
+                                  <CheckCircle fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="⏸️ Move to Pending" arrow>
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleStatusChange(student, 'Pending')}
+                                  sx={{
+                                    bgcolor: 'orange',
+                                    color: 'white',
+                                    width: 30,
+                                    height: 30,
+                                    '&:hover': {
+                                      bgcolor: 'darkorange',
+                                      transform: 'scale(1.1)'
+                                    },
+                                    transition: 'all 0.2s ease'
+                                  }}
+                                >
+                                  <Pending fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            </>
+                          )}
+
+                          <Tooltip title="🗑️ Delete Student" arrow>
                             <IconButton
                               size="small"
                               onClick={() => handleDeleteStudent(student)}
-                              color="error"
                               sx={{
-                                bgcolor: 'error.main',
+                                bgcolor: 'error.dark',
                                 color: 'white',
-                                '&:hover': { bgcolor: 'error.dark' }
+                                width: 30,
+                                height: 30,
+                                '&:hover': {
+                                  bgcolor: '#c62828',
+                                  transform: 'scale(1.1)'
+                                },
+                                transition: 'all 0.2s ease'
                               }}
                             >
                               <Delete fontSize="small" />
