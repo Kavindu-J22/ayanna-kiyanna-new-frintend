@@ -77,6 +77,7 @@ const AdminClassPayments = () => {
 
   // Search functionality
   const [searchTerm, setSearchTerm] = useState('');
+  const [monthlyPendingCounts, setMonthlyPendingCounts] = useState({});
 
   const monthNames = [
     'ජනවාරි', 'පෙබරවාරි', 'මාර්තු', 'අප්‍රේල්', 'මැයි', 'ජූනි',
@@ -85,6 +86,7 @@ const AdminClassPayments = () => {
 
   useEffect(() => {
     fetchClassData();
+    fetchMonthlyPendingCounts();
   }, [classId]);
 
   useEffect(() => {
@@ -92,6 +94,12 @@ const AdminClassPayments = () => {
       fetchPaymentData();
     }
   }, [classId, selectedYear, selectedMonth]);
+
+  useEffect(() => {
+    if (selectedYear) {
+      fetchMonthlyPendingCounts();
+    }
+  }, [classId, selectedYear]);
 
   const fetchClassData = async () => {
     try {
@@ -150,6 +158,36 @@ const AdminClassPayments = () => {
       setError(error.response?.data?.message || 'Error loading payment data');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchMonthlyPendingCounts = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const counts = {};
+
+      // Fetch pending counts for all 12 months
+      for (let month = 1; month <= 12; month++) {
+        try {
+          const response = await axios.get(
+            `https://ayanna-kiyanna-new-backend.onrender.com/api/payments/admin/${classId}/${selectedYear}/${month}`,
+            { headers: { 'x-auth-token': token } }
+          );
+
+          // Count pending payment requests
+          const pendingCount = response.data.paymentRequests?.filter(p =>
+            p.status && p.status.toLowerCase() === 'pending'
+          ).length || 0;
+
+          counts[month] = pendingCount;
+        } catch (error) {
+          counts[month] = 0;
+        }
+      }
+
+      setMonthlyPendingCounts(counts);
+    } catch (error) {
+      console.error('Error fetching monthly pending counts:', error);
     }
   };
 
@@ -695,17 +733,36 @@ const AdminClassPayments = () => {
           <Grid container spacing={2}>
             {monthNames.map((monthName, index) => (
               <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
-                <Button
-                  fullWidth
-                  variant={selectedMonth === index + 1 ? 'contained' : 'outlined'}
-                  onClick={() => handleMonthSelect(index + 1)}
-                  sx={{
-                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-                    fontWeight: 'bold'
-                  }}
-                >
-                  {monthName}
-                </Button>
+                <Box sx={{ position: 'relative' }}>
+                  <Button
+                    fullWidth
+                    variant={selectedMonth === index + 1 ? 'contained' : 'outlined'}
+                    onClick={() => handleMonthSelect(index + 1)}
+                    sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    {monthName}
+                  </Button>
+                  {monthlyPendingCounts[index + 1] > 0 && (
+                    <Badge
+                      badgeContent={monthlyPendingCounts[index + 1]}
+                      color="warning"
+                      sx={{
+                        position: 'absolute',
+                        top: -8,
+                        right: 8,
+                        '& .MuiBadge-badge': {
+                          fontSize: '0.75rem',
+                          minWidth: '20px',
+                          height: '20px',
+                          borderRadius: '10px'
+                        }
+                      }}
+                    />
+                  )}
+                </Box>
               </Grid>
             ))}
           </Grid>
@@ -732,7 +789,9 @@ const AdminClassPayments = () => {
               </Button>
             </Box>
 
-            <Grid container spacing={2}>
+            {/* Centered Summary Section */}
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Grid container spacing={2} sx={{ maxWidth: '1400px' }}>
               <Grid item xs={12} sm={6} md={3}>
                 <Card sx={{ background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)', color: 'white' }}>
                   <CardContent sx={{ textAlign: 'center', py: 2 }}>
@@ -866,7 +925,8 @@ const AdminClassPayments = () => {
                   </CardContent>
                 </Card>
               </Grid>
-            </Grid>
+              </Grid>
+            </Box>
           </Paper>
         )}
 
