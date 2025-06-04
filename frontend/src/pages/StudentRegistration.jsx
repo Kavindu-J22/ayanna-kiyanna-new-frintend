@@ -82,6 +82,9 @@ const StudentRegistration = () => {
   const [isLiteratureOnlyStudent, setIsLiteratureOnlyStudent] = useState(false);
   const [literatureGradeSelected, setLiteratureGradeSelected] = useState('');
 
+  // Registration type state
+  const [registrationType, setRegistrationType] = useState(''); // 'with-classes' or 'general-student'
+
   // Form data state
   const [formData, setFormData] = useState({
     // Personal Information
@@ -502,9 +505,22 @@ const StudentRegistration = () => {
                (formData.guardianContact || '').trim() &&
                validateGuardianContact(formData.guardianContact);
       case 2: // Academic Information
-        return (formData.selectedGrade || '').trim() &&
-               formData.enrolledClasses &&
-               formData.enrolledClasses.length > 0;
+        // Check if registration type is selected
+        if (!registrationType) return false;
+
+        // For general student registration, only grade is required
+        if (registrationType === 'general-student') {
+          return (formData.selectedGrade || '').trim();
+        }
+
+        // For class-based registration, both grade and classes are required
+        if (registrationType === 'with-classes') {
+          return (formData.selectedGrade || '').trim() &&
+                 formData.enrolledClasses &&
+                 formData.enrolledClasses.length > 0;
+        }
+
+        return false;
       case 3: // Security & Agreement
         return (formData.studentPassword || '').trim() &&
                (formData.confirmPassword || '').trim() &&
@@ -521,27 +537,36 @@ const StudentRegistration = () => {
     if (activeStep === 2) {
       // Check if basic validation passes first
       if (!validateStep(activeStep)) {
-        setError('Please select your grade and at least one class to enroll.');
+        if (!registrationType) {
+          setError('Please select your registration type first.');
+        } else if (registrationType === 'general-student') {
+          setError('Please select your grade.');
+        } else {
+          setError('Please select your grade and at least one class to enroll.');
+        }
         return;
       }
 
-      // Check for Literature class selection issues
-      const hasLiterature = hasLiteratureClasses();
-      const isOnlyLiterature = isOnlyLiteratureClasses();
-      const isCorrectOrder = isLiteratureInCorrectOrder();
+      // Only check Literature class issues for class-based registration
+      if (registrationType === 'with-classes') {
+        // Check for Literature class selection issues
+        const hasLiterature = hasLiteratureClasses();
+        const isOnlyLiterature = isOnlyLiteratureClasses();
+        const isCorrectOrder = isLiteratureInCorrectOrder();
 
-      if (hasLiterature && !isOnlyLiterature && !isCorrectOrder) {
-        // User has mixed Literature and non-Literature classes in wrong order
-        setShowLiteratureWarning(true);
-        setError('');
-        return; // Don't proceed to next step
-      }
+        if (hasLiterature && !isOnlyLiterature && !isCorrectOrder) {
+          // User has mixed Literature and non-Literature classes in wrong order
+          setShowLiteratureWarning(true);
+          setError('');
+          return; // Don't proceed to next step
+        }
 
-      // If only Literature classes are selected, check if grade is manually selected
-      if (isOnlyLiterature && !literatureGradeSelected) {
-        setIsLiteratureOnlyStudent(true);
-        setError('');
-        return; // Don't proceed to next step
+        // If only Literature classes are selected, check if grade is manually selected
+        if (isOnlyLiterature && !literatureGradeSelected) {
+          setIsLiteratureOnlyStudent(true);
+          setError('');
+          return; // Don't proceed to next step
+        }
       }
     }
 
@@ -574,7 +599,13 @@ const StudentRegistration = () => {
           }
           break;
         case 2:
-          setError('Please select your grade and at least one class to enroll.');
+          if (!registrationType) {
+            setError('Please select your registration type first.');
+          } else if (registrationType === 'general-student') {
+            setError('Please select your grade.');
+          } else {
+            setError('Please select your grade and at least one class to enroll.');
+          }
           break;
         case 3:
           if ((formData.studentPassword || '').length < 6) {
@@ -1272,43 +1303,195 @@ const StudentRegistration = () => {
                     අධ්‍යාපනික තොරතුරු (Academic Information)
                   </Typography>
 
-                  {/* Important Note */}
+                  {/* Registration Type Selection */}
                   <Alert
-                    severity="warning"
+                    severity="info"
                     icon={<Info />}
                     sx={{
                       mb: 3,
-                      bgcolor: 'rgba(255, 193, 7, 0.1)',
-                      border: '1px solid rgba(255, 193, 7, 0.3)',
+                      bgcolor: 'rgba(33, 150, 243, 0.1)',
+                      border: '2px solid rgba(33, 150, 243, 0.3)',
                       '& .MuiAlert-icon': {
-                        color: 'warning.main'
+                        color: 'info.main'
                       }
                     }}
                   >
                     <Typography variant="body2" sx={{
                       fontWeight: 'bold',
                       fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-                      mb: 1
+                      mb: 2
                     }}>
-                      ⚠️ වැදගත් සටහන (Important Note)
+                      🎯 ලියාපදිංචි වීමේ ආකාරය තෝරන්න (Select Registration Type)
                     </Typography>
-                    <Typography variant="body2" sx={{
-                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-                    }}>
-                      ඔබේ ශ්‍රේණිය ප්‍රවේශමෙන් තෝරන්න. මන්ද ඔබට එය අනාගතයේදී වෙනස් කළ නොහැකි බැවිනි.
-                      ඔබට එය වෙනස් කිරීමට අවශ්‍ය නම් පරිපාලකයාට දන්වන්න.
-                      මන්ද පද්ධතිය ස්වයංක්‍රීයව ඔබේ ශ්‍රේණිය අනුව වසරින් වසර යාවත්කාලීන කරයි.
-                    </Typography>
-                    <Typography variant="caption" sx={{
-                      display: 'block',
-                      mt: 1,
-                      fontStyle: 'italic',
-                      color: 'text.secondary'
-                    }}>
-                      📚 Carefully select your grade as you cannot change it in the future.
-                      If you need to change it, please inform the admin as the system automatically updates your grade year by year.
-                    </Typography>
+
+                    <FormControl component="fieldset" fullWidth>
+                      <RadioGroup
+                        value={registrationType}
+                        onChange={(e) => {
+                          setRegistrationType(e.target.value);
+                          // Reset form data when changing registration type
+                          setFormData(prev => ({
+                            ...prev,
+                            selectedGrade: '',
+                            enrolledClasses: []
+                          }));
+                        }}
+                        sx={{ gap: 2 }}
+                      >
+                        <Paper
+                          sx={{
+                            p: 2,
+                            border: 2,
+                            borderColor: registrationType === 'with-classes' ? 'primary.main' : 'grey.300',
+                            background: registrationType === 'with-classes'
+                              ? 'linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%)'
+                              : 'linear-gradient(135deg, #F5F5F5 0%, #EEEEEE 100%)',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            '&:hover': {
+                              boxShadow: 4,
+                              transform: 'translateY(-2px)'
+                            }
+                          }}
+                          onClick={() => {
+                            setRegistrationType('with-classes');
+                            setFormData(prev => ({
+                              ...prev,
+                              selectedGrade: '',
+                              enrolledClasses: []
+                            }));
+                          }}
+                        >
+                          <FormControlLabel
+                            value="with-classes"
+                            control={<Radio />}
+                            label={
+                              <Box>
+                                <Typography variant="body1" sx={{
+                                  fontWeight: 'bold',
+                                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                                  color: 'primary.main'
+                                }}>
+                                  📚 ඇතුල් වීමට අවශ්‍ය පන්තිය/පන්ති තෝරමින් සිසුවෙකු ලෙස ලියා පදිංචි වීමට අවශ්‍ය යි
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                  display: 'block',
+                                  mt: 0.5,
+                                  color: 'text.secondary',
+                                  fontStyle: 'italic'
+                                }}>
+                                  Want to register as a student by selecting specific classes to enroll
+                                </Typography>
+                              </Box>
+                            }
+                            sx={{
+                              margin: 0,
+                              width: '100%',
+                              '& .MuiFormControlLabel-label': {
+                                width: '100%'
+                              }
+                            }}
+                          />
+                        </Paper>
+
+                        <Paper
+                          sx={{
+                            p: 2,
+                            border: 2,
+                            borderColor: registrationType === 'general-student' ? 'success.main' : 'grey.300',
+                            background: registrationType === 'general-student'
+                              ? 'linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 100%)'
+                              : 'linear-gradient(135deg, #F5F5F5 0%, #EEEEEE 100%)',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            '&:hover': {
+                              boxShadow: 4,
+                              transform: 'translateY(-2px)'
+                            }
+                          }}
+                          onClick={() => {
+                            setRegistrationType('general-student');
+                            setFormData(prev => ({
+                              ...prev,
+                              selectedGrade: '',
+                              enrolledClasses: []
+                            }));
+                          }}
+                        >
+                          <FormControlLabel
+                            value="general-student"
+                            control={<Radio />}
+                            label={
+                              <Box>
+                                <Typography variant="body1" sx={{
+                                  fontWeight: 'bold',
+                                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                                  color: 'success.main'
+                                }}>
+                                  👤 පන්තියක් තේරීමට අවශ්‍ය නැත. සාමාන්‍ය සිසුවෙකු ලෙස ලියා පදිංචි වීමට අවශ්‍ය යි
+                                </Typography>
+                                <Typography variant="caption" sx={{
+                                  display: 'block',
+                                  mt: 0.5,
+                                  color: 'text.secondary',
+                                  fontStyle: 'italic'
+                                }}>
+                                  Don't need to select classes. Want to register as a general student
+                                </Typography>
+                              </Box>
+                            }
+                            sx={{
+                              margin: 0,
+                              width: '100%',
+                              '& .MuiFormControlLabel-label': {
+                                width: '100%'
+                              }
+                            }}
+                          />
+                        </Paper>
+                      </RadioGroup>
+                    </FormControl>
                   </Alert>
+
+                  {/* Important Note - Only show when registration type is selected */}
+                  {registrationType && (
+                    <Alert
+                      severity="warning"
+                      icon={<Info />}
+                      sx={{
+                        mb: 3,
+                        bgcolor: 'rgba(255, 193, 7, 0.1)',
+                        border: '1px solid rgba(255, 193, 7, 0.3)',
+                        '& .MuiAlert-icon': {
+                          color: 'warning.main'
+                        }
+                      }}
+                    >
+                      <Typography variant="body2" sx={{
+                        fontWeight: 'bold',
+                        fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                        mb: 1
+                      }}>
+                        ⚠️ වැදගත් සටහන (Important Note)
+                      </Typography>
+                      <Typography variant="body2" sx={{
+                        fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                      }}>
+                        ඔබේ ශ්‍රේණිය ප්‍රවේශමෙන් තෝරන්න. මන්ද ඔබට එය අනාගතයේදී වෙනස් කළ නොහැකි බැවිනි.
+                        ඔබට එය වෙනස් කිරීමට අවශ්‍ය නම් පරිපාලකයාට දන්වන්න.
+                        මන්ද පද්ධතිය ස්වයංක්‍රීයව ඔබේ ශ්‍රේණිය අනුව වසරින් වසර යාවත්කාලීන කරයි.
+                      </Typography>
+                      <Typography variant="caption" sx={{
+                        display: 'block',
+                        mt: 1,
+                        fontStyle: 'italic',
+                        color: 'text.secondary'
+                      }}>
+                        📚 Carefully select your grade as you cannot change it in the future.
+                        If you need to change it, please inform the admin as the system automatically updates your grade year by year.
+                      </Typography>
+                    </Alert>
+                  )}
 
                   {/* Sinhala Literature Notice */}
                   <Alert
@@ -1466,9 +1649,11 @@ const StudentRegistration = () => {
                           label="ඔබේ ශ්‍රේණිය තෝරන්න (Select Your Grade)"
                           sx={{ fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}
                         >
+                          <MenuItem value="Grade 9">Grade 9 (9 ශ්‍රේණිය)</MenuItem>
                           <MenuItem value="Grade 10">Grade 10 (10 ශ්‍රේණිය)</MenuItem>
                           <MenuItem value="Grade 11">Grade 11 (11 ශ්‍රේණිය)</MenuItem>
                           <MenuItem value="A/L">A/L (උසස් පෙළ)</MenuItem>
+                          <MenuItem value="Other">Other (වෙනත්)</MenuItem>
                         </Select>
                       </FormControl>
                       <Box sx={{ display: 'flex', gap: 2 }}>
@@ -1506,38 +1691,104 @@ const StudentRegistration = () => {
                     </Alert>
                   )}
 
-                  <Grid container spacing={3}>
-                    <Grid item xs={12}>
-                      <FormControl fullWidth required sx={{ minWidth: 200 }}>
-                        <InputLabel>ඔබේ ශ්‍රේණිය තෝරන්න (Select Your Grade)</InputLabel>
-                        <Select
-                          value={formData.selectedGrade || ''}
-                          onChange={(e) => handleInputChange('selectedGrade', e.target.value)}
-                          label="ඔබේ ශ්‍රේණිය තෝරන්න (Select Your Grade)"
-                        >
-                          {availableGrades.map((grade) => (
-                            <MenuItem key={grade} value={grade}>{grade}</MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-
-                    {formData.selectedGrade && (
+                  {/* Grade Selection - Show only when registration type is selected */}
+                  {registrationType && (
+                    <Grid container spacing={3}>
                       <Grid item xs={12}>
-                        <Box sx={{ mb: 3 }}>
-                          <Typography variant="h6" gutterBottom sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            color: 'primary.main',
-                            fontWeight: 'bold'
-                          }}>
-                            <Groups sx={{ mr: 1 }} />
-                            Available Classes for {formData.selectedGrade}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            ✨ මෙම ශ්‍රේණියේ පහත පන්ති වලින් ඔබට ඇතුලත් වීමට අවශ්‍ය පන්තිය තෝරන්න. ඔබට අනෙකුත් පන්ති ප්‍රවර්ග වලින් ද තොරාගැනීම් එක බැගින් සිදු කල හැක. මෙම තෝරාගන්නා පන්ති සදහා ඇඩ්මින්ගේ අනුමැතියෙන් පසුව ප්‍රවේශ විය හැකිය.
-                          </Typography>
-                        </Box>
+                        {registrationType === 'general-student' ? (
+                          // General Student Grade Selection
+                          <FormControl fullWidth required sx={{ minWidth: 200 }}>
+                            <InputLabel>ඔබේ ශ්‍රේණිය තෝරන්න (Select Your Grade)</InputLabel>
+                            <Select
+                              value={formData.selectedGrade || ''}
+                              onChange={(e) => handleInputChange('selectedGrade', e.target.value)}
+                              label="ඔබේ ශ්‍රේණිය තෝරන්න (Select Your Grade)"
+                            >
+                              <MenuItem value="Grade 6">Grade 6 (6 ශ්‍රේණිය)</MenuItem>
+                              <MenuItem value="Grade 7">Grade 7 (7 ශ්‍රේණිය)</MenuItem>
+                              <MenuItem value="Grade 8">Grade 8 (8 ශ්‍රේණිය)</MenuItem>
+                              <MenuItem value="Grade 9">Grade 9 (9 ශ්‍රේණිය)</MenuItem>
+                              <MenuItem value="Grade 10">Grade 10 (10 ශ්‍රේණිය)</MenuItem>
+                              <MenuItem value="Grade 11">Grade 11 (11 ශ්‍රේණිය)</MenuItem>
+                              <MenuItem value="A/L 12">A/L 12 (උසස් පෙළ 12)</MenuItem>
+                              <MenuItem value="A/L 13">A/L 13 (උසස් පෙළ 13)</MenuItem>
+                              <MenuItem value="Other">Other (වෙනත්)</MenuItem>
+                            </Select>
+                          </FormControl>
+                        ) : (
+                          // Class-based Registration Grade Selection
+                          <FormControl fullWidth required sx={{ minWidth: 200 }}>
+                            <InputLabel>ඔබේ ශ්‍රේණිය තෝරන්න (Select Your Grade)</InputLabel>
+                            <Select
+                              value={formData.selectedGrade || ''}
+                              onChange={(e) => handleInputChange('selectedGrade', e.target.value)}
+                              label="ඔබේ ශ්‍රේණිය තෝරන්න (Select Your Grade)"
+                            >
+                              {availableGrades.map((grade) => (
+                                <MenuItem key={grade} value={grade}>{grade}</MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        )}
+                      </Grid>
+
+                      {/* General Student Confirmation */}
+                      {registrationType === 'general-student' && formData.selectedGrade && (
+                        <Grid item xs={12}>
+                          <Alert
+                            severity="success"
+                            icon={<CheckCircle />}
+                            sx={{
+                              bgcolor: 'rgba(76, 175, 80, 0.1)',
+                              border: '2px solid rgba(76, 175, 80, 0.5)',
+                              '& .MuiAlert-icon': {
+                                color: 'success.main'
+                              }
+                            }}
+                          >
+                            <Typography variant="body2" sx={{
+                              fontWeight: 'bold',
+                              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                              mb: 1
+                            }}>
+                              ✅ සාමාන්‍ය සිසුවෙකු ලෙස ලියාපදිංචිය සම්පූර්ණයි! (General Student Registration Complete!)
+                            </Typography>
+                            <Typography variant="body2" sx={{
+                              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                            }}>
+                              ඔබ {formData.selectedGrade} ශ්‍රේණියේ සාමාන්‍ය සිසුවෙකු ලෙස ලියාපදිංචි වී ඇත.
+                              ඔබට අනාගතයේදී අවශ්‍ය පන්ති සඳහා වෙනම ලියාපදිංචි විය හැකිය.
+                            </Typography>
+                            <Typography variant="caption" sx={{
+                              display: 'block',
+                              mt: 1,
+                              fontStyle: 'italic',
+                              color: 'text.secondary'
+                            }}>
+                              You are registered as a general student for {formData.selectedGrade}.
+                              You can register for specific classes separately in the future.
+                            </Typography>
+                          </Alert>
+                        </Grid>
+                      )}
+
+                      {/* Class Selection - Only for class-based registration */}
+                      {registrationType === 'with-classes' && formData.selectedGrade && (
+                        <Grid item xs={12}>
+                          <Box sx={{ mb: 3 }}>
+                            <Typography variant="h6" gutterBottom sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              color: 'primary.main',
+                              fontWeight: 'bold'
+                            }}>
+                              <Groups sx={{ mr: 1 }} />
+                              Available Classes for {formData.selectedGrade}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              ✨ මෙම ශ්‍රේණියේ පහත පන්ති වලින් ඔබට ඇතුලත් වීමට අවශ්‍ය පන්තිය තෝරන්න. ඔබට අනෙකුත් පන්ති ප්‍රවර්ග වලින් ද තොරාගැනීම් එක බැගින් සිදු කල හැක. මෙම තෝරාගන්නා පන්ති සදහා ඇඩ්මින්ගේ අනුමැතියෙන් පසුව ප්‍රවේශ විය හැකිය.
+                            </Typography>
+                          </Box>
 
                         {loadingClasses ? (
                           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 4 }}>
@@ -1873,9 +2124,10 @@ const StudentRegistration = () => {
                             </Paper>
                           </Box>
                         )}
-                      </Grid>
-                    )}
-                  </Grid>
+                        </Grid>
+                      )}
+                    </Grid>
+                  )}
                 </motion.div>
               )}
 
