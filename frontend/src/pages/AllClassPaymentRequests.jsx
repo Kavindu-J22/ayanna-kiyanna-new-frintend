@@ -120,21 +120,23 @@ const AllClassPaymentRequests = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        'https://ayanna-kiyanna-new-backend.onrender.com/api/classes',
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/classes?limit=100',
         { headers: { 'x-auth-token': token } }
       );
-      setClasses(response.data || []);
+      // The API returns classes in response.data.classes
+      setClasses(response.data.classes || []);
     } catch (error) {
       console.error('Error fetching classes:', error);
+      setClasses([]); // Set empty array on error
     }
   };
 
   const calculateStats = (requests) => {
     const stats = {
       total: requests.length,
-      pending: requests.filter(r => r.status === 'pending').length,
-      approved: requests.filter(r => r.status === 'approved').length,
-      rejected: requests.filter(r => r.status === 'rejected').length
+      pending: requests.filter(r => r.status.toLowerCase() === 'pending').length,
+      approved: requests.filter(r => r.status.toLowerCase() === 'approved').length,
+      rejected: requests.filter(r => r.status.toLowerCase() === 'rejected').length
     };
     setStats(stats);
   };
@@ -157,7 +159,7 @@ const AllClassPaymentRequests = () => {
 
     // Status filter
     if (statusFilter) {
-      filtered = filtered.filter(request => request.status === statusFilter);
+      filtered = filtered.filter(request => request.status.toLowerCase() === statusFilter);
     }
 
     // Class filter
@@ -187,22 +189,48 @@ const AllClassPaymentRequests = () => {
   const handleUpdateStatus = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(
+
+      if (!actionDialog.payment?._id) {
+        setError('ගෙවීම් ඉල්ලීම හඳුනාගත නොහැක');
+        return;
+      }
+
+      if (!actionDialog.action) {
+        setError('කරුණාකර ක්‍රියාමාර්ගයක් තෝරන්න');
+        return;
+      }
+
+      const response = await axios.put(
         `https://ayanna-kiyanna-new-backend.onrender.com/api/admin/payment-requests/${actionDialog.payment._id}/status`,
-        { 
+        {
           status: actionDialog.action,
           adminNote: actionNote || `Payment ${actionDialog.action} by admin`
         },
         { headers: { 'x-auth-token': token } }
       );
 
-      setSuccess(`ගෙවීම් ඉල්ලීම ${actionDialog.action === 'approved' ? 'අනුමත' : 'ප්‍රතික්ෂේප'} කරන ලදී`);
-      setActionDialog({ open: false, payment: null, action: '' });
-      setActionNote('');
-      fetchPaymentRequests();
+      if (response.data) {
+        setSuccess(`ගෙවීම් ඉල්ලීම ${actionDialog.action === 'approved' ? 'අනුමත' : 'ප්‍රතික්ෂේප'} කරන ලදී`);
+        setActionDialog({ open: false, payment: null, action: '' });
+        setActionNote('');
+        fetchPaymentRequests();
+      }
     } catch (error) {
       console.error('Error updating payment status:', error);
-      setError('ගෙවීම් තත්ත්වය යාවත්කාලීන කිරීමේදී දෝෂයක් ඇති විය');
+
+      let errorMessage = 'ගෙවීම් තත්ත්වය යාවත්කාලීන කිරීමේදී දෝෂයක් ඇති විය';
+
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.status === 404) {
+        errorMessage = 'ගෙවීම් ඉල්ලීම හමු නොවිණි';
+      } else if (error.response?.status === 401) {
+        errorMessage = 'ඔබට මෙම ක්‍රියාමාර්ගය සිදු කිරීමට අවසර නැත';
+      } else if (error.response?.status === 400) {
+        errorMessage = 'වලංගු නොවන දත්ත ලබා දී ඇත';
+      }
+
+      setError(errorMessage);
     }
   };
 
@@ -224,11 +252,45 @@ const AllClassPaymentRequests = () => {
   };
 
   const getStatusColor = (status) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'approved': return 'success';
       case 'rejected': return 'error';
       case 'pending': return 'warning';
       default: return 'default';
+    }
+  };
+
+  const getStatusChipSx = (status) => {
+    const baseStyle = {
+      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+      fontWeight: 'bold',
+      minWidth: '100px'
+    };
+
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return {
+          ...baseStyle,
+          backgroundColor: '#4caf50',
+          color: 'white',
+          '&:hover': { backgroundColor: '#388e3c' }
+        };
+      case 'rejected':
+        return {
+          ...baseStyle,
+          backgroundColor: '#f44336',
+          color: 'white',
+          '&:hover': { backgroundColor: '#d32f2f' }
+        };
+      case 'pending':
+        return {
+          ...baseStyle,
+          backgroundColor: '#ff9800',
+          color: 'white',
+          '&:hover': { backgroundColor: '#f57c00' }
+        };
+      default:
+        return baseStyle;
     }
   };
 
@@ -524,7 +586,7 @@ const AllClassPaymentRequests = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredRequests.map((request, index) => (
+                  filteredRequests.map((request) => (
                     <TableRow key={request._id} hover>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -573,11 +635,8 @@ const AllClassPaymentRequests = () => {
                       <TableCell>
                         <Chip
                           label={getStatusText(request.status)}
-                          color={getStatusColor(request.status)}
                           size="small"
-                          sx={{
-                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-                          }}
+                          sx={getStatusChipSx(request.status)}
                         />
                       </TableCell>
                       <TableCell>
@@ -598,7 +657,7 @@ const AllClassPaymentRequests = () => {
                               <Visibility />
                             </IconButton>
                           </Tooltip>
-                          {request.status === 'pending' && (
+                          {request.status.toLowerCase() === 'pending' && (
                             <>
                               <Tooltip title="අනුමත කරන්න">
                                 <IconButton

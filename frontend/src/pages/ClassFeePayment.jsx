@@ -130,7 +130,7 @@ const ClassFeePayment = () => {
         receiptFile: file
       }));
 
-      setSuccess('Receipt uploaded successfully!');
+      setSuccess('Receipt/Evidence uploaded successfully!');
     } catch (error) {
       console.error('Error uploading file:', error);
       setError('Error uploading receipt. Please try again.');
@@ -154,7 +154,7 @@ const ClassFeePayment = () => {
         receiptFile: null
       }));
 
-      setSuccess('Receipt removed successfully!');
+      setSuccess('Receipt/Evidence removed successfully!');
     } catch (error) {
       console.error('Error removing receipt:', error);
       setError('Error removing receipt. Please try again.');
@@ -165,7 +165,7 @@ const ClassFeePayment = () => {
     e.preventDefault();
     
     if (!formData.receiptUrl) {
-      setError('Please upload a receipt');
+      setError('Please upload a receipt/evidence');
       return;
     }
 
@@ -448,7 +448,7 @@ const ClassFeePayment = () => {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                       <Chip label="Receipt Uploaded" color="success" />
                       <Typography variant="body2" color="text.secondary">
-                        Receipt successfully uploaded
+                        Receipt/Evidence successfully uploaded
                       </Typography>
                     </Box>
 
@@ -464,7 +464,7 @@ const ClassFeePayment = () => {
                           borderRadius: 1
                         }}>
                           <GetApp color="primary" />
-                          <Typography variant="body2">PDF Receipt</Typography>
+                          <Typography variant="body2">PDF Receipt/Evidence</Typography>
                           <Button
                             size="small"
                             variant="outlined"
@@ -540,7 +540,7 @@ const ClassFeePayment = () => {
                     <label htmlFor="receipt-upload" style={{ cursor: 'pointer' }}>
                       <CloudUpload sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
                       <Typography variant="body1">
-                        {uploading ? 'Uploading...' : 'Click to upload receipt or Other (Image or PDF)'}
+                        {uploading ? 'Uploading...' : 'Click to upload receipt or Evidence (Image or PDF)'}
                       </Typography>
                     </label>
                   </Box>
