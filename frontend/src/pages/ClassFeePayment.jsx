@@ -435,7 +435,7 @@ const ClassFeePayment = () => {
                     <Typography variant="subtitle1" fontWeight="bold" sx={{
                       fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                     }}>
-                      ගෙවීමේ අපහසුතාව
+                      ගෙවීමේ අපහසුතාව හො වෙනත් හේතු
                     </Typography>
                   </Box>
                 </AccordionSummary>
@@ -444,7 +444,7 @@ const ClassFeePayment = () => {
                     <Description color="primary" sx={{ mt: 0.5 }} />
                     <Box>
                       <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold' }}>
-                        ගෙවීමට අපහසුතාවයක් ඇත්නම්:
+                        ගෙවීමට අපහසුතාවයක් හො වෙනත් හේතුවක් ඇත්නම්:
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
                         •  ඔබේ පැහැදිලි ඡායාරූපයක් හෝ හේතුවට අදාල ඡායාරූපයක් හෝ ලේඛනයක් අමුණන්න
