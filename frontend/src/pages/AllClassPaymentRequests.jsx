@@ -390,11 +390,13 @@ const AllClassPaymentRequests = () => {
                   label="පන්තිය"
                 >
                   <MenuItem value="">සියලුම පන්ති</MenuItem>
-                  {classes.map((cls) => (
+                  {classes && classes.length > 0 ? classes.map((cls) => (
                     <MenuItem key={cls._id} value={cls._id}>
                       {cls.grade} - {cls.category}
                     </MenuItem>
-                  ))}
+                  )) : (
+                    <MenuItem disabled>පන්ති පූරණය වෙමින්...</MenuItem>
+                  )}
                 </Select>
               </FormControl>
             </Grid>
@@ -563,9 +565,8 @@ const AllClassPaymentRequests = () => {
                       </TableCell>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <AttachMoney sx={{ fontSize: 16, color: 'success.main' }} />
                           <Typography variant="body2" fontWeight="medium" color="success.main">
-                            Rs. {request.amount || 'N/A'}
+                            Rs. {request.amount || 'N/A'} /=
                           </Typography>
                         </Box>
                       </TableCell>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -30,6 +30,7 @@ import {
   ArrowBack,
   Payment,
   Visibility,
+  Delete,
   School,
   CalendarToday,
   AttachMoney,
@@ -55,6 +56,8 @@ const MyPaymentRequests = () => {
 
   // Dialog states
   const [viewDialog, setViewDialog] = useState({ open: false, payment: null });
+  const [deleteDialog, setDeleteDialog] = useState({ open: false, payment: null });
+  const [success, setSuccess] = useState('');
 
   const monthNames = [
     'ජනවාරි', 'පෙබරවාරි', 'මාර්තු', 'අප්‍රේල්', 'මැයි', 'ජූනි',
@@ -80,9 +83,9 @@ const MyPaymentRequests = () => {
       // Calculate stats
       const stats = {
         total: requests.length,
-        pending: requests.filter(r => r.status === 'pending').length,
-        approved: requests.filter(r => r.status === 'approved').length,
-        rejected: requests.filter(r => r.status === 'rejected').length
+        pending: requests.filter(r => r.status.toLowerCase() === 'pending').length,
+        approved: requests.filter(r => r.status.toLowerCase() === 'approved').length,
+        rejected: requests.filter(r => r.status.toLowerCase() === 'rejected').length
       };
       setStats(stats);
     } catch (error) {
@@ -90,6 +93,23 @@ const MyPaymentRequests = () => {
       setError('ගෙවීම් ඉල්ලීම් ලබා ගැනීමේදී දෝෂයක් ඇති විය');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeletePayment = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/payments/${deleteDialog.payment._id}`,
+        { headers: { 'x-auth-token': token } }
+      );
+
+      setSuccess('ගෙවීම් ඉල්ලීම සාර්ථකව ඉවත් කරන ලදී');
+      setDeleteDialog({ open: false, payment: null });
+      fetchMyPaymentRequests();
+    } catch (error) {
+      console.error('Error deleting payment request:', error);
+      setError('ගෙවීම් ඉල්ලීම ඉවත් කිරීමේදී දෝෂයක් ඇති විය');
     }
   };
 
@@ -180,6 +200,12 @@ const MyPaymentRequests = () => {
           {error && (
             <Alert severity="error" sx={{ mb: 3 }}>
               {error}
+            </Alert>
+          )}
+
+          {success && (
+            <Alert severity="success" sx={{ mb: 3 }}>
+              {success}
             </Alert>
           )}
 
@@ -296,9 +322,8 @@ const MyPaymentRequests = () => {
                           </TableCell>
                           <TableCell>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <AttachMoney color="success" />
                               <Typography variant="body2" fontWeight="medium" color="success.main">
-                                Rs. {request.amount || 'N/A'}
+                                Rs. {request.amount || 'N/A'} /=
                               </Typography>
                             </Box>
                           </TableCell>
@@ -316,14 +341,27 @@ const MyPaymentRequests = () => {
                             </Typography>
                           </TableCell>
                           <TableCell>
-                            <Tooltip title="විස්තර බලන්න">
-                              <IconButton
-                                size="small"
-                                onClick={() => setViewDialog({ open: true, payment: request })}
-                              >
-                                <Visibility />
-                              </IconButton>
-                            </Tooltip>
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                              <Tooltip title="විස්තර බලන්න">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => setViewDialog({ open: true, payment: request })}
+                                >
+                                  <Visibility />
+                                </IconButton>
+                              </Tooltip>
+                              {(request.status === 'pending' || request.status === 'rejected') && (
+                                <Tooltip title="ඉවත් කරන්න">
+                                  <IconButton
+                                    size="small"
+                                    color="error"
+                                    onClick={() => setDeleteDialog({ open: true, payment: request })}
+                                  >
+                                    <Delete />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
+                            </Box>
                           </TableCell>
                         </TableRow>
                       ))
@@ -424,16 +462,16 @@ const MyPaymentRequests = () => {
                     </>
                   )}
 
-                  {viewDialog.payment.adminAction?.note && (
+                  {viewDialog.payment.adminAction?.actionNote && (
                     <>
-                      <Typography variant="subtitle2" color="text.secondary">පරිපාලක සටහන:</Typography>
+                      <Typography variant="subtitle2" color="text.secondary">පරිපාලක සටහන (හේතුව) :</Typography>
                       <Typography variant="body2" sx={{
                         p: 2,
                         bgcolor: viewDialog.payment.status === 'approved' ? 'success.50' : 'error.50',
                         borderRadius: 1,
                         fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                       }}>
-                        {viewDialog.payment.adminAction.note}
+                        {viewDialog.payment.adminAction.actionNote}
                       </Typography>
                     </>
                   )}
@@ -444,6 +482,55 @@ const MyPaymentRequests = () => {
           <DialogActions>
             <Button onClick={() => setViewDialog({ open: false, payment: null })}>
               වසන්න
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog
+          open={deleteDialog.open}
+          onClose={() => setDeleteDialog({ open: false, payment: null })}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle sx={{
+            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+            color: 'error.main'
+          }}>
+            ගෙවීම් ඉල්ලීම ඉවත් කරන්න
+          </DialogTitle>
+          <DialogContent>
+            <Typography variant="body1" sx={{ mb: 2, fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+              ඔබට මෙම ගෙවීම් ඉල්ලීම ස්ථිරවම ඉවත් කිරීමට අවශ්‍යද? මෙම ක්‍රියාමාර්ගය ආපසු හැරවිය නොහැක.
+            </Typography>
+
+            {deleteDialog.payment && (
+              <Box sx={{ p: 2, bgcolor: 'error.50', borderRadius: 1, border: '1px solid', borderColor: 'error.200' }}>
+                <Typography variant="body2">
+                  <strong>පන්තිය:</strong> {deleteDialog.payment.class?.grade} - {deleteDialog.payment.class?.category}
+                </Typography>
+                <Typography variant="body2">
+                  <strong>මාසය:</strong> {monthNames[deleteDialog.payment.month - 1]} {deleteDialog.payment.year}
+                </Typography>
+                <Typography variant="body2">
+                  <strong>තත්ත්වය:</strong> {getStatusText(deleteDialog.payment.status)}
+                </Typography>
+              </Box>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDeleteDialog({ open: false, payment: null })}>
+              අවලංගු කරන්න
+            </Button>
+            <Button
+              onClick={handleDeletePayment}
+              variant="contained"
+              color="error"
+              sx={{
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+              }}
+            >
+              ඉවත් කරන්න
             </Button>
           </DialogActions>
         </Dialog>
