@@ -958,7 +958,7 @@ const SpecificClass = () => {
                           <Typography variant="h6" fontWeight="bold" sx={{
                             fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                           }}>
-                            ගෘහ කාර්ය කළමනාකරණය
+                            පැවරුම් සහ ඇගයීම් කළමනාකරණය
                           </Typography>
                           <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
                             සතිපතා කාර්ය
@@ -1123,7 +1123,7 @@ const SpecificClass = () => {
                           <Typography variant="h6" fontWeight="bold" sx={{
                             fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                           }}>
-                            සතිපතා ගෘහ කාර්ය
+                            පැවරුම් සහ ඇගයීම්
                           </Typography>
                           <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
                             කාර්ය ලැයිස්තුව
