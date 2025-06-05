@@ -328,7 +328,7 @@ const AdminAnnouncementManagement = () => {
             <Typography variant="h4" fontWeight="bold" sx={{
               fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
             }}>
-              පන්ති දැනුම්දීම් කළමනාකරණය
+              විශේෂ නිවේදන සහ දැනුවත් කිරීම් කළමනාකරණය
             </Typography>
           </Box>
           

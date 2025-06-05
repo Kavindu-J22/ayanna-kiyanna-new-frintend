@@ -161,7 +161,7 @@ const StudentAnnouncementView = () => {
             <Typography variant="h4" fontWeight="bold" sx={{
               fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
             }}>
-              පන්ති දැනුම්දීම්
+              විශේෂ නිවේදන සහ දැනුවත් කිරීම්
             </Typography>
           </Box>
           

@@ -1063,7 +1063,7 @@ const SpecificClass = () => {
                           <Typography variant="h6" fontWeight="bold" sx={{
                             fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                           }}>
-                            පන්ති දැනුම්දීම් කළමනාකරණය
+                            විශේෂ නිවේදන සහ දැනුවත් කිරීම් කළමනාකරණය
                           </Typography>
                           <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
                             දැනුම්දීම් යවන්න
@@ -1284,7 +1284,7 @@ const SpecificClass = () => {
                           <Typography variant="h6" fontWeight="bold" sx={{
                             fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                           }}>
-                            පන්ති දැනුම්දීම්
+                            විශේෂ නිවේදන සහ දැනුවත් කිරීම්
                           </Typography>
                           <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
                             නවතම දැනුම්දීම්

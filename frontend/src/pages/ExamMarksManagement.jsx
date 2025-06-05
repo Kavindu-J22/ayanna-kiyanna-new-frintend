@@ -222,9 +222,11 @@ const ExamMarksManagement = () => {
                     size="small"
                   />
                 )}
-                {exam.examTime && (
+                {(exam.examStartTime || exam.examEndTime) && (
                   <Chip
-                    label={`වේලාව: ${exam.examTime}`}
+                    label={`වේලාව: ${exam.examStartTime && exam.examEndTime
+                      ? `${exam.examStartTime} - ${exam.examEndTime}`
+                      : exam.examStartTime || exam.examEndTime}`}
                     variant="outlined"
                     size="small"
                     color="secondary"

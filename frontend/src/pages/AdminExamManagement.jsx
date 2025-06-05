@@ -25,6 +25,7 @@ import {
   useMediaQuery
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import {
@@ -67,7 +68,8 @@ const AdminExamManagement = () => {
     description: '',
     examLink: '',
     examDate: null,
-    examTime: '',
+    examStartTime: null,
+    examEndTime: null,
     guidelines: [],
     isPublished: false
   });
@@ -117,7 +119,9 @@ const AdminExamManagement = () => {
       const examData = {
         ...formData,
         classId,
-        examDate: formData.examDate ? formData.examDate.toISOString() : null
+        examDate: formData.examDate ? formData.examDate.toISOString() : null,
+        examStartTime: formData.examStartTime ? formData.examStartTime.toTimeString().slice(0, 5) : null,
+        examEndTime: formData.examEndTime ? formData.examEndTime.toTimeString().slice(0, 5) : null
       };
 
       await axios.post(
@@ -145,7 +149,9 @@ const AdminExamManagement = () => {
       
       const examData = {
         ...formData,
-        examDate: formData.examDate ? formData.examDate.toISOString() : null
+        examDate: formData.examDate ? formData.examDate.toISOString() : null,
+        examStartTime: formData.examStartTime ? formData.examStartTime.toTimeString().slice(0, 5) : null,
+        examEndTime: formData.examEndTime ? formData.examEndTime.toTimeString().slice(0, 5) : null
       };
 
       await axios.put(
@@ -194,7 +200,8 @@ const AdminExamManagement = () => {
       description: '',
       examLink: '',
       examDate: null,
-      examTime: '',
+      examStartTime: null,
+      examEndTime: null,
       guidelines: [],
       isPublished: false
     });
@@ -203,12 +210,23 @@ const AdminExamManagement = () => {
 
   const openEditDialog = (exam) => {
     setSelectedExam(exam);
+
+    // Convert time strings to Date objects for TimePicker
+    const createTimeFromString = (timeString) => {
+      if (!timeString) return null;
+      const [hours, minutes] = timeString.split(':');
+      const date = new Date();
+      date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      return date;
+    };
+
     setFormData({
       title: exam.title,
       description: exam.description,
       examLink: exam.examLink || '',
       examDate: exam.examDate ? new Date(exam.examDate) : null,
-      examTime: exam.examTime || '',
+      examStartTime: createTimeFromString(exam.examStartTime),
+      examEndTime: createTimeFromString(exam.examEndTime),
       guidelines: exam.guidelines || [],
       isPublished: exam.isPublished
     });
@@ -392,9 +410,27 @@ const AdminExamManagement = () => {
                       </Typography>
                     )}
 
-                    {exam.examTime && (
+                    {(exam.examStartTime || exam.examEndTime) && (
                       <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                        වේලාව: {exam.examTime}
+                        වේලාව: {exam.examStartTime && exam.examEndTime
+                          ? `${exam.examStartTime} - ${exam.examEndTime}`
+                          : exam.examStartTime || exam.examEndTime}
+                      </Typography>
+                    )}
+
+                    {/* Overdue Status */}
+                    {exam.isOverdue && (
+                      <Typography variant="caption" color="error" sx={{
+                        display: 'block',
+                        fontWeight: 'bold',
+                        bgcolor: 'error.light',
+                        color: 'error.contrastText',
+                        px: 1,
+                        py: 0.5,
+                        borderRadius: 1,
+                        mt: 1
+                      }}>
+                        කාලය ඉකුත්
                       </Typography>
                     )}
                   </CardContent>
@@ -531,18 +567,35 @@ const AdminExamManagement = () => {
                   )}
                 />
 
-                <TextField
-                  fullWidth
-                  label="විභාග වේලාව (විකල්ප)"
-                  type="time"
-                  value={formData.examTime}
-                  onChange={(e) => setFormData(prev => ({ ...prev, examTime: e.target.value }))}
-                  sx={{ mb: 3 }}
-                  slotProps={{
-                    inputLabel: { shrink: true }
-                  }}
-                  helperText="විභාගය පැවැත්වීමට නියමිත වේලාව"
-                />
+                {/* Time Fields - Start and End with proper spacing */}
+                <Box sx={{ display: 'flex', gap: 2, mb: 3, mt: 2 }}>
+                  <TimePicker
+                    label="ආරම්භ වේලාව (විකල්ප)"
+                    value={formData.examStartTime}
+                    onChange={(newValue) => setFormData(prev => ({ ...prev, examStartTime: newValue }))}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        helperText="විභාගය ආරම්භ වන වේලාව"
+                        sx={{ mt: 1 }}
+                      />
+                    )}
+                  />
+                  <TimePicker
+                    label="අවසාන වේලාව (විකල්ප)"
+                    value={formData.examEndTime}
+                    onChange={(newValue) => setFormData(prev => ({ ...prev, examEndTime: newValue }))}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        helperText="විභාගය අවසාන වන වේලාව"
+                        sx={{ mt: 1 }}
+                      />
+                    )}
+                  />
+                </Box>
 
                 {/* Guidelines Section */}
                 <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>

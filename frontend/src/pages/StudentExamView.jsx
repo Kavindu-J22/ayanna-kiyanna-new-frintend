@@ -213,7 +213,7 @@ const StudentExamView = () => {
                         {exam.description}
                       </Typography>
 
-                      {(exam.examDate || exam.examTime) && (
+                      {(exam.examDate || exam.examStartTime || exam.examEndTime) && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
                           {exam.examDate && (
                             <>
@@ -223,15 +223,26 @@ const StudentExamView = () => {
                               </Typography>
                             </>
                           )}
-                          {exam.examTime && (
+                          {(exam.examStartTime || exam.examEndTime) && (
                             <>
                               <AccessTime fontSize="small" color="secondary" />
                               <Typography variant="body2" color="secondary">
-                                වේලාව: {exam.examTime}
+                                වේලාව: {exam.examStartTime && exam.examEndTime
+                                  ? `${exam.examStartTime} - ${exam.examEndTime}`
+                                  : exam.examStartTime || exam.examEndTime}
                               </Typography>
                             </>
                           )}
                         </Box>
+                      )}
+
+                      {/* Overdue Status */}
+                      {exam.isOverdue && (
+                        <Alert severity="error" sx={{ mb: 2 }}>
+                          <Typography sx={{ fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}>
+                            මෙම විභාගය කාලය ඉකුත් වී ඇත
+                          </Typography>
+                        </Alert>
                       )}
 
                       {exam.guidelines && exam.guidelines.length > 0 && (
@@ -292,8 +303,8 @@ const StudentExamView = () => {
                       )}
                     </CardContent>
 
-                    {/* Action Button */}
-                    {exam.examLink && (
+                    {/* Action Button - Only show if not overdue and no marks assigned */}
+                    {exam.examLink && !exam.isOverdue && !exam.hasMarks && (
                       <Box sx={{ p: 2, pt: 0 }}>
                         <Button
                           fullWidth
@@ -308,6 +319,56 @@ const StudentExamView = () => {
                         >
                           දැන් ආරම්භ කරන්න
                         </Button>
+                      </Box>
+                    )}
+
+                    {/* Show message for overdue exams */}
+                    {exam.examLink && exam.isOverdue && (
+                      <Box sx={{ p: 2, pt: 0 }}>
+                        <Alert severity="warning" sx={{
+                          background: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+                          border: '2px solid #ff6b6b',
+                          borderRadius: 3
+                        }}>
+                          <Typography sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                            fontWeight: 'bold',
+                            fontSize: '1.1rem'
+                          }}>
+                            🕐 විභාගය කාලය ඉකුත්
+                          </Typography>
+                          <Typography sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                            mt: 1
+                          }}>
+                            මෙම විභාගය සඳහා නියමිත කාලය ඉකුත් වී ඇත
+                          </Typography>
+                        </Alert>
+                      </Box>
+                    )}
+
+                    {/* Show message for exams with assigned marks */}
+                    {exam.examLink && exam.hasMarks && !exam.isOverdue && (
+                      <Box sx={{ p: 2, pt: 0 }}>
+                        <Alert severity="info" sx={{
+                          background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                          border: '2px solid #4ecdc4',
+                          borderRadius: 3
+                        }}>
+                          <Typography sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                            fontWeight: 'bold',
+                            fontSize: '1.1rem'
+                          }}>
+                            ✅ විභාගය සම්පූර්ණයි
+                          </Typography>
+                          <Typography sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                            mt: 1
+                          }}>
+                            මෙම විභාගය සඳහා ලකුණු ප්‍රදානය කර ඇත
+                          </Typography>
+                        </Alert>
                       </Box>
                     )}
                   </Card>
