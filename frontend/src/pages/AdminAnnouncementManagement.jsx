@@ -86,7 +86,7 @@ const AdminAnnouncementManagement = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `http://localhost:5000/api/classes/${classId}`,
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/classes/${classId}`,
         { headers: { 'x-auth-token': token } }
       );
       setClassData(response.data);
@@ -101,7 +101,7 @@ const AdminAnnouncementManagement = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `http://localhost:5000/api/announcements/class/${classId}`,
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/announcements/class/${classId}`,
         { headers: { 'x-auth-token': token } }
       );
       setAnnouncements(response.data.announcements);
@@ -186,7 +186,7 @@ const AdminAnnouncementManagement = () => {
       console.log('Creating announcement with data:', announcementData);
 
       await axios.post(
-        'http://localhost:5000/api/announcements',
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/announcements',
         announcementData,
         { headers: { 'x-auth-token': token } }
       );
@@ -227,7 +227,7 @@ const AdminAnnouncementManagement = () => {
       console.log('Updating announcement with data:', announcementData);
 
       await axios.put(
-        `http://localhost:5000/api/announcements/${selectedAnnouncement._id}`,
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/announcements/${selectedAnnouncement._id}`,
         announcementData,
         { headers: { 'x-auth-token': token } }
       );
@@ -251,7 +251,7 @@ const AdminAnnouncementManagement = () => {
       const token = localStorage.getItem('token');
 
       await axios.delete(
-        `http://localhost:5000/api/announcements/${selectedAnnouncement._id}`,
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/announcements/${selectedAnnouncement._id}`,
         { headers: { 'x-auth-token': token } }
       );
 

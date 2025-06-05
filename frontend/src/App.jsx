@@ -117,6 +117,8 @@ import AdminAnnouncementManagement from './pages/AdminAnnouncementManagement';
 import StudentAnnouncementView from './pages/StudentAnnouncementView';
 import AnnouncementDetails from './pages/AnnouncementDetails';
 import ResourceDetails from './pages/ResourceDetails';
+import AdminTimeScheduleManagement from './pages/AdminTimeScheduleManagement';
+import StudentTimeScheduleView from './pages/StudentTimeScheduleView';
 
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
@@ -914,6 +916,10 @@ function AppContent() {
               <Route path="/student-announcements/:classId" element={<StudentAnnouncementView />} />
               <Route path="/announcement-details/:announcementId" element={<AnnouncementDetails />} />
               <Route path="/resource-details/:resourceId" element={<ResourceDetails />} />
+
+              {/* Time Schedule Routes */}
+              <Route path="/admin-time-schedule/:classId" element={<AdminTimeScheduleManagement />} />
+              <Route path="/student-time-schedule/:classId" element={<StudentTimeScheduleView />} />
 
               <Route path="/aksharamalawa" element={<AksharaMalawa />} />
             </Routes>
