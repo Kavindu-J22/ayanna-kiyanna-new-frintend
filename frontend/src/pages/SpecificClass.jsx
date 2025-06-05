@@ -59,7 +59,9 @@ import {
   CalendarToday,
   Group,
   CheckCircle,
-  FolderOpen
+  FolderOpen,
+  VideoCall,
+  Computer
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -1074,6 +1076,32 @@ const SpecificClass = () => {
                       </Card>
                     </motion.div>
                   </Grid>
+
+                  <Grid item xs={12} sm={6} md={4}>
+                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                      <Card sx={{
+                        height: '100%',
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        color: 'white',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                        onClick={() => navigate(`/admin-online-sessions/${classId}`)}
+                      >
+                        <CardContent sx={{ textAlign: 'center', py: 3 }}>
+                          <VideoCall sx={{ fontSize: 40, mb: 2 }} />
+                          <Typography variant="h6" fontWeight="bold" sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                          }}>
+                            Online Sessions කළමනාකරණය
+                          </Typography>
+                          <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
+                            මාර්ගගත සැසි සාදන්න
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </Grid>
                 </>
               ) : (
                 // Student Options
@@ -1292,6 +1320,32 @@ const SpecificClass = () => {
                           </Typography>
                           <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
                             නවතම දැනුම්දීම්
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6} md={4}>
+                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                      <Card sx={{
+                        height: '100%',
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        color: 'white',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                        onClick={() => navigate(`/student-online-sessions/${classId}`)}
+                      >
+                        <CardContent sx={{ textAlign: 'center', py: 3 }}>
+                          <Computer sx={{ fontSize: 40, mb: 2 }} />
+                          <Typography variant="h6" fontWeight="bold" sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                          }}>
+                            Online Sessions බලන්න
+                          </Typography>
+                          <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
+                            මාර්ගගත සැසි බලන්න
                           </Typography>
                         </CardContent>
                       </Card>

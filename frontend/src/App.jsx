@@ -119,6 +119,8 @@ import AnnouncementDetails from './pages/AnnouncementDetails';
 import ResourceDetails from './pages/ResourceDetails';
 import AdminTimeScheduleManagement from './pages/AdminTimeScheduleManagement';
 import StudentTimeScheduleView from './pages/StudentTimeScheduleView';
+import AdminOnlineSessions from './pages/AdminOnlineSessions';
+import StudentOnlineSessions from './pages/StudentOnlineSessions';
 
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
@@ -920,6 +922,10 @@ function AppContent() {
               {/* Time Schedule Routes */}
               <Route path="/admin-time-schedule/:classId" element={<AdminTimeScheduleManagement />} />
               <Route path="/student-time-schedule/:classId" element={<StudentTimeScheduleView />} />
+
+              {/* Online Sessions Routes */}
+              <Route path="/admin-online-sessions/:classId" element={<AdminOnlineSessions />} />
+              <Route path="/student-online-sessions/:classId" element={<StudentOnlineSessions />} />
 
               <Route path="/aksharamalawa" element={<AksharaMalawa />} />
             </Routes>
