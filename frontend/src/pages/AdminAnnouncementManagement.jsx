@@ -86,7 +86,7 @@ const AdminAnnouncementManagement = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `https://ayanna-kiyanna-new-backend.onrender.com/api/classes/${classId}`,
+        `http://localhost:5000/api/classes/${classId}`,
         { headers: { 'x-auth-token': token } }
       );
       setClassData(response.data);
@@ -101,7 +101,7 @@ const AdminAnnouncementManagement = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `https://ayanna-kiyanna-new-backend.onrender.com/api/announcements/class/${classId}`,
+        `http://localhost:5000/api/announcements/class/${classId}`,
         { headers: { 'x-auth-token': token } }
       );
       setAnnouncements(response.data.announcements);
@@ -166,15 +166,27 @@ const AdminAnnouncementManagement = () => {
     try {
       setFormLoading(true);
       const token = localStorage.getItem('token');
-      
+
+      // Validate required fields
+      if (!formData.title || !formData.description) {
+        alert('Title and description are required');
+        setFormLoading(false);
+        return;
+      }
+
       const announcementData = {
-        ...formData,
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        priority: formData.priority || 'Medium',
+        attachments: formData.attachments || [],
         classId,
         expiryDate: formData.expiryDate ? formData.expiryDate.toISOString() : null
       };
 
+      console.log('Creating announcement with data:', announcementData);
+
       await axios.post(
-        'https://ayanna-kiyanna-new-backend.onrender.com/api/announcements',
+        'http://localhost:5000/api/announcements',
         announcementData,
         { headers: { 'x-auth-token': token } }
       );
@@ -185,6 +197,7 @@ const AdminAnnouncementManagement = () => {
       alert('Announcement created successfully!');
     } catch (err) {
       console.error('Error creating announcement:', err);
+      console.error('Error response:', err.response?.data);
       alert(err.response?.data?.message || 'Failed to create announcement');
     } finally {
       setFormLoading(false);
@@ -195,14 +208,26 @@ const AdminAnnouncementManagement = () => {
     try {
       setFormLoading(true);
       const token = localStorage.getItem('token');
-      
+
+      // Validate required fields
+      if (!formData.title || !formData.description) {
+        alert('Title and description are required');
+        setFormLoading(false);
+        return;
+      }
+
       const announcementData = {
-        ...formData,
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        priority: formData.priority || 'Medium',
+        attachments: formData.attachments || [],
         expiryDate: formData.expiryDate ? formData.expiryDate.toISOString() : null
       };
 
+      console.log('Updating announcement with data:', announcementData);
+
       await axios.put(
-        `https://ayanna-kiyanna-new-backend.onrender.com/api/announcements/${selectedAnnouncement._id}`,
+        `http://localhost:5000/api/announcements/${selectedAnnouncement._id}`,
         announcementData,
         { headers: { 'x-auth-token': token } }
       );
@@ -213,6 +238,7 @@ const AdminAnnouncementManagement = () => {
       alert('Announcement updated successfully!');
     } catch (err) {
       console.error('Error updating announcement:', err);
+      console.error('Error response:', err.response?.data);
       alert(err.response?.data?.message || 'Failed to update announcement');
     } finally {
       setFormLoading(false);
@@ -223,9 +249,9 @@ const AdminAnnouncementManagement = () => {
     try {
       setFormLoading(true);
       const token = localStorage.getItem('token');
-      
+
       await axios.delete(
-        `https://ayanna-kiyanna-new-backend.onrender.com/api/announcements/${selectedAnnouncement._id}`,
+        `http://localhost:5000/api/announcements/${selectedAnnouncement._id}`,
         { headers: { 'x-auth-token': token } }
       );
 
