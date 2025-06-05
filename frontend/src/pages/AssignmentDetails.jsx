@@ -128,7 +128,7 @@ const AssignmentDetails = () => {
           
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
             <Chip 
-              label={assignment.classId.title}
+              label={assignment.classId.grade}
               color="primary"
               variant="outlined"
             />

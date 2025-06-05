@@ -307,7 +307,7 @@ const EditAssignment = () => {
             
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
               <Chip 
-                label={`${assignment.classId.title} - ${assignment.classId.grade} ශ්‍රේණිය`}
+                label={`පැවරුම - ${assignment.classId.grade} ශ්‍රේණිය`}
                 color="primary"
                 variant="outlined"
               />

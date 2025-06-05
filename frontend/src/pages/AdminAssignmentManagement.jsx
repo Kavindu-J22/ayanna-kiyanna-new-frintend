@@ -173,7 +173,7 @@ const AdminAssignmentManagement = () => {
                 variant="outlined"
               />
               <Chip 
-                label={`${classData.enrolledStudents?.length || 0} සිසුන්`}
+                label={`පන්තියේ සිසුන් ${classData.enrolledStudents?.length || 0} යි`}
                 color="secondary"
                 variant="outlined"
               />
@@ -319,7 +319,7 @@ const AdminAssignmentManagement = () => {
               මෙම පන්තිය සඳහා පැවරුම් නොමැත
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              නව පැවරුමක් සෑදීමට + බොත්තම ක්ලික් කරන්න
+              නව පැවරුමක් සෑදීමට යට දකුණු පස කොනේ ඇති  + බොත්තම ක්ලික් කරන්න
             </Typography>
           </Paper>
         )}
@@ -330,9 +330,9 @@ const AdminAssignmentManagement = () => {
             color="primary"
             sx={{
               position: 'fixed',
-              bottom: 24,
+              bottom: 36,
               right: 24,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+              background: 'linear-gradient(135deg,rgb(110, 218, 182) 0%,rgb(132, 51, 179) 100%)'
             }}
             onClick={() => navigate(`/create-assignment/${classId}`)}
           >
