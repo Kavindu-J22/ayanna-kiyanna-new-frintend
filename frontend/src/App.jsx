@@ -99,7 +99,15 @@ import ClassFeePayment from './pages/ClassFeePayment';
 import AdminClassPayments from './pages/AdminClassPayments';
 import AllClassPaymentRequests from './pages/AllClassPaymentRequests';
 import MyPaymentRequests from './pages/MyPaymentRequests';
-import AksharaMalawa from './components/Aksharamalawa/NewSinhalaHodiya'
+import AksharaMalawa from './components/Aksharamalawa/NewSinhalaHodiya';
+import AdminAssignmentManagement from './pages/AdminAssignmentManagement';
+import CreateAssignment from './pages/CreateAssignment';
+import EditAssignment from './pages/EditAssignment';
+import StudentAssignments from './pages/StudentAssignments';
+import AssignmentSubmission from './pages/AssignmentSubmission';
+import AssignmentSubmissions from './pages/AssignmentSubmissions';
+import AssignmentDetails from './pages/AssignmentDetails';
+import ViewSubmission from './pages/ViewSubmission';
 
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
@@ -861,6 +869,7 @@ function AppContent() {
               <Route path="/class-requests" element={<ClassRequestManagement />} />
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/class/:classId" element={<SpecificClass />} />
+              <Route path="/specific-class/:classId" element={<SpecificClass />} />
               <Route path="/attendance-management/:classId" element={<AttendanceManagement />} />
               <Route path="/attendance-view/:classId" element={<AttendanceView />} />
               <Route path="/attendance-edit/:id" element={<AttendanceEdit />} />
@@ -870,6 +879,17 @@ function AppContent() {
               <Route path="/admin-class-payments/:classId" element={<AdminClassPayments />} />
               <Route path="/all-class-payment-requests" element={<AllClassPaymentRequests />} />
               <Route path="/my-payment-requests" element={<MyPaymentRequests />} />
+
+              {/* Assignment Routes */}
+              <Route path="/admin-assignments/:classId" element={<AdminAssignmentManagement />} />
+              <Route path="/create-assignment/:classId" element={<CreateAssignment />} />
+              <Route path="/edit-assignment/:assignmentId" element={<EditAssignment />} />
+              <Route path="/student-assignments/:classId" element={<StudentAssignments />} />
+              <Route path="/submit-assignment/:assignmentId" element={<AssignmentSubmission />} />
+              <Route path="/edit-submission/:assignmentId" element={<AssignmentSubmission />} />
+              <Route path="/assignment-submissions/:assignmentId" element={<AssignmentSubmissions />} />
+              <Route path="/assignment-details/:assignmentId" element={<AssignmentDetails />} />
+              <Route path="/view-submission/:submissionId" element={<ViewSubmission />} />
 
               <Route path="/aksharamalawa" element={<AksharaMalawa />} />
             </Routes>

@@ -952,7 +952,9 @@ const SpecificClass = () => {
                         color: '#333',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'
-                      }}>
+                      }}
+                        onClick={() => navigate(`/admin-assignments/${classId}`)}
+                      >
                         <CardContent sx={{ textAlign: 'center', py: 3 }}>
                           <Assignment sx={{ fontSize: 40, mb: 2 }} />
                           <Typography variant="h6" fontWeight="bold" sx={{
@@ -1117,7 +1119,9 @@ const SpecificClass = () => {
                         color: '#333',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'
-                      }}>
+                      }}
+                        onClick={() => navigate(`/student-assignments/${classId}`)}
+                      >
                         <CardContent sx={{ textAlign: 'center', py: 3 }}>
                           <Assignment sx={{ fontSize: 40, mb: 2 }} />
                           <Typography variant="h6" fontWeight="bold" sx={{
