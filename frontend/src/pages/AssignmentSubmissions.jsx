@@ -25,7 +25,8 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Badge
+  Badge,
+  InputAdornment
 } from '@mui/material';
 import {
   ArrowBack,
@@ -35,7 +36,8 @@ import {
   PendingActions,
   Person,
   Assignment,
-  AttachFile
+  AttachFile,
+  Search
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -52,7 +54,10 @@ const AssignmentSubmissions = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [tabValue, setTabValue] = useState(0);
-  
+
+  // Search functionality
+  const [searchQuery, setSearchQuery] = useState('');
+
   // Grading dialog state
   const [gradeDialog, setGradeDialog] = useState(false);
   const [selectedSubmission, setSelectedSubmission] = useState(null);
@@ -140,6 +145,21 @@ const AssignmentSubmissions = () => {
     if (marks >= 50) return 'warning';
     return 'error';
   };
+
+  // Filter functions for search
+  const filteredSubmissions = submissions.filter(submission => {
+    const fullName = `${submission.studentId.firstName} ${submission.studentId.lastName}`.toLowerCase();
+    const studentId = submission.studentId.studentId.toLowerCase();
+    const query = searchQuery.toLowerCase();
+    return fullName.includes(query) || studentId.includes(query);
+  });
+
+  const filteredNotSubmittedStudents = notSubmittedStudents.filter(student => {
+    const fullName = `${student.firstName} ${student.lastName}`.toLowerCase();
+    const studentId = student.studentId.toLowerCase();
+    const query = searchQuery.toLowerCase();
+    return fullName.includes(query) || studentId.includes(query);
+  });
 
   if (loading) {
     return (
@@ -251,57 +271,125 @@ const AssignmentSubmissions = () => {
           </Grid>
         </Grid>
 
+        {/* Search Section */}
+        <Paper elevation={2} sx={{ p: 3, mb: 3, borderRadius: 3 }}>
+          <TextField
+            fullWidth
+            placeholder="සිසුවාගේ නම හෝ Student ID අනුව සොයන්න..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ maxWidth: 500 }}
+          />
+        </Paper>
+
+        {/* Smart Notes Section */}
+        <Paper elevation={2} sx={{ p: 3, mb: 4, bgcolor: 'warning.light', borderRadius: 3 }}>
+          <Typography variant="h6" fontWeight="bold" sx={{
+            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+            mb: 2,
+            color: 'warning.dark'
+          }}>
+            📊 ප්‍රතිචාර කළමනාකරණය පිළිබඳ වැදගත් සටහන්
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                <Typography variant="body2">
+                  <strong>ලකුණු ලබා දීම:</strong> සෑම ප්‍රතිචාරයකටම 0-100 අතර ලකුණු ලබා දෙන්න
+                </Typography>
+              </Alert>
+              <Alert severity="success" sx={{ mb: 2 }}>
+                <Typography variant="body2">
+                  <strong>ප්‍රතිචාර:</strong> සිසුන්ට ප්‍රතිචාර ලබා දීම සඳහා feedback භාවිතා කරන්න
+                </Typography>
+              </Alert>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Alert severity="warning" sx={{ mb: 2 }}>
+                <Typography variant="body2">
+                  <strong>සෙවීම:</strong> සිසුවාගේ නම හෝ Student ID භාවිතයෙන් සොයන්න
+                </Typography>
+              </Alert>
+              <Alert severity="error" sx={{ mb: 2 }}>
+                <Typography variant="body2">
+                  <strong>ඉදිරිපත් නොකළ:</strong> ඉදිරිපත් නොකල සිසුන් වෙනම පරීක්ෂා කල හැක
+                </Typography>
+              </Alert>
+            </Grid>
+          </Grid>
+        </Paper>
+
         {/* Tabs */}
         <Paper elevation={3} sx={{ borderRadius: 3 }}>
-          <Tabs 
-            value={tabValue} 
+          <Tabs
+            value={tabValue}
             onChange={(e, newValue) => setTabValue(newValue)}
             sx={{ borderBottom: 1, borderColor: 'divider' }}
           >
-            <Tab 
+            <Tab
               label={
-                <Badge badgeContent={submissions.length} color="primary">
+                <Badge badgeContent={filteredSubmissions.length} color="primary">
                   ඉදිරිපත් කළ ප්‍රතිචාර
                 </Badge>
-              } 
+              }
             />
-            <Tab 
+            <Tab
               label={
-                <Badge badgeContent={notSubmittedStudents.length} color="error">
+                <Badge badgeContent={filteredNotSubmittedStudents.length} color="error">
                   ඉදිරිපත් නොකළ සිසුන්
                 </Badge>
-              } 
+              }
             />
           </Tabs>
 
           {/* Submitted Submissions Tab */}
           {tabValue === 0 && (
             <Box sx={{ p: 3 }}>
-              {submissions.length > 0 ? (
+              {filteredSubmissions.length > 0 ? (
                 <Grid container spacing={3}>
-                  {submissions.map((submission) => (
-                    <Grid item xs={12} md={6} lg={4} key={submission._id}>
+                  {filteredSubmissions.map((submission) => (
+                    <Grid item xs={12} md={6} key={submission._id}>
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3 }}
                       >
                         <Card sx={{
-                          height: '100%',
+                          height: 350, // Fixed height for uniform boxes
+                          minWidth: 240, // Fixed minimum width
+                          maxWidth: 240, // Fixed maximum width
+                          width: '100%', // Full width within constraints
+                          display: 'flex',
+                          flexDirection: 'column',
+                          border: '1px solid',
+                          borderColor: 'primary.light',
                           '&:hover': {
                             transform: 'translateY(-4px)',
-                            boxShadow: 6
+                            boxShadow: 6,
+                            borderColor: 'primary.main'
                           },
                           transition: 'all 0.3s ease'
                         }}>
-                          <CardContent>
+                          <CardContent sx={{
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            p: 3
+                          }}>
                             {/* Student Info */}
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                               <Avatar src={submission.studentId.profilePicture}>
                                 {submission.studentId.firstName?.charAt(0)}
                               </Avatar>
-                              <Box>
-                                <Typography variant="subtitle1" fontWeight="bold">
+                              <Box sx={{ minWidth: 0, flex: 1 }}>
+                                <Typography variant="subtitle1" fontWeight="bold" noWrap>
                                   {submission.studentId.firstName} {submission.studentId.lastName}
                                 </Typography>
                                 <Typography variant="caption" color="text.secondary">
@@ -318,7 +406,7 @@ const AssignmentSubmissions = () => {
                             {/* Submission Text Preview */}
                             <Typography variant="body2" sx={{ mb: 2 }}>
                               {submission.submissionText.length > 100 
-                                ? `${submission.submissionText.substring(0, 100)}...`
+                                ? `${submission.submissionText.substring(0, 20)}...`
                                 : submission.submissionText
                               }
                             </Typography>
@@ -351,14 +439,20 @@ const AssignmentSubmissions = () => {
                             )}
 
                             {/* Action Buttons */}
-                            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            <Box sx={{
+                              display: 'flex',
+                              gap: 1,
+                              mt: 'auto',
+                              pt: 2
+                            }}>
                               <Button
                                 size="small"
                                 variant="outlined"
                                 startIcon={<Visibility />}
                                 onClick={() => navigate(`/view-submission/${submission._id}`)}
+                                sx={{ flex: 1 }}
                               >
-                                විස්තර
+                                බලන්න
                               </Button>
                               <Button
                                 size="small"
@@ -366,6 +460,7 @@ const AssignmentSubmissions = () => {
                                 startIcon={<Grade />}
                                 onClick={() => handleOpenGradeDialog(submission)}
                                 color={submission.marks !== null ? 'warning' : 'primary'}
+                                sx={{ flex: 1 }}
                               >
                                 {submission.marks !== null ? 'සංස්කරණය' : 'ලකුණු'}
                               </Button>
@@ -380,8 +475,13 @@ const AssignmentSubmissions = () => {
                 <Box sx={{ textAlign: 'center', py: 6 }}>
                   <Assignment sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
                   <Typography variant="h6" color="text.secondary">
-                    ප්‍රතිචාර ඉදිරිපත් කර නොමැත
+                    {searchQuery ? 'සෙවුම් ප්‍රතිඵල සඳහා ප්‍රතිචාර නොමැත' : 'ප්‍රතිචාර ඉදිරිපත් කර නොමැත'}
                   </Typography>
+                  {searchQuery && (
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                      "{searchQuery}" සඳහා ප්‍රතිඵල නොමැත
+                    </Typography>
+                  )}
                 </Box>
               )}
             </Box>
@@ -390,10 +490,18 @@ const AssignmentSubmissions = () => {
           {/* Not Submitted Students Tab */}
           {tabValue === 1 && (
             <Box sx={{ p: 3 }}>
-              {notSubmittedStudents.length > 0 ? (
+              {filteredNotSubmittedStudents.length > 0 ? (
                 <List>
-                  {notSubmittedStudents.map((student) => (
-                    <ListItem key={student._id} sx={{ border: '1px solid', borderColor: 'grey.300', borderRadius: 2, mb: 1 }}>
+                  {filteredNotSubmittedStudents.map((student) => (
+                    <ListItem key={student._id} sx={{
+                      border: '1px solid',
+                      borderColor: 'grey.300',
+                      borderRadius: 2,
+                      mb: 1,
+                      '&:hover': {
+                        bgcolor: 'grey.50'
+                      }
+                    }}>
                       <ListItemAvatar>
                         <Avatar src={student.profilePicture}>
                           {student.firstName?.charAt(0)}
@@ -414,10 +522,24 @@ const AssignmentSubmissions = () => {
                 </List>
               ) : (
                 <Box sx={{ textAlign: 'center', py: 6 }}>
-                  <CheckCircle sx={{ fontSize: 64, color: 'success.main', mb: 2 }} />
-                  <Typography variant="h6" color="success.main">
-                    සියලුම සිසුන් ඉදිරිපත් කර ඇත!
-                  </Typography>
+                  {searchQuery ? (
+                    <>
+                      <Assignment sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+                      <Typography variant="h6" color="text.secondary">
+                        සෙවුම් ප්‍රතිඵල සඳහා සිසුන් නොමැත
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                        "{searchQuery}" සඳහා ප්‍රතිඵල නොමැත
+                      </Typography>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle sx={{ fontSize: 64, color: 'success.main', mb: 2 }} />
+                      <Typography variant="h6" color="success.main">
+                        සියලුම සිසුන් ඉදිරිපත් කර ඇත!
+                      </Typography>
+                    </>
+                  )}
                 </Box>
               )}
             </Box>

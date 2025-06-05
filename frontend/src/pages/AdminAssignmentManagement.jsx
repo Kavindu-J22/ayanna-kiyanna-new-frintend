@@ -224,7 +224,7 @@ const AdminAssignmentManagement = () => {
               </Alert>
               <Alert severity="error" sx={{ mb: 2 }}>
                 <Typography variant="body2">
-                  <strong>කාලය ඉකුත්:</strong> අවසන් දිනය පසු වූ පැවරුම් ස්වයංක්‍රීයව සලකුණු වේ
+                  <strong>කාලය ඉකුත්:</strong> අවසන් දිනය පසු වූ පැවරුම ඒ බව සිසුන්ට පෙන්නුම් කරයි
                 </Typography>
               </Alert>
             </Grid>
@@ -241,7 +241,10 @@ const AdminAssignmentManagement = () => {
                 transition={{ duration: 0.3 }}
               >
                 <Card sx={{
-                  height: 420, // Fixed height for uniform boxes
+                  height: 400, // Fixed height for uniform boxes
+                  minWidth: 480, // Fixed minimum width
+                  maxWidth: 480, // Fixed maximum width
+                  width: '100%', // Full width within constraints
                   display: 'flex',
                   flexDirection: 'column',
                   position: 'relative',
@@ -346,7 +349,7 @@ const AdminAssignmentManagement = () => {
                           onClick={() => navigate(`/assignment-submissions/${assignment._id}`)}
                           sx={{ flex: 1 }}
                         >
-                          ප්‍රතිචාර
+                          ප්‍රතිචාර බලන්න
                         </Button>
 
                         <Button

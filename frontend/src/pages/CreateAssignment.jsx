@@ -346,7 +346,7 @@ const CreateAssignment = () => {
 
                       <Grid item xs={12} md={6}>
                         <DateTimePicker
-                          label="අවසන් දිනය (විකල්ප)"
+                          label="අවසන් දිනය"
                           value={formData.dueDate}
                           onChange={(newValue) => handleInputChange('dueDate', newValue)}
                           renderInput={(params) => <TextField {...params} fullWidth />}
@@ -356,7 +356,7 @@ const CreateAssignment = () => {
                       <Grid item xs={12} md={6}>
                         <Alert severity="info" sx={{ height: 'fit-content' }}>
                           <Typography variant="body2">
-                            අවසන් දිනය සකසන්නේ නම්, සිසුන්ට එම දිනයෙන් පසුව ඒ බව දැනුවත් වේ.
+                            අවසන් දිනය සැකසූ විට, සිසුන්ට එම දිනයෙන් පසුව ඒ බව දැනුවත් වේ.
                           </Typography>
                         </Alert>
                       </Grid>

@@ -108,6 +108,17 @@ const StudentAssignments = () => {
     return new Date() > new Date(dueDate);
   };
 
+  // Helper function to determine color based on marks
+function getMarkColor(marks) {
+  if (marks >= 75) {
+    return { name: 'success', light: 'success.light', dark: 'success.dark' };
+  } else if (marks >= 50) {
+    return { name: 'warning', light: 'warning.light', dark: 'warning.dark' };
+  } else {
+    return { name: 'error', light: 'error.light', dark: 'error.dark' };
+  }
+}
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
@@ -211,7 +222,10 @@ const StudentAssignments = () => {
                 transition={{ duration: 0.3 }}
               >
                 <Card sx={{
-                  height: 450, // Fixed height for uniform boxes
+                  height: 425, // Fixed height for uniform boxes
+                  minWidth: 480, // Fixed minimum width
+                  maxWidth: 480, // Fixed maximum width
+                  width: '100%', // Full width within constraints
                   display: 'flex',
                   flexDirection: 'column',
                   position: 'relative',
@@ -319,23 +333,33 @@ const StudentAssignments = () => {
 
                       {/* Marks Display */}
                       {assignment.submissionStatus.marks !== null && assignment.submissionStatus.marks !== undefined && (
-                        <Box sx={{ mt: 2, p: 2, bgcolor: 'success.light', borderRadius: 2 }}>
-                          <Typography variant="h6" fontWeight="bold" color="success.dark" textAlign="center">
-                            ලකුණු: {assignment.submissionStatus.marks}/100
+                      <Box sx={{ 
+                        mt: 2, 
+                        p: 2, 
+                        bgcolor: getMarkColor(assignment.submissionStatus.marks).light, 
+                        borderRadius: 2 
+                      }}>
+                        <Typography 
+                          variant="h6" 
+                          fontWeight="bold" 
+                          color={getMarkColor(assignment.submissionStatus.marks).dark} 
+                          textAlign="center"
+                        >
+                          ලකුණු: {assignment.submissionStatus.marks}/100
+                        </Typography>
+                        <LinearProgress
+                          variant="determinate"
+                          value={assignment.submissionStatus.marks}
+                          sx={{ mt: 1, height: 8, borderRadius: 4 }}
+                          color={getMarkColor(assignment.submissionStatus.marks).name}
+                        />
+                        {assignment.submissionStatus.feedback && (
+                          <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic' }}>
+                            "{assignment.submissionStatus.feedback}"
                           </Typography>
-                          <LinearProgress
-                            variant="determinate"
-                            value={assignment.submissionStatus.marks}
-                            sx={{ mt: 1, height: 8, borderRadius: 4 }}
-                            color="success"
-                          />
-                          {assignment.submissionStatus.feedback && (
-                            <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic' }}>
-                              "{assignment.submissionStatus.feedback}"
-                            </Typography>
-                          )}
-                        </Box>
-                      )}
+                        )}
+                      </Box>
+                    )}
                     </Box>
 
                     {/* Action Buttons */}
