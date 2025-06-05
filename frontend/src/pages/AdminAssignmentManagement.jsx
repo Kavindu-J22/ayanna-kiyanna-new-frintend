@@ -31,7 +31,8 @@ import {
   Publish,
   UnpublishedOutlined,
   Schedule,
-  People
+  People,
+  AttachFile
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -193,31 +194,71 @@ const AdminAssignmentManagement = () => {
           </Alert>
         )}
 
+        {/* Smart Notes Section */}
+        <Paper elevation={2} sx={{ p: 3, mb: 4, bgcolor: 'info.light', borderRadius: 3 }}>
+          <Typography variant="h6" fontWeight="bold" sx={{
+            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+            mb: 2,
+            color: 'info.dark'
+          }}>
+            📝 පැවරුම් කළමනාකරණය පිළිබඳ වැදගත් සටහන්
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                <Typography variant="body2">
+                  <strong>ප්‍රකාශිත පැවරුම්:</strong> සිසුන්ට පෙනෙන සහ ඉදිරිපත් කළ හැකි පැවරුම්
+                </Typography>
+              </Alert>
+              <Alert severity="warning" sx={{ mb: 2 }}>
+                <Typography variant="body2">
+                  <strong>ප්‍රකාශ නොකළ පැවරුම්:</strong> සිසුන්ට නොපෙනෙන, සකස් කරමින් පවතින පැවරුම්
+                </Typography>
+              </Alert>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Alert severity="success" sx={{ mb: 2 }}>
+                <Typography variant="body2">
+                  <strong>ප්‍රතිචාර බලන්න:</strong> සිසුන්ගේ ඉදිරිපත් කිරීම් සහ ලකුණු ලබා දීම
+                </Typography>
+              </Alert>
+              <Alert severity="error" sx={{ mb: 2 }}>
+                <Typography variant="body2">
+                  <strong>කාලය ඉකුත්:</strong> අවසන් දිනය පසු වූ පැවරුම් ස්වයංක්‍රීයව සලකුණු වේ
+                </Typography>
+              </Alert>
+            </Grid>
+          </Grid>
+        </Paper>
+
         {/* Assignments Grid */}
         <Grid container spacing={3}>
           {assignments.map((assignment) => (
-            <Grid item xs={12} md={6} lg={4} key={assignment._id}>
+            <Grid item xs={12} md={6} key={assignment._id}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
                 <Card sx={{
-                  height: '100%',
+                  height: 420, // Fixed height for uniform boxes
                   display: 'flex',
                   flexDirection: 'column',
                   position: 'relative',
+                  border: '1px solid',
+                  borderColor: 'primary.light',
                   '&:hover': {
                     transform: 'translateY(-4px)',
-                    boxShadow: 6
+                    boxShadow: 6,
+                    borderColor: 'primary.main'
                   },
                   transition: 'all 0.3s ease'
                 }}>
                   {/* Status Badge */}
                   <Box sx={{
                     position: 'absolute',
-                    top: 12,
-                    right: 12,
+                    top: 16,
+                    right: 16,
                     zIndex: 1
                   }}>
                     <Chip
@@ -225,82 +266,130 @@ const AdminAssignmentManagement = () => {
                       color={assignment.isPublished ? 'success' : 'warning'}
                       size="small"
                       icon={assignment.isPublished ? <Publish /> : <UnpublishedOutlined />}
+                      sx={{ fontWeight: 'bold' }}
                     />
                   </Box>
 
-                  <CardContent sx={{ flexGrow: 1, pt: 6 }}>
+                  <CardContent sx={{
+                    flexGrow: 1,
+                    pt: 3,
+                    pb: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100%'
+                  }}>
+                    {/* Title */}
                     <Typography variant="h6" fontWeight="bold" sx={{
                       fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                       mb: 2,
-                      pr: 2
+                      pr: 6, // Space for status badge
+                      minHeight: 64, // Fixed height for title
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden'
                     }}>
                       {assignment.title}
                     </Typography>
-                    
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      {assignment.description.length > 100 
-                        ? `${assignment.description.substring(0, 100)}...`
-                        : assignment.description
-                      }
+
+                    {/* Description */}
+                    <Typography variant="body2" color="text.secondary" sx={{
+                      mb: 2,
+                      minHeight: 60, // Fixed height for description
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden'
+                    }}>
+                      {assignment.description}
                     </Typography>
 
                     {/* Assignment Details */}
-                    <Box sx={{ mb: 2 }}>
+                    <Box sx={{ mb: 2, flexGrow: 1 }}>
                       {assignment.dueDate && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                          <Schedule fontSize="small" color="action" />
-                          <Typography variant="caption">
+                          <Schedule fontSize="small" color="primary" />
+                          <Typography variant="caption" fontWeight="bold">
                             {formatDate(assignment.dueDate)}
                           </Typography>
                         </Box>
                       )}
-                      
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Assignment fontSize="small" color="action" />
-                        <Typography variant="caption">
+
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <Assignment fontSize="small" color="primary" />
+                        <Typography variant="caption" fontWeight="bold">
                           {assignment.tasks?.length || 0} කාර්ය
+                        </Typography>
+                      </Box>
+
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <AttachFile fontSize="small" color="primary" />
+                        <Typography variant="caption" fontWeight="bold">
+                          {assignment.attachments?.length || 0} ගොනු
                         </Typography>
                       </Box>
                     </Box>
 
                     {/* Action Buttons */}
-                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        startIcon={<Visibility />}
-                        onClick={() => navigate(`/assignment-submissions/${assignment._id}`)}
-                      >
-                        ප්‍රතිචාර
-                      </Button>
-                      
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        startIcon={<Edit />}
-                        onClick={() => navigate(`/edit-assignment/${assignment._id}`)}
-                      >
-                        සංස්කරණය
-                      </Button>
-                      
-                      <IconButton
-                        size="small"
-                        color={assignment.isPublished ? 'warning' : 'success'}
-                        onClick={() => handleTogglePublish(assignment._id, assignment.isPublished)}
-                      >
-                        {assignment.isPublished ? <UnpublishedOutlined /> : <Publish />}
-                      </IconButton>
-                      
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => {
-                          setSelectedAssignment(assignment);
-                          setDeleteDialog(true);
-                        }}
-                      >
-                        <Delete />
-                      </IconButton>
+                    <Box sx={{
+                      display: 'flex',
+                      gap: 1,
+                      flexDirection: 'column',
+                      mt: 'auto',
+                      pt: 2
+                    }}>
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          startIcon={<Visibility />}
+                          onClick={() => navigate(`/assignment-submissions/${assignment._id}`)}
+                          sx={{ flex: 1 }}
+                        >
+                          ප්‍රතිචාර
+                        </Button>
+
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          startIcon={<Edit />}
+                          onClick={() => navigate(`/edit-assignment/${assignment._id}`)}
+                          sx={{ flex: 1 }}
+                        >
+                          සංස්කරණය
+                        </Button>
+                      </Box>
+
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button
+                          size="small"
+                          variant={assignment.isPublished ? "contained" : "outlined"}
+                          color={assignment.isPublished ? 'warning' : 'success'}
+                          startIcon={assignment.isPublished ? <UnpublishedOutlined /> : <Publish />}
+                          onClick={() => handleTogglePublish(assignment._id, assignment.isPublished)}
+                          sx={{ flex: 1 }}
+                        >
+                          {assignment.isPublished ? 'අප්‍රකාශ කරන්න' : 'ප්‍රකාශ කරන්න'}
+                        </Button>
+
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => {
+                            setSelectedAssignment(assignment);
+                            setDeleteDialog(true);
+                          }}
+                          sx={{
+                            border: '1px solid',
+                            borderColor: 'error.main',
+                            '&:hover': {
+                              bgcolor: 'error.light'
+                            }
+                          }}
+                        >
+                          <Delete />
+                        </IconButton>
+                      </Box>
                     </Box>
                   </CardContent>
                 </Card>

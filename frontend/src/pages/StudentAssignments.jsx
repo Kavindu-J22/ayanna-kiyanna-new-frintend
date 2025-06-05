@@ -24,7 +24,8 @@ import {
   PendingActions,
   Grade,
   Visibility,
-  Edit
+  Edit,
+  AttachFile
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -163,32 +164,71 @@ const StudentAssignments = () => {
           </Alert>
         )}
 
+        {/* Smart Notes Section */}
+        <Paper elevation={2} sx={{ p: 3, mb: 4, bgcolor: 'success.light', borderRadius: 3 }}>
+          <Typography variant="h6" fontWeight="bold" sx={{
+            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+            mb: 2,
+            color: 'success.dark'
+          }}>
+            📚 පැවරුම් ඉදිරිපත් කිරීම පිළිබඳ වැදගත් සටහන්
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                <Typography variant="body2">
+                  <strong>ඉදිරිපත් කිරීම:</strong> අවසන් දිනයට පෙර ඔබේ පැවරුම් ඉදිරිපත් කරන්න
+                </Typography>
+              </Alert>
+              <Alert severity="warning" sx={{ mb: 2 }}>
+                <Typography variant="body2">
+                  <strong>කාලය ඉකුත්:</strong> අවසන් දිනය පසු වූ පැවරුම ඒ බව පෙන්නුම් කරයි
+                </Typography>
+              </Alert>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Alert severity="success" sx={{ mb: 2 }}>
+                <Typography variant="body2">
+                  <strong>ලකුණු ලැබීම:</strong> ගුරුවරයා ලකුණු ලබා දීමෙන් පසු ඔබට පෙනේ
+                </Typography>
+              </Alert>
+              <Alert severity="error" sx={{ mb: 2 }}>
+                <Typography variant="body2">
+                  <strong>සංස්කරණය:</strong> ලකුණු ලැබීමෙන් පසු සංස්කරණය කළ නොහැක
+                </Typography>
+              </Alert>
+            </Grid>
+          </Grid>
+        </Paper>
+
         {/* Assignments Grid */}
         <Grid container spacing={3}>
           {assignments.map((assignment) => (
-            <Grid item xs={12} md={6} lg={4} key={assignment._id}>
+            <Grid item xs={12} md={6} key={assignment._id}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
                 <Card sx={{
-                  height: '100%',
+                  height: 450, // Fixed height for uniform boxes
                   display: 'flex',
                   flexDirection: 'column',
                   position: 'relative',
-                  border: isOverdue(assignment.dueDate, assignment.submissionStatus) ? '2px solid #f44336' : 'none',
+                  border: '1px solid',
+                  borderColor: isOverdue(assignment.dueDate, assignment.submissionStatus) ? 'error.main' : 'primary.light',
                   '&:hover': {
                     transform: 'translateY(-4px)',
-                    boxShadow: 6
+                    boxShadow: 6,
+                    borderColor: isOverdue(assignment.dueDate, assignment.submissionStatus) ? 'error.dark' : 'primary.main'
                   },
                   transition: 'all 0.3s ease'
                 }}>
                   {/* Status Badge */}
                   <Box sx={{
                     position: 'absolute',
-                    top: 12,
-                    right: 12,
+                    top: 16,
+                    right: 16,
                     zIndex: 1
                   }}>
                     <Chip
@@ -196,6 +236,7 @@ const StudentAssignments = () => {
                       color={getStatusColor(assignment.submissionStatus)}
                       size="small"
                       icon={getStatusIcon(assignment.submissionStatus)}
+                      sx={{ fontWeight: 'bold' }}
                     />
                   </Box>
 
@@ -203,8 +244,8 @@ const StudentAssignments = () => {
                   {isOverdue(assignment.dueDate, assignment.submissionStatus) && (
                     <Box sx={{
                       position: 'absolute',
-                      top: 12,
-                      left: 12,
+                      top: 16,
+                      left: 16,
                       zIndex: 1
                     }}>
                       <Chip
@@ -212,41 +253,67 @@ const StudentAssignments = () => {
                         color="error"
                         size="small"
                         variant="filled"
+                        sx={{ fontWeight: 'bold' }}
                       />
                     </Box>
                   )}
 
-                  <CardContent sx={{ flexGrow: 1, pt: assignment.submissionStatus.marks !== null ? 6 : 6 }}>
+                  <CardContent sx={{
+                    flexGrow: 1,
+                    pt: 3,
+                    pb: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100%'
+                  }}>
+                    {/* Title */}
                     <Typography variant="h6" fontWeight="bold" sx={{
                       fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                       mb: 2,
-                      pr: 2
+                      pr: 6, // Space for status badge
+                      minHeight: 64, // Fixed height for title
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden'
                     }}>
                       {assignment.title}
                     </Typography>
-                    
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      {assignment.description.length > 100 
-                        ? `${assignment.description.substring(0, 100)}...`
-                        : assignment.description
-                      }
+
+                    {/* Description */}
+                    <Typography variant="body2" color="text.secondary" sx={{
+                      mb: 2,
+                      minHeight: 60, // Fixed height for description
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden'
+                    }}>
+                      {assignment.description}
                     </Typography>
 
                     {/* Assignment Details */}
-                    <Box sx={{ mb: 2 }}>
+                    <Box sx={{ mb: 2, flexGrow: 1 }}>
                       {assignment.dueDate && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                          <Schedule fontSize="small" color="action" />
-                          <Typography variant="caption">
+                          <Schedule fontSize="small" color="primary" />
+                          <Typography variant="caption" fontWeight="bold">
                             {formatDate(assignment.dueDate)}
                           </Typography>
                         </Box>
                       )}
-                      
+
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                        <Assignment fontSize="small" color="action" />
-                        <Typography variant="caption">
+                        <Assignment fontSize="small" color="primary" />
+                        <Typography variant="caption" fontWeight="bold">
                           {assignment.tasks?.length || 0} කාර්ය
+                        </Typography>
+                      </Box>
+
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                        <AttachFile fontSize="small" color="primary" />
+                        <Typography variant="caption" fontWeight="bold">
+                          {assignment.attachments?.length || 0} ගොනු
                         </Typography>
                       </Box>
 
@@ -256,9 +323,9 @@ const StudentAssignments = () => {
                           <Typography variant="h6" fontWeight="bold" color="success.dark" textAlign="center">
                             ලකුණු: {assignment.submissionStatus.marks}/100
                           </Typography>
-                          <LinearProgress 
-                            variant="determinate" 
-                            value={assignment.submissionStatus.marks} 
+                          <LinearProgress
+                            variant="determinate"
+                            value={assignment.submissionStatus.marks}
                             sx={{ mt: 1, height: 8, borderRadius: 4 }}
                             color="success"
                           />
@@ -272,7 +339,13 @@ const StudentAssignments = () => {
                     </Box>
 
                     {/* Action Buttons */}
-                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 'auto' }}>
+                    <Box sx={{
+                      display: 'flex',
+                      gap: 1,
+                      flexDirection: 'column',
+                      mt: 'auto',
+                      pt: 2
+                    }}>
                       <Button
                         size="small"
                         variant="outlined"
@@ -282,7 +355,7 @@ const StudentAssignments = () => {
                       >
                         විස්තර බලන්න
                       </Button>
-                      
+
                       {!assignment.submissionStatus.submitted ? (
                         <Button
                           size="small"
