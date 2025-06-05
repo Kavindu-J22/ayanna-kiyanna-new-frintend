@@ -987,7 +987,7 @@ const SpecificClass = () => {
                           <Typography variant="h6" fontWeight="bold" sx={{
                             fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                           }}>
-                            ඊළඟ පාඩම් කාලසටහන
+                            පාඩම් කාලසටහන් කළමනාකරණය
                           </Typography>
                           <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
                             කාලසටහන් කරන්න
