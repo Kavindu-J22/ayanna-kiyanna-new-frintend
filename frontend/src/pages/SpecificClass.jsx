@@ -58,7 +58,8 @@ import {
   TrendingUp,
   CalendarToday,
   Group,
-  CheckCircle
+  CheckCircle,
+  FolderOpen
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -998,11 +999,65 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        color: 'white',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                        onClick={() => navigate(`/admin-exams/${classId}`)}
+                      >
+                        <CardContent sx={{ textAlign: 'center', py: 3 }}>
+                          <Assignment sx={{ fontSize: 40, mb: 2 }} />
+                          <Typography variant="h6" fontWeight="bold" sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                          }}>
+                            විභාග සහ ප්‍රතිඵල කළමනාකරණය
+                          </Typography>
+                          <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
+                            විභාග සහ ලකුණු
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6} md={4}>
+                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                      <Card sx={{
+                        height: '100%',
+                        background: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+                        color: '#333',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                        onClick={() => navigate(`/admin-resources/${classId}`)}
+                      >
+                        <CardContent sx={{ textAlign: 'center', py: 3 }}>
+                          <FolderOpen sx={{ fontSize: 40, mb: 2 }} />
+                          <Typography variant="h6" fontWeight="bold" sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                          }}>
+                            වෙනත් සම්පත් සහ මෙවලම් කළමනාකරණය
+                          </Typography>
+                          <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
+                            සම්පත් සහ ලින්ක්
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6} md={4}>
+                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                      <Card sx={{
+                        height: '100%',
                         background: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
                         color: 'white',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'
-                      }}>
+                      }}
+                        onClick={() => navigate(`/admin-announcements/${classId}`)}
+                      >
                         <CardContent sx={{ textAlign: 'center', py: 3 }}>
                           <Notifications sx={{ fontSize: 40, mb: 2 }} />
                           <Typography variant="h6" fontWeight="bold" sx={{
@@ -1165,11 +1220,65 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        color: 'white',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                        onClick={() => navigate(`/student-exams/${classId}`)}
+                      >
+                        <CardContent sx={{ textAlign: 'center', py: 3 }}>
+                          <Assignment sx={{ fontSize: 40, mb: 2 }} />
+                          <Typography variant="h6" fontWeight="bold" sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                          }}>
+                            විභාග සහ ප්‍රතිඵල
+                          </Typography>
+                          <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
+                            විභාග සහ ලකුණු
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6} md={4}>
+                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                      <Card sx={{
+                        height: '100%',
+                        background: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+                        color: '#333',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                        onClick={() => navigate(`/student-resources/${classId}`)}
+                      >
+                        <CardContent sx={{ textAlign: 'center', py: 3 }}>
+                          <FolderOpen sx={{ fontSize: 40, mb: 2 }} />
+                          <Typography variant="h6" fontWeight="bold" sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                          }}>
+                            සම්පත් සහ මෙවලම්
+                          </Typography>
+                          <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
+                            සම්පත් සහ ලින්ක්
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6} md={4}>
+                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                      <Card sx={{
+                        height: '100%',
                         background: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
                         color: 'white',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'
-                      }}>
+                      }}
+                        onClick={() => navigate(`/student-announcements/${classId}`)}
+                      >
                         <CardContent sx={{ textAlign: 'center', py: 3 }}>
                           <Notifications sx={{ fontSize: 40, mb: 2 }} />
                           <Typography variant="h6" fontWeight="bold" sx={{

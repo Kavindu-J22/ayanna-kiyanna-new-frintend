@@ -108,6 +108,15 @@ import AssignmentSubmission from './pages/AssignmentSubmission';
 import AssignmentSubmissions from './pages/AssignmentSubmissions';
 import AssignmentDetails from './pages/AssignmentDetails';
 import ViewSubmission from './pages/ViewSubmission';
+import AdminExamManagement from './pages/AdminExamManagement';
+import ExamMarksManagement from './pages/ExamMarksManagement';
+import StudentExamView from './pages/StudentExamView';
+import AdminResourceManagement from './pages/AdminResourceManagement';
+import StudentResourceView from './pages/StudentResourceView';
+import AdminAnnouncementManagement from './pages/AdminAnnouncementManagement';
+import StudentAnnouncementView from './pages/StudentAnnouncementView';
+import AnnouncementDetails from './pages/AnnouncementDetails';
+import ResourceDetails from './pages/ResourceDetails';
 
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
@@ -890,6 +899,21 @@ function AppContent() {
               <Route path="/assignment-submissions/:assignmentId" element={<AssignmentSubmissions />} />
               <Route path="/assignment-details/:assignmentId" element={<AssignmentDetails />} />
               <Route path="/view-submission/:submissionId" element={<ViewSubmission />} />
+
+              {/* Exam Routes */}
+              <Route path="/admin-exams/:classId" element={<AdminExamManagement />} />
+              <Route path="/exam-marks/:examId" element={<ExamMarksManagement />} />
+              <Route path="/student-exams/:classId" element={<StudentExamView />} />
+
+              {/* Resource Routes */}
+              <Route path="/admin-resources/:classId" element={<AdminResourceManagement />} />
+              <Route path="/student-resources/:classId" element={<StudentResourceView />} />
+
+              {/* Announcement Routes */}
+              <Route path="/admin-announcements/:classId" element={<AdminAnnouncementManagement />} />
+              <Route path="/student-announcements/:classId" element={<StudentAnnouncementView />} />
+              <Route path="/announcement-details/:announcementId" element={<AnnouncementDetails />} />
+              <Route path="/resource-details/:resourceId" element={<ResourceDetails />} />
 
               <Route path="/aksharamalawa" element={<AksharaMalawa />} />
             </Routes>
