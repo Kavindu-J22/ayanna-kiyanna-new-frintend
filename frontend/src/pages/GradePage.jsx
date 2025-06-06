@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -95,11 +95,25 @@ const GradePage = () => {
 
   const currentConfig = gradeConfigs[gradeCategory] || gradeConfigs['grade-9'];
 
-  useEffect(() => {
-    checkAuthentication();
+  const fetchFolders = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`https://ayanna-kiyanna-new-backend.onrender.com/api/grades/folders/${gradeCategory}`, {
+        headers: { 'x-auth-token': token }
+      });
+
+      if (response.data.success) {
+        setFolders(response.data.data); // Backend returns folders sorted oldest first
+      }
+    } catch (err) {
+      console.error('Error fetching folders:', err);
+      setError('Error loading folders');
+    } finally {
+      setLoading(false);
+    }
   }, [gradeCategory]);
 
-  const checkAuthentication = async () => {
+  const checkAuthentication = useCallback(async () => {
     const userEmail = localStorage.getItem('userEmail');
     const token = localStorage.getItem('token');
 
@@ -123,25 +137,15 @@ const GradePage = () => {
       setShowLoginDialog(true);
       setLoading(false);
     }
-  };
+  }, [fetchFolders]);
 
-  const fetchFolders = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`https://ayanna-kiyanna-new-backend.onrender.com/api/grades/folders/${gradeCategory}`, {
-        headers: { 'x-auth-token': token }
-      });
-
-      if (response.data.success) {
-        setFolders(response.data.data); // Backend returns folders sorted oldest first
-      }
-    } catch (err) {
-      console.error('Error fetching folders:', err);
-      setError('Error loading folders');
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    // Reset loading state when grade category changes
+    setLoading(true);
+    setError('');
+    setFolders([]);
+    checkAuthentication();
+  }, [gradeCategory, checkAuthentication]);
 
   const handleLoginRedirect = () => {
     setShowLoginDialog(false);
@@ -592,7 +596,7 @@ const GradePage = () => {
         PaperProps={{
           sx: {
             borderRadius: 3,
-            background: `linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, ${currentConfig.color}90 100%)`
+            background: `linear-gradient(135deg, rgb(255, 255, 255) 0%, ${currentConfig.color}90 100%)`
           }
         }}
       >

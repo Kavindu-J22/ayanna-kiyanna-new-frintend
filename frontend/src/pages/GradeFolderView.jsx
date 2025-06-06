@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -89,37 +89,10 @@ const GradeFolderView = () => {
 
   const currentConfig = gradeConfigs[gradeCategory] || gradeConfigs['grade-9'];
 
-  useEffect(() => {
-    checkAuthentication();
-  }, [folderId]);
-
-  const checkAuthentication = async () => {
-    const userEmail = localStorage.getItem('userEmail');
-    const token = localStorage.getItem('token');
-
-    if (!userEmail || !token) {
-      navigate('/login');
-      return;
-    }
-
-    try {
-      // Check user role from database
-      const response = await axios.get('https://ayanna-kiyanna-new-backend.onrender.com/api/auth/me', {
-        headers: { 'x-auth-token': token }
-      });
-
-      setUserRole(response.data.role);
-      fetchFolderAndFiles();
-    } catch (err) {
-      console.error('Authentication error:', err);
-      navigate('/login');
-    }
-  };
-
-  const fetchFolderAndFiles = async () => {
+  const fetchFolderAndFiles = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
-      
+
       // Fetch folder details
       const folderResponse = await axios.get(
         `https://ayanna-kiyanna-new-backend.onrender.com/api/grades/folders/single/${folderId}`,
@@ -145,7 +118,39 @@ const GradeFolderView = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [folderId]);
+
+  const checkAuthentication = useCallback(async () => {
+    const userEmail = localStorage.getItem('userEmail');
+    const token = localStorage.getItem('token');
+
+    if (!userEmail || !token) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      // Check user role from database
+      const response = await axios.get('https://ayanna-kiyanna-new-backend.onrender.com/api/auth/me', {
+        headers: { 'x-auth-token': token }
+      });
+
+      setUserRole(response.data.role);
+      fetchFolderAndFiles();
+    } catch (err) {
+      console.error('Authentication error:', err);
+      navigate('/login');
+    }
+  }, [navigate, fetchFolderAndFiles]);
+
+  useEffect(() => {
+    // Reset loading state when folder ID changes
+    setLoading(true);
+    setError('');
+    setFolder(null);
+    setFiles([]);
+    checkAuthentication();
+  }, [folderId, checkAuthentication]);
 
   const handleDeleteFile = async (fileId) => {
     if (!window.confirm('ඔබට මෙම ගොනුව මකා දැමීමට අවශ්‍යද?')) {
