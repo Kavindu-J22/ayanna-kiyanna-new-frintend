@@ -125,6 +125,8 @@ import GrammarPage from './pages/GrammarPage';
 import FolderView from './pages/FolderView';
 import LiteraturePage from './pages/LiteraturePage';
 import LiteratureFolderView from './pages/LiteratureFolderView';
+import GradePage from './pages/GradePage';
+import GradeFolderView from './pages/GradeFolderView';
 
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
@@ -187,11 +189,11 @@ const navItems = [
       name: "ශ්‍රේණිය අනුව අධ්‍යයනය කරන්න",
       icon: <ClassIcon />,
       subcategories: [
-        { name: "9 ශ්‍රේණිය", path: "/grade-9", icon: <GroupsIcon /> },
-        { name: "10 ශ්‍රේණිය", path: "/grade-10", icon: <GroupsIcon /> },
-        { name: "11 ශ්‍රේණිය", path: "/grade-11", icon: <GroupsIcon /> },
-        { name: "A/L", path: "/a-l", icon: <ScienceIcon /> },
-        { name: "සිංහල සාහිත්‍යය (කාණ්ඩ විෂය)", path: "/sinhala-literature", icon: <LibraryBooksIcon /> },
+        { name: "9 ශ්‍රේණිය", path: "/grade/grade-9", icon: <GroupsIcon /> },
+        { name: "10 ශ්‍රේණිය", path: "/grade/grade-10", icon: <GroupsIcon /> },
+        { name: "11 ශ්‍රේණිය", path: "/grade/grade-11", icon: <GroupsIcon /> },
+        { name: "A/L", path: "/grade/a-level", icon: <ScienceIcon /> },
+        { name: "සිංහල සාහිත්‍යය (කාණ්ඩ විෂය)", path: "/grade/sinhala-literature", icon: <LibraryBooksIcon /> },
       ],
     },
 
@@ -855,6 +857,8 @@ function AppContent() {
               <Route path="/grammar/folder/:folderId" element={<FolderView />} />
               <Route path="/literature" element={<LiteraturePage />} />
               <Route path="/literature/folder/:folderId" element={<LiteratureFolderView />} />
+              <Route path="/grade/:gradeCategory" element={<GradePage />} />
+              <Route path="/grade/:gradeCategory/folder/:folderId" element={<GradeFolderView />} />
               <Route path="/literature" element={<LiteraturePage />} />
               <Route path="/alphabet" element={<TestPage title="අක්ෂර මාලාව" />} />
               <Route path="/paper-bank" element={<TestPage title="Paper Bank" />} />
