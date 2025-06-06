@@ -197,23 +197,13 @@ const navItems = [
       ],
     },
 
-      // පරීක්ෂණාත්මක Category
-  {
-    name: "පරීක්ෂණ හා පෙරහුරු ",
-    icon: <AssignmentIcon />,
-    subcategories: [
-      { name: "Online Exams & Speed Tests", path: "/online-exams", icon: <QuizIcon /> },
-      { name: "Home Works", path: "/speed-tests", icon: <TimerIcon /> },
-      { name: "Paper Structures", path: "/syllabus", icon: <NoteAltIcon /> },
-    ],
-  },
-
     {
       name: "Paper Bank",
       icon: <ArticleIcon />,
       subcategories: [
         { name: "සිංහල භාෂාව හා සාහිත්‍යය (O/L & A/L)", path: "/e-magazine", icon: <ImportContactsIcon /> },
         { name: "සිංහල සාහිත්‍යය (කාණ්ඩ විෂය)", path: "/reviews", icon: <RateReviewOutlinedIcon /> },
+        { name: "Paper Structures", path: "/syllabus", icon: <NoteAltIcon /> },
       ],
     },
 
