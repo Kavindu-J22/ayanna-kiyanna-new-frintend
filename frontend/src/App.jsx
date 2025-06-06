@@ -123,6 +123,8 @@ import AdminOnlineSessions from './pages/AdminOnlineSessions';
 import StudentOnlineSessions from './pages/StudentOnlineSessions';
 import GrammarPage from './pages/GrammarPage';
 import FolderView from './pages/FolderView';
+import LiteraturePage from './pages/LiteraturePage';
+import LiteratureFolderView from './pages/LiteratureFolderView';
 
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
@@ -163,11 +165,10 @@ const navItems = [
         icon: <AccountTreeIcon />,
         external: true // Add this flag to indicate it's an external link
       },
-      { name: "ස්වර", path: "/grammar", icon: <TranslateIcon /> },
-      { name: "ව්‍යංජන", path: "/literature", icon: <LocalLibraryIcon /> },
-      { name: "අකාරාදී පිළිවෙල", path: "/grammar", icon: <TranslateIcon /> },
-      { name: "අක්ෂර වින්‍යාසය", path: "/literature", icon: <LocalLibraryIcon /> },
-      { name: "වර්ණ ගැන්වූ විග්‍රහය පිටපත", path: "/literature", icon: <LocalLibraryIcon /> },
+      { name: "ස්වර", path: "/swara", icon: <TranslateIcon /> },
+      { name: "ව්‍යංජන", path: "/viyanjana", icon: <LocalLibraryIcon /> },
+      { name: "අකාරාදී පිළිවෙල", path: "/akaradiya", icon: <TranslateIcon /> },
+      { name: "අක්ෂර වින්‍යාසය", path: "/aksharavinyasaya", icon: <LocalLibraryIcon /> },
     ],
   },
 
@@ -852,7 +853,9 @@ function AppContent() {
               <Route path="/contact" element={<AkContact />} />
               <Route path="/grammar" element={<GrammarPage />} />
               <Route path="/grammar/folder/:folderId" element={<FolderView />} />
-              <Route path="/literature" element={<TestPage title="සාහිත්‍ය" />} />
+              <Route path="/literature" element={<LiteraturePage />} />
+              <Route path="/literature/folder/:folderId" element={<LiteratureFolderView />} />
+              <Route path="/literature" element={<LiteraturePage />} />
               <Route path="/alphabet" element={<TestPage title="අක්ෂර මාලාව" />} />
               <Route path="/paper-bank" element={<TestPage title="Paper Bank" />} />
               <Route path="/online-exams" element={<TestPage title="Online Exams" />} />
