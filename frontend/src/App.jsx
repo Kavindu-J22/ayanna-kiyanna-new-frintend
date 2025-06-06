@@ -121,6 +121,8 @@ import AdminTimeScheduleManagement from './pages/AdminTimeScheduleManagement';
 import StudentTimeScheduleView from './pages/StudentTimeScheduleView';
 import AdminOnlineSessions from './pages/AdminOnlineSessions';
 import StudentOnlineSessions from './pages/StudentOnlineSessions';
+import GrammarPage from './pages/GrammarPage';
+import FolderView from './pages/FolderView';
 
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
@@ -249,7 +251,7 @@ const navItems = [
   { name: "අයන්න කියන්න E-Magazine", path: "/books-products", icon: <ImportContactsIcon /> },
   { name: "අයන්න කියන්න : Books & Products", path: "/books-products", icon: <ShoppingCartIcon /> },
   { name: "අයන්න කියන්න : Specal Notices", path: "/special-notice", icon: <NotificationsActiveIcon /> },
-  { name: "අයන්න කියන්න : 2025 Calender", path: "/contact-support", icon: <ContactMailIcon /> },
+  { name: "අයන්න කියන්න : 2025 Calender", path: "https://ayannakiyanna-calender.vercel.app/", icon: <ContactMailIcon /> },
   { name: "අයන්න කියන්න : Contact Suport", path: "/contact-support", icon: <ContactMailIcon /> },
 ];
 
@@ -848,7 +850,8 @@ function AppContent() {
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<AkContact />} />
-              <Route path="/grammar" element={<TestPage title="ව්‍යාකරණ" />} />
+              <Route path="/grammar" element={<GrammarPage />} />
+              <Route path="/grammar/folder/:folderId" element={<FolderView />} />
               <Route path="/literature" element={<TestPage title="සාහිත්‍ය" />} />
               <Route path="/alphabet" element={<TestPage title="අක්ෂර මාලාව" />} />
               <Route path="/paper-bank" element={<TestPage title="Paper Bank" />} />
