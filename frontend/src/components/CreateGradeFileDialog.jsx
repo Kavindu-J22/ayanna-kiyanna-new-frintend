@@ -240,7 +240,7 @@ const CreateGradeFileDialog = ({ open, onClose, folderId, gradeCategory, onFileC
       PaperProps={{
         sx: {
           borderRadius: 3,
-          background: `linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, ${currentConfig.color}90 100%)`,
+          background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
           maxHeight: '90vh'
         }
       }}
@@ -468,7 +468,6 @@ const CreateGradeFileDialog = ({ open, onClose, folderId, gradeCategory, onFileC
               sx={{
                 borderColor: currentConfig.color,
                 color: currentConfig.color,
-                background: "rgba(255, 255, 255, 0.73)",
                 fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                 '&:hover': {
                   borderColor: currentConfig.color,

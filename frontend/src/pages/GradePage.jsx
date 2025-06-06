@@ -323,7 +323,7 @@ const GradePage = () => {
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
-                    background: `linear-gradient(135deg, ${currentConfig.color}20 0%, ${currentConfig.color}10 100%)`,
+                    background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
                     borderRadius: 3,
                     transition: 'all 0.3s ease',
                     '&:hover': {
@@ -440,7 +440,7 @@ const GradePage = () => {
             sx={{
               p: 6,
               textAlign: 'center',
-              background: `linear-gradient(135deg, ${currentConfig.color}20 0%, ${currentConfig.color}10 100%)`,
+              background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
               borderRadius: 3
             }}
           >
@@ -583,7 +583,7 @@ const GradePage = () => {
         PaperProps={{
           sx: {
             borderRadius: 3,
-            background: `linear-gradient(135deg, ${currentConfig.color}20 0%, ${currentConfig.color}10 100%)`
+            background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'
           }
         }}
       >

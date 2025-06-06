@@ -10,14 +10,22 @@ import {
   IconButton,
   Card,
   CardContent,
-  Avatar
+  Avatar,
+  Grid
 } from '@mui/material';
 import {
   Close as CloseIcon,
   InsertDriveFile as FileIcon,
   Person as PersonIcon,
   AccessTime as TimeIcon,
-  Description as DescriptionIcon
+  Description as DescriptionIcon,
+  Attachment as AttachmentIcon,
+  Link as LinkIcon,
+  Download as DownloadIcon,
+  OpenInNew as OpenInNewIcon,
+  PictureAsPdf as PdfIcon,
+  Image as ImageIcon,
+  Launch as LaunchIcon
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 
@@ -35,6 +43,18 @@ const GradeFileDetailsDialog = ({ open, onClose, file, gradeCategory }) => {
 
   const currentConfig = gradeConfigs[gradeCategory] || gradeConfigs['grade-9'];
 
+  const handleDownload = (attachment) => {
+    window.open(attachment.url, '_blank');
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   return (
     <Dialog
       open={open}
@@ -44,7 +64,7 @@ const GradeFileDetailsDialog = ({ open, onClose, file, gradeCategory }) => {
       PaperProps={{
         sx: {
           borderRadius: 3,
-          background: `linear-gradient(135deg, ${currentConfig.color}20 0%, ${currentConfig.color}10 100%)`,
+          background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
           maxHeight: '90vh'
         }
       }}
@@ -146,7 +166,7 @@ const GradeFileDetailsDialog = ({ open, onClose, file, gradeCategory }) => {
 
           {/* Content */}
           {file.content && (
-            <Card elevation={3}>
+            <Card elevation={3} sx={{ mb: 3 }}>
               <CardContent sx={{ p: 3 }}>
                 <Box display="flex" alignItems="center" gap={2} mb={2}>
                   <DescriptionIcon sx={{ color: currentConfig.color }} />
@@ -171,6 +191,237 @@ const GradeFileDetailsDialog = ({ open, onClose, file, gradeCategory }) => {
                 >
                   {file.content}
                 </Typography>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Attachments */}
+          {file.attachments && file.attachments.length > 0 && (
+            <Card elevation={3} sx={{ mb: 3 }}>
+              <CardContent sx={{ p: 3 }}>
+                <Box display="flex" alignItems="center" gap={2} mb={3}>
+                  <AttachmentIcon sx={{ color: currentConfig.color }} />
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                      color: '#2C3E50'
+                    }}
+                  >
+                    අමුණන ලද ගොනු ({file.attachments.length})
+                  </Typography>
+                </Box>
+
+                <Grid container spacing={2}>
+                  {file.attachments.map((attachment, index) => (
+                    <Grid item xs={12} sm={6} key={index}>
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                      >
+                        <Card
+                          elevation={2}
+                          sx={{
+                            transition: 'all 0.3s ease',
+                            '&:hover': {
+                              transform: 'translateY(-2px)',
+                              boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+                            }
+                          }}
+                        >
+                          <CardContent sx={{ p: 2 }}>
+                            <Box display="flex" alignItems="center" gap={2} mb={2}>
+                              {attachment.type === 'pdf' ? (
+                                <PdfIcon sx={{ color: '#F44336', fontSize: 32 }} />
+                              ) : (
+                                <ImageIcon sx={{ color: '#4CAF50', fontSize: 32 }} />
+                              )}
+                              <Box flexGrow={1}>
+                                <Typography
+                                  variant="subtitle2"
+                                  sx={{
+                                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                                    fontWeight: 'bold',
+                                    color: '#2C3E50'
+                                  }}
+                                >
+                                  {attachment.title}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                  sx={{
+                                    fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
+                                  }}
+                                >
+                                  {formatFileSize(attachment.size)}
+                                </Typography>
+                              </Box>
+                            </Box>
+
+                            {attachment.description && (
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{
+                                  fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                                  mb: 2,
+                                  lineHeight: 1.4
+                                }}
+                              >
+                                {attachment.description}
+                              </Typography>
+                            )}
+
+                            <Box display="flex" gap={1}>
+                              <Button
+                                variant="contained"
+                                size="small"
+                                startIcon={<DownloadIcon />}
+                                onClick={() => handleDownload(attachment)}
+                                sx={{
+                                  bgcolor: currentConfig.color,
+                                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                                  fontSize: '0.75rem',
+                                  '&:hover': {
+                                    bgcolor: currentConfig.color,
+                                    filter: 'brightness(0.9)'
+                                  }
+                                }}
+                              >
+                                බාගන්න
+                              </Button>
+                              <Button
+                                variant="outlined"
+                                size="small"
+                                startIcon={<OpenInNewIcon />}
+                                onClick={() => window.open(attachment.url, '_blank')}
+                                sx={{
+                                  borderColor: currentConfig.color,
+                                  color: currentConfig.color,
+                                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                                  fontSize: '0.75rem',
+                                  '&:hover': {
+                                    borderColor: currentConfig.color,
+                                    color: currentConfig.color,
+                                    filter: 'brightness(0.9)'
+                                  }
+                                }}
+                              >
+                                විවෘත කරන්න
+                              </Button>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    </Grid>
+                  ))}
+                </Grid>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Source Links */}
+          {file.sourceLinks && file.sourceLinks.length > 0 && (
+            <Card elevation={3}>
+              <CardContent sx={{ p: 3 }}>
+                <Box display="flex" alignItems="center" gap={2} mb={3}>
+                  <LinkIcon sx={{ color: currentConfig.color }} />
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                      color: '#2C3E50'
+                    }}
+                  >
+                    මූලාශ්‍ර සබැඳි ({file.sourceLinks.length})
+                  </Typography>
+                </Box>
+
+                <Grid container spacing={2}>
+                  {file.sourceLinks.map((link, index) => (
+                    <Grid item xs={12} sm={6} key={index}>
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                      >
+                        <Card
+                          elevation={2}
+                          sx={{
+                            transition: 'all 0.3s ease',
+                            '&:hover': {
+                              transform: 'translateY(-2px)',
+                              boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+                            }
+                          }}
+                        >
+                          <CardContent sx={{ p: 2 }}>
+                            <Box display="flex" alignItems="center" gap={2} mb={2}>
+                              <LinkIcon sx={{ color: currentConfig.color, fontSize: 32 }} />
+                              <Box flexGrow={1}>
+                                <Typography
+                                  variant="subtitle2"
+                                  sx={{
+                                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                                    fontWeight: 'bold',
+                                    color: '#2C3E50'
+                                  }}
+                                >
+                                  {link.title}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                  sx={{
+                                    fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                                    wordBreak: 'break-all'
+                                  }}
+                                >
+                                  {link.url}
+                                </Typography>
+                              </Box>
+                            </Box>
+
+                            {link.description && (
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{
+                                  fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                                  mb: 2,
+                                  lineHeight: 1.4
+                                }}
+                              >
+                                {link.description}
+                              </Typography>
+                            )}
+
+                            <Button
+                              variant="contained"
+                              size="small"
+                              fullWidth
+                              startIcon={<LaunchIcon />}
+                              onClick={() => window.open(link.url, '_blank')}
+                              sx={{
+                                bgcolor: currentConfig.color,
+                                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                                fontSize: '0.75rem',
+                                '&:hover': {
+                                  bgcolor: currentConfig.color,
+                                  filter: 'brightness(0.9)'
+                                }
+                              }}
+                            >
+                              සබැඳිය විවෘත කරන්න
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    </Grid>
+                  ))}
+                </Grid>
               </CardContent>
             </Card>
           )}
