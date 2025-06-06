@@ -129,6 +129,18 @@ import LiteraturePage from './pages/LiteraturePage';
 import LiteratureFolderView from './pages/LiteratureFolderView';
 import GradePage from './pages/GradePage';
 import GradeFolderView from './pages/GradeFolderView';
+import SubjectGuidelinesPage from './pages/SubjectGuidelinesPage';
+import SubjectGuidelinesFolderView from './pages/SubjectGuidelinesFolderView';
+import TeacherHandbookPage from './pages/TeacherHandbookPage';
+import TeacherHandbookFolderView from './pages/TeacherHandbookFolderView';
+import VideoLessonsPage from './pages/VideoLessonsPage';
+import VideoLessonsFolderView from './pages/VideoLessonsFolderView';
+import OthersPage from './pages/OthersPage';
+import OthersFolderView from './pages/OthersFolderView';
+import AcademicInfoPage from './pages/AcademicInfoPage';
+import AcademicInfoFolderView from './pages/AcademicInfoFolderView';
+import ExtracurricularPage from './pages/ExtracurricularPage';
+import ExtracurricularFolderView from './pages/ExtracurricularFolderView';
 
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
@@ -214,8 +226,8 @@ const navItems = [
     name: "විෂය අධ්‍යනය",
     icon: <MenuBookIcon />,
     subcategories: [
-      { name: "විෂය නිර්දේශ", path: "/syllabus", icon: <MenuBookIcon /> },
-      { name: "ගුරු අත් පොත්", path: "/syllabus", icon: <MenuBookIcon /> },
+      { name: "විෂය නිර්දේශ", path: "/subject-guidelines", icon: <MenuBookIcon /> },
+      { name: "ගුරු අත් පොත්", path: "/teacher-handbook", icon: <MenuBookIcon /> },
     ],
   },
 
@@ -225,7 +237,7 @@ const navItems = [
     icon: <MoreHorizIcon />,
     subcategories: [
       { name: "වීඩියෝ පාඩම්", path: "/video-lessons", icon: <PlayLessonIcon /> },
-      { name: "Others", path: "/others", icon: <MoreHorizIcon /> },
+      { name: "Other", path: "/others", icon: <MoreHorizIcon /> },
     ],
   },
 
@@ -235,8 +247,8 @@ const navItems = [
     icon: <SchoolIcon />,
     subcategories: [
       { name: "Academic Information", path: "/academic-info", icon: <CastForEducationIcon /> },
-      { name: "Classes & Time Tables", path: "/academic-info", icon: <CastForEducationIcon /> },
-      { name: "Extracurricular Infomation", path: "/extracurricular", icon: <EmojiEventsIcon /> },
+      { name: "Classes & Time Tables", path: "/classes-info", icon: <CastForEducationIcon /> },
+      { name: "Extracurricular Information", path: "/extracurricular", icon: <EmojiEventsIcon /> },
       { name: "Photo Bucket", path: "/photo-bucket", icon: <PhotoLibraryIcon /> },
     ],
   },
@@ -858,12 +870,18 @@ function AppContent() {
               <Route path="/speed-tests" element={<TestPage title="Speed Tests" />} />
               <Route path="/e-magazine" element={<TestPage title="E-Magazine" />} />
               <Route path="/reviews" element={<TestPage title="Reviews" />} />
-              <Route path="/syllabus" element={<TestPage title="Syllabus" />} />
-              <Route path="/video-lessons" element={<TestPage title="Video Lessons" />} />
-              <Route path="/paper-structures" element={<TestPage title="Paper Structures" />} />
-              <Route path="/others" element={<TestPage title="Others" />} />
-              <Route path="/academic-info" element={<TestPage title="Academic Info" />} />
-              <Route path="/extracurricular" element={<TestPage title="Extracurricular" />} />
+              <Route path="/subject-guidelines" element={<SubjectGuidelinesPage />} />
+              <Route path="/subject-guidelines/folder/:folderId" element={<SubjectGuidelinesFolderView />} />
+              <Route path="/teacher-handbook" element={<TeacherHandbookPage />} />
+              <Route path="/teacher-handbook/folder/:folderId" element={<TeacherHandbookFolderView />} />
+              <Route path="/video-lessons" element={<VideoLessonsPage />} />
+              <Route path="/video-lessons/folder/:folderId" element={<VideoLessonsFolderView />} />
+              <Route path="/others" element={<OthersPage />} />
+              <Route path="/others/folder/:folderId" element={<OthersFolderView />} />
+              <Route path="/academic-info" element={<AcademicInfoPage />} />
+              <Route path="/academic-info/folder/:folderId" element={<AcademicInfoFolderView />} />
+              <Route path="/extracurricular" element={<ExtracurricularPage />} />
+              <Route path="/extracurricular/folder/:folderId" element={<ExtracurricularFolderView />} />
               <Route path="/photo-bucket" element={<TestPage title="Photo Bucket" />} />
               <Route path="/grade-9" element={<TestPage title="Grade 9" />} />
               <Route path="/grade-10" element={<TestPage title="Grade 10" />} />
