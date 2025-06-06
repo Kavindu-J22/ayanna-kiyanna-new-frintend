@@ -43,7 +43,7 @@ const CreatePaperDialog = ({ open, onClose, onSuccess }) => {
   const [newSourceLink, setNewSourceLink] = useState({ title: '', url: '' });
 
   const gradeOptions = ['Grade 9', 'Grade 10', 'Grade 11', 'A/L', 'සිංහල සාහිත්‍ය (කාණ්ඩ විෂය)'];
-  const paperTypeOptions = ['Past Paper', 'Model Paper', 'Other'];
+  const paperTypeOptions = ['Past Paper', 'Model Paper', 'අනුමාන ප්‍රශ්ණපත්‍ර', 'RAM Papers', 'Other'];
   const paperPartOptions = ['Part 1', 'Part 2', 'Part 3', 'Full Paper', 'Other'];
 
   const handleInputChange = (field, value) => {

@@ -101,6 +101,7 @@ import AllClassPaymentRequests from './pages/AllClassPaymentRequests';
 import MyPaymentRequests from './pages/MyPaymentRequests';
 import AksharaMalawa from './components/Aksharamalawa/NewSinhalaHodiya';
 import PaperBankPage from './pages/PaperBankPage';
+import PaperStructuresPage from './pages/PaperStructuresPage';
 import AdminAssignmentManagement from './pages/AdminAssignmentManagement';
 import CreateAssignment from './pages/CreateAssignment';
 import EditAssignment from './pages/EditAssignment';
@@ -203,7 +204,7 @@ const navItems = [
       icon: <ArticleIcon />,
       subcategories: [
         { name: "Paper Bank", path: "/paperbank", icon: <ImportContactsIcon /> },
-        { name: "Paper Structures", path: "/paperStuctures", icon: <NoteAltIcon /> },
+        { name: "Paper Structures සහ අනුමාන", path: "/paper-structures", icon: <NoteAltIcon /> },
       ],
     },
 
@@ -852,6 +853,7 @@ function AppContent() {
               <Route path="/literature" element={<LiteraturePage />} />
               <Route path="/alphabet" element={<TestPage title="අක්ෂර මාලාව" />} />
               <Route path="/paperbank" element={<PaperBankPage />} />
+              <Route path="/paper-structures" element={<PaperStructuresPage />} />
               <Route path="/online-exams" element={<TestPage title="Online Exams" />} />
               <Route path="/speed-tests" element={<TestPage title="Speed Tests" />} />
               <Route path="/e-magazine" element={<TestPage title="E-Magazine" />} />

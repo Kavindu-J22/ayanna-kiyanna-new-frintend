@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -27,39 +27,24 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 
-const EditPaperDialog = ({ open, onClose, paper, onSuccess }) => {
+const CreatePaperStructureDialog = ({ open, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    type: '',
     grade: '',
-    paperType: '',
-    paperYear: '',
     paperPart: '',
     attachments: [],
-    sourceLinks: []
+    sourceLinks: [],
+    additionalNote: ''
   });
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [newSourceLink, setNewSourceLink] = useState({ title: '', url: '' });
 
-  const gradeOptions = ['Grade 9', 'Grade 10', 'Grade 11', 'A/L', 'සිංහල සාහිත්‍ය (කාණ්ඩ විෂය)'];
-  const paperTypeOptions = ['Past Paper', 'Model Paper', 'අනුමාන ප්‍රශ්ණපත්‍ර', 'RAM Papers', 'Other'];
+  const typeOptions = ['Paper Structures', 'අනුමාන', 'Others'];
+  const gradeOptions = ['Grade 9', 'Grade 10', 'Grade 11', 'A/L', 'සිංහල සාහිත්‍යය (කාණ්ඩ විෂය)'];
   const paperPartOptions = ['Part 1', 'Part 2', 'Part 3', 'Full Paper', 'Other'];
-
-  useEffect(() => {
-    if (paper && open) {
-      setFormData({
-        title: paper.title || '',
-        description: paper.description || '',
-        grade: paper.grade || '',
-        paperType: paper.paperType || '',
-        paperYear: paper.paperYear || '',
-        paperPart: paper.paperPart || '',
-        attachments: paper.attachments || [],
-        sourceLinks: paper.sourceLinks || []
-      });
-    }
-  }, [paper, open]);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -74,11 +59,13 @@ const EditPaperDialog = ({ open, onClose, paper, onSuccess }) => {
     setUploading(true);
     try {
       const uploadPromises = Array.from(files).map(async (file) => {
+        // Validate file type
         const isValidType = file.type.startsWith('image/') || file.type === 'application/pdf';
         if (!isValidType) {
           throw new Error('Only images and PDF files are allowed');
         }
 
+        // Validate file size (10MB limit)
         if (file.size > 10 * 1024 * 1024) {
           throw new Error('File size must be less than 10MB');
         }
@@ -115,7 +102,7 @@ const EditPaperDialog = ({ open, onClose, paper, onSuccess }) => {
         attachments: [...prev.attachments, ...uploadedFiles]
       }));
     } catch (err) {
-      setError(err.message || 'File upload failed');
+      setError(err.message || 'Error uploading files');
     } finally {
       setUploading(false);
     }
@@ -150,19 +137,15 @@ const EditPaperDialog = ({ open, onClose, paper, onSuccess }) => {
       setError('');
       
       if (!formData.title.trim()) {
-        setError('ප්‍රශ්න පත්‍ර නම අවශ්‍ය වේ');
+        setError('ශීර්ෂය අවශ්‍ය වේ');
+        return;
+      }
+      if (!formData.type) {
+        setError('වර්ගය තෝරන්න');
         return;
       }
       if (!formData.grade) {
         setError('ශ්‍රේණිය තෝරන්න');
-        return;
-      }
-      if (!formData.paperType) {
-        setError('ප්‍රශ්න පත්‍ර වර්ගය තෝරන්න');
-        return;
-      }
-      if (!formData.paperYear.trim()) {
-        setError('වර්ෂය ඇතුළත් කරන්න');
         return;
       }
       if (!formData.paperPart) {
@@ -180,8 +163,8 @@ const EditPaperDialog = ({ open, onClose, paper, onSuccess }) => {
       }
 
       const token = localStorage.getItem('token');
-      const response = await axios.put(
-        `https://ayanna-kiyanna-new-backend.onrender.com/api/paperbank/${paper._id}`,
+      const response = await axios.post(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/paper-structures',
         formData,
         {
           headers: { 'x-auth-token': token }
@@ -193,88 +176,50 @@ const EditPaperDialog = ({ open, onClose, paper, onSuccess }) => {
         handleClose();
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Error updating paper');
+      setError(err.response?.data?.message || 'Error creating paper structure');
     }
   };
 
   const handleClose = () => {
+    setFormData({
+      title: '',
+      description: '',
+      type: '',
+      grade: '',
+      paperPart: '',
+      attachments: [],
+      sourceLinks: [],
+      additionalNote: ''
+    });
     setNewSourceLink({ title: '', url: '' });
     setError('');
     onClose();
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      maxWidth="md"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: 3,
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.2)',
-        }
-      }}
-    >
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle sx={{
         fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         color: 'white',
-        textAlign: 'center',
-        fontSize: '1.5rem',
-        fontWeight: 'bold',
-        py: 3,
-        position: 'relative',
-        '&::after': {
-          content: '""',
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: '4px',
-          background: 'linear-gradient(90deg, #ff6b6b 0%, #feca57 50%, #48dbfb 100%)'
-        }
+        textAlign: 'center'
       }}>
-        ප්‍රශ්න පත්‍රය සංස්කරණය කරන්න
+        නව Paper Structure එකක් සාදන්න
       </DialogTitle>
-      
-      <DialogContent sx={{
-        mt: 2,
-        background: 'linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%)',
-        '&::-webkit-scrollbar': {
-          width: '8px',
-        },
-        '&::-webkit-scrollbar-track': {
-          background: '#f1f1f1',
-          borderRadius: '4px',
-        },
-        '&::-webkit-scrollbar-thumb': {
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          borderRadius: '4px',
-        },
-        '&::-webkit-scrollbar-thumb:hover': {
-          background: 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)',
-        }
-      }}>
+
+      <DialogContent sx={{ mt: 2 }}>
         {error && (
-          <Alert
-            severity="error"
-            sx={{
-              mb: 2,
-              borderRadius: 2,
-              '& .MuiAlert-message': {
-                fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-              }
-            }}
-          >
+          <Alert severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
         )}
 
         <Grid container spacing={3}>
-          <Grid item xs={12} sx={{ mt: 2 }}>
+          {/* Basic Information */}
+          <Grid item xs={12} >
             <Paper elevation={2} sx={{
               p: 2,
+              mt: 2,
               borderRadius: 2,
               background: 'linear-gradient(135deg, #e8f0ff 0%, #f0f8ff 100%)',
               border: '1px solid rgba(102, 126, 234, 0.2)'
@@ -297,112 +242,18 @@ const EditPaperDialog = ({ open, onClose, paper, onSuccess }) => {
             </Paper>
           </Grid>
 
-          <Grid item xs={12} sx={{ mt: 2 }}>
+          <Grid item xs={12}>
             <TextField
               fullWidth
-              label="ප්‍රශ්න පත්‍ර නම *"
+              label="ශීර්ෂය *"
               value={formData.title}
               onChange={(e) => handleInputChange('title', e.target.value)}
               sx={{
-                minWidth: 200,
-                '& .MuiInputLabel-root': {
-                  fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-                },
-                '& .MuiInputBase-input': {
-                  fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-                }
-              }}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} sx={{ mt: 2 }}>
-            <FormControl fullWidth sx={{ minWidth: 200 }}>
-              <InputLabel sx={{
-                fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-              }}>
-                ශ්‍රේණිය *
-              </InputLabel>
-              <Select
-                value={formData.grade}
-                label="ශ්‍රේණිය *"
-                onChange={(e) => handleInputChange('grade', e.target.value)}
-                sx={{
-                  '& .MuiSelect-select': {
-                    fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-                  }
-                }}
-              >
-                {gradeOptions.map(grade => (
-                  <MenuItem key={grade} value={grade} sx={{
-                    fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-                  }}>
-                    {grade}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth sx={{ minWidth: 200 }}>
-              <InputLabel sx={{
-                fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-              }}>
-                ප්‍රශ්න පත්‍ර වර්ගය *
-              </InputLabel>
-              <Select
-                value={formData.paperType}
-                label="ප්‍රශ්න පත්‍ර වර්ගය *"
-                onChange={(e) => handleInputChange('paperType', e.target.value)}
-                sx={{
-                  '& .MuiSelect-select': {
-                    fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-                  }
-                }}
-              >
-                {paperTypeOptions.map(type => (
-                  <MenuItem key={type} value={type} sx={{
-                    fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-                  }}>
-                    {type}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="වර්ෂය *"
-              value={formData.paperYear}
-              onChange={(e) => handleInputChange('paperYear', e.target.value)}
-              placeholder="උදා: 2023"
-              sx={{
                 '& .MuiInputLabel-root': {
                   fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
                 }
               }}
             />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
-              <InputLabel sx={{
-                fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-              }}>
-                කොටස *
-              </InputLabel>
-              <Select
-                value={formData.paperPart}
-                label="කොටස *"
-                onChange={(e) => handleInputChange('paperPart', e.target.value)}
-              >
-                {paperPartOptions.map(part => (
-                  <MenuItem key={part} value={part}>{part}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
           </Grid>
 
           <Grid item xs={12}>
@@ -421,17 +272,64 @@ const EditPaperDialog = ({ open, onClose, paper, onSuccess }) => {
             />
           </Grid>
 
+          <Grid item xs={12} sm={4}>
+            <FormControl fullWidth required sx={{ minWidth: 200 }}>
+              <InputLabel>වර්ගය</InputLabel>
+              <Select
+                value={formData.type}
+                label="වර්ගය"
+                onChange={(e) => handleInputChange('type', e.target.value)}
+              >
+                {typeOptions.map((type) => (
+                  <MenuItem key={type} value={type}>{type}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <FormControl fullWidth required sx={{ minWidth: 200 }}>
+              <InputLabel>ශ්‍රේණිය</InputLabel>
+              <Select
+                value={formData.grade}
+                label="ශ්‍රේණිය"
+                onChange={(e) => handleInputChange('grade', e.target.value)}
+              >
+                {gradeOptions.map((grade) => (
+                  <MenuItem key={grade} value={grade}>{grade}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <FormControl fullWidth required sx={{ minWidth: 200 }}>
+              <InputLabel>කොටස</InputLabel>
+              <Select
+                value={formData.paperPart}
+                label="කොටස"
+                onChange={(e) => handleInputChange('paperPart', e.target.value)}
+              >
+                {paperPartOptions.map((part) => (
+                  <MenuItem key={part} value={part}>{part}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          {/* File Upload Section */}
           <Grid item xs={12}>
             <Paper elevation={2} sx={{
               p: 2,
+              mt: 2,
               borderRadius: 2,
-              background: 'linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%)',
-              border: '1px solid rgba(255, 165, 0, 0.2)'
+              background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+              border: '1px solid rgba(255, 152, 0, 0.2)'
             }}>
               <Typography variant="h6" sx={{
                 fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                 mb: 2,
-                color: '#ff8c00',
+                color: '#f57c00',
                 fontWeight: 'bold',
                 display: 'flex',
                 alignItems: 'center',
@@ -441,13 +339,10 @@ const EditPaperDialog = ({ open, onClose, paper, onSuccess }) => {
                   fontSize: '1.2rem'
                 }
               }}>
-                ගොනු අමුණන්න (විකල්ප)
+                ගොනු (විකල්ප)
               </Typography>
             </Paper>
-          </Grid>
 
-          <Grid item xs={12}>
-            
             <Paper
               variant="outlined"
               sx={{
@@ -455,21 +350,27 @@ const EditPaperDialog = ({ open, onClose, paper, onSuccess }) => {
                 textAlign: 'center',
                 border: '2px dashed #ccc',
                 cursor: 'pointer',
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%)',
+                transition: 'all 0.3s ease',
                 '&:hover': {
-                  borderColor: '#667eea'
+                  borderColor: '#667eea',
+                  background: 'linear-gradient(135deg, #e8f0ff 0%, #d0e0ff 100%)',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 8px 25px rgba(102, 126, 234, 0.15)'
                 }
               }}
-              onClick={() => document.getElementById('file-upload-edit').click()}
+              onClick={() => document.getElementById('file-upload').click()}
             >
               <input
-                id="file-upload-edit"
+                id="file-upload"
                 type="file"
                 multiple
                 accept="image/*,.pdf"
                 style={{ display: 'none' }}
                 onChange={(e) => handleFileUpload(e.target.files)}
               />
-              
+
               {uploading ? (
                 <CircularProgress />
               ) : (
@@ -505,17 +406,19 @@ const EditPaperDialog = ({ open, onClose, paper, onSuccess }) => {
             )}
           </Grid>
 
+          {/* Source Links Section */}
           <Grid item xs={12}>
             <Paper elevation={2} sx={{
               p: 2,
+              mt: 2,
               borderRadius: 2,
-              background: 'linear-gradient(135deg, #e6f7ff 0%, #ccf2ff 100%)',
-              border: '1px solid rgba(0, 191, 255, 0.2)'
+              background: 'linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%)',
+              border: '1px solid rgba(76, 175, 80, 0.2)'
             }}>
               <Typography variant="h6" sx={{
                 fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                 mb: 2,
-                color: '#00bfff',
+                color: '#4caf50',
                 fontWeight: 'bold',
                 display: 'flex',
                 alignItems: 'center',
@@ -528,75 +431,75 @@ const EditPaperDialog = ({ open, onClose, paper, onSuccess }) => {
                 මූලාශ්‍ර සම්බන්ධක (විකල්ප)
               </Typography>
             </Paper>
+
+            <Box sx={{ mt: 2 }}>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={12} sm={5}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="සම්බන්ධකයේ නම"
+                    value={newSourceLink.title}
+                    onChange={(e) => setNewSourceLink(prev => ({ ...prev, title: e.target.value }))}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={5}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="URL"
+                    value={newSourceLink.url}
+                    onChange={(e) => setNewSourceLink(prev => ({ ...prev, url: e.target.value }))}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={2}>
+                  <IconButton
+                    onClick={addSourceLink}
+                    disabled={!newSourceLink.title.trim() || !newSourceLink.url.trim()}
+                    sx={{
+                      backgroundColor: '#4caf50',
+                      color: 'white',
+                      '&:hover': { backgroundColor: '#45a049' },
+                      '&:disabled': { backgroundColor: '#ccc' }
+                    }}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Grid>
+              </Grid>
+
+              {formData.sourceLinks.length > 0 && (
+                <Box sx={{ mt: 2 }}>
+                  {formData.sourceLinks.map((link, index) => (
+                    <Chip
+                      key={index}
+                      label={link.title}
+                      onDelete={() => removeSourceLink(index)}
+                      deleteIcon={<DeleteIcon />}
+                      icon={<LinkIcon />}
+                      sx={{ m: 0.5 }}
+                    />
+                  ))}
+                </Box>
+              )}
+            </Box>
           </Grid>
 
+          {/* Additional Note */}
           <Grid item xs={12}>
-
-            <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap' }}>
-              <TextField
-                label="සම්බන්ධක නම"
-                value={newSourceLink.title}
-                onChange={(e) => setNewSourceLink(prev => ({ ...prev, title: e.target.value }))}
-                sx={{
-                  flex: 1,
-                  minWidth: 200,
-                  '& .MuiInputLabel-root': {
-                    fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-                  },
-                  '& .MuiInputBase-input': {
-                    fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-                  }
-                }}
-              />
-              <TextField
-                label="URL"
-                value={newSourceLink.url}
-                onChange={(e) => setNewSourceLink(prev => ({ ...prev, url: e.target.value }))}
-                sx={{
-                  flex: 1,
-                  minWidth: 200,
-                  '& .MuiInputLabel-root': {
-                    fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-                  },
-                  '& .MuiInputBase-input': {
-                    fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-                  }
-                }}
-              />
-              <Button
-                variant="outlined"
-                onClick={addSourceLink}
-                startIcon={<AddIcon />}
-                disabled={!newSourceLink.title.trim() || !newSourceLink.url.trim()}
-                sx={{
-                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-                  borderColor: '#667eea',
-                  color: '#667eea',
-                  minWidth: 120,
-                  '&:hover': {
-                    borderColor: '#5a67d8',
-                    backgroundColor: 'rgba(102, 126, 234, 0.1)'
-                  }
-                }}
-              >
-                එක් කරන්න
-              </Button>
-            </Box>
-
-            {formData.sourceLinks.length > 0 && (
-              <Box>
-                {formData.sourceLinks.map((link, index) => (
-                  <Chip
-                    key={index}
-                    icon={<LinkIcon />}
-                    label={link.title}
-                    onDelete={() => removeSourceLink(index)}
-                    deleteIcon={<DeleteIcon />}
-                    sx={{ m: 0.5 }}
-                  />
-                ))}
-              </Box>
-            )}
+            <TextField
+              fullWidth
+              multiline
+              rows={3}
+              label="අමතර සටහන (විකල්ප)"
+              value={formData.additionalNote}
+              onChange={(e) => handleInputChange('additionalNote', e.target.value)}
+              sx={{
+                '& .MuiInputLabel-root': {
+                  fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
+                }
+              }}
+            />
           </Grid>
         </Grid>
       </DialogContent>
@@ -616,14 +519,26 @@ const EditPaperDialog = ({ open, onClose, paper, onSuccess }) => {
           disabled={uploading}
           sx={{
             fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            minWidth: 120,
+            borderRadius: 2,
+            boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)',
+              boxShadow: '0 6px 20px rgba(102, 126, 234, 0.4)',
+              transform: 'translateY(-1px)'
+            },
+            '&:disabled': {
+              background: '#ccc',
+              boxShadow: 'none'
+            }
           }}
         >
-          {uploading ? 'උඩුගත කරමින්...' : 'යාවත්කාලීන කරන්න'}
+          {uploading ? 'උඩුගත කරමින්...' : 'සුරකින්න'}
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default EditPaperDialog;
+export default CreatePaperStructureDialog;
