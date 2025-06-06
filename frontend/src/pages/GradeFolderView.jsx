@@ -51,6 +51,7 @@ const GradeFolderView = () => {
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [editingFile, setEditingFile] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -151,6 +152,7 @@ const GradeFolderView = () => {
       return;
     }
 
+    setDeletingId(fileId);
     try {
       const token = localStorage.getItem('token');
       await axios.delete(
@@ -162,6 +164,8 @@ const GradeFolderView = () => {
     } catch (err) {
       console.error('Error deleting file:', err);
       setError('Error deleting file');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -209,9 +213,55 @@ const GradeFolderView = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-        <CircularProgress size={60} sx={{ color: currentConfig.color }} />
-      </Box>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Box textAlign="center">
+              <CircularProgress
+                size={80}
+                sx={{
+                  color: currentConfig.color,
+                  mb: 3
+                }}
+              />
+              <Typography
+                variant="h5"
+                gutterBottom
+                sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                  color: '#2C3E50',
+                  mb: 1
+                }}
+              >
+                {currentConfig.title}
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                  color: '#2C3E50',
+                  mb: 1
+                }}
+              >
+                පූරණය වෙමින්...
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
+                }}
+              >
+                කරුණාකර රැඳී සිටින්න
+              </Typography>
+            </Box>
+          </motion.div>
+        </Box>
+      </Container>
     );
   }
 
@@ -309,9 +359,47 @@ const GradeFolderView = () => {
       )}
 
       {/* Files Grid */}
-      <Grid container spacing={3}>
-        <AnimatePresence>
-          {files.map((file, index) => (
+      {loading ? (
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="40vh" width="100%">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Box textAlign="center">
+              <CircularProgress
+                size={80}
+                sx={{
+                  color: currentConfig.color,
+                  mb: 3
+                }}
+              />
+              <Typography
+                variant="h6"
+                sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                  color: '#2C3E50',
+                  mb: 1
+                }}
+              >
+                ගොනු පූරණය වෙමින්...
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
+                }}
+              >
+                කරුණාකර රැඳී සිටින්න
+              </Typography>
+            </Box>
+          </motion.div>
+        </Box>
+      ) : (
+        <Grid container spacing={3}>
+          <AnimatePresence>
+            {files.map((file, index) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={file._id}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -441,9 +529,14 @@ const GradeFolderView = () => {
                         <IconButton
                           size="small"
                           onClick={() => handleDeleteFile(file._id)}
+                          disabled={deletingId === file._id}
                           sx={{ color: '#F44336' }}
                         >
-                          <DeleteIcon />
+                          {deletingId === file._id ? (
+                            <CircularProgress size={16} sx={{ color: '#F44336' }} />
+                          ) : (
+                            <DeleteIcon />
+                          )}
                         </IconButton>
                       </Box>
                     )}
@@ -452,8 +545,9 @@ const GradeFolderView = () => {
               </motion.div>
             </Grid>
           ))}
-        </AnimatePresence>
-      </Grid>
+            </AnimatePresence>
+          </Grid>
+        )}
 
       {/* Empty State */}
       {files.length === 0 && !loading && (

@@ -52,6 +52,7 @@ const GradePage = () => {
     description: ''
   });
   const [submitting, setSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -218,6 +219,7 @@ const GradePage = () => {
       return;
     }
 
+    setDeletingId(folderId);
     try {
       const token = localStorage.getItem('token');
       await axios.delete(
@@ -229,6 +231,8 @@ const GradePage = () => {
     } catch (err) {
       console.error('Error deleting folder:', err);
       setError('Error deleting folder');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -245,11 +249,57 @@ const GradePage = () => {
     navigate(`/grade/${gradeCategory}/folder/${folderId}`);
   };
 
-  if (loading) {
+  if (loading && !isAuthenticated) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-        <CircularProgress size={60} sx={{ color: currentConfig.color }} />
-      </Box>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Box textAlign="center">
+              <CircularProgress
+                size={80}
+                sx={{
+                  color: currentConfig.color,
+                  mb: 3
+                }}
+              />
+              <Typography
+                variant="h5"
+                gutterBottom
+                sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                  color: '#2C3E50',
+                  mb: 1
+                }}
+              >
+                {currentConfig.title}
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                  color: '#2C3E50',
+                  mb: 1
+                }}
+              >
+                පූරණය වෙමින්...
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
+                }}
+              >
+                කරුණාකර රැඳී සිටින්න
+              </Typography>
+            </Box>
+          </motion.div>
+        </Box>
+      </Container>
     );
   }
 
@@ -306,9 +356,47 @@ const GradePage = () => {
       )}
 
       {/* Folders Grid */}
-      <Grid container spacing={3}>
-        <AnimatePresence>
-          {folders.map((folder, index) => (
+      {loading ? (
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="40vh" width="100%">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Box textAlign="center">
+              <CircularProgress
+                size={80}
+                sx={{
+                  color: currentConfig.color,
+                  mb: 3
+                }}
+              />
+              <Typography
+                variant="h6"
+                sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                  color: '#2C3E50',
+                  mb: 1
+                }}
+              >
+                ෆෝල්ඩර පූරණය වෙමින්...
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
+                }}
+              >
+                කරුණාකර රැඳී සිටින්න
+              </Typography>
+            </Box>
+          </motion.div>
+        </Box>
+      ) : (
+        <Grid container spacing={3}>
+          <AnimatePresence>
+            {folders.map((folder, index) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={folder._id}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -414,9 +502,14 @@ const GradePage = () => {
                         <IconButton
                           size="small"
                           onClick={() => handleDeleteFolder(folder._id)}
+                          disabled={deletingId === folder._id}
                           sx={{ color: '#F44336' }}
                         >
-                          <DeleteIcon />
+                          {deletingId === folder._id ? (
+                            <CircularProgress size={16} sx={{ color: '#F44336' }} />
+                          ) : (
+                            <DeleteIcon />
+                          )}
                         </IconButton>
                       </Box>
                     )}
@@ -425,8 +518,9 @@ const GradePage = () => {
               </motion.div>
             </Grid>
           ))}
-        </AnimatePresence>
-      </Grid>
+            </AnimatePresence>
+          </Grid>
+        )}
 
       {/* Empty State */}
       {folders.length === 0 && !loading && (
