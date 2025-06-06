@@ -100,6 +100,7 @@ import AdminClassPayments from './pages/AdminClassPayments';
 import AllClassPaymentRequests from './pages/AllClassPaymentRequests';
 import MyPaymentRequests from './pages/MyPaymentRequests';
 import AksharaMalawa from './components/Aksharamalawa/NewSinhalaHodiya';
+import PaperBankPage from './pages/PaperBankPage';
 import AdminAssignmentManagement from './pages/AdminAssignmentManagement';
 import CreateAssignment from './pages/CreateAssignment';
 import EditAssignment from './pages/EditAssignment';
@@ -198,12 +199,11 @@ const navItems = [
     },
 
     {
-      name: "Paper Bank",
+      name: "Papers & Paper Structures",
       icon: <ArticleIcon />,
       subcategories: [
-        { name: "සිංහල භාෂාව හා සාහිත්‍යය (O/L & A/L)", path: "/e-magazine", icon: <ImportContactsIcon /> },
-        { name: "සිංහල සාහිත්‍යය (කාණ්ඩ විෂය)", path: "/reviews", icon: <RateReviewOutlinedIcon /> },
-        { name: "Paper Structures", path: "/syllabus", icon: <NoteAltIcon /> },
+        { name: "Paper Bank", path: "/paperbank", icon: <ImportContactsIcon /> },
+        { name: "Paper Structures", path: "/paperStuctures", icon: <NoteAltIcon /> },
       ],
     },
 
@@ -851,7 +851,7 @@ function AppContent() {
               <Route path="/grade/:gradeCategory/folder/:folderId" element={<GradeFolderView />} />
               <Route path="/literature" element={<LiteraturePage />} />
               <Route path="/alphabet" element={<TestPage title="අක්ෂර මාලාව" />} />
-              <Route path="/paper-bank" element={<TestPage title="Paper Bank" />} />
+              <Route path="/paperbank" element={<PaperBankPage />} />
               <Route path="/online-exams" element={<TestPage title="Online Exams" />} />
               <Route path="/speed-tests" element={<TestPage title="Speed Tests" />} />
               <Route path="/e-magazine" element={<TestPage title="E-Magazine" />} />
