@@ -139,6 +139,7 @@ import OthersPage from './pages/OthersPage';
 import OthersFolderView from './pages/OthersFolderView';
 import AcademicInfoPage from './pages/AcademicInfoPage';
 import AcademicInfoFolderView from './pages/AcademicInfoFolderView';
+import ClassesInfoPage from './pages/ClassesInfoPage';
 import ExtracurricularPage from './pages/ExtracurricularPage';
 import ExtracurricularFolderView from './pages/ExtracurricularFolderView';
 
@@ -880,6 +881,7 @@ function AppContent() {
               <Route path="/others/folder/:folderId" element={<OthersFolderView />} />
               <Route path="/academic-info" element={<AcademicInfoPage />} />
               <Route path="/academic-info/folder/:folderId" element={<AcademicInfoFolderView />} />
+              <Route path="/classes-info" element={<ClassesInfoPage />} />
               <Route path="/extracurricular" element={<ExtracurricularPage />} />
               <Route path="/extracurricular/folder/:folderId" element={<ExtracurricularFolderView />} />
               <Route path="/photo-bucket" element={<TestPage title="Photo Bucket" />} />
