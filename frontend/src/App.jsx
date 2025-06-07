@@ -150,6 +150,15 @@ import AkaradiyaPage from './pages/AkaradiyaPage';
 import AkaradiyaFolderView from './pages/AkaradiyaFolderView';
 import AksharavinyasayaPage from './pages/AksharavinyasayaPage';
 import AksharavinyasayaFolderView from './pages/AksharavinyasayaFolderView';
+import ReviewsPage from './pages/ReviewsPage';
+import ReviewsFolderView from './pages/ReviewsFolderView';
+import ReviewsFileDetail from './pages/ReviewsFileDetail';
+import AppreciationPage from './pages/AppreciationPage';
+import AppreciationFolderView from './pages/AppreciationFolderView';
+import AppreciationFileDetail from './pages/AppreciationFileDetail';
+import OtherEntPage from './pages/OtherEntPage';
+import OtherEntFolderView from './pages/OtherEntFolderView';
+import OtherEntFileDetail from './pages/OtherEntFileDetail';
 
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
@@ -197,16 +206,7 @@ const navItems = [
     ],
   },
 
-    // වැදගත් විශේෂාංග Category
-    {
-      name: "විචාර හා රසවින්දන",
-      icon: <StarIcon />,
-      subcategories: [
-        { name: "විචාර", path: "/e-magazine", icon: <ImportContactsIcon /> },
-        { name: "රසවින්දන", path: "/reviews", icon: <RateReviewOutlinedIcon /> },
-        { name: "වෙනත්", path: "/syllabus", icon: <MenuBookIcon /> },
-      ],
-    },
+
 
     {
       name: "ශ්‍රේණිය අනුව අධ්‍යයනය කරන්න",
@@ -247,6 +247,17 @@ const navItems = [
     subcategories: [
       { name: "වීඩියෝ පාඩම්", path: "/video-lessons", icon: <PlayLessonIcon /> },
       { name: "Other", path: "/others", icon: <MoreHorizIcon /> },
+    ],
+  },
+
+  // විචාර හා රසවින්දන Category
+  {
+    name: "විචාර හා රසවින්දන",
+    icon: <MenuBookIcon />,
+    subcategories: [
+      { name: "විචාර", path: "/reviews", icon: <MenuBookIcon /> },
+      { name: "රසවින්දන", path: "/appreciation", icon: <MenuBookIcon /> },
+      { name: "වෙනත් අමතර", path: "/otherEnt", icon: <MenuBookIcon /> },
     ],
   },
 
@@ -886,7 +897,15 @@ function AppContent() {
               <Route path="/online-exams" element={<TestPage title="Online Exams" />} />
               <Route path="/speed-tests" element={<TestPage title="Speed Tests" />} />
               <Route path="/e-magazine" element={<TestPage title="E-Magazine" />} />
-              <Route path="/reviews" element={<TestPage title="Reviews" />} />
+              <Route path="/reviews" element={<ReviewsPage />} />
+              <Route path="/reviews/folder/:folderId" element={<ReviewsFolderView />} />
+              <Route path="/reviews/file/:fileId" element={<ReviewsFileDetail />} />
+              <Route path="/appreciation" element={<AppreciationPage />} />
+              <Route path="/appreciation/folder/:folderId" element={<AppreciationFolderView />} />
+              <Route path="/appreciation/file/:fileId" element={<AppreciationFileDetail />} />
+              <Route path="/otherEnt" element={<OtherEntPage />} />
+              <Route path="/otherEnt/folder/:folderId" element={<OtherEntFolderView />} />
+              <Route path="/otherEnt/file/:fileId" element={<OtherEntFileDetail />} />
               <Route path="/subject-guidelines" element={<SubjectGuidelinesPage />} />
               <Route path="/subject-guidelines/folder/:folderId" element={<SubjectGuidelinesFolderView />} />
               <Route path="/teacher-handbook" element={<TeacherHandbookPage />} />
