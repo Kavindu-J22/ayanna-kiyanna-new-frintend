@@ -599,13 +599,28 @@ const ReviewsFileDetail = () => {
                         </>
                       )}
                       {(userRole === 'admin' || userRole === 'moderator') && (
-                        <IconButton
-                          size="small"
-                          onClick={() => setReplyingTo(comment._id)}
-                          sx={{ color: '#e91e63' }}
-                        >
-                          <ReplyIcon fontSize="small" />
-                        </IconButton>
+                        <>
+                          <IconButton
+                            size="small"
+                            onClick={() => setReplyingTo(comment._id)}
+                            sx={{ color: '#e91e63' }}
+                          >
+                            <ReplyIcon fontSize="small" />
+                          </IconButton>
+                          {comment.user._id !== currentUserId && (
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                setCommentToDelete(comment._id);
+                                setOpenDeleteDialog(true);
+                              }}
+                              sx={{ color: '#f44336' }}
+                              title="Admin: Delete Comment"
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          )}
+                        </>
                       )}
                     </Box>
                   </Box>
@@ -686,22 +701,84 @@ const ReviewsFileDetail = () => {
                     <Box sx={{ ml: 4, mt: 2 }}>
                       {comment.replies.map((reply) => (
                         <Box key={reply._id} sx={{ mb: 2, p: 2, bgcolor: '#fff', borderRadius: 1, border: '1px solid #e0e0e0' }}>
-                          <Box display="flex" alignItems="center" mb={1}>
-                            <Avatar sx={{ bgcolor: '#ff9800', mr: 2, width: 32, height: 32 }}>
-                              {reply.user.fullName.charAt(0)}
-                            </Avatar>
-                            <Box>
-                              <Typography variant="subtitle2" sx={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
-                                {reply.user.fullName} (Admin)
-                              </Typography>
-                              <Typography variant="caption" color="text.secondary">
-                                {new Date(reply.createdAt).toLocaleString('si-LK')}
-                              </Typography>
+                          <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                            <Box display="flex" alignItems="center">
+                              <Avatar sx={{ bgcolor: '#ff9800', mr: 2, width: 32, height: 32 }}>
+                                {reply.user.fullName.charAt(0)}
+                              </Avatar>
+                              <Box>
+                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
+                                  {reply.user.fullName} (Admin)
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  {new Date(reply.createdAt).toLocaleString('si-LK')}
+                                  {reply.isEdited && <span> (සංස්කරණය කර ඇත)</span>}
+                                </Typography>
+                              </Box>
                             </Box>
+
+                            {/* Admin can edit/delete their own replies */}
+                            {reply.user._id === currentUserId && (userRole === 'admin' || userRole === 'moderator') && (
+                              <Box>
+                                <IconButton
+                                  size="small"
+                                  onClick={() => {
+                                    setEditingComment(reply._id);
+                                    setEditText(reply.content);
+                                  }}
+                                  sx={{ color: '#ff9800' }}
+                                >
+                                  <EditIcon fontSize="small" />
+                                </IconButton>
+                                <IconButton
+                                  size="small"
+                                  onClick={() => {
+                                    setCommentToDelete(reply._id);
+                                    setOpenDeleteDialog(true);
+                                  }}
+                                  sx={{ color: '#f44336' }}
+                                >
+                                  <DeleteIcon fontSize="small" />
+                                </IconButton>
+                              </Box>
+                            )}
                           </Box>
-                          <Typography variant="body2" sx={{ ml: 5 }}>
-                            {reply.content}
-                          </Typography>
+
+                          {editingComment === reply._id ? (
+                            <Box sx={{ ml: 5 }}>
+                              <TextField
+                                fullWidth
+                                multiline
+                                rows={2}
+                                value={editText}
+                                onChange={(e) => setEditText(e.target.value)}
+                                sx={{ mb: 2 }}
+                              />
+                              <Box display="flex" gap={1}>
+                                <Button
+                                  size="small"
+                                  variant="contained"
+                                  onClick={() => handleEditComment(reply._id)}
+                                  sx={{ bgcolor: '#ff9800' }}
+                                >
+                                  යාවත්කාලීන කරන්න
+                                </Button>
+                                <Button
+                                  size="small"
+                                  onClick={() => {
+                                    setEditingComment(null);
+                                    setEditText('');
+                                  }}
+                                >
+                                  අවලංගු කරන්න
+                                </Button>
+                              </Box>
+                            </Box>
+                          ) : (
+                            <Typography variant="body2" sx={{ ml: 5 }}>
+                              {reply.content}
+                            </Typography>
+                          )}
                         </Box>
                       ))}
                     </Box>
