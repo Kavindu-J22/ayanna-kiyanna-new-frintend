@@ -142,6 +142,14 @@ import AcademicInfoFolderView from './pages/AcademicInfoFolderView';
 import ClassesInfoPage from './pages/ClassesInfoPage';
 import ExtracurricularPage from './pages/ExtracurricularPage';
 import ExtracurricularFolderView from './pages/ExtracurricularFolderView';
+import SwaraPage from './pages/SwaraPage';
+import SwaraFolderView from './pages/SwaraFolderView';
+import ViyanjanaPage from './pages/ViyanjanaPage';
+import ViyanjanaFolderView from './pages/ViyanjanaFolderView';
+import AkaradiyaPage from './pages/AkaradiyaPage';
+import AkaradiyaFolderView from './pages/AkaradiyaFolderView';
+import AksharavinyasayaPage from './pages/AksharavinyasayaPage';
+import AksharavinyasayaFolderView from './pages/AksharavinyasayaFolderView';
 
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
@@ -865,6 +873,14 @@ function AppContent() {
               <Route path="/grade/:gradeCategory/folder/:folderId" element={<GradeFolderView />} />
               <Route path="/literature" element={<LiteraturePage />} />
               <Route path="/alphabet" element={<TestPage title="අක්ෂර මාලාව" />} />
+              <Route path="/swara" element={<SwaraPage />} />
+              <Route path="/swara/folder/:folderId" element={<SwaraFolderView />} />
+              <Route path="/viyanjana" element={<ViyanjanaPage />} />
+              <Route path="/viyanjana/folder/:folderId" element={<ViyanjanaFolderView />} />
+              <Route path="/akaradiya" element={<AkaradiyaPage />} />
+              <Route path="/akaradiya/folder/:folderId" element={<AkaradiyaFolderView />} />
+              <Route path="/aksharavinyasaya" element={<AksharavinyasayaPage />} />
+              <Route path="/aksharavinyasaya/folder/:folderId" element={<AksharavinyasayaFolderView />} />
               <Route path="/paperbank" element={<PaperBankPage />} />
               <Route path="/paper-structures" element={<PaperStructuresPage />} />
               <Route path="/online-exams" element={<TestPage title="Online Exams" />} />

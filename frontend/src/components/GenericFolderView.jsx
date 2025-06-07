@@ -161,6 +161,7 @@ const GenericFolderView = ({
       const newAttachment = {
         title: file.name,
         description: '',
+        name: file.name,
         url: response.data.secure_url,
         publicId: response.data.public_id,
         type: file.type.startsWith('image/') ? 'image' : 'pdf',
@@ -237,7 +238,7 @@ const GenericFolderView = ({
         `https://ayanna-kiyanna-new-backend.onrender.com/api/${apiEndpoint}/files`,
         {
           ...formData,
-          folder: folderId,
+          folderId: folderId,
           sourceLinks: validSourceLinks
         },
         { headers: { 'x-auth-token': token } }
