@@ -194,8 +194,8 @@ const navItems = [
       name: "විචාර හා රසවින්දන",
       icon: <StarIcon />,
       subcategories: [
-        { name: "විචාර රසවින්දන", path: "/e-magazine", icon: <ImportContactsIcon /> },
-        { name: "ගී රසවින්දන", path: "/reviews", icon: <RateReviewOutlinedIcon /> },
+        { name: "විචාර", path: "/e-magazine", icon: <ImportContactsIcon /> },
+        { name: "රසවින්දන", path: "/reviews", icon: <RateReviewOutlinedIcon /> },
         { name: "වෙනත්", path: "/syllabus", icon: <MenuBookIcon /> },
       ],
     },
