@@ -39,7 +39,9 @@ import {
   BarChart,
   PieChart,
   Timeline,
-  Payment
+  Payment,
+  NotificationsActive,
+  ContactSupport
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -47,6 +49,8 @@ import { useNavigate } from 'react-router-dom';
 const AdminDashboard = () => {
   const [userInfo, setUserInfo] = useState({});
   const [pendingCount, setPendingCount] = useState(0);
+  const [unansweredQuestionsCount, setUnansweredQuestionsCount] = useState(0);
+  const [unrepliedFeedbacksCount, setUnrepliedFeedbacksCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -58,8 +62,10 @@ const AdminDashboard = () => {
     const fullName = localStorage.getItem('fullName');
     setUserInfo({ email, fullName });
 
-    // Load pending student count
+    // Load pending student count, unanswered questions count, and unreplied feedbacks count
     loadPendingCount();
+    loadUnansweredQuestionsCount();
+    loadUnrepliedFeedbacksCount();
   }, []);
 
   const loadPendingCount = async () => {
@@ -75,6 +81,38 @@ const AdminDashboard = () => {
       setPendingCount(0);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadUnansweredQuestionsCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('https://ayanna-kiyanna-new-backend.onrender.com/api/special-notices/unanswered-count', {
+        headers: { 'x-auth-token': token }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setUnansweredQuestionsCount(data.data.count || 0);
+      }
+    } catch (error) {
+      console.error('Error loading unanswered questions count:', error);
+      setUnansweredQuestionsCount(0);
+    }
+  };
+
+  const loadUnrepliedFeedbacksCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('https://ayanna-kiyanna-new-backend.onrender.com/api/feedback/admin/unreplied-count', {
+        headers: { 'x-auth-token': token }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setUnrepliedFeedbacksCount(data.data.count || 0);
+      }
+    } catch (error) {
+      console.error('Error loading unreplied feedbacks count:', error);
+      setUnrepliedFeedbacksCount(0);
     }
   };
 
@@ -97,6 +135,8 @@ const AdminDashboard = () => {
   const quickActions = [
     { title: 'සිසු කළමනාකරණය', icon: <PersonAdd />, color: '#667eea', path: '/student-management' },
     { title: 'පන්ති කළමනාකරණය', icon: <School />, color: '#f093fb', path: '/class-management' },
+    { title: 'Special Notice Management (For All Users)', icon: <NotificationsActive />, color: '#E91E63', path: '/admin-special-notice-management' },
+    { title: 'User Questions and Feedbacks', icon: <ContactSupport />, color: '#FF9800', path: '/admin-feedback-management' },
     { title: 'සියලුම පන්ති ගෙවීම් සහ ආදායම් විශ්ලේෂණ', icon: <Payment />, color: '#ff9a9e', path: '/all-class-payment-requests' },
     { title: 'පැමිණීම් විශ්ලේෂණ', icon: <Assignment />, color: '#4caf50', path: '/attendance-analytics' },
     { title: 'වාර්තා බලන්න', icon: <BarChart />, color: '#a8edea', path: '/reports' },
@@ -219,7 +259,9 @@ const AdminDashboard = () => {
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                           <Badge
                             badgeContent={
-                              action.title === 'සිසු කළමනාකරණය' && pendingCount > 0 ? (
+                              (action.title === 'සිසු කළමනාකරණය' && pendingCount > 0) ||
+                              (action.title === 'Special Notice Management (For All Users)' && unansweredQuestionsCount > 0) ||
+                              (action.title === 'User Questions and Feedbacks' && unrepliedFeedbacksCount > 0) ? (
                                 <Box sx={{
                                   background: 'linear-gradient(135deg, #ff4444 0%, #cc0000 100%)',
                                   color: 'white',
@@ -232,7 +274,7 @@ const AdminDashboard = () => {
                                   fontSize: '0.75rem',
                                   fontWeight: 'bold',
                                   boxShadow: '0 2px 8px rgba(255, 68, 68, 0.4)',
-                                  animation: pendingCount > 0 ? 'pulse 2s infinite' : 'none',
+                                  animation: (pendingCount > 0 || unansweredQuestionsCount > 0 || unrepliedFeedbacksCount > 0) ? 'pulse 2s infinite' : 'none',
                                   '@keyframes pulse': {
                                     '0%': {
                                       transform: 'scale(1)',
@@ -248,7 +290,10 @@ const AdminDashboard = () => {
                                     }
                                   }
                                 }}>
-                                  {loading ? <CircularProgress size={12} sx={{ color: 'white' }} /> : pendingCount}
+                                  {loading ? <CircularProgress size={12} sx={{ color: 'white' }} /> :
+                                    (action.title === 'සිසු කළමනාකරණය' ? pendingCount :
+                                     action.title === 'Special Notice Management (For All Users)' ? unansweredQuestionsCount :
+                                     unrepliedFeedbacksCount)}
                                 </Box>
                               ) : null
                             }
@@ -290,6 +335,36 @@ const AdminDashboard = () => {
                                   border: '1px solid #ffcdd2'
                                 }}>
                                   ({pendingCount})
+                                </Typography>
+                              )}
+                              {action.title === 'Special Notice Management (For All Users)' && unansweredQuestionsCount > 0 && (
+                                <Typography component="span" sx={{
+                                  ml: 1,
+                                  color: '#ff4444',
+                                  fontWeight: 'bold',
+                                  fontSize: '0.9rem',
+                                  background: 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)',
+                                  px: 1,
+                                  py: 0.5,
+                                  borderRadius: 2,
+                                  border: '1px solid #ffcdd2'
+                                }}>
+                                  ({unansweredQuestionsCount})
+                                </Typography>
+                              )}
+                              {action.title === 'User Questions and Feedbacks' && unrepliedFeedbacksCount > 0 && (
+                                <Typography component="span" sx={{
+                                  ml: 1,
+                                  color: '#ff4444',
+                                  fontWeight: 'bold',
+                                  fontSize: '0.9rem',
+                                  background: 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)',
+                                  px: 1,
+                                  py: 0.5,
+                                  borderRadius: 2,
+                                  border: '1px solid #ffcdd2'
+                                }}>
+                                  ({unrepliedFeedbacksCount})
                                 </Typography>
                               )}
                             </Typography>

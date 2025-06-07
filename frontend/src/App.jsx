@@ -160,6 +160,13 @@ import OtherEntPage from './pages/OtherEntPage';
 import OtherEntFolderView from './pages/OtherEntFolderView';
 import OtherEntFileDetail from './pages/OtherEntFileDetail';
 
+// New page imports
+import PhotoBucketPage from './pages/PhotoBucketPage';
+import SpecialNoticePage from './pages/SpecialNoticePage';
+import ContactSupportPage from './pages/ContactSupportPage';
+import AdminSpecialNoticeManagement from './pages/AdminSpecialNoticeManagement';
+import AdminFeedbackManagement from './pages/AdminFeedbackManagement';
+
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
 
@@ -883,7 +890,6 @@ function AppContent() {
               <Route path="/grade/:gradeCategory" element={<GradePage />} />
               <Route path="/grade/:gradeCategory/folder/:folderId" element={<GradeFolderView />} />
               <Route path="/literature" element={<LiteraturePage />} />
-              <Route path="/alphabet" element={<TestPage title="අක්ෂර මාලාව" />} />
               <Route path="/swara" element={<SwaraPage />} />
               <Route path="/swara/folder/:folderId" element={<SwaraFolderView />} />
               <Route path="/viyanjana" element={<ViyanjanaPage />} />
@@ -894,9 +900,6 @@ function AppContent() {
               <Route path="/aksharavinyasaya/folder/:folderId" element={<AksharavinyasayaFolderView />} />
               <Route path="/paperbank" element={<PaperBankPage />} />
               <Route path="/paper-structures" element={<PaperStructuresPage />} />
-              <Route path="/online-exams" element={<TestPage title="Online Exams" />} />
-              <Route path="/speed-tests" element={<TestPage title="Speed Tests" />} />
-              <Route path="/e-magazine" element={<TestPage title="E-Magazine" />} />
               <Route path="/reviews" element={<ReviewsPage />} />
               <Route path="/reviews/folder/:folderId" element={<ReviewsFolderView />} />
               <Route path="/reviews/file/:fileId" element={<ReviewsFileDetail />} />
@@ -919,15 +922,7 @@ function AppContent() {
               <Route path="/classes-info" element={<ClassesInfoPage />} />
               <Route path="/extracurricular" element={<ExtracurricularPage />} />
               <Route path="/extracurricular/folder/:folderId" element={<ExtracurricularFolderView />} />
-              <Route path="/photo-bucket" element={<TestPage title="Photo Bucket" />} />
-              <Route path="/grade-9" element={<TestPage title="Grade 9" />} />
-              <Route path="/grade-10" element={<TestPage title="Grade 10" />} />
-              <Route path="/grade-11" element={<TestPage title="Grade 11" />} />
-              <Route path="/a-l" element={<TestPage title="A/L" />} />
-              <Route path="/sinhala-literature" element={<TestPage title="Sinhala Literature" />} />
-              <Route path="/books-products" element={<TestPage title="Books & Products" />} />
-              <Route path="/special-notice" element={<TestPage title="Special Notice" />} />
-              <Route path="/contact-support" element={<TestPage title="Contact Support" />} />
+              
 
               <Route path="/login" element={<SignIn />} />
               <Route path="/register" element={<SignUp />} />
@@ -985,6 +980,13 @@ function AppContent() {
               <Route path="/student-online-sessions/:classId" element={<StudentOnlineSessions />} />
 
               <Route path="/aksharamalawa" element={<AksharaMalawa />} />
+
+              {/* New Routes */}
+              <Route path="/photo-bucket" element={<PhotoBucketPage />} />
+              <Route path="/special-notice" element={<SpecialNoticePage />} />
+              <Route path="/contact-support" element={<ContactSupportPage />} />
+              <Route path="/admin-special-notice-management" element={<AdminSpecialNoticeManagement />} />
+              <Route path="/admin-feedback-management" element={<AdminFeedbackManagement />} />
             </Routes>
           </Container>
         </Main>
