@@ -229,6 +229,17 @@ const navItems = [
       ],
     },
 
+      // විචාර හා රසවින්දන Category
+  {
+    name: "විචාර හා රසවින්දන",
+    icon: <MenuBookIcon />,
+    subcategories: [
+      { name: "විචාර", path: "/reviews", icon: <MenuBookIcon /> },
+      { name: "රසවින්දන", path: "/appreciation", icon: <MenuBookIcon /> },
+      { name: "වෙනත් අමතර", path: "/otherEnt", icon: <MenuBookIcon /> },
+    ],
+  },
+
 
   // වැදගත් විශේෂාංග Category
   {
@@ -247,17 +258,6 @@ const navItems = [
     subcategories: [
       { name: "වීඩියෝ පාඩම්", path: "/video-lessons", icon: <PlayLessonIcon /> },
       { name: "Other", path: "/others", icon: <MoreHorizIcon /> },
-    ],
-  },
-
-  // විචාර හා රසවින්දන Category
-  {
-    name: "විචාර හා රසවින්දන",
-    icon: <MenuBookIcon />,
-    subcategories: [
-      { name: "විචාර", path: "/reviews", icon: <MenuBookIcon /> },
-      { name: "රසවින්දන", path: "/appreciation", icon: <MenuBookIcon /> },
-      { name: "වෙනත් අමතර", path: "/otherEnt", icon: <MenuBookIcon /> },
     ],
   },
 
