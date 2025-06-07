@@ -274,7 +274,7 @@ const navItems = [
   },
 
   // Other direct links
-  { name: "අයන්න කියන්න E-Magazine", path: "/books-products", icon: <ImportContactsIcon /> },
+  { name: "අයන්න කියන්න E-Magazine", path: "https://drive.google.com/file/d/13wMOoZSV4b9_lxX0QfOC7ma3AgevBnFL/view?usp=sharing", icon: <ImportContactsIcon /> },
   { name: "අයන්න කියන්න : Books & Products", path: "/books-products", icon: <ShoppingCartIcon /> },
   { name: "අයන්න කියන්න : Specal Notices", path: "/special-notice", icon: <NotificationsActiveIcon /> },
   { name: "අයන්න කියන්න : 2025 Calender", path: "https://ayannakiyanna-calender.vercel.app/", icon: <ContactMailIcon /> },

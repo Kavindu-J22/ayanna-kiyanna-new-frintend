@@ -20,7 +20,12 @@ import {
   DialogContent,
   DialogActions,
   Grid,
-  Paper
+  Paper,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Snackbar
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -35,7 +40,12 @@ import {
   CloudDownload as CloudDownloadIcon,
   Link as LinkIcon,
   PictureAsPdf as PictureAsPdfIcon,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Share as ShareIcon,
+  ContentCopy as ContentCopyIcon,
+  WhatsApp as WhatsAppIcon,
+  Facebook as FacebookIcon,
+  Twitter as TwitterIcon
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -216,8 +226,57 @@ const OtherEntFileDetail = () => {
 
   const isLiked = file?.likes?.some(like => like.user._id === currentUserId);
 
+  // Share states
+  const [shareAnchorEl, setShareAnchorEl] = useState(null);
+  const [shareSuccess, setShareSuccess] = useState(false);
+
   const handleNavigateToLogin = () => {
     navigate('/login');
+  };
+
+  // Share functions
+  const handleShareClick = (event) => {
+    setShareAnchorEl(event.currentTarget);
+  };
+
+  const handleShareClose = () => {
+    setShareAnchorEl(null);
+  };
+
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setShareSuccess(true);
+      setTimeout(() => setShareSuccess(false), 3000);
+      handleShareClose();
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  };
+
+  const shareToSocialMedia = (platform) => {
+    const url = window.location.href;
+    const title = file?.title || 'වෙනත් අමතර';
+    const text = `${title} - ${file?.description || ''}`;
+
+    let shareUrl = '';
+
+    switch (platform) {
+      case 'whatsapp':
+        shareUrl = `https://wa.me/?text=${encodeURIComponent(`${text}\n${url}`)}`;
+        break;
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+        break;
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+        break;
+      default:
+        return;
+    }
+
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+    handleShareClose();
   };
 
   if (!isAuthenticated && error) {
@@ -505,6 +564,17 @@ const OtherEntFileDetail = () => {
                 sx={{ color: '#666', fontWeight: 'bold' }}
               >
                 {comments.length} අදහස්
+              </Button>
+              <Button
+                startIcon={<ShareIcon />}
+                onClick={handleShareClick}
+                sx={{
+                  color: '#666',
+                  fontWeight: 'bold',
+                  '&:hover': { bgcolor: '#fff3e0' }
+                }}
+              >
+                බෙදා ගන්න
               </Button>
             </Box>
           </Box>
@@ -813,6 +883,57 @@ const OtherEntFileDetail = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Share Menu */}
+      <Menu
+        anchorEl={shareAnchorEl}
+        open={Boolean(shareAnchorEl)}
+        onClose={handleShareClose}
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+            minWidth: 200
+          }
+        }}
+      >
+        <MenuItem onClick={() => copyToClipboard(window.location.href)}>
+          <ListItemIcon>
+            <ContentCopyIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="සබැඳිය පිටපත් කරන්න" />
+        </MenuItem>
+        <MenuItem onClick={() => shareToSocialMedia('whatsapp')}>
+          <ListItemIcon>
+            <WhatsAppIcon fontSize="small" sx={{ color: '#25D366' }} />
+          </ListItemIcon>
+          <ListItemText primary="WhatsApp" />
+        </MenuItem>
+        <MenuItem onClick={() => shareToSocialMedia('facebook')}>
+          <ListItemIcon>
+            <FacebookIcon fontSize="small" sx={{ color: '#1877F2' }} />
+          </ListItemIcon>
+          <ListItemText primary="Facebook" />
+        </MenuItem>
+        <MenuItem onClick={() => shareToSocialMedia('twitter')}>
+          <ListItemIcon>
+            <TwitterIcon fontSize="small" sx={{ color: '#1DA1F2' }} />
+          </ListItemIcon>
+          <ListItemText primary="Twitter" />
+        </MenuItem>
+      </Menu>
+
+      {/* Share Success Snackbar */}
+      <Snackbar
+        open={shareSuccess}
+        autoHideDuration={3000}
+        onClose={() => setShareSuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity="success" sx={{ width: '100%' }}>
+          සබැඳිය පිටපත් කරන ලදී!
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
