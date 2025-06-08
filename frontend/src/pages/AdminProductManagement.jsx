@@ -734,34 +734,114 @@ const AdminProductManagement = () => {
                     <Grid container spacing={3} sx={{ mb: 3 }}>
                       <Grid item xs={12} md={4}>
                         <Card elevation={2} sx={{ p: 2, borderLeft: 4, borderColor: 'error.main' }}>
-                          <Typography variant="h6" color="error.main" sx={{ fontWeight: 'bold' }}>
-                            තොගය අවසන් වූ නිෂ්පාදන ගණන
+                          <Typography variant="h6" color="error.main" sx={{ fontWeight: 'bold', mb: 1 }}>
+                            තොගය අවසන් වූ නිෂ්පාදන
                           </Typography>
-                          <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                          <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>
                             {inventoryData.overview.outOfStockCount}
                           </Typography>
+                          {inventoryData.outOfStock && inventoryData.outOfStock.length > 0 && (
+                            <Box sx={{ maxHeight: 120, overflowY: 'auto' }}>
+                              {inventoryData.outOfStock.slice(0, 5).map((product, index) => (
+                                <Chip
+                                  key={index}
+                                  label={product.name}
+                                  size="small"
+                                  color="error"
+                                  variant="outlined"
+                                  sx={{
+                                    mr: 0.5,
+                                    mb: 0.5,
+                                    fontSize: '0.75rem',
+                                    fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
+                                  }}
+                                />
+                              ))}
+                              {inventoryData.outOfStock.length > 5 && (
+                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                                  +{inventoryData.outOfStock.length - 5} තවත්
+                                </Typography>
+                              )}
+                            </Box>
+                          )}
                         </Card>
                       </Grid>
 
                       <Grid item xs={12} md={4}>
                         <Card elevation={2} sx={{ p: 2, borderLeft: 4, borderColor: 'warning.main' }}>
-                          <Typography variant="h6" color="warning.main" sx={{ fontWeight: 'bold' }}>
-                            තොගය අඩු නිෂ්පාදන ගණන
+                          <Typography variant="h6" color="warning.main" sx={{ fontWeight: 'bold', mb: 1 }}>
+                            තොගය අඩු නිෂ්පාදන
                           </Typography>
-                          <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                          <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>
                             {inventoryData.overview.lowStockCount}
                           </Typography>
+                          {inventoryData.lowStock && inventoryData.lowStock.length > 0 && (
+                            <Box sx={{ maxHeight: 120, overflowY: 'auto' }}>
+                              {inventoryData.lowStock.slice(0, 5).map((product, index) => (
+                                <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                                  <Chip
+                                    label={product.name}
+                                    size="small"
+                                    color="warning"
+                                    variant="outlined"
+                                    sx={{
+                                      mr: 1,
+                                      fontSize: '0.75rem',
+                                      fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                                      flexGrow: 1
+                                    }}
+                                  />
+                                  <Typography variant="caption" color="warning.main" sx={{ fontWeight: 'bold' }}>
+                                    ({product.availableQuantity})
+                                  </Typography>
+                                </Box>
+                              ))}
+                              {inventoryData.lowStock.length > 5 && (
+                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                                  +{inventoryData.lowStock.length - 5} තවත්
+                                </Typography>
+                              )}
+                            </Box>
+                          )}
                         </Card>
                       </Grid>
 
                       <Grid item xs={12} md={4}>
                         <Card elevation={2} sx={{ p: 2, borderLeft: 4, borderColor: 'success.main' }}>
-                          <Typography variant="h6" color="success.main" sx={{ fontWeight: 'bold' }}>
-                            තොගය ඇති නිෂ්පාදන ගණන
+                          <Typography variant="h6" color="success.main" sx={{ fontWeight: 'bold', mb: 1 }}>
+                            තොගය ඇති නිෂ්පාදන
                           </Typography>
-                          <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                          <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>
                             {inventoryData.overview.inStockCount}
                           </Typography>
+                          {inventoryData.inStock && inventoryData.inStock.length > 0 && (
+                            <Box sx={{ maxHeight: 120, overflowY: 'auto' }}>
+                              {inventoryData.inStock.slice(0, 3).map((product, index) => (
+                                <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                                  <Chip
+                                    label={product.name}
+                                    size="small"
+                                    color="success"
+                                    variant="outlined"
+                                    sx={{
+                                      mr: 1,
+                                      fontSize: '0.75rem',
+                                      fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                                      flexGrow: 1
+                                    }}
+                                  />
+                                  <Typography variant="caption" color="success.main" sx={{ fontWeight: 'bold' }}>
+                                    ({product.availableQuantity})
+                                  </Typography>
+                                </Box>
+                              ))}
+                              {inventoryData.inStock.length > 3 && (
+                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                                  +{inventoryData.inStock.length - 3} තවත්
+                                </Typography>
+                              )}
+                            </Box>
+                          )}
                         </Card>
                       </Grid>
                     </Grid>
