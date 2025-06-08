@@ -41,7 +41,10 @@ import {
   Timeline,
   Payment,
   NotificationsActive,
-  ContactSupport
+  ContactSupport,
+  ShoppingBag,
+  ShoppingCart,
+  LocalShipping
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -49,6 +52,7 @@ import { useNavigate } from 'react-router-dom';
 const AdminDashboard = () => {
   const [userInfo, setUserInfo] = useState({});
   const [pendingCount, setPendingCount] = useState(0);
+  const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
   const [unansweredQuestionsCount, setUnansweredQuestionsCount] = useState(0);
   const [unrepliedFeedbacksCount, setUnrepliedFeedbacksCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -62,8 +66,9 @@ const AdminDashboard = () => {
     const fullName = localStorage.getItem('fullName');
     setUserInfo({ email, fullName });
 
-    // Load pending student count, unanswered questions count, and unreplied feedbacks count
+    // Load pending student count, pending orders count, unanswered questions count, and unreplied feedbacks count
     loadPendingCount();
+    loadPendingOrdersCount();
     loadUnansweredQuestionsCount();
     loadUnrepliedFeedbacksCount();
   }, []);
@@ -81,6 +86,24 @@ const AdminDashboard = () => {
       setPendingCount(0);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadPendingOrdersCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      console.log('Loading pending orders count...');
+      const response = await fetch('https://ayanna-kiyanna-new-backend.onrender.com/api/orders?status=pending&limit=1', {
+        headers: { 'x-auth-token': token }
+      });
+      const data = await response.json();
+      console.log('Pending orders response:', data);
+      const count = data.pagination?.totalOrders || 0;
+      console.log('Setting pending orders count to:', count);
+      setPendingOrdersCount(count);
+    } catch (error) {
+      console.error('Error loading pending orders count:', error);
+      setPendingOrdersCount(0);
     }
   };
 
@@ -135,6 +158,9 @@ const AdminDashboard = () => {
   const quickActions = [
     { title: 'සිසු කළමනාකරණය', icon: <PersonAdd />, color: '#667eea', path: '/student-management' },
     { title: 'පන්ති කළමනාකරණය', icon: <School />, color: '#f093fb', path: '/class-management' },
+    { title: 'නිෂ්පාදන කළමනාකරණය', icon: <ShoppingBag />, color: '#FF6B6B', path: '/admin-product-management' },
+    { title: 'ඇණවුම් කළමනාකරණය', icon: <ShoppingCart />, color: '#4ECDC4', path: '/admin-order-management' },
+    { title: 'ගෙන්වා දීමේ ගාස්තු කළමනාකරණය', icon: <LocalShipping />, color: '#9C27B0', path: '/admin-delivery-charge-management' },
     { title: 'Special Notice Management (For All Users)', icon: <NotificationsActive />, color: '#E91E63', path: '/admin-special-notice-management' },
     { title: 'User Questions and Feedbacks', icon: <ContactSupport />, color: '#FF9800', path: '/admin-feedback-management' },
     { title: 'සියලුම පන්ති ගෙවීම් සහ ආදායම් විශ්ලේෂණ', icon: <Payment />, color: '#ff9a9e', path: '/all-class-payment-requests' },
@@ -260,6 +286,7 @@ const AdminDashboard = () => {
                           <Badge
                             badgeContent={
                               (action.title === 'සිසු කළමනාකරණය' && pendingCount > 0) ||
+                              (action.title === 'ඇණවුම් කළමනාකරණය' && pendingOrdersCount > 0) ||
                               (action.title === 'Special Notice Management (For All Users)' && unansweredQuestionsCount > 0) ||
                               (action.title === 'User Questions and Feedbacks' && unrepliedFeedbacksCount > 0) ? (
                                 <Box sx={{
@@ -274,7 +301,7 @@ const AdminDashboard = () => {
                                   fontSize: '0.75rem',
                                   fontWeight: 'bold',
                                   boxShadow: '0 2px 8px rgba(255, 68, 68, 0.4)',
-                                  animation: (pendingCount > 0 || unansweredQuestionsCount > 0 || unrepliedFeedbacksCount > 0) ? 'pulse 2s infinite' : 'none',
+                                  animation: (pendingCount > 0 || pendingOrdersCount > 0 || unansweredQuestionsCount > 0 || unrepliedFeedbacksCount > 0) ? 'pulse 2s infinite' : 'none',
                                   '@keyframes pulse': {
                                     '0%': {
                                       transform: 'scale(1)',
@@ -292,6 +319,7 @@ const AdminDashboard = () => {
                                 }}>
                                   {loading ? <CircularProgress size={12} sx={{ color: 'white' }} /> :
                                     (action.title === 'සිසු කළමනාකරණය' ? pendingCount :
+                                     action.title === 'ඇණවුම් කළමනාකරණය' ? pendingOrdersCount :
                                      action.title === 'Special Notice Management (For All Users)' ? unansweredQuestionsCount :
                                      unrepliedFeedbacksCount)}
                                 </Box>
@@ -335,6 +363,21 @@ const AdminDashboard = () => {
                                   border: '1px solid #ffcdd2'
                                 }}>
                                   ({pendingCount})
+                                </Typography>
+                              )}
+                              {action.title === 'ඇණවුම් කළමනාකරණය' && pendingOrdersCount > 0 && (
+                                <Typography component="span" sx={{
+                                  ml: 1,
+                                  color: '#ff4444',
+                                  fontWeight: 'bold',
+                                  fontSize: '0.9rem',
+                                  background: 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)',
+                                  px: 1,
+                                  py: 0.5,
+                                  borderRadius: 2,
+                                  border: '1px solid #ffcdd2'
+                                }}>
+                                  ({pendingOrdersCount})
                                 </Typography>
                               )}
                               {action.title === 'Special Notice Management (For All Users)' && unansweredQuestionsCount > 0 && (

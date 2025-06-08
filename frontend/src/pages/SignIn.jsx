@@ -73,6 +73,7 @@ const SignInPage = () => {
 
       if (response.data.user) {
         localStorage.setItem('fullName', response.data.user.fullName);
+        localStorage.setItem('userRole', response.data.user.role);
       }
 
       // Show success popup
@@ -105,6 +106,7 @@ const SignInPage = () => {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userEmail', response.data.user.email);
       localStorage.setItem('fullName', response.data.user.fullName);
+      localStorage.setItem('userRole', response.data.user.role);
 
       setPopupMessage(`ආයුබෝවන් 🙏 ${response.data.user.fullName || response.data.user.email}!`);
       setOpenSuccessPopup(true);

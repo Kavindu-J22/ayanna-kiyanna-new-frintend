@@ -40,6 +40,9 @@ import { useLocation } from 'react-router-dom';
 // Import your logo image (make sure the path is correct)
 import logo from '../assets/AKlogo.png';
 
+// Import cart icon component
+import CartIcon from './CartIcon';
+
 const pulseAnimation = keyframes`
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
@@ -325,8 +328,9 @@ const Header = () => {
                     borderColor: 'white'
                   },
                   // Add some debugging styles
-                  minHeight: '40px',
-                  minWidth: '120px'
+                  minHeight: '30px',
+                  minWidth: '80px',
+                  fontSize: '0.65rem'
                 }}
               >
                 {mobileMenuOpen ? 'Close' : 'Explore'}
@@ -339,6 +343,7 @@ const Header = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               {userEmail ? (
                 <>
+                  <CartIcon />
                   <IconButton
                     size="large"
                     aria-label="notifications"

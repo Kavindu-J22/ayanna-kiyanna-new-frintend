@@ -167,6 +167,16 @@ import ContactSupportPage from './pages/ContactSupportPage';
 import AdminSpecialNoticeManagement from './pages/AdminSpecialNoticeManagement';
 import AdminFeedbackManagement from './pages/AdminFeedbackManagement';
 
+// E-commerce page imports
+import BooksProductsPage from './pages/BooksProductsPage';
+import ProductDetailPage from './pages/ProductDetailPage';
+import CartPage from './pages/CartPage';
+import PaymentPage from './pages/PaymentPage';
+import OrdersPage from './pages/OrdersPage';
+import AdminProductManagement from './pages/AdminProductManagement';
+import AdminOrderManagement from './pages/AdminOrderManagement';
+import AdminDeliveryChargeManagement from './pages/AdminDeliveryChargeManagement';
+
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
 
@@ -987,6 +997,16 @@ function AppContent() {
               <Route path="/contact-support" element={<ContactSupportPage />} />
               <Route path="/admin-special-notice-management" element={<AdminSpecialNoticeManagement />} />
               <Route path="/admin-feedback-management" element={<AdminFeedbackManagement />} />
+
+              {/* E-commerce Routes */}
+              <Route path="/books-products" element={<BooksProductsPage />} />
+              <Route path="/product/:productId" element={<ProductDetailPage />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/payment" element={<PaymentPage />} />
+              <Route path="/orders" element={<OrdersPage />} />
+              <Route path="/admin-product-management" element={<AdminProductManagement />} />
+              <Route path="/admin-order-management" element={<AdminOrderManagement />} />
+              <Route path="/admin-delivery-charge-management" element={<AdminDeliveryChargeManagement />} />
             </Routes>
           </Container>
         </Main>
