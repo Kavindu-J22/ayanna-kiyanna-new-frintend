@@ -264,7 +264,7 @@ const Header = () => {
     { name: 'Home', path: '/', icon: <HomeIcon /> },
     { name: 'About', path: '/about', icon: <PeopleIcon /> },
     { name: 'Services', path: '/services', icon: <BusinessIcon /> },
-    { name: 'Products', path: '/products', icon: <InfoIcon /> },
+    { name: 'Products', path: '/books-products', icon: <InfoIcon /> },
     { name: 'Contact', path: '/contact', icon: <ContactMailIcon /> },
   ];
 
