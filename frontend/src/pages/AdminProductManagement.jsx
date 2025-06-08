@@ -147,7 +147,8 @@ const AdminProductManagement = () => {
         page: currentPage,
         limit: 12,
         sortBy,
-        sortOrder
+        sortOrder,
+        includeInactive: 'true' // Include inactive products for admin view
       });
 
       if (searchTerm) params.append('search', searchTerm);
@@ -728,7 +729,7 @@ const AdminProductManagement = () => {
                 {inventoryData && (
                   <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
                     <Typography variant="h5" gutterBottom sx={{ fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif', fontWeight: 'bold', mb: 3 }}>
-                      📦 ඉන්වෙන්ටරි තත්ත්වය
+                      📦 ඉන්වෙන්ටරි තත්ත්වය (සක්‍රීය නිශ්පාදන වල)
                     </Typography>
 
                     <Grid container spacing={3} sx={{ mb: 3 }}>
@@ -944,6 +945,7 @@ const AdminProductManagement = () => {
                   type="number"
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  onWheel={(e) => e.target.blur()} // This will prevent wheel from changing the value
                   required
                 />
               </Grid>
@@ -955,6 +957,7 @@ const AdminProductManagement = () => {
                   type="number"
                   value={formData.discount}
                   onChange={(e) => setFormData({ ...formData, discount: e.target.value })}
+                  onWheel={(e) => e.target.blur()} // This will prevent wheel from changing the value
                   slotProps={{ htmlInput: { min: 0, max: 100 } }}
                 />
               </Grid>
@@ -966,6 +969,7 @@ const AdminProductManagement = () => {
                   type="number"
                   value={formData.availableQuantity}
                   onChange={(e) => setFormData({ ...formData, availableQuantity: e.target.value })}
+                  onWheel={(e) => e.target.blur()} // This will prevent wheel from changing the value
                   required
                 />
               </Grid>
@@ -1102,38 +1106,41 @@ const AdminProductManagement = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} md={3}>
-                <TextField
-                  fullWidth
-                  label="මිල (Rs) *"
-                  type="number"
-                  value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  required
-                />
-              </Grid>
+            <Grid item xs={12} md={3}>
+              <TextField
+                fullWidth
+                label="මිල (Rs) *"
+                type="number"
+                value={formData.price}
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                onWheel={(e) => e.target.blur()}
+                required
+              />
+            </Grid>
 
-              <Grid item xs={12} md={3}>
-                <TextField
-                  fullWidth
-                  label="වට්ටම (%)"
-                  type="number"
-                  value={formData.discount}
-                  onChange={(e) => setFormData({ ...formData, discount: e.target.value })}
-                  slotProps={{ htmlInput: { min: 0, max: 100 } }}
-                />
-              </Grid>
+            <Grid item xs={12} md={3}>
+              <TextField
+                fullWidth
+                label="වට්ටම (%)"
+                type="number"
+                value={formData.discount}
+                onChange={(e) => setFormData({ ...formData, discount: e.target.value })}
+                onWheel={(e) => e.target.blur()}
+                slotProps={{ htmlInput: { min: 0, max: 100 } }}
+              />
+            </Grid>
 
-              <Grid item xs={12} md={3}>
-                <TextField
-                  fullWidth
-                  label="තොගයේ ප්‍රමාණය *"
-                  type="number"
-                  value={formData.availableQuantity}
-                  onChange={(e) => setFormData({ ...formData, availableQuantity: e.target.value })}
-                  required
-                />
-              </Grid>
+            <Grid item xs={12} md={3}>
+              <TextField
+                fullWidth
+                label="තොගයේ ප්‍රමාණය *"
+                type="number"
+                value={formData.availableQuantity}
+                onChange={(e) => setFormData({ ...formData, availableQuantity: e.target.value })}
+                onWheel={(e) => e.target.blur()}
+                required
+              />
+            </Grid>
 
               <Grid item xs={12} md={3}>
                 <FormControl fullWidth>

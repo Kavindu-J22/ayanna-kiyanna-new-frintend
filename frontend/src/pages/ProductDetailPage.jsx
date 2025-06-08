@@ -58,7 +58,7 @@ const ProductDetailPage = () => {
       setProduct(response.data);
     } catch (err) {
       console.error('Error fetching product:', err);
-      setError('Product not found');
+      setError('Product not found (සමහර විට මෙම නිශ්පාදනයේ තත්වය "අක්‍රීය" තත්වයට දමා ඇත. කරුනාකර එය මුලින් පරීක්ශා කර "සක්‍රීය" මට්ටමට දමන්න (පරිපාලකට පමණක් අවසර ඇත))');
     } finally {
       setLoading(false);
     }
