@@ -614,7 +614,7 @@ const AdminProductManagement = () => {
                               Rs. {analyticsData.overview.totalIncome.toLocaleString()}
                             </Typography>
                             <Typography variant="body1">
-                              මුළු ආදායම
+                              නිශ්පාදන වලින් ලද මුළු ආදායම
                             </Typography>
                           </Box>
                           <TrendingUpIcon sx={{ fontSize: 40, opacity: 0.8 }} />
