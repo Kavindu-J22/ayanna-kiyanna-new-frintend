@@ -485,7 +485,7 @@ const SignInPage = () => {
                   }
                 }}
               >
-                Forgot password?
+                Forgot or Reset password?
               </Link>
             </Box>
 

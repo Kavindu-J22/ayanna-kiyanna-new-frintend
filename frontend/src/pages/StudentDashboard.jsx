@@ -699,7 +699,7 @@ const StudentDashboard = () => {
             onClick={handleForgotPassword}
             sx={{ textTransform: 'none' }}
           >
-            Forgot Password?
+            Forgot or Reset Password?
           </Button>
         </DialogActions>
       </Dialog>
