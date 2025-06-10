@@ -168,6 +168,7 @@ import AdminSpecialNoticeManagement from './pages/AdminSpecialNoticeManagement';
 import AdminFeedbackManagement from './pages/AdminFeedbackManagement';
 import AdminStudentNoticeManagement from './pages/AdminStudentNoticeManagement';
 import AdminStudentMessageManagement from './pages/AdminStudentMessageManagement';
+import AdminUserManagement from './pages/AdminUserManagement';
 
 // E-commerce page imports
 import BooksProductsPage from './pages/BooksProductsPage';
@@ -1001,6 +1002,7 @@ function AppContent() {
               <Route path="/admin-feedback-management" element={<AdminFeedbackManagement />} />
               <Route path="/admin-student-notice-management" element={<AdminStudentNoticeManagement />} />
               <Route path="/admin-student-message-management" element={<AdminStudentMessageManagement />} />
+              <Route path="/admin-user-management" element={<AdminUserManagement />} />
 
               {/* E-commerce Routes */}
               <Route path="/books-products" element={<BooksProductsPage />} />

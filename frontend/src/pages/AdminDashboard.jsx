@@ -56,6 +56,7 @@ const AdminDashboard = () => {
   const [unansweredQuestionsCount, setUnansweredQuestionsCount] = useState(0);
   const [unrepliedFeedbacksCount, setUnrepliedFeedbacksCount] = useState(0);
   const [unrepliedStudentMessagesCount, setUnrepliedStudentMessagesCount] = useState(0);
+  const [pendingEnrollmentRequestsCount, setPendingEnrollmentRequestsCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -73,6 +74,7 @@ const AdminDashboard = () => {
     loadUnansweredQuestionsCount();
     loadUnrepliedFeedbacksCount();
     loadUnrepliedStudentMessagesCount();
+    loadPendingEnrollmentRequestsCount();
   }, []);
 
   const loadPendingCount = async () => {
@@ -157,6 +159,22 @@ const AdminDashboard = () => {
     }
   };
 
+  const loadPendingEnrollmentRequestsCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('https://ayanna-kiyanna-new-backend.onrender.com/api/class-requests/pending-count', {
+        headers: { 'x-auth-token': token }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setPendingEnrollmentRequestsCount(data.count || 0);
+      }
+    } catch (error) {
+      console.error('Error loading pending enrollment requests count:', error);
+      setPendingEnrollmentRequestsCount(0);
+    }
+  };
+
   // Sample data for admin dashboard
   const stats = [
     { title: 'මුළු සිසුන්', value: '156', icon: <People />, color: '#667eea' },
@@ -175,6 +193,8 @@ const AdminDashboard = () => {
 
   const quickActions = [
     { title: 'සිසු කළමනාකරණය', icon: <PersonAdd />, color: '#667eea', path: '/student-management' },
+    { title: 'පරිශීලක කළමනාකරණය', icon: <PersonAdd />, color: '#795548', path: '/admin-user-management' },
+    { title: 'පන්ති ඉල්ලීම් කළමනාකරණය', icon: <School />, color: '#ff5722', path: '/class-requests' },
     { title: 'පන්ති කළමනාකරණය', icon: <School />, color: '#f093fb', path: '/class-management' },
     { title: 'නිෂ්පාදන කළමනාකරණය', icon: <ShoppingBag />, color: '#FF6B6B', path: '/admin-product-management' },
     { title: 'ඇණවුම් කළමනාකරණය', icon: <ShoppingCart />, color: '#4ECDC4', path: '/admin-order-management' },
@@ -309,7 +329,8 @@ const AdminDashboard = () => {
                               (action.title === 'ඇණවුම් කළමනාකරණය' && pendingOrdersCount > 0) ||
                               (action.title === 'Special Notice Management (For All Users)' && unansweredQuestionsCount > 0) ||
                               (action.title === 'User Questions and Feedbacks' && unrepliedFeedbacksCount > 0) ||
-                              (action.title === 'සිසුන්ගේ පණිවිඩ සහ ප්‍රශ්න කළමනාකරණය' && unrepliedStudentMessagesCount > 0) ? (
+                              (action.title === 'සිසුන්ගේ පණිවිඩ සහ ප්‍රශ්න කළමනාකරණය' && unrepliedStudentMessagesCount > 0) ||
+                              (action.title === 'පන්ති ඉල්ලීම් කළමනාකරණය' && pendingEnrollmentRequestsCount > 0) ? (
                                 <Box sx={{
                                   background: 'linear-gradient(135deg, #ff4444 0%, #cc0000 100%)',
                                   color: 'white',
@@ -322,7 +343,7 @@ const AdminDashboard = () => {
                                   fontSize: '0.75rem',
                                   fontWeight: 'bold',
                                   boxShadow: '0 2px 8px rgba(255, 68, 68, 0.4)',
-                                  animation: (pendingCount > 0 || pendingOrdersCount > 0 || unansweredQuestionsCount > 0 || unrepliedFeedbacksCount > 0 || unrepliedStudentMessagesCount > 0) ? 'pulse 2s infinite' : 'none',
+                                  animation: (pendingCount > 0 || pendingOrdersCount > 0 || unansweredQuestionsCount > 0 || unrepliedFeedbacksCount > 0 || unrepliedStudentMessagesCount > 0 || pendingEnrollmentRequestsCount > 0) ? 'pulse 2s infinite' : 'none',
                                   '@keyframes pulse': {
                                     '0%': {
                                       transform: 'scale(1)',
@@ -343,6 +364,7 @@ const AdminDashboard = () => {
                                      action.title === 'ඇණවුම් කළමනාකරණය' ? pendingOrdersCount :
                                      action.title === 'Special Notice Management (For All Users)' ? unansweredQuestionsCount :
                                      action.title === 'සිසුන්ගේ පණිවිඩ සහ ප්‍රශ්න කළමනාකරණය' ? unrepliedStudentMessagesCount :
+                                     action.title === 'පන්ති ඉල්ලීම් කළමනාකරණය' ? pendingEnrollmentRequestsCount :
                                      unrepliedFeedbacksCount)}
                                 </Box>
                               ) : null
@@ -445,6 +467,21 @@ const AdminDashboard = () => {
                                   border: '1px solid #ffcdd2'
                                 }}>
                                   ({unrepliedStudentMessagesCount})
+                                </Typography>
+                              )}
+                              {action.title === 'පන්ති ඉල්ලීම් කළමනාකරණය' && pendingEnrollmentRequestsCount > 0 && (
+                                <Typography component="span" sx={{
+                                  ml: 1,
+                                  color: '#ff4444',
+                                  fontWeight: 'bold',
+                                  fontSize: '0.9rem',
+                                  background: 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)',
+                                  px: 1,
+                                  py: 0.5,
+                                  borderRadius: 2,
+                                  border: '1px solid #ffcdd2'
+                                }}>
+                                  ({pendingEnrollmentRequestsCount})
                                 </Typography>
                               )}
                             </Typography>
