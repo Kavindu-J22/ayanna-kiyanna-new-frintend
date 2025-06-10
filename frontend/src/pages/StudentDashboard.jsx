@@ -7,6 +7,7 @@ import {
   Grid,
   Card,
   CardContent,
+  CardActions,
   Button,
   Avatar,
   Chip,
@@ -27,7 +28,11 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Tooltip
 } from '@mui/material';
 import {
   School,
@@ -45,9 +50,17 @@ import {
   AccessTime,
   Group,
   Delete,
+  Edit,
   Warning,
   Payment,
-  Refresh as RefreshIcon
+  Refresh as RefreshIcon,
+  Message as MessageIcon,
+  Send as SendIcon,
+  AttachFile as AttachFileIcon,
+  ExpandMore as ExpandMoreIcon,
+  Announcement as AnnouncementIcon,
+  Link as LinkIcon,
+  Close as CloseIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -92,6 +105,24 @@ const StudentDashboard = () => {
 
   // Loading States
   const [accessingClass, setAccessingClass] = useState({});
+
+  // Student Notices States
+  const [studentNotices, setStudentNotices] = useState([]);
+  const [loadingNotices, setLoadingNotices] = useState(false);
+
+  // Student Message States
+  const [showMessageDialog, setShowMessageDialog] = useState(false);
+  const [showMyMessagesDialog, setShowMyMessagesDialog] = useState(false);
+  const [showEditMessageDialog, setShowEditMessageDialog] = useState(false);
+  const [myMessages, setMyMessages] = useState([]);
+  const [loadingMyMessages, setLoadingMyMessages] = useState(false);
+  const [selectedEditMessage, setSelectedEditMessage] = useState(null);
+  const [messageData, setMessageData] = useState({
+    about: '',
+    message: '',
+    attachments: []
+  });
+  const [submittingMessage, setSubmittingMessage] = useState(false);
 
   // Month names in Sinhala
   const monthNames = [
@@ -376,6 +407,202 @@ const StudentDashboard = () => {
     }
   };
 
+  // Load student notices
+  const loadStudentNotices = async () => {
+    setLoadingNotices(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/student-notices',
+        { headers: { 'x-auth-token': token } }
+      );
+
+      if (response.data.success) {
+        setStudentNotices(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error loading student notices:', error);
+    } finally {
+      setLoadingNotices(false);
+    }
+  };
+
+  // Handle message form
+  const handleOpenMessageDialog = () => {
+    setMessageData({
+      about: '',
+      message: '',
+      attachments: []
+    });
+    setShowMessageDialog(true);
+  };
+
+
+
+  const handleMessageInputChange = (field, value) => {
+    setMessageData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleFileUpload = async (files) => {
+    if (files.length + messageData.attachments.length > 5) {
+      alert('උපරිම ගොනු 5ක් පමණක් අමුණා ගත හැක');
+      return;
+    }
+
+    const uploadPromises = Array.from(files).map(async (file) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'ml_default');
+
+      try {
+        const response = await axios.post(
+          'https://api.cloudinary.com/v1_1/dl9k5qoae/auto/upload',
+          formData
+        );
+
+        return {
+          url: response.data.secure_url,
+          publicId: response.data.public_id,
+          type: file.type.startsWith('image/') ? 'image' : 'raw',
+          originalName: file.name
+        };
+      } catch (error) {
+        console.error('File upload error:', error);
+        throw error;
+      }
+    });
+
+    try {
+      const uploadedFiles = await Promise.all(uploadPromises);
+      setMessageData(prev => ({
+        ...prev,
+        attachments: [...prev.attachments, ...uploadedFiles]
+      }));
+    } catch (error) {
+      alert('ගොනු උඩුගත කිරීමේදී දෝෂයක් ඇතිවිය');
+    }
+  };
+
+  const removeAttachment = (index) => {
+    setMessageData(prev => ({
+      ...prev,
+      attachments: prev.attachments.filter((_, i) => i !== index)
+    }));
+  };
+
+  const submitMessage = async () => {
+    if (!messageData.about.trim() || !messageData.message.trim()) {
+      alert('විෂය සහ පණිවිඩය අවශ්‍ය වේ');
+      return;
+    }
+
+    setSubmittingMessage(true);
+    try {
+      const token = localStorage.getItem('token');
+      let response;
+
+      if (selectedEditMessage) {
+        // Update existing message
+        response = await axios.put(
+          `https://ayanna-kiyanna-new-backend.onrender.com/api/student-messages/${selectedEditMessage._id}`,
+          messageData,
+          { headers: { 'x-auth-token': token } }
+        );
+      } else {
+        // Create new message
+        response = await axios.post(
+          'https://ayanna-kiyanna-new-backend.onrender.com/api/student-messages',
+          messageData,
+          { headers: { 'x-auth-token': token } }
+        );
+      }
+
+      if (response.data.success) {
+        alert(selectedEditMessage ? 'පණිවිඩය සාර්ථකව යාවත්කාලීන කරන ලදී' : 'පණිවිඩය සාර්ථකව යවන ලදී');
+        handleCloseMessageDialog();
+        if (showMyMessagesDialog) {
+          loadMyMessages(); // Refresh messages if viewing messages dialog is open
+        }
+      }
+    } catch (error) {
+      console.error('Error submitting message:', error);
+      alert('පණිවිඩය යැවීමේදී දෝෂයක් ඇතිවිය');
+    } finally {
+      setSubmittingMessage(false);
+    }
+  };
+
+  // Load user's messages
+  const loadMyMessages = async () => {
+    setLoadingMyMessages(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/student-messages/my-messages',
+        { headers: { 'x-auth-token': token } }
+      );
+
+      if (response.data.success) {
+
+        setMyMessages(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error loading my messages:', error);
+      alert('පණිවිඩ ලබා ගැනීමේදී දෝෂයක් ඇතිවිය');
+    } finally {
+      setLoadingMyMessages(false);
+    }
+  };
+
+  // Handle edit message
+  const handleEditMessage = (message) => {
+    setSelectedEditMessage(message);
+    setMessageData({
+      about: message.about,
+      message: message.message,
+      attachments: message.attachments || []
+    });
+    setShowMyMessagesDialog(false);
+    setShowMessageDialog(true);
+  };
+
+  // Handle delete message
+  const handleDeleteMessage = async (messageId) => {
+    if (!window.confirm('ඔබට මෙම පණිවිඩය මකා දැමීමට අවශ්‍යද?')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.delete(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/student-messages/${messageId}`,
+        { headers: { 'x-auth-token': token } }
+      );
+
+      if (response.data.success) {
+        alert('පණිවිඩය සාර්ථකව මකා දමන ලදී');
+        loadMyMessages(); // Refresh messages
+      }
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      alert('පණිවිඩය මකා දැමීමේදී දෝෂයක් ඇතිවිය');
+    }
+  };
+
+  // Handle close message dialog
+  const handleCloseMessageDialog = () => {
+    setShowMessageDialog(false);
+    setSelectedEditMessage(null);
+    setMessageData({
+      about: '',
+      message: '',
+      attachments: []
+    });
+  };
+
   const handleStudentLogin = async () => {
     if (!studentPassword) {
       setPasswordError('Please enter your student password');
@@ -400,6 +627,9 @@ const StudentDashboard = () => {
 
       // Load additional data separately with error handling
       await loadAdditionalData();
+
+      // Load student notices
+      await loadStudentNotices();
 
       // Check payment statuses for enrolled classes
       if (response.data.student.enrolledClasses) {
@@ -1235,6 +1465,166 @@ const StudentDashboard = () => {
                 >
                   Back to Home
                 </Button>
+
+                <Button
+                  fullWidth
+                  variant="contained"
+                  startIcon={<MessageIcon />}
+                  onClick={handleOpenMessageDialog}
+                  sx={{
+                    mt: 2,
+                    background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+                    '&:hover': {
+                      background: 'linear-gradient(45deg, #5a6fd8 30%, #6a4190 90%)'
+                    },
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                  }}
+                >
+                  ගුරුවරයාට පණිවිඩයක් යවන්න
+                </Button>
+
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  startIcon={<Visibility />}
+                  onClick={() => setShowMyMessagesDialog(true)}
+                  sx={{
+                    mt: 1,
+                    borderColor: '#667eea',
+                    color: '#667eea',
+                    '&:hover': {
+                      borderColor: '#5a6fd8',
+                      backgroundColor: 'rgba(102, 126, 234, 0.04)'
+                    },
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                  }}
+                >
+                  මගේ පණිවිඩ බලන්න
+                </Button>
+              </Paper>
+
+              {/* Student Notices */}
+              <Paper elevation={6} sx={{ p: 3, borderRadius: 3, mt: 3 }}>
+                <Typography variant="h6" gutterBottom sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
+                  <AnnouncementIcon sx={{ mr: 1 }} />
+                  සිසුන් සඳහා විශේෂ නිවේදන
+                </Typography>
+                <Divider sx={{ mb: 2 }} />
+
+                {loadingNotices ? (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+                    <CircularProgress />
+                  </Box>
+                ) : studentNotices.length > 0 ? (
+                  studentNotices.slice(0, 3).map((notice, index) => {
+                    // Check if this is the latest notice (first in the sorted array)
+                    const isLatest = index === 0;
+                    const isNew = isLatest && new Date(notice.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // Within last 7 days
+
+                    return (
+                      <Accordion key={notice._id} sx={{ mb: 1 }}>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                            <Typography variant="subtitle1" sx={{
+                              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                              fontWeight: 'bold',
+                              flex: 1
+                            }}>
+                              {notice.title}
+                            </Typography>
+                            {isNew && (
+                              <Chip
+                                label="NEW"
+                                size="small"
+                                sx={{
+                                  background: 'linear-gradient(45deg, #ff4444 30%, #cc0000 90%)',
+                                  color: 'white',
+                                  fontWeight: 'bold',
+                                  fontSize: '0.7rem',
+                                  height: 20,
+                                  animation: 'pulse 2s infinite',
+                                  '@keyframes pulse': {
+                                    '0%': {
+                                      transform: 'scale(1)',
+                                      boxShadow: '0 0 0 0 rgba(255, 68, 68, 0.7)'
+                                    },
+                                    '70%': {
+                                      transform: 'scale(1.05)',
+                                      boxShadow: '0 0 0 10px rgba(255, 68, 68, 0)'
+                                    },
+                                    '100%': {
+                                      transform: 'scale(1)',
+                                      boxShadow: '0 0 0 0 rgba(255, 68, 68, 0)'
+                                    }
+                                  }
+                                }}
+                              />
+                            )}
+                          </Box>
+                        </AccordionSummary>
+                      <AccordionDetails>
+                        <Typography variant="body2" sx={{ mb: 2 }}>
+                          {notice.content}
+                        </Typography>
+
+                        {notice.content2 && (
+                          <Typography variant="body2" sx={{ mb: 2 }}>
+                            {notice.content2}
+                          </Typography>
+                        )}
+
+                        {notice.attachments && notice.attachments.length > 0 && (
+                          <Box sx={{ mb: 2 }}>
+                            <Typography variant="subtitle2" gutterBottom>
+                              ගොනු:
+                            </Typography>
+                            {notice.attachments.map((attachment, index) => (
+                              <Chip
+                                key={index}
+                                icon={<AttachFileIcon />}
+                                label={attachment.originalName || 'ගොනුව'}
+                                size="small"
+                                sx={{ mr: 1, mb: 1 }}
+                                onClick={() => window.open(attachment.url, '_blank')}
+                              />
+                            ))}
+                          </Box>
+                        )}
+
+                        {notice.sourceLinks && notice.sourceLinks.length > 0 && (
+                          <Box sx={{ mb: 2 }}>
+                            <Typography variant="subtitle2" gutterBottom>
+                              මූලාශ්‍ර සබැඳි:
+                            </Typography>
+                            {notice.sourceLinks.map((link, index) => (
+                              <Chip
+                                key={index}
+                                icon={<LinkIcon />}
+                                label={`සබැඳිය ${index + 1}`}
+                                size="small"
+                                sx={{ mr: 1, mb: 1 }}
+                                onClick={() => window.open(link, '_blank')}
+                              />
+                            ))}
+                          </Box>
+                        )}
+
+                        <Typography variant="caption" color="text.secondary">
+                          නිර්මාණය: {new Date(notice.createdAt).toLocaleDateString('si-LK')}
+                        </Typography>
+                      </AccordionDetails>
+                    </Accordion>
+                    );
+                  })
+                ) : (
+                  <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
+                    නිවේදන නොමැත
+                  </Typography>
+                )}
               </Paper>
             </Grid>
           </Grid>
@@ -1441,6 +1831,278 @@ const StudentDashboard = () => {
           <Typography variant="body2" color="text.secondary">
             Please wait while we send a password reset code to your email...
           </Typography>
+        </DialogContent>
+      </Dialog>
+
+      {/* Message Dialog */}
+      <Dialog
+        open={showMessageDialog}
+        onClose={handleCloseMessageDialog}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: { borderRadius: 3 }
+        }}
+      >
+        <DialogTitle sx={{
+          background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+          color: 'white',
+          fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+        }}>
+          {selectedEditMessage ? 'පණිවිඩය සංස්කරණය කරන්න' : 'ගුරුවරයාට පණිවිඩයක් යවන්න'}
+        </DialogTitle>
+
+        <DialogContent sx={{ p: 3 }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel>විෂය</InputLabel>
+                <Select
+                  value={messageData.about}
+                  onChange={(e) => handleMessageInputChange('about', e.target.value)}
+                  label="විෂය"
+                >
+                  <MenuItem value="පන්ති සම්බන්ධ">පන්ති සම්බන්ධ</MenuItem>
+                  <MenuItem value="ගෙවීම් සම්බන්ධ">ගෙවීම් සම්බන්ධ</MenuItem>
+                  <MenuItem value="පාඩම් සම්බන්ධ">පාඩම් සම්බන්ධ</MenuItem>
+                  <MenuItem value="තාක්ෂණික ගැටළු">තාක්ෂණික ගැටළු</MenuItem>
+                  <MenuItem value="වෙනත්">වෙනත්</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="ඔබේ පණිවිඩය"
+                value={messageData.message}
+                onChange={(e) => handleMessageInputChange('message', e.target.value)}
+                multiline
+                rows={4}
+                required
+                sx={{ mb: 2 }}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <Typography variant="subtitle1" gutterBottom>
+                ගොනු (විකල්ප - උපරිම 5)
+              </Typography>
+              <input
+                type="file"
+                multiple
+                accept="image/*,.pdf"
+                onChange={(e) => handleFileUpload(e.target.files)}
+                style={{ marginBottom: 16 }}
+              />
+
+              {messageData.attachments.map((attachment, index) => (
+                <Chip
+                  key={index}
+                  label={attachment.originalName || 'ගොනුව'}
+                  onDelete={() => removeAttachment(index)}
+                  sx={{ mr: 1, mb: 1 }}
+                />
+              ))}
+            </Grid>
+          </Grid>
+        </DialogContent>
+
+        <DialogActions sx={{ p: 3 }}>
+          <Button onClick={handleCloseMessageDialog}>
+            අවලංගු කරන්න
+          </Button>
+          <Button
+            onClick={submitMessage}
+            variant="contained"
+            disabled={submittingMessage}
+            startIcon={submittingMessage ? <CircularProgress size={20} /> : <SendIcon />}
+            sx={{
+              background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+              '&:hover': {
+                background: 'linear-gradient(45deg, #5a6fd8 30%, #6a4190 90%)'
+              }
+            }}
+          >
+            {submittingMessage ? (selectedEditMessage ? 'යාවත්කාලීන කරමින්...' : 'යවමින්...') : (selectedEditMessage ? 'යාවත්කාලීන කරන්න' : 'පණිවිඩය යවන්න')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* My Messages Dialog */}
+      <Dialog
+        open={showMyMessagesDialog}
+        onClose={() => setShowMyMessagesDialog(false)}
+        maxWidth="lg"
+        fullWidth
+        PaperProps={{
+          sx: { borderRadius: 3, maxHeight: '90vh' }
+        }}
+      >
+        <DialogTitle sx={{
+          background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+          color: 'white',
+          fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+        }}>
+          මගේ පණිවිඩ
+          <IconButton
+            onClick={() => setShowMyMessagesDialog(false)}
+            sx={{ position: 'absolute', right: 8, top: 8, color: 'white' }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+        <DialogContent sx={{ p: 3 }}>
+          <Button
+            variant="contained"
+            onClick={loadMyMessages}
+            sx={{
+              mb: 3,
+              background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+              '&:hover': {
+                background: 'linear-gradient(45deg, #5a6fd8 30%, #6a4190 90%)'
+              }
+            }}
+          >
+            පණිවිඩ නැවුම් කරන්න
+          </Button>
+
+          {loadingMyMessages ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : myMessages.length > 0 ? (
+            <Grid container spacing={3}>
+              {myMessages.map((message) => (
+                <Grid item xs={12} md={6} key={message._id}>
+                  <Card sx={{
+                    borderRadius: 3,
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                    border: message.reply ? '2px solid #4caf50' : '2px solid #ff9800'
+                  }}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Typography variant="h6" sx={{
+                          fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                          color: 'primary.main'
+                        }}>
+                          {message.about}
+                        </Typography>
+                        <Chip
+                          label={message.reply ? 'පිළිතුරු ලැබී ඇත' : 'පිළිතුරු බලාපොරොත්තුවෙන්'}
+                          color={message.reply ? 'success' : 'warning'}
+                          size="small"
+                        />
+                      </Box>
+
+                      <Typography variant="body2" sx={{ mb: 2 }}>
+                        {message.message}
+                      </Typography>
+
+                      {message.attachments && message.attachments.length > 0 && (
+                        <Box sx={{ mb: 2 }}>
+                          {message.attachments.map((attachment, index) => (
+                            <Chip
+                              key={index}
+                              icon={<AttachFileIcon />}
+                              label={attachment.originalName || 'ගොනුව'}
+                              size="small"
+                              sx={{ mr: 1, mb: 1 }}
+                              onClick={() => window.open(attachment.url, '_blank')}
+                            />
+                          ))}
+                        </Box>
+                      )}
+
+                      {message.reply && (
+                        <Box sx={{
+                          bgcolor: 'grey.100',
+                          p: 2,
+                          borderRadius: 2,
+                          mt: 2
+                        }}>
+                          <Typography variant="subtitle2" gutterBottom sx={{
+                            color: 'primary.main',
+                            fontWeight: 'bold'
+                          }}>
+                            ගුරුවරයාගේ පිළිතුර:
+                          </Typography>
+                          <Typography variant="body2" sx={{ mb: 1 }}>
+                            {message.reply}
+                          </Typography>
+
+                          {message.replyAttachments && message.replyAttachments.length > 0 && (
+                            <Box sx={{ mt: 2 }}>
+                              <Typography variant="caption" sx={{ display: 'block', mb: 1, fontWeight: 'bold', color: 'primary.main' }}>
+                                පිළිතුරු ගොනු ({message.replyAttachments.length}):
+                              </Typography>
+                              {message.replyAttachments.map((attachment, index) => (
+                                <Chip
+                                  key={index}
+                                  icon={<AttachFileIcon />}
+                                  label={attachment.originalName || `ගොනුව ${index + 1}`}
+                                  size="small"
+                                  sx={{
+                                    mr: 1,
+                                    mb: 1,
+                                    backgroundColor: '#e3f2fd',
+                                    '&:hover': {
+                                      backgroundColor: '#bbdefb'
+                                    }
+                                  }}
+                                  onClick={() => window.open(attachment.url, '_blank')}
+                                  clickable
+                                />
+                              ))}
+                            </Box>
+                          )}
+
+                          <Typography variant="caption" sx={{ display: 'block', mt: 1 }}>
+                            පිළිතුරු දුන් දිනය: {new Date(message.repliedAt).toLocaleDateString('si-LK')}
+                          </Typography>
+                        </Box>
+                      )}
+
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
+                        යවන ලද දිනය: {new Date(message.createdAt).toLocaleDateString('si-LK')}
+                      </Typography>
+                    </CardContent>
+
+                    {!message.reply && (
+                      <CardActions>
+                        <Button
+                          size="small"
+                          startIcon={<Edit />}
+                          onClick={() => handleEditMessage(message)}
+                          sx={{ color: 'primary.main' }}
+                        >
+                          සංස්කරණය
+                        </Button>
+                        <Button
+                          size="small"
+                          startIcon={<Delete />}
+                          onClick={() => handleDeleteMessage(message._id)}
+                          sx={{ color: 'error.main' }}
+                        >
+                          මකන්න
+                        </Button>
+                      </CardActions>
+                    )}
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <Paper elevation={2} sx={{ p: 4, textAlign: 'center', borderRadius: 3 }}>
+              <Typography variant="h6" color="text.secondary">
+                පණිවිඩ නොමැත
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                ඔබ තවම කිසිදු පණිවිඩයක් යවා නැත
+              </Typography>
+            </Paper>
+          )}
         </DialogContent>
       </Dialog>
     </Box>
