@@ -1120,10 +1120,10 @@ const SpecificClass = () => {
                           <Typography variant="h6" fontWeight="bold" sx={{
                             fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                           }}>
-                            මගේ ප්‍රගතිය බලන්න
+                            මගේ තොරතුරු බලන්න
                           </Typography>
                           <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
-                            පන්තියේ ප්‍රගතිය
+                            තමන්ගේ තොරතුරු
                           </Typography>
                         </CardContent>
                       </Card>
