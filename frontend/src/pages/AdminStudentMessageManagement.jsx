@@ -35,7 +35,8 @@ import {
   WhatsApp as WhatsAppIcon,
   Schedule as ScheduleIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon
+  Delete as DeleteIcon,
+  Add as AddIcon
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
@@ -55,7 +56,8 @@ const AdminStudentMessageManagement = () => {
 
   const [replyData, setReplyData] = useState({
     reply: '',
-    replyAttachments: []
+    replyAttachments: [],
+    replySourceLinks: ['']
   });
 
   useEffect(() => {
@@ -113,7 +115,8 @@ const AdminStudentMessageManagement = () => {
     setSelectedMessage(message);
     setReplyData({
       reply: '',
-      replyAttachments: []
+      replyAttachments: [],
+      replySourceLinks: ['']
     });
     setIsEditingReply(false);
     setOpenReplyDialog(true);
@@ -125,7 +128,8 @@ const AdminStudentMessageManagement = () => {
     setSelectedMessage(message);
     setReplyData({
       reply: message.reply || '',
-      replyAttachments: message.replyAttachments || []
+      replyAttachments: message.replyAttachments || [],
+      replySourceLinks: message.replySourceLinks && message.replySourceLinks.length > 0 ? message.replySourceLinks : ['']
     });
     setIsEditingReply(true);
     setOpenReplyDialog(true);
@@ -181,6 +185,30 @@ const AdminStudentMessageManagement = () => {
     }));
   };
 
+  const handleReplySourceLinkChange = (index, value) => {
+    const newLinks = [...replyData.replySourceLinks];
+    newLinks[index] = value;
+    setReplyData(prev => ({
+      ...prev,
+      replySourceLinks: newLinks
+    }));
+  };
+
+  const addReplySourceLink = () => {
+    setReplyData(prev => ({
+      ...prev,
+      replySourceLinks: [...prev.replySourceLinks, '']
+    }));
+  };
+
+  const removeReplySourceLink = (index) => {
+    const newLinks = replyData.replySourceLinks.filter((_, i) => i !== index);
+    setReplyData(prev => ({
+      ...prev,
+      replySourceLinks: newLinks.length > 0 ? newLinks : ['']
+    }));
+  };
+
   const handleSubmitReply = async () => {
     if (!replyData.reply.trim()) {
       setError('පිළිතුර අවශ්‍ය වේ');
@@ -192,20 +220,24 @@ const AdminStudentMessageManagement = () => {
     setSubmitting(true);
     try {
       const token = localStorage.getItem('token');
+      const submitData = {
+        ...replyData,
+        replySourceLinks: replyData.replySourceLinks.filter(link => link.trim() !== '')
+      };
       let response;
 
       if (isEditingReply) {
         // Update existing reply
         response = await axios.put(
           `https://ayanna-kiyanna-new-backend.onrender.com/api/student-messages/${selectedMessage._id}/edit-reply`,
-          replyData,
+          submitData,
           { headers: { 'x-auth-token': token } }
         );
       } else {
         // Create new reply
         response = await axios.put(
           `https://ayanna-kiyanna-new-backend.onrender.com/api/student-messages/${selectedMessage._id}/reply`,
-          replyData,
+          submitData,
           { headers: { 'x-auth-token': token } }
         );
       }
@@ -612,6 +644,30 @@ const AdminStudentMessageManagement = () => {
               ))}
             </Box>
           )}
+
+          <Typography variant="subtitle1" gutterBottom sx={{ mt: 3 }}>
+            මූලාශ්‍ර සබැඳි (විකල්ප)
+          </Typography>
+          {replyData.replySourceLinks.map((link, index) => (
+            <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <TextField
+                fullWidth
+                label={`සබැඳිය ${index + 1}`}
+                value={link}
+                onChange={(e) => handleReplySourceLinkChange(index, e.target.value)}
+                placeholder="https://example.com"
+                sx={{ mr: 1 }}
+              />
+              {replyData.replySourceLinks.length > 1 && (
+                <IconButton onClick={() => removeReplySourceLink(index)}>
+                  <CloseIcon />
+                </IconButton>
+              )}
+            </Box>
+          ))}
+          <Button onClick={addReplySourceLink} startIcon={<AddIcon />} sx={{ mb: 2 }}>
+            සබැඳියක් එක් කරන්න
+          </Button>
         </DialogContent>
 
         <DialogActions sx={{ p: 3 }}>

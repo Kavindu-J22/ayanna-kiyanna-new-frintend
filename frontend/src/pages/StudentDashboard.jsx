@@ -44,6 +44,7 @@ import {
   Lock,
   Visibility,
   Add,
+  Add as AddIcon,
   Notifications,
   Dashboard as DashboardIcon,
   LocationOn,
@@ -120,7 +121,8 @@ const StudentDashboard = () => {
   const [messageData, setMessageData] = useState({
     about: '',
     message: '',
-    attachments: []
+    attachments: [],
+    sourceLinks: ['']
   });
   const [submittingMessage, setSubmittingMessage] = useState(false);
 
@@ -432,7 +434,8 @@ const StudentDashboard = () => {
     setMessageData({
       about: '',
       message: '',
-      attachments: []
+      attachments: [],
+      sourceLinks: ['']
     });
     setShowMessageDialog(true);
   };
@@ -493,6 +496,32 @@ const StudentDashboard = () => {
     }));
   };
 
+  const handleSourceLinkChange = (index, value) => {
+    const currentLinks = messageData.sourceLinks || [''];
+    const newLinks = [...currentLinks];
+    newLinks[index] = value;
+    setMessageData(prev => ({
+      ...prev,
+      sourceLinks: newLinks
+    }));
+  };
+
+  const addSourceLink = () => {
+    setMessageData(prev => ({
+      ...prev,
+      sourceLinks: [...(prev.sourceLinks || []), '']
+    }));
+  };
+
+  const removeSourceLink = (index) => {
+    const currentLinks = messageData.sourceLinks || [''];
+    const newLinks = currentLinks.filter((_, i) => i !== index);
+    setMessageData(prev => ({
+      ...prev,
+      sourceLinks: newLinks.length > 0 ? newLinks : ['']
+    }));
+  };
+
   const submitMessage = async () => {
     if (!messageData.about.trim() || !messageData.message.trim()) {
       alert('විෂය සහ පණිවිඩය අවශ්‍ය වේ');
@@ -502,20 +531,24 @@ const StudentDashboard = () => {
     setSubmittingMessage(true);
     try {
       const token = localStorage.getItem('token');
+      const submitData = {
+        ...messageData,
+        sourceLinks: (messageData.sourceLinks || []).filter(link => link.trim() !== '')
+      };
       let response;
 
       if (selectedEditMessage) {
         // Update existing message
         response = await axios.put(
           `https://ayanna-kiyanna-new-backend.onrender.com/api/student-messages/${selectedEditMessage._id}`,
-          messageData,
+          submitData,
           { headers: { 'x-auth-token': token } }
         );
       } else {
         // Create new message
         response = await axios.post(
           'https://ayanna-kiyanna-new-backend.onrender.com/api/student-messages',
-          messageData,
+          submitData,
           { headers: { 'x-auth-token': token } }
         );
       }
@@ -563,7 +596,8 @@ const StudentDashboard = () => {
     setMessageData({
       about: message.about,
       message: message.message,
-      attachments: message.attachments || []
+      attachments: message.attachments || [],
+      sourceLinks: message.sourceLinks && message.sourceLinks.length > 0 ? message.sourceLinks : ['']
     });
     setShowMyMessagesDialog(false);
     setShowMessageDialog(true);
@@ -599,7 +633,8 @@ const StudentDashboard = () => {
     setMessageData({
       about: '',
       message: '',
-      attachments: []
+      attachments: [],
+      sourceLinks: ['']
     });
   };
 
@@ -1905,6 +1940,32 @@ const StudentDashboard = () => {
                   sx={{ mr: 1, mb: 1 }}
                 />
               ))}
+            </Grid>
+
+            <Grid item xs={12}>
+              <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
+                මූලාශ්‍ර සබැඳි (විකල්ප)
+              </Typography>
+              {(messageData.sourceLinks || ['']).map((link, index) => (
+                <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <TextField
+                    fullWidth
+                    label={`සබැඳිය ${index + 1}`}
+                    value={link}
+                    onChange={(e) => handleSourceLinkChange(index, e.target.value)}
+                    placeholder="https://example.com"
+                    sx={{ mr: 1 }}
+                  />
+                  {(messageData.sourceLinks || ['']).length > 1 && (
+                    <IconButton onClick={() => removeSourceLink(index)}>
+                      <CloseIcon />
+                    </IconButton>
+                  )}
+                </Box>
+              ))}
+              <Button onClick={addSourceLink} startIcon={<AddIcon />} sx={{ mb: 2 }}>
+                සබැඳියක් එක් කරන්න
+              </Button>
             </Grid>
           </Grid>
         </DialogContent>
