@@ -835,9 +835,9 @@ function AppContent() {
                   }
                 }
               }}>
-                <Link href="/privacy-policy">Privacy Policy</Link>
-                <Link href="/terms-conditions">Terms & Conditions</Link>
-                <Link href="/copyright-policy">Copyright Policy</Link>
+                <Link to="/privacy-policy">Privacy Policy</Link>
+                <Link to="/terms-conditions">Terms & Conditions</Link>
+                <Link to="/copyright-policy">Copyright Policy</Link>
               </Box>
               <Typography variant="caption" sx={{
                 display: 'block',
@@ -963,9 +963,9 @@ function AppContent() {
                   }
                 }
               }}>
-                <Link href="/privacy-policy">Privacy Policy</Link>
-                <Link href="/terms-conditions">Terms & Conditions</Link>
-                <Link href="/copyright-policy">Copyright Policy</Link>
+                <Link to="/privacy-policy">Privacy Policy</Link>
+                <Link to="/terms-conditions">Terms & Conditions</Link>
+                <Link to="/copyright-policy">Copyright Policy</Link>
               </Box>
               <Typography variant="caption" sx={{
                 display: 'block',
