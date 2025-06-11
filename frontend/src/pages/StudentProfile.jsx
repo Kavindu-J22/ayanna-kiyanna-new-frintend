@@ -1025,6 +1025,9 @@ const StudentProfile = () => {
                         onChange={(e) => handleInputChange('selectedGrade', e.target.value)}
                         label="Selected Grade"
                       >
+                        <MenuItem value="Grade 6">Grade 6</MenuItem>
+                        <MenuItem value="Grade 7">Grade 7</MenuItem>
+                        <MenuItem value="Grade 8">Grade 8</MenuItem>
                         <MenuItem value="Grade 9">Grade 9</MenuItem>
                         <MenuItem value="Grade 10">Grade 10</MenuItem>
                         <MenuItem value="Grade 11">Grade 11</MenuItem>
