@@ -450,27 +450,48 @@ function AppContent() {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [location.pathname]);
 
-  const handleBackToAdmin = () => {
-    // Clear admin view data
-    localStorage.removeItem('adminView');
-    localStorage.removeItem('adminViewStudentId');
-    localStorage.removeItem('adminViewStudentName');
-    localStorage.removeItem('adminViewStudentIdNumber');
-    localStorage.removeItem('studentData');
-    localStorage.removeItem('adminAsStudentMode');
+  const handleBackToAdmin = async () => {
+    try {
+      // Get stored admin context
+      const adminContextStr = localStorage.getItem('adminContext');
+      if (!adminContextStr) {
+        console.error('No admin context found');
+        // Fallback: redirect to login
+        window.location.href = '/login';
+        return;
+      }
 
-    // Restore admin token if available
-    const originalAdminToken = localStorage.getItem('originalAdminToken');
-    if (originalAdminToken) {
-      localStorage.setItem('token', originalAdminToken);
-      localStorage.removeItem('originalAdminToken');
+      const adminContext = JSON.parse(adminContextStr);
+
+      // Clear current student session
+      localStorage.removeItem('token');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('fullName');
+      localStorage.removeItem('studentData');
+
+      // Clear admin view data
+      localStorage.removeItem('adminView');
+      localStorage.removeItem('adminViewStudentId');
+      localStorage.removeItem('adminViewStudentName');
+      localStorage.removeItem('adminViewStudentIdNumber');
+      localStorage.removeItem('adminContext');
+
+      // Restore admin session
+      localStorage.setItem('token', adminContext.token);
+      localStorage.setItem('userRole', adminContext.userRole);
+      localStorage.setItem('userId', adminContext.userId);
+      localStorage.setItem('userEmail', adminContext.userEmail);
+      localStorage.setItem('fullName', adminContext.fullName);
+
+      // Navigate to student management
+      window.location.href = '/student-management';
+    } catch (error) {
+      console.error('Error returning to admin account:', error);
+      // Fallback: redirect to login
+      window.location.href = '/login';
     }
-
-    // Set admin role
-    localStorage.setItem('userRole', 'admin');
-
-    // Navigate to student management
-    window.location.href = '/student-management';
   };
 
   // Auto-expand category if current path is in its subcategories
@@ -533,31 +554,61 @@ function AppContent() {
           left: 0,
           right: 0,
           zIndex: 1300,
-          background: 'linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 100%)',
+          background: 'linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 50%, #45B7D1 100%)',
           color: 'white',
-          py: 1,
+          py: 1.5,
           px: 2,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+          borderBottom: '3px solid rgba(255,255,255,0.3)',
+          '@keyframes pulse': {
+            '0%': { opacity: 1 },
+            '50%': { opacity: 0.8 },
+            '100%': { opacity: 1 }
+          },
           animation: 'pulse 2s infinite'
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <AdminIcon />
-            <Typography variant="body1" fontWeight="bold">
-              Admin View: Viewing as Student {adminViewStudentName} ({adminViewStudentId})
-            </Typography>
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            maxWidth: '1200px',
+            width: '100%',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap'
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <AdminIcon sx={{ fontSize: 28 }} />
+              <Box>
+                <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '1.1rem' }}>
+                  🔄 Admin View Mode
+                </Typography>
+                <Typography variant="body2" sx={{ opacity: 0.9, fontSize: '0.9rem' }}>
+                  Viewing as Student: {adminViewStudentName} ({adminViewStudentId})
+                </Typography>
+              </Box>
+            </Box>
+
             <Button
               variant="contained"
-              size="small"
+              size="medium"
               onClick={handleBackToAdmin}
               sx={{
-                bgcolor: 'rgba(255,255,255,0.2)',
+                bgcolor: 'rgba(255,255,255,0.15)',
                 color: 'white',
+                fontWeight: 'bold',
+                borderRadius: 2,
+                px: 3,
+                py: 1,
+                border: '2px solid rgba(255,255,255,0.3)',
                 '&:hover': {
-                  bgcolor: 'rgba(255,255,255,0.3)'
-                }
+                  bgcolor: 'rgba(255,255,255,0.25)',
+                  transform: 'translateY(-1px)',
+                  boxShadow: '0 6px 20px rgba(0,0,0,0.2)'
+                },
+                transition: 'all 0.3s ease'
               }}
               startIcon={<ArrowBackIcon />}
             >
@@ -986,7 +1037,8 @@ function AppContent() {
             minHeight: '100%',
             display: 'flex',
             flexDirection: 'column',
-            overflow: 'visible' // Allow content to flow naturally
+            overflow: 'visible', // Allow content to flow naturally
+            pt: isAdminView ? 10 : 0 // Extra top padding when admin view is active
           }}>
             <Routes>
               <Route path="/" element={<Home />} />

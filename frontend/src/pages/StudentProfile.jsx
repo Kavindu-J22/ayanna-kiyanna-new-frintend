@@ -248,7 +248,11 @@ const StudentProfile = () => {
 
   const handleAccessAsStudent = async (classId) => {
     try {
-      const token = localStorage.getItem('token');
+      const currentToken = localStorage.getItem('token');
+      const currentUserRole = localStorage.getItem('userRole');
+      const currentUserId = localStorage.getItem('userId');
+      const currentUserEmail = localStorage.getItem('userEmail');
+      const currentUserFullName = localStorage.getItem('fullName');
 
       // Check if student is enrolled in this class
       const isEnrolled = student.enrolledClasses?.some(
@@ -261,23 +265,67 @@ const StudentProfile = () => {
         return;
       }
 
-      // Store admin view information
+      // Store complete admin context for restoration
+      const adminContext = {
+        token: currentToken,
+        userRole: currentUserRole,
+        userId: currentUserId,
+        userEmail: currentUserEmail,
+        fullName: currentUserFullName,
+        timestamp: new Date().toISOString()
+      };
+
+      localStorage.setItem('adminContext', JSON.stringify(adminContext));
       localStorage.setItem('adminView', 'true');
       localStorage.setItem('adminViewStudentId', studentId);
       localStorage.setItem('adminViewStudentName', `${student.firstName} ${student.lastName}`);
       localStorage.setItem('adminViewStudentIdNumber', student.studentId);
-      localStorage.setItem('originalAdminToken', token);
 
-      // Set student role and data for the session
-      localStorage.setItem('userRole', 'student');
-      localStorage.setItem('studentData', JSON.stringify(student));
-      localStorage.setItem('adminAsStudentMode', 'true');
+      // Get student login credentials from backend
+      console.log('Attempting to access as student:', { studentId, classId, token: !!currentToken });
 
-      // Navigate to specific class
-      navigate(`/specific-class/${classId}`);
+      const response = await axios.post(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/admin/students/access-as-student',
+        {
+          studentId: studentId,
+          targetClassId: classId
+        },
+        { headers: { 'x-auth-token': currentToken } }
+      );
+
+      console.log('Access as student response:', response.data);
+
+      if (response.data.success) {
+        // Clear current session
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('fullName');
+        localStorage.removeItem('studentData');
+
+        // Set student session data
+        localStorage.setItem('token', response.data.studentToken);
+        localStorage.setItem('userRole', 'student');
+        localStorage.setItem('userId', response.data.studentUserId);
+        localStorage.setItem('userEmail', response.data.studentEmail);
+        localStorage.setItem('fullName', response.data.studentFullName);
+        localStorage.setItem('studentData', JSON.stringify(response.data.studentData));
+
+        // Show success message
+        setSuccess('Successfully switched to student account. Redirecting...');
+
+        // Navigate to specific class after a short delay
+        setTimeout(() => {
+          navigate(`/specific-class/${classId}`);
+        }, 1500);
+      } else {
+        setError('Failed to access student account. Please try again.');
+        setTimeout(() => setError(''), 5000);
+      }
     } catch (error) {
       console.error('Error accessing as student:', error);
-      setError('Failed to access class as student. Please try again.');
+      setError(error.response?.data?.message || 'Failed to access class as student. Please try again.');
       setTimeout(() => setError(''), 5000);
     }
   };
