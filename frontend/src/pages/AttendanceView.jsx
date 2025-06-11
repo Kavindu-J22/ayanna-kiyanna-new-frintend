@@ -206,7 +206,7 @@ const AttendanceView = () => {
         studentAttendance: attendanceData
           .filter(student => student.studentId?._id) // Filter out students without valid IDs
           .map(student => ({
-            studentId: student.studentId._id,
+            studentId: student.studentId?._id,
             status: student.status
           }))
       };
@@ -243,7 +243,7 @@ const AttendanceView = () => {
     if (!searchTerm) return true;
 
     const studentName = student.studentId
-      ? `${student.studentId.firstName || ''} ${student.studentId.lastName || ''}`.trim()
+      ? `${student.studentId?.firstName || ''} ${student.studentId?.lastName || ''}`.trim()
       : '';
     const studentId = student.studentId?.studentId || '';
 
@@ -258,7 +258,7 @@ const AttendanceView = () => {
   const updateStudentAttendance = (studentId, status) => {
     setAttendanceData(prev =>
       prev.map(student =>
-        student.studentId._id === studentId
+        student.studentId?._id === studentId
           ? { ...student, status }
           : student
       )
@@ -749,7 +749,7 @@ const AttendanceView = () => {
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((sheet) => {
                           const myAttendance = sheet.studentAttendance?.find(
-                            record => record.studentId._id === currentStudent?._id
+                            record => record.studentId?._id === currentStudent?._id
                           );
 
                           return (
@@ -960,7 +960,7 @@ const AttendanceView = () => {
                 {attendanceData.some(student =>
                   !student.studentId ||
                   (student.studentId &&
-                   (`${student.studentId.firstName || ''} ${student.studentId.lastName || ''}`.trim() === ''))
+                   (`${student.studentId?.firstName || ''} ${student.studentId?.lastName || ''}`.trim() === ''))
                 ) && (
                   <Alert
                     severity="info"
@@ -1051,7 +1051,7 @@ const AttendanceView = () => {
                               <Box>
                                 <Typography variant="body2">
                                   {student.studentId ?
-                                    `${student.studentId.firstName || ''} ${student.studentId.lastName || ''}` :
+                                    `${student.studentId?.firstName || ''} ${student.studentId?.lastName || ''}` :
                                     'අලුත් හෝ ඉවත් වූ සිසුවෙකි'
                                   }
                                   {/* Show (you) label for the current monitor */}
