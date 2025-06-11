@@ -1468,7 +1468,7 @@ const StudentDashboard = () => {
                   fullWidth
                   variant="outlined"
                   startIcon={<Person />}
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 1 }}
                   onClick={() => navigate('/student-profile')}
                 >
                   View Profile
@@ -1477,20 +1477,48 @@ const StudentDashboard = () => {
                 <Button
                   fullWidth
                   variant="outlined"
-                  startIcon={<Schedule />}
-                  sx={{ mb: 2 }}
+                  startIcon={<Payment />}
+                  sx={{ mb: 1, fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}
+                  onClick={() => navigate('/my-payment-requests')}
                 >
-                  Class Schedule
+                  මගේ පන්ති ගෙවීම් ඉල්ලීම්
+                </Button>
+
+                <Button
+                  fullWidth
+                  variant="contained"
+                  startIcon={<MessageIcon />}
+                  onClick={handleOpenMessageDialog}
+                  sx={{
+                    mt: 1,
+                    background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+                    '&:hover': {
+                      background: 'linear-gradient(45deg, #5a6fd8 30%, #6a4190 90%)'
+                    },
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                  }}
+                >
+                  ගුරුවරයාට පණිවිඩයක් හෝ ගැටලුවක් යවන්න
                 </Button>
 
                 <Button
                   fullWidth
                   variant="outlined"
-                  startIcon={<Payment />}
-                  sx={{ mb: 2, fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}
-                  onClick={() => navigate('/my-payment-requests')}
+                  startIcon={<Visibility />}
+                  onClick={() => setShowMyMessagesDialog(true)}
+                  sx={{
+                    mt: 1,
+                    mb: 1,
+                    borderColor: '#667eea',
+                    color: '#667eea',
+                    '&:hover': {
+                      borderColor: '#5a6fd8',
+                      backgroundColor: 'rgba(102, 126, 234, 0.04)'
+                    },
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                  }}
                 >
-                  මගේ ගෙවීම් ඉල්ලීම්
+                  මගේ පණිවිඩ සහ ගැටලු බලන්න
                 </Button>
 
                 <Button
@@ -1502,41 +1530,6 @@ const StudentDashboard = () => {
                   Back to Home
                 </Button>
 
-                <Button
-                  fullWidth
-                  variant="contained"
-                  startIcon={<MessageIcon />}
-                  onClick={handleOpenMessageDialog}
-                  sx={{
-                    mt: 2,
-                    background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-                    '&:hover': {
-                      background: 'linear-gradient(45deg, #5a6fd8 30%, #6a4190 90%)'
-                    },
-                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-                  }}
-                >
-                  ගුරුවරයාට පණිවිඩයක් යවන්න
-                </Button>
-
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  startIcon={<Visibility />}
-                  onClick={() => setShowMyMessagesDialog(true)}
-                  sx={{
-                    mt: 1,
-                    borderColor: '#667eea',
-                    color: '#667eea',
-                    '&:hover': {
-                      borderColor: '#5a6fd8',
-                      backgroundColor: 'rgba(102, 126, 234, 0.04)'
-                    },
-                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-                  }}
-                >
-                  මගේ පණිවිඩ බලන්න
-                </Button>
               </Paper>
 
               {/* Student Notices */}
@@ -2062,6 +2055,33 @@ const StudentDashboard = () => {
                         {message.message}
                       </Typography>
 
+                      {/* Source Links */}
+                      {message.sourceLinks && message.sourceLinks.length > 0 && (
+                        <Box sx={{ mb: 2 }}>
+                          <Typography variant="caption" sx={{ display: 'block', mb: 1, fontWeight: 'bold', color: 'primary.main' }}>
+                            මූලාශ්‍ර සබැඳි ({message.sourceLinks.length}):
+                          </Typography>
+                          {message.sourceLinks.map((link, index) => (
+                            <Chip
+                              key={index}
+                              icon={<LinkIcon />}
+                              label={`සබැඳිය ${index + 1}`}
+                              size="small"
+                              sx={{
+                                mr: 1,
+                                mb: 1,
+                                backgroundColor: '#fff3e0',
+                                '&:hover': {
+                                  backgroundColor: '#ffe0b2'
+                                }
+                              }}
+                              onClick={() => window.open(link, '_blank')}
+                              clickable
+                            />
+                          ))}
+                        </Box>
+                      )}
+
                       {message.attachments && message.attachments.length > 0 && (
                         <Box sx={{ mb: 2 }}>
                           {message.attachments.map((attachment, index) => (
@@ -2114,6 +2134,33 @@ const StudentDashboard = () => {
                                     }
                                   }}
                                   onClick={() => window.open(attachment.url, '_blank')}
+                                  clickable
+                                />
+                              ))}
+                            </Box>
+                          )}
+
+                          {/* Reply Source Links */}
+                          {message.replySourceLinks && message.replySourceLinks.length > 0 && (
+                            <Box sx={{ mt: 2 }}>
+                              <Typography variant="caption" sx={{ display: 'block', mb: 1, fontWeight: 'bold', color: 'primary.main' }}>
+                                පිළිතුරු මූලාශ්‍ර සබැඳි ({message.replySourceLinks.length}):
+                              </Typography>
+                              {message.replySourceLinks.map((link, index) => (
+                                <Chip
+                                  key={index}
+                                  icon={<LinkIcon />}
+                                  label={`සබැඳිය ${index + 1}`}
+                                  size="small"
+                                  sx={{
+                                    mr: 1,
+                                    mb: 1,
+                                    backgroundColor: '#f3e5f5',
+                                    '&:hover': {
+                                      backgroundColor: '#e1bee7'
+                                    }
+                                  }}
+                                  onClick={() => window.open(link, '_blank')}
                                   clickable
                                 />
                               ))}

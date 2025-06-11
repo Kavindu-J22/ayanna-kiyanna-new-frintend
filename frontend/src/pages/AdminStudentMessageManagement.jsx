@@ -36,7 +36,8 @@ import {
   Schedule as ScheduleIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-  Add as AddIcon
+  Add as AddIcon,
+  Link as LinkIcon
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
@@ -429,7 +430,34 @@ const AdminStudentMessageManagement = () => {
                       <Typography variant="body2" sx={{ mb: 2 }}>
                         {message.message}
                       </Typography>
-                      
+
+                      {/* Source Links */}
+                      {message.sourceLinks && message.sourceLinks.length > 0 && (
+                        <Box sx={{ mb: 2 }}>
+                          <Typography variant="caption" sx={{ display: 'block', mb: 1, fontWeight: 'bold', color: 'primary.main' }}>
+                            මූලාශ්‍ර සබැඳි ({message.sourceLinks.length}):
+                          </Typography>
+                          {message.sourceLinks.map((link, index) => (
+                            <Chip
+                              key={index}
+                              icon={<LinkIcon />}
+                              label={`සබැඳිය ${index + 1}`}
+                              size="small"
+                              sx={{
+                                mr: 1,
+                                mb: 1,
+                                backgroundColor: '#fff3e0',
+                                '&:hover': {
+                                  backgroundColor: '#ffe0b2'
+                                }
+                              }}
+                              onClick={() => window.open(link, '_blank')}
+                              clickable
+                            />
+                          ))}
+                        </Box>
+                      )}
+
                       {/* Attachments */}
                       {message.attachments && message.attachments.length > 0 && (
                         <Box sx={{ mb: 2 }}>
@@ -489,7 +517,34 @@ const AdminStudentMessageManagement = () => {
                               ))}
                             </Box>
                           )}
-                          
+
+                          {/* Reply Source Links */}
+                          {message.replySourceLinks && message.replySourceLinks.length > 0 && (
+                            <Box sx={{ mt: 2 }}>
+                              <Typography variant="caption" sx={{ display: 'block', mb: 1, fontWeight: 'bold', color: 'primary.main' }}>
+                                පිළිතුරු මූලාශ්‍ර සබැඳි ({message.replySourceLinks.length}):
+                              </Typography>
+                              {message.replySourceLinks.map((link, index) => (
+                                <Chip
+                                  key={index}
+                                  icon={<LinkIcon />}
+                                  label={`සබැඳිය ${index + 1}`}
+                                  size="small"
+                                  sx={{
+                                    mr: 1,
+                                    mb: 1,
+                                    backgroundColor: '#f3e5f5',
+                                    '&:hover': {
+                                      backgroundColor: '#e1bee7'
+                                    }
+                                  }}
+                                  onClick={() => window.open(link, '_blank')}
+                                  clickable
+                                />
+                              ))}
+                            </Box>
+                          )}
+
                           <Typography variant="caption" sx={{ display: 'block', mt: 1 }}>
                             පිළිතුරු දුන් දිනය: {formatDate(message.repliedAt)}
                           </Typography>

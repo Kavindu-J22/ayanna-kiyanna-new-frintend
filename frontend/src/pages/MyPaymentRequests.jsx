@@ -186,10 +186,10 @@ const MyPaymentRequests = () => {
                     WebkitBackgroundClip: 'text',
                     color: 'transparent'
                   }}>
-                    මගේ ගෙවීම් ඉල්ලීම්
+                    මගේ පන්ති ගෙවීම් ඉල්ලීම්
                   </Typography>
                   <Typography variant="subtitle1" color="text.secondary">
-                    ඔබගේ සියලුම ගෙවීම් ඉල්ලීම් සහ ඒවායේ තත්ත්වය
+                    ඔබගේ සියලුම පන්ති ගෙවීම් ඉල්ලීම් සහ ඒවායේ තත්ත්වය
                   </Typography>
                 </Box>
               </Box>
