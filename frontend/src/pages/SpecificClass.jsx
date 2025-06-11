@@ -859,7 +859,7 @@ const SpecificClass = () => {
                           <Typography variant="h6" fontWeight="bold" sx={{
                             fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
                           }}>
-                            පන්තියේ සිසුන් ප්‍රගතිය සමග
+                            පන්තියේ සිසුන් විස්තර සමග
                           </Typography>
                           <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
                             බලන්න / ඉවත් කරන්න
@@ -1108,7 +1108,9 @@ const SpecificClass = () => {
                 <>
                   <Grid item xs={12} sm={6} md={4}>
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                      <Card sx={{
+                      <Card
+                      onClick={() => navigate('/student-profile')}
+                       sx={{
                         height: '100%',
                         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                         color: 'white',
@@ -1552,6 +1554,7 @@ const SpecificClass = () => {
                         <TableCell>
                           <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                             <Button
+                              onClick={() => navigate(`/student-profile/${student._id}`)}
                               variant="contained"
                               size="small"
                               startIcon={<Visibility />}
@@ -1570,7 +1573,7 @@ const SpecificClass = () => {
                                 transition: 'all 0.3s ease'
                               }}
                             >
-                              ප්‍රොෆයිලය සමග ප්‍රගතිය
+                              විස්තර සමග ප්‍රොෆයිලය 
                             </Button>
                             {isAdmin && (
                               <Button
