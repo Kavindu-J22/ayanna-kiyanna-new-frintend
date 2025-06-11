@@ -81,6 +81,10 @@ import LoadingScreen from './components/LoadingScreen';
 import TestPage from './pages/TestPage';
 import Home from './pages/Home';
 import About from './pages/About';
+import Services from './pages/Services';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsConditions from './pages/TermsConditions';
+import CopyrightPolicy from './pages/CopyrightPolicy';
 import AkContact from './pages/Contact';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
@@ -831,9 +835,9 @@ function AppContent() {
                   }
                 }
               }}>
-                <Link href="#" onClick={(e) => e.preventDefault()}>Privacy Policy</Link>
-                <Link href="#" onClick={(e) => e.preventDefault()}>Terms & Conditions</Link>
-                <Link href="#" onClick={(e) => e.preventDefault()}>Copyright Policy</Link>
+                <Link href="/privacy-policy">Privacy Policy</Link>
+                <Link href="/terms-conditions">Terms & Conditions</Link>
+                <Link href="/copyright-policy">Copyright Policy</Link>
               </Box>
               <Typography variant="caption" sx={{
                 display: 'block',
@@ -959,9 +963,9 @@ function AppContent() {
                   }
                 }
               }}>
-                <Link href="#" onClick={(e) => e.preventDefault()}>Privacy Policy</Link>
-                <Link href="#" onClick={(e) => e.preventDefault()}>Terms & Conditions</Link>
-                <Link href="#" onClick={(e) => e.preventDefault()}>Copyright Policy</Link>
+                <Link href="/privacy-policy">Privacy Policy</Link>
+                <Link href="/terms-conditions">Terms & Conditions</Link>
+                <Link href="/copyright-policy">Copyright Policy</Link>
               </Box>
               <Typography variant="caption" sx={{
                 display: 'block',
@@ -1043,6 +1047,10 @@ function AppContent() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-conditions" element={<TermsConditions />} />
+              <Route path="/copyright-policy" element={<CopyrightPolicy />} />
               <Route path="/contact" element={<AkContact />} />
               <Route path="/grammar" element={<GrammarPage />} />
               <Route path="/grammar/folder/:folderId" element={<FolderView />} />

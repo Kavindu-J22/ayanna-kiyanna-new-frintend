@@ -270,7 +270,7 @@ const Header = () => {
     { name: 'About', path: '/about', icon: <PeopleIcon /> },
     { name: 'Services', path: '/services', icon: <BusinessIcon /> },
     { name: 'Products', path: '/books-products', icon: <InfoIcon /> },
-    { name: 'Contact', path: '/contact', icon: <ContactMailIcon /> },
+    { name: 'Contact', path: '/contact-support', icon: <ContactMailIcon /> },
   ];
 
   const isActive = (path) => {
