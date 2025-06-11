@@ -192,10 +192,10 @@ const AdminDashboard = () => {
   ];
 
   const quickActions = [
-    { title: 'සිසු කළමනාකරණය', icon: <PersonAdd />, color: '#667eea', path: '/student-management' },
     { title: 'පරිශීලක කළමනාකරණය', icon: <PersonAdd />, color: '#795548', path: '/admin-user-management' },
-    { title: 'පන්ති ඉල්ලීම් කළමනාකරණය', icon: <School />, color: '#ff5722', path: '/class-requests' },
+    { title: 'සිසු කළමනාකරණය', icon: <PersonAdd />, color: '#667eea', path: '/student-management' },
     { title: 'පන්ති කළමනාකරණය', icon: <School />, color: '#f093fb', path: '/class-management' },
+    { title: 'පන්ති ඉල්ලීම් කළමනාකරණය', icon: <School />, color: '#ff5722', path: '/class-requests' },
     { title: 'නිෂ්පාදන කළමනාකරණය', icon: <ShoppingBag />, color: '#FF6B6B', path: '/admin-product-management' },
     { title: 'ඇණවුම් කළමනාකරණය', icon: <ShoppingCart />, color: '#4ECDC4', path: '/admin-order-management' },
     { title: 'ගෙන්වා දීමේ ගාස්තු කළමනාකරණය', icon: <LocalShipping />, color: '#9C27B0', path: '/admin-delivery-charge-management' },
@@ -205,8 +205,6 @@ const AdminDashboard = () => {
     { title: 'User Questions and Feedbacks', icon: <ContactSupport />, color: '#FF9800', path: '/admin-feedback-management' },
     { title: 'සියලුම පන්ති ගෙවීම් සහ ආදායම් විශ්ලේෂණ', icon: <Payment />, color: '#ff9a9e', path: '/all-class-payment-requests' },
     { title: 'පැමිණීම් විශ්ලේෂණ', icon: <Assignment />, color: '#4caf50', path: '/attendance-analytics' },
-    { title: 'වාර්තා බලන්න', icon: <BarChart />, color: '#a8edea', path: '/reports' },
-    { title: 'සිස්ටම් සැකසුම්', icon: <Settings />, color: '#ffecd2', path: '/settings' }
   ];
 
   return (
