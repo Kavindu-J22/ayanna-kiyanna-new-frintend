@@ -68,7 +68,9 @@ import {
   Facebook as FacebookIcon,
   Twitter as TwitterIcon,
   Instagram as InstagramIcon,
-  YouTube as YouTubeIcon
+  YouTube as YouTubeIcon,
+  AdminPanelSettings as AdminIcon,
+  ArrowBack as ArrowBackIcon
 } from '@mui/icons-material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { FaTiktok } from "react-icons/fa";
@@ -179,6 +181,7 @@ import OrdersPage from './pages/OrdersPage';
 import AdminProductManagement from './pages/AdminProductManagement';
 import AdminOrderManagement from './pages/AdminOrderManagement';
 import AdminDeliveryChargeManagement from './pages/AdminDeliveryChargeManagement';
+import StudentProfile from './pages/StudentProfile';
 
 const mobileDrawerWidth = 280;
 const desktopDrawerWidth = 320; // Increased width for desktop
@@ -419,6 +422,57 @@ function AppContent() {
   const [showTip, setShowTip] = useState(true);
   const sidebarRef = useRef(null);
 
+  // Admin view state
+  const [isAdminView, setIsAdminView] = useState(false);
+  const [adminViewStudentName, setAdminViewStudentName] = useState('');
+  const [adminViewStudentId, setAdminViewStudentId] = useState('');
+
+  // Check admin view status
+  useEffect(() => {
+    const checkAdminView = () => {
+      const adminView = localStorage.getItem('adminView') === 'true';
+      const studentName = localStorage.getItem('adminViewStudentName');
+      const studentId = localStorage.getItem('adminViewStudentIdNumber');
+
+      setIsAdminView(adminView);
+      setAdminViewStudentName(studentName || '');
+      setAdminViewStudentId(studentId || '');
+    };
+
+    checkAdminView();
+
+    // Listen for localStorage changes
+    const handleStorageChange = () => {
+      checkAdminView();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [location.pathname]);
+
+  const handleBackToAdmin = () => {
+    // Clear admin view data
+    localStorage.removeItem('adminView');
+    localStorage.removeItem('adminViewStudentId');
+    localStorage.removeItem('adminViewStudentName');
+    localStorage.removeItem('adminViewStudentIdNumber');
+    localStorage.removeItem('studentData');
+    localStorage.removeItem('adminAsStudentMode');
+
+    // Restore admin token if available
+    const originalAdminToken = localStorage.getItem('originalAdminToken');
+    if (originalAdminToken) {
+      localStorage.setItem('token', originalAdminToken);
+      localStorage.removeItem('originalAdminToken');
+    }
+
+    // Set admin role
+    localStorage.setItem('userRole', 'admin');
+
+    // Navigate to student management
+    window.location.href = '/student-management';
+  };
+
   // Auto-expand category if current path is in its subcategories
   useEffect(() => {
     navItems.forEach(item => {
@@ -470,6 +524,48 @@ function AppContent() {
     }}>
       <CssBaseline />
       <Header />
+
+      {/* Admin View Indicator */}
+      {isAdminView && (
+        <Box sx={{
+          position: 'fixed',
+          top: 64,
+          left: 0,
+          right: 0,
+          zIndex: 1300,
+          background: 'linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 100%)',
+          color: 'white',
+          py: 1,
+          px: 2,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+          animation: 'pulse 2s infinite'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <AdminIcon />
+            <Typography variant="body1" fontWeight="bold">
+              Admin View: Viewing as Student {adminViewStudentName} ({adminViewStudentId})
+            </Typography>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={handleBackToAdmin}
+              sx={{
+                bgcolor: 'rgba(255,255,255,0.2)',
+                color: 'white',
+                '&:hover': {
+                  bgcolor: 'rgba(255,255,255,0.3)'
+                }
+              }}
+              startIcon={<ArrowBackIcon />}
+            >
+              Back to Admin Account
+            </Button>
+          </Box>
+        </Box>
+      )}
 
       {/* Mobile Menu Button */}
       {!isNoSidebarPage && isMobile && (
@@ -1013,6 +1109,7 @@ function AppContent() {
               <Route path="/admin-product-management" element={<AdminProductManagement />} />
               <Route path="/admin-order-management" element={<AdminOrderManagement />} />
               <Route path="/admin-delivery-charge-management" element={<AdminDeliveryChargeManagement />} />
+              <Route path="/student-profile/:studentId?" element={<StudentProfile />} />
             </Routes>
           </Container>
         </Main>

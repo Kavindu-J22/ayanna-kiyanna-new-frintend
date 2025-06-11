@@ -1391,6 +1391,7 @@ const StudentManagement = () => {
               <Tooltip title="View Student Profile" arrow>
                 <Button
                   size="small"
+                  onClick={() => navigate(`/student-profile/${student._id}`)}
                   startIcon={<CgProfile sx={{ fontSize: 18 }} />}
                   sx={{
                     bgcolor: 'rgb(71, 63, 181)',

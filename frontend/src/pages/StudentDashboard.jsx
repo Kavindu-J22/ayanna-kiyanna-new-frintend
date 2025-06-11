@@ -1434,6 +1434,7 @@ const StudentDashboard = () => {
                   variant="outlined"
                   startIcon={<Person />}
                   sx={{ mb: 2 }}
+                  onClick={() => navigate('/student-profile')}
                 >
                   View Profile
                 </Button>
