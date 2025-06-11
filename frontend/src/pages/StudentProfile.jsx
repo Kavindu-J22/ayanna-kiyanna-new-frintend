@@ -610,7 +610,7 @@ const StudentProfile = () => {
                         Role
                       </Typography>
                       <Chip 
-                        label={userDetails?.role || 'N/A'} 
+                        label={userDetails?.role || 'Student'} 
                         color="primary" 
                         size="small"
                       />
@@ -631,8 +631,8 @@ const StudentProfile = () => {
                         Email Verification
                       </Typography>
                       <Chip 
-                        label={userDetails?.emailVerified ? 'Verified' : 'Not Verified'} 
-                        color={userDetails?.emailVerified ? 'success' : 'error'} 
+                        label='Verified'
+                        color='success'
                         size="small"
                       />
                     </Box>
