@@ -76,10 +76,25 @@ const StudentProfile = () => {
         );
       } else {
         // Student viewing own profile
-        response = await axios.get(
-          'https://ayanna-kiyanna-new-backend.onrender.com/api/students/profile',
-          { headers: { 'x-auth-token': token } }
-        );
+        try {
+          response = await axios.get(
+            'https://ayanna-kiyanna-new-backend.onrender.com/api/students/profile',
+            { headers: { 'x-auth-token': token } }
+          );
+        } catch (studentError) {
+          // If student profile not found, try to get user details only
+          if (studentError.response?.status === 404) {
+            console.log('Student profile not found, loading user details only');
+            const userResponse = await axios.get(
+              'https://ayanna-kiyanna-new-backend.onrender.com/api/auth/me',
+              { headers: { 'x-auth-token': token } }
+            );
+            setUserDetails(userResponse.data);
+            setStudent(null); // No student profile exists
+            return;
+          }
+          throw studentError;
+        }
       }
 
       // Handle different response structures
@@ -105,7 +120,7 @@ const StudentProfile = () => {
       });
     } catch (error) {
       console.error('Error loading student profile:', error);
-      setError(error.response?.data?.message || 'Failed to load student profile');
+      setError(error.response?.data?.message || 'Failed to load profile');
     } finally {
       setLoading(false);
     }
@@ -338,21 +353,165 @@ const StudentProfile = () => {
     );
   }
 
-  if (!student) {
+  // If no student profile but user details exist, show only user account details
+  if (!student && userDetails) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        {/* Back Button */}
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate('/')}
+          sx={{ mb: 2 }}
+        >
+          Back to Home
+        </Button>
+
+        {/* Success/Error Messages */}
+        {success && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {success}
+          </Alert>
+        )}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        {/* Page Title */}
+        <Typography variant="h4" gutterBottom sx={{
+          fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+          fontWeight: 'bold',
+          color: 'primary.main',
+          mb: 3
+        }}>
+          My Profile
+        </Typography>
+
+        <Grid container spacing={3}>
+          {/* User Account Details Section */}
+          <Grid item xs={12}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Paper elevation={6} sx={{ p: 3, borderRadius: 3, mb: 3 }}>
+                <Typography variant="h5" gutterBottom sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  color: 'primary.main',
+                  fontWeight: 'bold'
+                }}>
+                  <AccountCircleIcon />
+                  User Account Details
+                </Typography>
+                <Divider sx={{ mb: 3 }} />
+
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                      <EmailIcon color="primary" />
+                      <Box>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Email Address
+                        </Typography>
+                        <Typography variant="body1" fontWeight="medium">
+                          {userDetails?.email || 'N/A'}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                      <PersonIcon color="primary" />
+                      <Box>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Full Name
+                        </Typography>
+                        <Typography variant="body1" fontWeight="medium">
+                          {userDetails?.fullName || 'N/A'}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                      <AdminIcon color="primary" />
+                      <Box>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Role
+                        </Typography>
+                        <Chip
+                          label={userDetails?.role || 'N/A'}
+                          color="primary"
+                          size="small"
+                        />
+                      </Box>
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                      <Badge
+                        color={userDetails?.emailVerified ? 'success' : 'error'}
+                        variant="dot"
+                      >
+                        <EmailIcon color="primary" />
+                      </Badge>
+                      <Box>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Email Verification
+                        </Typography>
+                        <Chip
+                          label={userDetails?.emailVerified ? 'Verified' : 'Not Verified'}
+                          color={userDetails?.emailVerified ? 'success' : 'error'}
+                          size="small"
+                        />
+                      </Box>
+                    </Box>
+                  </Grid>
+                </Grid>
+
+                {/* Student Registration Notice */}
+                <Box sx={{ mt: 4, p: 3, bgcolor: 'info.light', borderRadius: 2 }}>
+                  <Typography variant="h6" gutterBottom sx={{ color: 'info.dark', fontWeight: 'bold' }}>
+                    Student Registration
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 2, color: 'info.dark' }}>
+                    You are currently registered as a user. To access student features and enroll in classes,
+                    you need to complete your student registration.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="info"
+                    onClick={() => navigate('/student-registration')}
+                    sx={{ mt: 1 }}
+                  >
+                    Complete Student Registration
+                  </Button>
+                </Box>
+              </Paper>
+            </motion.div>
+          </Grid>
+        </Grid>
+      </Container>
+    );
+  }
+
+  // If no student profile and no user details, show error
+  if (!student && !userDetails) {
     return (
       <Container maxWidth="lg" sx={{ mt: 4 }}>
         <Alert severity="error">
-          Student profile not found.
+          Profile not found.
           {error && (
             <div>
               <br />
               Error details: {error}
-              <br />
-              Student ID: {studentId}
-              <br />
-              User Role: {userRole}
-              <br />
-              Is Admin: {isAdmin ? 'Yes' : 'No'}
             </div>
           )}
         </Alert>

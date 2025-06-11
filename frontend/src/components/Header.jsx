@@ -243,6 +243,11 @@ const Header = () => {
     setAnchorEl(null);
   };
 
+  const handleProfileClick = () => {
+    handleMenuClose();
+    navigate('/student-profile');
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('userEmail');
     localStorage.removeItem('token');
@@ -414,7 +419,7 @@ const Header = () => {
                     }}
                   >
                     <MenuItem
-                      onClick={handleMenuClose}
+                      onClick={handleProfileClick}
                       sx={{
                         '&:hover': {
                           backgroundColor: 'rgba(179, 136, 255, 0.1)',
