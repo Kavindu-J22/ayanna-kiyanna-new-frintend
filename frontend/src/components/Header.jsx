@@ -432,16 +432,7 @@ const Header = () => {
                     >
                       Profile
                     </MenuItem>
-                    <MenuItem
-                      onClick={handleMenuClose}
-                      sx={{
-                        '&:hover': {
-                          backgroundColor: 'rgba(179, 136, 255, 0.1)',
-                        }
-                      }}
-                    >
-                      Settings
-                    </MenuItem>
+                    
                     <Divider sx={{ borderColor: 'rgba(179, 136, 255, 0.2)' }} />
                     <MenuItem
                       onClick={handleLogout}
