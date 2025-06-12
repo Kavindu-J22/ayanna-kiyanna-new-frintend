@@ -998,7 +998,7 @@ function AppContent() {
         )}
 
               {/* Customer Support Button */}
-      <a href="/CustomerSupport" style={{ textDecoration: 'none' }}>
+      <a href="/contact-support" style={{ textDecoration: 'none' }}>
         <div
           style={{
             position: "fixed",
