@@ -202,49 +202,49 @@ const Home = () => {
   // Sample data for the carousel
   const carouselItems = [
     {
-      image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+      image: "https://res.cloudinary.com/dl9k5qoae/image/upload/v1750023734/s6_uua6tu.png",
       title: "සුවිශේෂී පන්ති මාලා",
-      description: "අපගේ සාම්ප්‍රදායික නර්තන පන්ති සඳහා අයදුම් කරන්න"
+      description: "සුවිශේෂී ඉගැන්වීම් ක්‍රම සමග කම්මැලි නැති සිංහල පන්තිය"
     },
     {
       image: "https://images.unsplash.com/photo-1541178735493-479c1a27ed24?ixlib=rb-1.2.1&auto=format&fit=crop&w=1351&q=80",
       title: "මාර්ගගත පන්ති",
-      description: "සංගීතයේ මනා අත්දැකීමක් ලබා දෙන පන්ති"
+      description: "නව තාක්ෂණය මුසු කරගනිමින් සිසුන්ට සමීප වීම"
     },
     {
-      image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+      image: "https://res.cloudinary.com/dl9k5qoae/image/upload/v1750023525/registrationImage_weccef.png",
       title: "විභාග පෙරහුරු හා සම්මන්ත්‍රණ",
-      description: "නාට්‍ය කලාව උගන්වන විශේෂ පන්ති"
+      description: "විශිෂ්ට ප්‍රතිඵල සමගින් ලංකාවේ විශාලතම සිංහල සම්මන්ත්‍රණ"
     },
     {
-      image: "https://images.unsplash.com/photo-1547153760-18fc86324498?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+      image: "https://res.cloudinary.com/dl9k5qoae/image/upload/v1750023742/s1_tamsx7.png",
       title: "නායකත්ව පුහුනු වැඩසටහන්",
-      description: "උඩරට සංස්කෘතියේ සුවිශේෂී නැටුම්"
+      description: "දරුවන්ගේ පෞර්ශ හා නායකත්ව ගුනාංග දියුණු කිරීම"
     },
     {
       image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
       title: "රසවින්දන වැඩසටහන්",
-      description: "සාම්ප්‍රදායික රඟමඩුල්ල පන්ති"
+      description: "දිනක් ජීවත්වෙමු ආදී වැඩසටහන්"
     }
   ];
 
   // Testimonials data
   const testimonials = [
     {
-      name: "සුනේත්‍රා පෙරේරා",
-      role: "සිසුවා",
-      content: "අයන්න කියන්න ආයතනයේ පන්ති මගේ ජීවිතය වෙනස් කළා. මෙතැනින් ලැබුණු අත්දැකීම් අමුතුම දෙයක්.",
-      avatar: "https://randomuser.me/api/portraits/women/44.jpg"
+      name: "වීරසිරි ද සොයිසා",
+      role: "ප්‍රවීණ කථිකාචාර්‍ය",
+      content: "ජගත් කුමාර ජයසිංහයන් මාගේ ශිෂ්‍යයෙකු වීම සැබැවින්ම මා හට මහත් වූ ආඩම්බරයකි.",
+      avatar: "https://res.cloudinary.com/dl9k5qoae/image/upload/v1750026035/sois_s2ghkj.png"
     },
     {
-      name: "රවීන්ද්‍ර ජයසිංහ",
-      role: "මාතාපිය",
-      content: "මගේ දරුවාගේ සංස්කෘතික දැනුම වර්ධනය කිරීමට මෙම ආයතනය ඉතාමත් උපකාරී විය.",
-      avatar: "https://randomuser.me/api/portraits/men/32.jpg"
+      name: "උදය බණ්ඩාර දසනායක",
+      role: "ප්‍රවීණ දේශක හා ලේඛක",
+      content: "කුඩා කල සිට මා මිතුරු ඔහුගෙන් ඔබ අප සියලු දෙනාටම ඉගැනීමට ඇති දේ අපමණය.",
+      avatar: "https://res.cloudinary.com/dl9k5qoae/image/upload/v1750026035/uda_qrwiih.png"
     },
     {
-      name: "නිරූපමා සිල්වා",
-      role: "සිසුවා",
+      name: "වත්සලා පෙරේරා",
+      role: "රූපවාහිනී නිවේදක",
       content: "ජගත් කුමාර සර්ගේ උගන්වන ආකාරය අතිවිශිෂ්ටයි. ඔහුගේ පන්ති ඉතාමත් රසවත්.",
       avatar: "https://randomuser.me/api/portraits/women/63.jpg"
     }
@@ -1370,6 +1370,7 @@ const Home = () => {
                 variant="contained"
                 size="small"
                 endIcon={<ArrowRight fontSize="small" />}
+                onClick={() => navigate('/classes-info')}
                 sx={{
                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                   borderRadius: '50px',
@@ -1451,20 +1452,21 @@ const Home = () => {
                   fontWeight: 'bold',
                   mb: 1
                 }}>
-                  පොත් තබාගැනීම
+                  ආයතනික හා අධ්‍යන තොරතුරු
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{
                   fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
                   fontSize: '0.875rem',
                   mb: 1.5
                 }}>
-                අධ්‍යයනයේ පහසුව සඳහා අවශ්‍ය පොත් තබාගැනීමට මග පෙන්වීම
+                අපගේ ආයතනය සහ අධ්‍යන කටයුතු සදහා අවශ්‍ය මග පෙන්වීම
                 </Typography>
               </Box>
               <Button
                 variant="contained"
                 size="small"
                 endIcon={<ArrowRight fontSize="small" />}
+                onClick={() => navigate('/academic-info')}
                 sx={{
                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                   borderRadius: '50px',
@@ -1553,6 +1555,7 @@ const Home = () => {
                   </Typography>
                   <Button
                     variant="contained"
+                    onClick={() => navigate('/academic-info')}
                     color="secondary"
                     size="large"
                     sx={{
@@ -1817,7 +1820,7 @@ const Home = () => {
             mb: 3,
             lineHeight: 1.6
           }}>
-            "අයන්න කියන්න" යනු ශ්‍රී ලාංකික සංස්කෘතිය, භාෂාව හා සාහිත්‍යය සම්බන්ධයෙන් ගැඹුරු හා සවිස්තරාත්මක දැනුම ලබා දෙන ප්‍රමුඛතම අන්තර්ජාල ප්‍රකාශනයක් බවට පත්වීම අපගේ අරමුණයි. අපි අපගේ පාඨකයන්ට සිංහල භාෂාවේ සියලු අංශ පිළිබඳව නිවැරදි, අධ්‍යයනය කළ ප්‍රතිඵල සහ ගවේෂණාත්මක ලිපි සැපයීමට කටයුතු කරමු.
+            "අයන්න කියන්න" යනු ශ්‍රී ලංකාවේ ඉතාමත් ජනප්‍රිය හා විශිෂ්ටතම සිංහල අධ්‍යාපන ආයතනයකි. අපගේ ප්‍රධාන ගුරුතුමා වන ජගත් කුමාර ජයසිංහ මහතා ශ්‍රී ලංකාවේම වඩාත් ප්‍රසිද්ධ හා කැපී පෙනෙන සිංහල ගුරුවරයෙකු ලෙස සුවිශේෂී සේවයක් ඉටු කරයි. ඔහුගේ අතිශය ගැඹුරු දැනුම හා කුසලතාවය අපගේ ආයතනයේ විශිෂ්ටත්වයට හේතුවී ඇත.
           </Typography>
 
           <Typography variant="body1" sx={{
@@ -1827,7 +1830,7 @@ const Home = () => {
             mb: 3,
             lineHeight: 1.6
           }}>
-            සිංහල භාෂාව, සාහිත්‍යය, ව්‍යාකරණය, කාව්‍ය ශාස්ත්‍රය, නාට්‍ය කලාව සහ සංස්කෘතික උරුමය පිළිබඳ සියලු තොරතුරු එකම ස්ථානයකින් ලබා ගත හැකි වන පරිදි අපි අපගේ අන්තර්ජාල වේදිකාව සකස් කර ඇත. විශේෂයෙන් අධ්‍යාපනික අවශ්‍යතා සඳහා වන විෂය නිර්දේශ ආශ්‍රිත ගැඹුරු විශ්ලේෂණ, පාඩම් උපකරණ සහ උදාහරණ සහිත පැහැදිලි කිරීම් අපගේ වෙබ් අඩවියේ විශේෂ ලක්ෂණයකි.
+            අපගේ ආයතනය විසින් සිංහල භාෂාව, සාහිත්‍යය, ව්‍යාකරණය, කාව්‍ය ශාස්ත්‍රය සහ සංස්කෘතික උරුමය පිළිබඳ සියලු අංශ පිළිබඳව උසස් තත්ත්වයේ අධ්‍යාපනය ලබා දෙයි. ජගත් කුමාර ජයසිංහ ගුරුතුමාගේ නායකත්වය යටතේ, අපි සිසුන්ට විශ්වාසදායක, නිරවුල් හා ප්‍රායෝගික දැනුමක් ලබා දෙමින් ශ්‍රී ලංකාවේ අග්‍රගණයතම සිංහල අධ්‍යාපන කේන්ද්‍රස්ථානය ලෙස ප්‍රතිඥාව තහවුරු කර ගැනීම අපගේ එකම අරමුණ යි.
           </Typography>
 
           <Typography variant="body1" sx={{
@@ -1837,7 +1840,7 @@ const Home = () => {
             mb: 3,
             lineHeight: 1.6
           }}>
-            අපගේ අධ්‍යාපනික ප්‍රවේශය හරහා සිසුන්ට ශ්‍රී ලංකාවේ සමෘද්ධ සංස්කෘතික උරුමය පිළිබඳ ගෞරවාදර ඇති කරගැනීමටත්, නවීන ලෝකයට අනුගත වන අතරම ජාතික අනන්‍යතාවය රැකගැනීමටත් අපි උපකාරී වෙමු. අපගේ විශේෂඥ ගුරු මඩුල්ල විසින් සකස් කරන ලද නිර්මාණශීලී ඉගැන්වීම් ක්‍රම මගින් සිසුන්ගේ භාෂා දක්ෂතා, විවේචනාත්මක චින්තනය හා නිර්මාණශීලිත්වය වර්ධනය කිරීම අපගේ ප්‍රමුඛ ඉලක්කයයි.
+            අයන්න කියන්න ආයතනයේ විශේෂත්වය වන්නේ සාම්ප්‍රදායික දැනුම නවීන ඉගැන්වීම් ක්‍රමවේද සමඟ ඒකාබද්ධ කිරීමයි. ජගත් කුමාර ජයසිංහ ගුරුතුමාගේ නිර්මාණශීලී ඉගැන්වීම් ශෛලිය හරහා සිසුන්ගේ භාෂා දක්ෂතා, විවේචනාත්මක චින්තනය හා නිර්මාණශීලිත්වය වර්ධනය කිරීම අපගේ ප්‍රමුඛ ඉලක්කයයි. මෙම අනර්ඝ සේවය හරහා අපි ශ්‍රී ලංකාවේ අංක එකේ සිංහල අධ්‍යාපන ආයතනය ලෙස ස්ථාපිත වීම අපගේ ඉලක්කය යි.
           </Typography>
 
             </Box>
@@ -1854,6 +1857,7 @@ const Home = () => {
                 variant="contained"
                 size="large"
                 endIcon={<ArrowRight />}
+                onClick={() => navigate('/about')}
                 sx={{
                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                   color: 'rgb(255, 255, 255)',
@@ -1874,6 +1878,7 @@ const Home = () => {
                 variant="outlined"
                 color="secondary"
                 size="large"
+                onClick={() => navigate('/contact-support')}
                 sx={{
                   fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                   borderRadius: '50px',
@@ -2021,6 +2026,7 @@ const Home = () => {
               "සිංහල සංස්කෘතික ක්ෂේත්‍රයේ ප්‍රවීණ ගුරුවරයෙක් වන අතර ඔහුගේ අත්දැකීම් වසර 25කට අධික කාලයක් පුරා විහිදෙයි.",
               "ජාතික හා ජාත්‍යන්තර මට්ටමින් සිංහල සංස්කෘතිය නියෝජනය කර ඇත.",
               "සාම්ප්‍රදායික ක්‍රම හා නවීන අධ්‍යාපන ක්‍රම අතර සුන්දර සම්බන්ධතාවක් ගොඩනගා ඇත.",
+              "සිසුන් සඳහා නවෝත්පාදනාත්මක ඉගැන්වීම් ක්‍රම භාවිතයෙන් සංස්කෘතික අධ්‍යාපනය ප්‍රගුණ කිරීම.",
               "සිසුන් සඳහා නවෝත්පාදනාත්මක ඉගැන්වීම් ක්‍රම භාවිතයෙන් සංස්කෘතික අධ්‍යාපනය ප්‍රගුණ කිරීම."
             ].map((point, index) => (
               <motion.div
@@ -2103,6 +2109,7 @@ const Home = () => {
               variant="outlined"
               color="primary"
               startIcon={<MenuBook />}
+              onClick={() => navigate('/books-products')}
               sx={{
                 fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                 borderColor: 'rgba(107, 17, 203, 0.69)',
@@ -2471,7 +2478,7 @@ const Home = () => {
                   <Typography variant="body1" sx={{
                     fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
                   }}>
-                    123 සංස්කෘතික වීථිය, කොළඹ 07, ශ්‍රී ලංකාව
+                    98/8, මල්වත්ත, යටන්වල, රුවන්වැල්ල
                   </Typography>
                 </Box>
               </Box>
@@ -2496,7 +2503,7 @@ const Home = () => {
                     දුරකථන
                   </Typography>
                   <Typography variant="body1">
-                    +94 112 345 678
+                    077-7047 391 / 036-2268 882
                   </Typography>
                 </Box>
               </Box>
@@ -2521,14 +2528,14 @@ const Home = () => {
                     ඊමේල්
                   </Typography>
                   <Typography variant="body1">
-                    info@ayannakiyanna.lk
+                    ayannakiyanna@gmail.com
                   </Typography>
                 </Box>
               </Box>
             </Box>
             <Box sx={{ mt: 'auto' }}>
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.798511757686!2d79.8588464153939!3d6.921657495003654!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae2596b2f0b1e0d%3A0x2d5a4a3e6f6b1b1a!2sColombo%2C%20Sri%20Lanka!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.052790715731!2d80.2573963!3d7.0527082!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae3063e7ffd4181%3A0x9b2bf4f6b89a4983!2sAyanna%20Kiyanna!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus"
                 width="100%"
                 height="250"
                 style={{
@@ -2802,9 +2809,9 @@ const Home = () => {
 
           <Box sx={{ mb: 3 }}>
             {[
-              { icon: <LocationOn sx={{ color: theme.palette.primary.main }} />, text: '123 සංස්කෘතික වීථිය, කොළඹ 07, ශ්‍රී ලංකාව' },
-              { icon: <Phone sx={{ color: theme.palette.primary.main }} />, text: '+94 112 345 678' },
-              { icon: <Email sx={{ color: theme.palette.primary.main }} />, text: 'info@ayannakiyanna.lk' }
+              { icon: <LocationOn sx={{ color: theme.palette.primary.main }} />, text: '98/8, මල්වත්ත, යටන්වල, රුවන්වැල්ල' },
+              { icon: <Phone sx={{ color: theme.palette.primary.main }} />, text: '+94 777 047 391' },
+              { icon: <Email sx={{ color: theme.palette.primary.main }} />, text: 'ayannakiyanna@gmail.com' }
             ].map((item, index) => (
               <Box key={index} display="flex" alignItems="flex-start" mb={2}>
                 <Box sx={{ mr: 2, mt: '2px' }}>
