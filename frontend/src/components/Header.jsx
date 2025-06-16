@@ -286,9 +286,7 @@ const Header = () => {
               variant="h6"
               noWrap
               sx={{ flexGrow: isMobile ? 0 : 1, cursor: 'pointer' }}
-              onClick={() => {
-                  window.location.href = '/';
-              }}
+              onClick={() => navigate('/')}
             >
               <img src={logo} alt="Logo" />
               <span className="title-text">"අ"යන්න කියන්න</span>
@@ -308,7 +306,7 @@ const Header = () => {
                 {navItems.map((item) => (
                   <NavButton
                     key={item.name}
-                    href={item.path}
+                    onClick={() => navigate(item.path)}
                     className={isActive(item.path) ? 'active' : ''}
                   >
                     {item.name}
@@ -553,11 +551,10 @@ const Header = () => {
                 <ListItem
                   button
                   key={item.name}
-                  component="a"
-                  href={item.path}
                   onClick={() => {
                     console.log('Menu item clicked:', item.name);
                     setMobileMenuOpen(false);
+                    navigate(item.path);
                   }}
                   sx={{
                     borderRadius: '8px',
@@ -570,7 +567,8 @@ const Header = () => {
                     },
                     display: 'flex',
                     justifyContent: 'center',
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    cursor: 'pointer'
                   }}
                 >
                   <ListItemIcon sx={{
