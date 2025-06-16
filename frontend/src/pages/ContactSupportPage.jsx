@@ -482,6 +482,131 @@ const ContactSupportPage = () => {
       {tabValue === 0 && (
         <Box>
           <Grid container spacing={4} sx={{ mb: 4 }}>
+
+            <Grid item xs={12} md={6}>
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+              >
+                <Card sx={{
+                  borderRadius: 3,
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  background: 'linear-gradient(135deg, #ffffff 0%,rgb(248, 242, 226) 100%)',
+                  border: '1px solid rgba(233, 30, 99, 0.1)',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  {/* Decorative elements */}
+                  <Box sx={{
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    width: 120,
+                    height: 120,
+                    background: 'radial-gradient(circle, rgba(233,30,99,0.1) 0%, rgba(255,255,255,0) 70%)',
+                    borderRadius: '50%',
+                    transform: 'translate(50%, -50%)'
+                  }} />
+                  <Box sx={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    width: 100,
+                    height: 100,
+                    background: 'radial-gradient(circle, rgba(255,152,0,0.1) 0%, rgba(255,255,255,0) 70%)',
+                    borderRadius: '50%',
+                    transform: 'translate(-50%, 50%)'
+                  }} />
+                  
+                  <CardContent sx={{ p: 4, flexGrow: 1 }}>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      mb: 3,
+                      padding: 2,
+                      background: 'linear-gradient(90deg, rgba(233,30,99,0.1) 0%, rgba(255,255,255,0) 100%)',
+                      borderRadius: 2
+                    }}>
+                      <ContactSupportIcon sx={{ 
+                        fontSize: 40, 
+                        color: '#E91E63', 
+                        mr: 2 
+                      }} />
+                      <Typography variant="h5" sx={{
+                        fontWeight: 'bold',
+                        fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                        color: '#2E2E2E'
+                      }}>
+                        ප්‍රතිපෝෂණ සහ ප්‍රශ්න
+                      </Typography>
+                    </Box>
+
+                    <Box sx={{ 
+                      display: 'flex', 
+                      flexDirection: { xs: 'column', sm: 'row' },
+                      alignItems: 'center',
+                      mb: 3
+                    }}>
+                      <Box sx={{ 
+                        flex: 1,
+                        mr: { sm: 3 },
+                        mb: { xs: 3, sm: 0 }
+                      }}>
+                        <Typography variant="body1" sx={{
+                          mb: 2,
+                          fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                          lineHeight: 1.6
+                        }}>
+                          ඔබට අයන්න කියන්න ආයතනය සම්බන්ධයෙන් කිසියම් ප්‍රශ්නයක්, යෝජනාවක් හෝ ප්‍රතිපෝෂණයක් ඇත්නම් 
+                          කරුණාකර පහත බොත්තම භාවිතා කරන්න.
+                        </Typography>
+                        <Button
+                          variant="contained"
+                          startIcon={<ContactSupportIcon />}
+                          onClick={() => setShowFeedbackDialog(true)}
+                          sx={{
+                            bgcolor: '#E91E63',
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                            fontWeight: 'bold',
+                            px: 4,
+                            py: 1.5,
+                            borderRadius: 2,
+                            boxShadow: '0 4px 12px rgba(233, 30, 99, 0.3)',
+                            '&:hover': {
+                              bgcolor: '#C2185B',
+                              boxShadow: '0 6px 16px rgba(233, 30, 99, 0.4)'
+                            }
+                          }}
+                        >
+                          ප්‍රතිපෝෂණයක් යවන්න
+                        </Button>
+                      </Box>
+                      <Box sx={{
+                        flex: 1,
+                        display: 'flex',
+                        justifyContent: 'center'
+                      }}>
+                        <img 
+                          src="https://res.cloudinary.com/dl9k5qoae/image/upload/v1750023725/Ask_ewytxw.png" 
+                          alt="Feedback Illustration" 
+                          style={{ 
+                            maxWidth: '100%', 
+                            height: 'auto',
+                            maxHeight: '200px',
+                            borderRadius: '8px'
+                          }} 
+                        />
+                      </Box>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Grid>
+
             <Grid item xs={12}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -766,130 +891,6 @@ const ContactSupportPage = () => {
                       >
                         Facebook පිටුවට යන්න
                       </Button>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, delay: 0.1 }}
-              >
-                <Card sx={{
-                  borderRadius: 3,
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                  background: 'linear-gradient(135deg, #ffffff 0%,rgb(248, 242, 226) 100%)',
-                  border: '1px solid rgba(233, 30, 99, 0.1)',
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}>
-                  {/* Decorative elements */}
-                  <Box sx={{
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    width: 120,
-                    height: 120,
-                    background: 'radial-gradient(circle, rgba(233,30,99,0.1) 0%, rgba(255,255,255,0) 70%)',
-                    borderRadius: '50%',
-                    transform: 'translate(50%, -50%)'
-                  }} />
-                  <Box sx={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    width: 100,
-                    height: 100,
-                    background: 'radial-gradient(circle, rgba(255,152,0,0.1) 0%, rgba(255,255,255,0) 70%)',
-                    borderRadius: '50%',
-                    transform: 'translate(-50%, 50%)'
-                  }} />
-                  
-                  <CardContent sx={{ p: 4, flexGrow: 1 }}>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      mb: 3,
-                      padding: 2,
-                      background: 'linear-gradient(90deg, rgba(233,30,99,0.1) 0%, rgba(255,255,255,0) 100%)',
-                      borderRadius: 2
-                    }}>
-                      <ContactSupportIcon sx={{ 
-                        fontSize: 40, 
-                        color: '#E91E63', 
-                        mr: 2 
-                      }} />
-                      <Typography variant="h5" sx={{
-                        fontWeight: 'bold',
-                        fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-                        color: '#2E2E2E'
-                      }}>
-                        ප්‍රතිපෝෂණ සහ ප්‍රශ්න
-                      </Typography>
-                    </Box>
-
-                    <Box sx={{ 
-                      display: 'flex', 
-                      flexDirection: { xs: 'column', sm: 'row' },
-                      alignItems: 'center',
-                      mb: 3
-                    }}>
-                      <Box sx={{ 
-                        flex: 1,
-                        mr: { sm: 3 },
-                        mb: { xs: 3, sm: 0 }
-                      }}>
-                        <Typography variant="body1" sx={{
-                          mb: 2,
-                          fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
-                          lineHeight: 1.6
-                        }}>
-                          ඔබට අයන්න කියන්න ආයතනය සම්බන්ධයෙන් කිසියම් ප්‍රශ්නයක්, යෝජනාවක් හෝ ප්‍රතිපෝෂණයක් ඇත්නම් 
-                          කරුණාකර පහත බොත්තම භාවිතා කරන්න.
-                        </Typography>
-                        <Button
-                          variant="contained"
-                          startIcon={<ContactSupportIcon />}
-                          onClick={() => setShowFeedbackDialog(true)}
-                          sx={{
-                            bgcolor: '#E91E63',
-                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-                            fontWeight: 'bold',
-                            px: 4,
-                            py: 1.5,
-                            borderRadius: 2,
-                            boxShadow: '0 4px 12px rgba(233, 30, 99, 0.3)',
-                            '&:hover': {
-                              bgcolor: '#C2185B',
-                              boxShadow: '0 6px 16px rgba(233, 30, 99, 0.4)'
-                            }
-                          }}
-                        >
-                          ප්‍රතිපෝෂණයක් යවන්න
-                        </Button>
-                      </Box>
-                      <Box sx={{
-                        flex: 1,
-                        display: 'flex',
-                        justifyContent: 'center'
-                      }}>
-                        <img 
-                          src="https://res.cloudinary.com/dl9k5qoae/image/upload/v1750023725/Ask_ewytxw.png" 
-                          alt="Feedback Illustration" 
-                          style={{ 
-                            maxWidth: '100%', 
-                            height: 'auto',
-                            maxHeight: '200px',
-                            borderRadius: '8px'
-                          }} 
-                        />
-                      </Box>
                     </Box>
                   </CardContent>
                 </Card>

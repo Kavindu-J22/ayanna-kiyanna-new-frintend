@@ -347,7 +347,7 @@ const AdminFeedbackManagement = () => {
           mb: 2,
           fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
         }}>
-          User Questions and Feedbacks
+          පරිශීලක ගැටළු සහ ප්‍රත්පෝශණ
         </Typography>
         
         <Typography variant="h6" color="text.secondary" sx={{

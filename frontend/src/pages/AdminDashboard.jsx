@@ -175,36 +175,201 @@ const AdminDashboard = () => {
     }
   };
 
-  // Sample data for admin dashboard
-  const stats = [
-    { title: 'මුළු සිසුන්', value: '156', icon: <People />, color: '#667eea' },
-    { title: 'සක්‍රීය පන්ති', value: '12', icon: <School />, color: '#f093fb' },
-    { title: 'අවසන් වූ පන්ති', value: '8', icon: <Assignment />, color: '#a8edea' },
-    { title: 'මාසික ආදායම', value: 'Rs. 45,000', icon: <TrendingUp />, color: '#ffecd2' }
-  ];
-
-  const recentStudents = [
-    { id: 1, name: 'සුනේත්‍රා පෙරේරා', email: 'sunethra@email.com', course: 'සිංහල භාෂා', status: 'සක්‍රීය', joinDate: '2024-01-15' },
-    { id: 2, name: 'රවීන්ද්‍ර ජයසිංහ', email: 'raveendra@email.com', course: 'සාම්ප්‍රදායික නර්තන', status: 'සක්‍රීය', joinDate: '2024-01-20' },
-    { id: 3, name: 'නිරූපමා සිල්වා', email: 'nirupama@email.com', course: 'සිංහල සංගීතය', status: 'අක්‍රීය', joinDate: '2024-01-25' },
-    { id: 4, name: 'කමල් ප්‍රියන්ත', email: 'kamal@email.com', course: 'සිංහල භාෂා', status: 'සක්‍රීය', joinDate: '2024-02-01' },
-    { id: 5, name: 'සරිත් කුමාර', email: 'sarith@email.com', course: 'සාම්ප්‍රදායික නර්තන', status: 'සක්‍රීය', joinDate: '2024-02-05' }
-  ];
-
-  const quickActions = [
-    { title: 'පරිශීලක කළමනාකරණය', icon: <PersonAdd />, color: '#795548', path: '/admin-user-management' },
-    { title: 'සිසු කළමනාකරණය', icon: <PersonAdd />, color: '#667eea', path: '/student-management' },
-    { title: 'පන්ති කළමනාකරණය', icon: <School />, color: '#f093fb', path: '/class-management' },
-    { title: 'පන්ති ඉල්ලීම් කළමනාකරණය', icon: <School />, color: '#ff5722', path: '/class-requests' },
-    { title: 'නිෂ්පාදන කළමනාකරණය', icon: <ShoppingBag />, color: '#FF6B6B', path: '/admin-product-management' },
-    { title: 'ඇණවුම් කළමනාකරණය', icon: <ShoppingCart />, color: '#4ECDC4', path: '/admin-order-management' },
-    { title: 'ගෙන්වා දීමේ ගාස්තු කළමනාකරණය', icon: <LocalShipping />, color: '#9C27B0', path: '/admin-delivery-charge-management' },
-    { title: 'Special Notice Management (For All Users)', icon: <NotificationsActive />, color: '#E91E63', path: '/admin-special-notice-management' },
-    { title: 'සිසුන් සඳහා විශේෂ නිවේදන කළමනාකරණය', icon: <NotificationsActive />, color: '#2196F3', path: '/admin-student-notice-management' },
-    { title: 'සිසුන්ගේ පණිවිඩ සහ ප්‍රශ්න කළමනාකරණය', icon: <ContactSupport />, color: '#9C27B0', path: '/admin-student-message-management' },
-    { title: 'User Questions and Feedbacks', icon: <ContactSupport />, color: '#FF9800', path: '/admin-feedback-management' },
-    { title: 'සියලුම පන්ති ගෙවීම් සහ ආදායම් විශ්ලේෂණ', icon: <Payment />, color: '#ff9a9e', path: '/all-class-payment-requests' },
-    { title: 'පැමිණීම් විශ්ලේෂණ', icon: <Assignment />, color: '#4caf50', path: '/attendance-analytics' },
+const quickActions = [
+    {
+      title: 'පරිශීලක කළමනාකරණය',
+      icon: <People />,
+      color: '#795548',
+      gradient: 'linear-gradient(135deg, #795548 0%, #5d4037 100%)',
+      path: '/admin-user-management',
+      description: [
+        'පරිශීලකයින් පරීක්ශා කිරීම ට.',
+        'පරිශීලකයින් තහවුරු කර ගැනීම ට.',
+        'මුළු පරිශීලකයින් ගනණ ඔවුන්ගේ තත්වය සමග හදුනා ගැනීම ට.',
+        'පරිශීලකයින් වෙන වෙනම සම්බන්ධ වූ දින සමග බැලීම ට.',
+        'අනවශ්‍ය පරිශීලකයින් ඉවත් කිරීම ට.',
+        'ආදී සියළුම පරිශීලක කළමනාකරණය අදාල බලතල.'
+      ]
+    },
+    {
+      title: 'සිසු කළමනාකරණය',
+      icon: <School />,
+      color: '#667eea',
+      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      path: '/student-management',
+      description: [
+        'සිසුන්ගේ ලැයිස්තුව පරීක්ශා කිරීමට හා වෙන වෙනම සිසුන්ගේ ප්‍රගතිය බැලීම ට.',
+        'සිසුන්ට වෙනවෙනම පණිවිඩ යැවීමට, ඔවුන්ගේ පන්ති තහවුරු කිරීමට, පන්ති මාරු කිරීමට, ඉවත් කිරීමට.',
+        'සිසුන්ගේ ගිණුම් පරීක්ශා කිරීමට, ඔවුන්ට නොමිලේ පන්ති අවස්ථා ලබා දීමට.',
+        'සිසුන්ගේ හැසිරීම් සහ විනය පිසිබද සටහන් තබා ගැනීමට, ඔව්න්ගේ ගිනුම් අවහිර කිරීමට.',
+        'ආදී සියළුම ශිෂ්‍ය කලමණාකරණයට අදාල බලතල.'
+      ]
+    },
+    {
+      title: 'පන්ති කළමනාකරණය',
+      icon: <Assignment />,
+      color: '#f093fb',
+      gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      path: '/class-management',
+      description: [
+        'නව පන්ති නිර්මාණය කිරීම සහ පවතින පන්ති සංස්කරණය කිරීම.',
+        'පන්ති කාලසටහන්, ස්ථාන සහ ධාරිතාව කළමනාකරණය කිරීම.',
+        'පන්ති වර්ග, ශ්‍රේණි සහ විෂය අනුව සංවිධානය කිරීම.',
+        'ඔන්ලයින් සහ භෞතික පන්ති සඳහා වෙනම සැකසුම්.',
+        'පන්ති සම්පත් සහ අධ්‍යයන ද්‍රව්‍ය කළමනාකරණය කිරීම.',
+        'ආදී සියළුම පන්ති කළමනාකරණයට අදාල බලතල.'
+      ]
+    },
+    {
+      title: 'පන්ති ඉල්ලීම් කළමනාකරණය',
+      icon: <NotificationsActive />,
+      color: '#ff5722',
+      gradient: 'linear-gradient(135deg, #ff5722 0%, #e64a19 100%)',
+      path: '/class-requests',
+      description: [
+        'සිසුන්ගේ පන්ති ඇතුළත් වීමේ ඉල්ලීම් පරීක්ශා කිරීම.',
+        'ඉල්ලීම් අනුමත කිරීම හෝ ප්‍රතික්ෂේප කිරීම.',
+        'සිසුන්ට ඉල්ලීම් තත්වය පිළිබඳ දැනුම් දීම.',
+        'පන්ති ධාරිතාව අනුව ඉල්ලීම් කළමනාකරණය කිරීම.',
+        'ප්‍රමාද වූ ඉල්ලීම් සහ ප්‍රමුඛතා ලබා දීම.',
+        'ආදී සියළුම පන්ති ඉල්ලීම් කළමනාකරණයට අදාල බලතල.'
+      ]
+    },
+    {
+      title: 'පැමිණීම් විශ්ලේෂණ',
+      icon: <BarChart />,
+      color: '#4caf50',
+      gradient: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
+      path: '/attendance-analytics',
+      description: [
+        'සිසුන්ගේ පන්ති පැමිණීම් වාර්තා සහ විශ්ලේෂණ.',
+        'දිනපතා, සතිපතා සහ මාසික පැමිණීම් සංඛ්‍යාලේඛන.',
+        'අඩු පැමිණීම් ඇති සිසුන් හඳුනා ගැනීම.',
+        'පන්ති අනුව පැමිණීම් ප්‍රතිශත සංසන්දනය.',
+        'පැමිණීම් ප්‍රවණතා සහ අනාවැකි විශ්ලේෂණ.',
+        'ආදී සියළුම පැමිණීම් විශ්ලේෂණයට අදාල බලතල.'
+      ]
+    },
+    {
+      title: 'සියලුම පන්ති ගෙවීම් සහ ආදායම් විශ්ලේෂණ',
+      icon: <Payment />,
+      color: '#ff9a9e',
+      gradient: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+      path: '/all-class-payment-requests',
+      description: [
+        'සිසුන්ගේ පන්ති ගෙවීම් ඉල්ලීම් කළමනාකරණය.',
+        'ගෙවීම් තත්වය සහ ඉතිරි මුදල් පරීක්ශා කිරීම.',
+        'මාසික සහ වාර්ෂික ආදායම් වාර්තා.',
+        'ගෙවීම් ප්‍රමාද වූ සිසුන් හඳුනා ගැනීම.',
+        'ගෙවීම් ක්‍රම සහ ගනුදෙනු ඉතිහාසය.',
+        'ආදී සියළුම ගෙවීම් කළමනාකරණයට අදාල බලතල.'
+      ]
+    },
+    {
+      title: 'සිසුන් සඳහා විශේෂ නිවේදන කළමනාකරණය',
+      icon: <NotificationsActive />,
+      color: '#2196F3',
+      gradient: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)',
+      path: '/admin-student-notice-management',
+      description: [
+        'සිසුන් සඳහා විශේෂ නිවේදන නිර්මාණය සහ ප්‍රකාශනය.',
+        'නිවේදන වර්ගීකරණය සහ ප්‍රමුඛතා ලබා දීම.',
+        'ශ්‍රේණි අනුව හෝ විෂය අනුව නිවේදන යැවීම.',
+        'නිවේදන කියවීමේ තත්වය සහ ප්‍රතිචාර පරීක්ශා කිරීම.',
+        'ස්වයංක්‍රීය නිවේදන සහ කාලසටහන් සැකසීම.',
+        'ආදී සියළුම සිසු නිවේදන කළමනාකරණයට අදාල බලතල.'
+      ]
+    },
+    {
+      title: 'සිසුන්ගේ පණිවිඩ සහ ප්‍රශ්න කළමනාකරණය',
+      icon: <ContactSupport />,
+      color: '#9C27B0',
+      gradient: 'linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%)',
+      path: '/admin-student-message-management',
+      description: [
+        'සිසුන්ගේ පණිවිඩ සහ ප්‍රශ්න පරීක්ශා කිරීම.',
+        'ප්‍රශ්නවලට ඉක්මන් සහ සවිස්තරාත්මක පිළිතුරු ලබා දීම.',
+        'පණිවිඩ වර්ගීකරණය සහ ප්‍රමුඛතා ලබා දීම.',
+        'සිසුන්ගේ ගැටළු සහ යෝජනා කළමනාකරණය.',
+        'පණිවිඩ ඉතිහාසය සහ ප්‍රතිචාර වාර්තා.',
+        'ආදී සියළුම සිසු සන්නිවේදන කළමනාකරණයට අදාල බලතල.'
+      ]
+    },
+    {
+      title: 'නිෂ්පාදන කළමනාකරණය',
+      icon: <ShoppingBag />,
+      color: '#FF6B6B',
+      gradient: 'linear-gradient(135deg, #FF6B6B 0%, #EE5A52 100%)',
+      path: '/admin-product-management',
+      description: [
+        'පොත් සහ අධ්‍යයන ද්‍රව්‍ය නිෂ්පාදන කළමනාකරණය.',
+        'නිෂ්පාදන තොග, මිල සහ ලබා ගත හැකි ප්‍රමාණය.',
+        'නව නිෂ්පාදන එකතු කිරීම සහ පවතින ඒවා සංස්කරණය.',
+        'නිෂ්පාදන වර්ගීකරණය සහ සෙවුම් ප්‍රශස්තකරණය.',
+        'විකුණුම් වාර්තා සහ ජනප්‍රිය නිෂ්පාදන විශ්ලේෂණ.',
+        'ආදී සියළුම නිෂ්පාදන කළමනාකරණයට අදාල බලතල.'
+      ]
+    },
+    {
+      title: 'ඇණවුම් කළමනාකරණය',
+      icon: <ShoppingCart />,
+      color: '#4ECDC4',
+      gradient: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+      path: '/admin-order-management',
+      description: [
+        'පරිශීලක ඇණවුම් පරීක්ශා සහ කළමනාකරණය.',
+        'ඇණවුම් තත්වය යාවත්කාලීන කිරීම සහ ගෙන්වා දීම.',
+        'ගෙවීම් තහවුරු කිරීම සහ ඇණවුම් අනුමත කිරීම.',
+        'ඇණවුම් ඉතිහාසය සහ ගනුදෙනු වාර්තා.',
+        'ප්‍රමාද වූ ඇණවුම් සහ ගැටළු විසඳීම.',
+        'ආදී සියළුම ඇණවුම් කළමනාකරණයට අදාල බලතල.'
+      ]
+    },
+    {
+      title: 'ගෙන්වා දීමේ ගාස්තු කළමනාකරණය',
+      icon: <LocalShipping />,
+      color: '#9C27B0',
+      gradient: 'linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%)',
+      path: '/admin-delivery-charge-management',
+      description: [
+        'ප්‍රදේශ අනුව ගෙන්වා දීමේ ගාස්තු සැකසීම.',
+        'විශේෂ ගෙන්වා දීමේ සේවා සහ මිල ගණන්.',
+        'ගෙන්වා දීමේ කාලසීමා සහ ප්‍රදේශ ආවරණය.',
+        'නොමිලේ ගෙන්වා දීමේ කොන්දේසි සැකසීම.',
+        'ගෙන්වා දීමේ සේවා සපයන්නන් කළමනාකරණය.',
+        'ආදී සියළුම ගෙන්වා දීමේ කළමනාකරණයට අදාල බලතල.'
+      ]
+    },
+    {
+      title: 'සියළුම පරිශීලකයින් සදහා විශේෂ නිවේදන කළමනාකරණය',
+      icon: <NotificationsActive />,
+      color: '#E91E63',
+      gradient: 'linear-gradient(135deg, #E91E63 0%, #C2185B 100%)',
+      path: '/admin-special-notice-management',
+      description: [
+        'සියළුම පරිශීලකයින් සඳහා සාමාන්‍ය නිවේදන.',
+        'හදිසි නිවේදන සහ වැදගත් දැනුම්දීම්.',
+        'පද්ධති නඩත්තු සහ සේවා බාධා නිවේදන.',
+        'නිවේදන කියවීමේ සංඛ්‍යාලේඛන සහ ප්‍රතිචාර.',
+        'නිවේදන සැකසුම් සහ ප්‍රදර්ශන කාලසීමා.',
+        'ආදී සියළුම සාමාන්‍ය නිවේදන කළමනාකරණයට අදාල බලතල.'
+      ]
+    },
+    {
+      title: 'පරිශීලක ගැටළු සහ ප්‍රත්පෝශණ කළමනාකරණය',
+      icon: <ContactSupport />,
+      color: '#FF9800',
+      gradient: 'linear-gradient(135deg, #FF9800 0%, #F57C00 100%)',
+      path: '/admin-feedback-management',
+      description: [
+        'පරිශීලක ගැටළු සහ ප්‍රතිපෝෂණ පරීක්ශා කිරීම.',
+        'ගැටළුවලට ඉක්මන් සහ ඵලදායී විසඳුම් ලබා දීම.',
+        'ප්‍රතිපෝෂණ වර්ගීකරණය සහ ප්‍රමුඛතා ලබා දීම.',
+        'පරිශීලක සතුට සහ සේවා ගුණත්වය මැනීම.',
+        'ප්‍රතිපෝෂණ ප්‍රවණතා සහ වැඩිදියුණු කිරීම් හඳුනා ගැනීම.',
+        'ආදී සියළුම ප්‍රතිපෝෂණ කළමනාකරණයට අදාල බලතල.'
+      ]
+    }
   ];
 
   return (
@@ -266,306 +431,208 @@ const AdminDashboard = () => {
         </Paper>
 
         <Grid container spacing={3}>
-          {/* Statistics Cards */}
-          <Grid item xs={12}>
-            <Grid container spacing={2}>
-              {stats.map((stat, index) => (
-                <Grid item xs={12} sm={6} md={3} key={index}>
-                  <motion.div whileHover={{ scale: 1.02 }}>
-                    <Card sx={{
-                      background: `linear-gradient(135deg, ${stat.color} 0%, ${stat.color}99 100%)`,
-                      color: 'white',
-                      height: '100%'
-                    }}>
-                      <CardContent sx={{ textAlign: 'center' }}>
-                        <Box sx={{ mb: 1 }}>
-                          {React.cloneElement(stat.icon, { sx: { fontSize: 40 } })}
-                        </Box>
-                        <Typography variant="h4" fontWeight="bold">
-                          {stat.value}
-                        </Typography>
-                        <Typography variant="body2" sx={{
-                          fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-                        }}>
-                          {stat.title}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                </Grid>
-              ))}
-            </Grid>
-          </Grid>
 
-          {/* Quick Actions */}
-          <Grid item xs={12} md={4}>
-            <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
-              <Typography variant="h6" fontWeight="bold" sx={{
+          <Grid item xs={12}>
+            <Paper elevation={3} sx={{ 
+              p: 3, 
+              borderRadius: 3,
+              background: 'rgba(255, 255, 255, 0.9)',
+              backdropFilter: 'blur(10px)'
+            }}>
+              <Typography variant="h5" fontWeight="bold" sx={{
                 mb: 3,
-                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                color: theme.palette.primary.dark,
+                textAlign: 'center',
+                fontSize: '1.8rem',
+                textShadow: '1px 1px 3px rgba(0,0,0,0.1)'
               }}>
                 ඉක්මන් ක්‍රියාමාර්ග
               </Typography>
-              <Grid container spacing={2}>
+              
+              <Grid container spacing={3}>
                 {quickActions.map((action, index) => (
-                  <Grid item xs={12} key={index}>
-                    <motion.div whileHover={{ scale: 1.02 }}>
-                      <Card variant="outlined" sx={{
-                        p: 2,
-                        cursor: 'pointer',
-                        '&:hover': {
-                          bgcolor: 'grey.50'
-                        },
+                  <Grid item xs={12} sm={6} md={4} key={index}>
+                    <motion.div 
+                      whileHover={{ scale: 1.03, boxShadow: theme.shadows[6] }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Card sx={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        borderRadius: '12px',
+                        boxShadow: theme.shadows[3],
+                        background: action.gradient || action.color,
+                        color: 'white',
                         position: 'relative',
-                        overflow: 'visible'
-                      }}
-                      onClick={() => navigate(action.path)}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Badge
-                            badgeContent={
-                              (action.title === 'සිසු කළමනාකරණය' && pendingCount > 0) ||
-                              (action.title === 'ඇණවුම් කළමනාකරණය' && pendingOrdersCount > 0) ||
-                              (action.title === 'Special Notice Management (For All Users)' && unansweredQuestionsCount > 0) ||
-                              (action.title === 'User Questions and Feedbacks' && unrepliedFeedbacksCount > 0) ||
-                              (action.title === 'සිසුන්ගේ පණිවිඩ සහ ප්‍රශ්න කළමනාකරණය' && unrepliedStudentMessagesCount > 0) ||
-                              (action.title === 'පන්ති ඉල්ලීම් කළමනාකරණය' && pendingEnrollmentRequestsCount > 0) ? (
-                                <Box sx={{
-                                  background: 'linear-gradient(135deg, #ff4444 0%, #cc0000 100%)',
-                                  color: 'white',
-                                  borderRadius: '50%',
-                                  width: 24,
-                                  height: 24,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  fontSize: '0.75rem',
-                                  fontWeight: 'bold',
-                                  boxShadow: '0 2px 8px rgba(255, 68, 68, 0.4)',
-                                  animation: (pendingCount > 0 || pendingOrdersCount > 0 || unansweredQuestionsCount > 0 || unrepliedFeedbacksCount > 0 || unrepliedStudentMessagesCount > 0 || pendingEnrollmentRequestsCount > 0) ? 'pulse 2s infinite' : 'none',
-                                  '@keyframes pulse': {
-                                    '0%': {
-                                      transform: 'scale(1)',
-                                      boxShadow: '0 2px 8px rgba(255, 68, 68, 0.4)'
-                                    },
-                                    '50%': {
-                                      transform: 'scale(1.1)',
-                                      boxShadow: '0 4px 12px rgba(255, 68, 68, 0.6)'
-                                    },
-                                    '100%': {
-                                      transform: 'scale(1)',
-                                      boxShadow: '0 2px 8px rgba(255, 68, 68, 0.4)'
-                                    }
-                                  }
-                                }}>
-                                  {loading ? <CircularProgress size={12} sx={{ color: 'white' }} /> :
-                                    (action.title === 'සිසු කළමනාකරණය' ? pendingCount :
-                                     action.title === 'ඇණවුම් කළමනාකරණය' ? pendingOrdersCount :
-                                     action.title === 'Special Notice Management (For All Users)' ? unansweredQuestionsCount :
-                                     action.title === 'සිසුන්ගේ පණිවිඩ සහ ප්‍රශ්න කළමනාකරණය' ? unrepliedStudentMessagesCount :
-                                     action.title === 'පන්ති ඉල්ලීම් කළමනාකරණය' ? pendingEnrollmentRequestsCount :
-                                     unrepliedFeedbacksCount)}
-                                </Box>
-                              ) : null
-                            }
-                            sx={{
-                              '& .MuiBadge-badge': {
-                                top: -8,
-                                right: -8,
-                                border: 'none',
-                                padding: 0,
-                                minWidth: 'auto',
-                                height: 'auto',
-                                backgroundColor: 'transparent'
-                              }
-                            }}
-                          >
+                        overflow: 'hidden',
+                        '&:before': {
+                          content: '""',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          height: '4px',
+                          background: 'rgba(255,255,255,0.3)'
+                        }
+                      }}>
+                        <CardContent sx={{ 
+                          flexGrow: 1,
+                          position: 'relative',
+                          zIndex: 1,
+                          pb: '60px !important' // Space for button
+                        }}>
+                          <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            mb: 2
+                          }}>
                             <Avatar sx={{
-                              bgcolor: action.color,
-                              width: 40,
-                              height: 40
+                              bgcolor: 'rgba(255,255,255,0.2)',
+                              width: 50,
+                              height: 50,
+                              mr: 2,
+                              backdropFilter: 'blur(5px)',
+                              border: '1px solid rgba(255,255,255,0.3)'
                             }}>
-                              {action.icon}
+                              {React.cloneElement(action.icon, { sx: { fontSize: '1.5rem' } })}
                             </Avatar>
-                          </Badge>
-                          <Box sx={{ flex: 1 }}>
-                            <Typography variant="body1" fontWeight="medium" sx={{
-                              fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
+                            <Typography variant="h6" sx={{
+                              fontWeight: 'bold',
+                              fontFamily: '"Noto Sans Sinhala", sans-serif',
+                              fontSize: '1.1rem',
+                              flexGrow: 1
                             }}>
                               {action.title}
-                              {action.title === 'සිසු කළමනාකරණය' && pendingCount > 0 && (
-                                <Typography component="span" sx={{
-                                  ml: 1,
-                                  color: '#ff4444',
-                                  fontWeight: 'bold',
-                                  fontSize: '0.9rem',
-                                  background: 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)',
-                                  px: 1,
-                                  py: 0.5,
-                                  borderRadius: 2,
-                                  border: '1px solid #ffcdd2'
-                                }}>
-                                  ({pendingCount})
-                                </Typography>
-                              )}
-                              {action.title === 'ඇණවුම් කළමනාකරණය' && pendingOrdersCount > 0 && (
-                                <Typography component="span" sx={{
-                                  ml: 1,
-                                  color: '#ff4444',
-                                  fontWeight: 'bold',
-                                  fontSize: '0.9rem',
-                                  background: 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)',
-                                  px: 1,
-                                  py: 0.5,
-                                  borderRadius: 2,
-                                  border: '1px solid #ffcdd2'
-                                }}>
-                                  ({pendingOrdersCount})
-                                </Typography>
-                              )}
-                              {action.title === 'Special Notice Management (For All Users)' && unansweredQuestionsCount > 0 && (
-                                <Typography component="span" sx={{
-                                  ml: 1,
-                                  color: '#ff4444',
-                                  fontWeight: 'bold',
-                                  fontSize: '0.9rem',
-                                  background: 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)',
-                                  px: 1,
-                                  py: 0.5,
-                                  borderRadius: 2,
-                                  border: '1px solid #ffcdd2'
-                                }}>
-                                  ({unansweredQuestionsCount})
-                                </Typography>
-                              )}
-                              {action.title === 'User Questions and Feedbacks' && unrepliedFeedbacksCount > 0 && (
-                                <Typography component="span" sx={{
-                                  ml: 1,
-                                  color: '#ff4444',
-                                  fontWeight: 'bold',
-                                  fontSize: '0.9rem',
-                                  background: 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)',
-                                  px: 1,
-                                  py: 0.5,
-                                  borderRadius: 2,
-                                  border: '1px solid #ffcdd2'
-                                }}>
-                                  ({unrepliedFeedbacksCount})
-                                </Typography>
-                              )}
-                              {action.title === 'සිසුන්ගේ පණිවිඩ සහ ප්‍රශ්න කළමනාකරණය' && unrepliedStudentMessagesCount > 0 && (
-                                <Typography component="span" sx={{
-                                  ml: 1,
-                                  color: '#ff4444',
-                                  fontWeight: 'bold',
-                                  fontSize: '0.9rem',
-                                  background: 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)',
-                                  px: 1,
-                                  py: 0.5,
-                                  borderRadius: 2,
-                                  border: '1px solid #ffcdd2'
-                                }}>
-                                  ({unrepliedStudentMessagesCount})
-                                </Typography>
-                              )}
-                              {action.title === 'පන්ති ඉල්ලීම් කළමනාකරණය' && pendingEnrollmentRequestsCount > 0 && (
-                                <Typography component="span" sx={{
-                                  ml: 1,
-                                  color: '#ff4444',
-                                  fontWeight: 'bold',
-                                  fontSize: '0.9rem',
-                                  background: 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)',
-                                  px: 1,
-                                  py: 0.5,
-                                  borderRadius: 2,
-                                  border: '1px solid #ffcdd2'
-                                }}>
-                                  ({pendingEnrollmentRequestsCount})
-                                </Typography>
-                              )}
                             </Typography>
-                            {action.title === 'සිසු කළමනාකරණය' && pendingCount > 0 && (
-                              <Typography variant="caption" sx={{
-                                color: '#ff4444',
-                                fontWeight: 'medium',
-                                fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-                              }}>
-                                අනුමැතිය බලාපොරොත්තුවෙන්
-                              </Typography>
-                            )}
                           </Box>
-                        </Box>
+                          
+                          <Box sx={{
+                            background: 'rgba(0,0,0,0.1)',
+                            p: 2,
+                            borderRadius: '8px',
+                            mb: 2,
+                            maxHeight: '200px',
+                            overflowY: 'auto',
+                            '&::-webkit-scrollbar': {
+                              width: '6px'
+                            },
+                            '&::-webkit-scrollbar-thumb': {
+                              backgroundColor: 'rgba(255,255,255,0.3)',
+                              borderRadius: '3px'
+                            }
+                          }}>
+                            <ul style={{ 
+                              margin: 0, 
+                              paddingLeft: '20px',
+                              listStyleType: 'none'
+                            }}>
+                              {action.description.map((item, i) => (
+                                <li key={i} style={{ 
+                                  marginBottom: '8px',
+                                  position: 'relative',
+                                  paddingLeft: '20px',
+                                  fontSize: '0.85rem',
+                                  lineHeight: '1.4'
+                                }}>
+                                  <span style={{
+                                    position: 'absolute',
+                                    left: 0,
+                                    top: '6px',
+                                    width: '8px',
+                                    height: '8px',
+                                    borderRadius: '50%',
+                                    background: 'white'
+                                  }}></span>
+                                  {item}
+                                </li>
+                              ))}
+                            </ul>
+                          </Box>
+                          
+                          <Box sx={{
+                            position: 'absolute',
+                            bottom: 16,
+                            right: 16,
+                            left: 16
+                          }}>
+                            <Button
+                              variant="contained"
+                              fullWidth
+                              onClick={() => navigate(action.path)}
+                              sx={{
+                                bgcolor: 'white',
+                                color: action.color,
+                                fontWeight: 'bold',
+                                borderRadius: '8px',
+                                py: 1,
+                                boxShadow: theme.shadows[2],
+                                '&:hover': {
+                                  bgcolor: 'rgba(255,255,255,0.9)',
+                                  boxShadow: theme.shadows[4]
+                                },
+                                transition: 'all 0.2s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                px: 2
+                              }}
+                            >
+                              <span>පිවිසෙන්න</span>
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke={action.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </Button>
+                          </Box>
+                          
+                          {/* Badge for pending items */}
+                          {(action.title === 'සිසු කළමනාකරණය' && pendingCount > 0) ||
+                          (action.title === 'ඇණවුම් කළමනාකරණය' && pendingOrdersCount > 0) ||
+                          (action.title === 'සියළුම පරිශීලකයින් සදහා විශේෂ නිවේදන කළමනාකරණය' && unansweredQuestionsCount > 0) ||
+                          (action.title === 'පරිශීලක ගැටළු සහ ප්‍රත්පෝශණ කළමනාකරණය' && unrepliedFeedbacksCount > 0) ||
+                          (action.title === 'සිසුන්ගේ පණිවිඩ සහ ප්‍රශ්න කළමනාකරණය' && unrepliedStudentMessagesCount > 0) ||
+                          (action.title === 'පන්ති ඉල්ලීම් කළමනාකරණය' && pendingEnrollmentRequestsCount > 0) ? (
+                            <Box sx={{
+                              position: 'absolute',
+                              top: 12,
+                              right: 12,
+                              background: 'rgba(255,255,255,0.9)',
+                              color: '#d32f2f',
+                              borderRadius: '50%',
+                              width: '28px',
+                              height: '28px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontWeight: 'bold',
+                              fontSize: '0.8rem',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                              animation: 'pulse 1.5s infinite',
+                              '@keyframes pulse': {
+                                '0%': { transform: 'scale(1)' },
+                                '50%': { transform: 'scale(1.1)' },
+                                '100%': { transform: 'scale(1)' }
+                              }
+                            }}>
+                              {loading ? (
+                                <CircularProgress size={16} color="error" />
+                              ) : (
+                                action.title === 'සිසු කළමනාකරණය' ? pendingCount :
+                                action.title === 'ඇණවුම් කළමනාකරණය' ? pendingOrdersCount :
+                                action.title === 'සියළුම පරිශීලකයින් සදහා විශේෂ නිවේදන කළමනාකරණය' ? unansweredQuestionsCount :
+                                action.title === 'සිසුන්ගේ පණිවිඩ සහ ප්‍රශ්න කළමනාකරණය' ? unrepliedStudentMessagesCount :
+                                action.title === 'පන්ති ඉල්ලීම් කළමනාකරණය' ? pendingEnrollmentRequestsCount :
+                                unrepliedFeedbacksCount
+                              )}
+                            </Box>
+                          ) : null}
+                        </CardContent>
                       </Card>
                     </motion.div>
                   </Grid>
                 ))}
               </Grid>
-            </Paper>
-          </Grid>
-
-          {/* Recent Students */}
-          <Grid item xs={12} md={8}>
-            <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
-              <Typography variant="h6" fontWeight="bold" sx={{
-                mb: 3,
-                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-              }}>
-                මෑත සිසුන්
-              </Typography>
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell sx={{ fontWeight: 'bold' }}>නම</TableCell>
-                      <TableCell sx={{ fontWeight: 'bold' }}>පන්තිය</TableCell>
-                      <TableCell sx={{ fontWeight: 'bold' }}>තත්ත්වය</TableCell>
-                      <TableCell sx={{ fontWeight: 'bold' }}>ක්‍රියාමාර්ග</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {recentStudents.map((student) => (
-                      <TableRow key={student.id} hover>
-                        <TableCell>
-                          <Box>
-                            <Typography variant="body2" fontWeight="medium">
-                              {student.name}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              {student.email}
-                            </Typography>
-                          </Box>
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="body2" sx={{
-                            fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
-                          }}>
-                            {student.course}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Chip
-                            label={student.status}
-                            color={student.status === 'සක්‍රීය' ? 'success' : 'default'}
-                            size="small"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Box sx={{ display: 'flex', gap: 1 }}>
-                            <IconButton size="small" color="primary">
-                              <Visibility />
-                            </IconButton>
-                            <IconButton size="small" color="primary">
-                              <Edit />
-                            </IconButton>
-                            <IconButton size="small" color="error">
-                              <Delete />
-                            </IconButton>
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
             </Paper>
           </Grid>
         </Grid>
