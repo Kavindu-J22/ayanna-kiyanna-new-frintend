@@ -258,7 +258,7 @@ const PaymentPage = () => {
         >
         <Paper elevation={4} sx={{ p: 4, borderRadius: 3 }}>
           <Typography
-            variant="h4"
+            variant="h5"
             component="h1"
             gutterBottom
             sx={{
@@ -288,25 +288,45 @@ const PaymentPage = () => {
           {/* Step 0: Delivery Method */}
           {activeStep === 0 && (
             <Box>
-              <Typography variant="h6" gutterBottom sx={{ fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif', mb: 3 }}>
+              <Typography 
+                variant="h6" 
+                gutterBottom 
+                sx={{ 
+                  fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif', 
+                  mb: 3 
+                }}
+              >
                 මෙම අයිතම ඔබ අතට ලබා ගැනීමට බලාපොරොත්තු වන්නේ කෙසේද?
               </Typography>
 
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
+              <Grid container spacing={3} justifyContent="center">
+                <Grid item xs={12} sm={6} md={6} lg={5}>
                   <Card
                     elevation={deliveryType === 'pickup' ? 4 : 1}
                     sx={{
                       cursor: 'pointer',
+                      height: '220px',
                       border: deliveryType === 'pickup' ? 2 : 1,
                       borderColor: deliveryType === 'pickup' ? 'primary.main' : 'grey.300',
-                      '&:hover': { elevation: 3 }
+                      '&:hover': {
+                        boxShadow: 3,
+                        borderColor: 'primary.light'
+                      },
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center'
                     }}
                     onClick={() => setDeliveryType('pickup')}
                   >
-                    <CardContent sx={{ textAlign: 'center', py: 4 }}>
+                    <CardContent sx={{ textAlign: 'center' }}>
                       <PickupIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
-                      <Typography variant="h6" sx={{ fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif', mb: 1 }}>
+                      <Typography 
+                        variant="h6" 
+                        sx={{ 
+                          fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif', 
+                          mb: 1 
+                        }}
+                      >
                         මම ආයතනයෙන් මගේ අතට ලබාගනිමි
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
@@ -316,20 +336,33 @@ const PaymentPage = () => {
                   </Card>
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} sm={6} md={6} lg={5}>
                   <Card
                     elevation={deliveryType === 'delivery' ? 4 : 1}
                     sx={{
                       cursor: 'pointer',
+                      height: '220px',
                       border: deliveryType === 'delivery' ? 2 : 1,
                       borderColor: deliveryType === 'delivery' ? 'primary.main' : 'grey.300',
-                      '&:hover': { elevation: 3 }
+                      '&:hover': {
+                        boxShadow: 3,
+                        borderColor: 'primary.light'
+                      },
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center'
                     }}
                     onClick={() => setDeliveryType('delivery')}
                   >
-                    <CardContent sx={{ textAlign: 'center', py: 4 }}>
+                    <CardContent sx={{ textAlign: 'center' }}>
                       <DeliveryIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
-                      <Typography variant="h6" sx={{ fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif', mb: 1 }}>
+                      <Typography 
+                        variant="h6" 
+                        sx={{ 
+                          fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif', 
+                          mb: 1 
+                        }}
+                      >
                         Delivery කර ගැනීමට අවශ්‍ය යි
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
@@ -342,7 +375,13 @@ const PaymentPage = () => {
 
               {deliveryType === 'delivery' && (
                 <Box sx={{ mt: 4 }}>
-                  <Typography variant="h6" gutterBottom sx={{ fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif' }}>
+                  <Typography 
+                    variant="h6" 
+                    gutterBottom 
+                    sx={{ 
+                      fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif' 
+                    }}
+                  >
                     ලබන්නාගේ විස්තර
                   </Typography>
                   

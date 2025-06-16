@@ -249,7 +249,7 @@ const ProductDetailPage = () => {
             <Grid item xs={12} md={6}>
               <Box>
                 <Typography
-                  variant="h4"
+                  variant="h5"
                   component="h1"
                   gutterBottom
                   sx={{
@@ -409,7 +409,7 @@ const ProductDetailPage = () => {
       {relatedProducts.length > 0 && (
         <Box sx={{ mt: 6 }}>
           <Typography
-            variant="h5"
+            variant="h6"
             gutterBottom
             sx={{
               fontWeight: 'bold',
@@ -431,6 +431,7 @@ const ProductDetailPage = () => {
                     elevation={3}
                     sx={{
                       height: '100%',
+                      width: '368px',
                       cursor: 'pointer',
                       '&:hover': { boxShadow: 6 }
                     }}

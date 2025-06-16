@@ -21,9 +21,10 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
-  Pagination,
   CircularProgress,
-  Alert
+  Alert,
+  useTheme,
+  useMediaQuery
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -35,16 +36,113 @@ import {
   Delete as DeleteIcon,
   Receipt as OrdersIcon,
   Star as StarIcon,
-  StarBorder as StarBorderIcon
+  StarBorder as StarBorderIcon,
+  ExpandMore as ExpandMoreIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { styled } from '@mui/material/styles';
 import axios from 'axios';
+
+// Styled Components
+const ProductsContainer = styled(Box)(({ theme }) => ({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+  gap: theme.spacing(3),
+  maxWidth: '1400px',
+  margin: '0 auto',
+  padding: theme.spacing(0, 2),
+  [theme.breakpoints.up('sm')]: {
+    gridTemplateColumns: 'repeat(2, 1fr)',
+  },
+  [theme.breakpoints.up('md')]: {
+    gridTemplateColumns: 'repeat(3, 1fr)',
+  },
+  [theme.breakpoints.up('lg')]: {
+    gridTemplateColumns: 'repeat(4, 1fr)',
+  },
+}));
+
+const StyledProductCard = styled(Card)(({ theme }) => ({
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  borderRadius: '20px',
+  overflow: 'hidden',
+  background: 'linear-gradient(145deg, #ffffff 0%, #fef7ff 100%)',
+  border: '1px solid rgba(156, 39, 176, 0.1)',
+  boxShadow: '0 8px 32px rgba(156, 39, 176, 0.15)',
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  position: 'relative',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '4px',
+    background: 'linear-gradient(90deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4)',
+    backgroundSize: '300% 300%',
+    animation: 'gradientShift 3s ease infinite',
+  },
+  '&:hover': {
+    transform: 'translateY(-8px) scale(1.02)',
+    boxShadow: '0 20px 40px rgba(156, 39, 176, 0.25)',
+    '&::before': {
+      height: '6px',
+    }
+  },
+  '@keyframes gradientShift': {
+    '0%': { backgroundPosition: '0% 50%' },
+    '50%': { backgroundPosition: '100% 50%' },
+    '100%': { backgroundPosition: '0% 50%' },
+  }
+}));
+
+const ShowMoreButton = styled(Button)(({ theme }) => ({
+  background: 'linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 50%, #45B7D1 100%)',
+  color: 'white',
+  padding: theme.spacing(2, 6),
+  borderRadius: '50px',
+  fontSize: '1.1rem',
+  fontWeight: 'bold',
+  fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+  textTransform: 'none',
+  boxShadow: '0 8px 25px rgba(255, 107, 107, 0.3)',
+  border: 'none',
+  position: 'relative',
+  overflow: 'hidden',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: '-100%',
+    width: '100%',
+    height: '100%',
+    background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+    transition: 'left 0.6s',
+  },
+  '&:hover': {
+    transform: 'translateY(-2px)',
+    boxShadow: '0 12px 35px rgba(255, 107, 107, 0.4)',
+    '&::before': {
+      left: '100%',
+    }
+  },
+  '&:active': {
+    transform: 'translateY(0px)',
+  }
+}));
 
 const BooksProductsPage = () => {
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  const [allProducts, setAllProducts] = useState([]);
+  const [displayedProducts, setDisplayedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState('');
   const [userRole, setUserRole] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -58,10 +156,10 @@ const BooksProductsPage = () => {
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState('desc');
 
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  // Show More functionality
+  const [itemsToShow, setItemsToShow] = useState(12);
   const [totalProducts, setTotalProducts] = useState(0);
+  const [hasMoreItems, setHasMoreItems] = useState(false);
 
   const categories = ['Books', 'T-shirts', 'Caps', 'Magazines', 'Others'];
 
@@ -73,7 +171,16 @@ const BooksProductsPage = () => {
     if (isAuthenticated) {
       fetchProducts();
     }
-  }, [isAuthenticated, currentPage, searchTerm, selectedCategory, minPrice, maxPrice, sortBy, sortOrder]);
+  }, [isAuthenticated, searchTerm, selectedCategory, minPrice, maxPrice, sortBy, sortOrder]);
+
+  useEffect(() => {
+    // Update displayed products when itemsToShow changes
+    if (allProducts.length > 0) {
+      const newDisplayedProducts = allProducts.slice(0, itemsToShow);
+      setDisplayedProducts(newDisplayedProducts);
+      setHasMoreItems(itemsToShow < allProducts.length);
+    }
+  }, [allProducts, itemsToShow]);
 
   const checkAuthentication = async () => {
     const userEmail = localStorage.getItem('userEmail');
@@ -103,9 +210,14 @@ const BooksProductsPage = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
+      setError('');
+
+      // Reset items to show when filters change
+      setItemsToShow(12);
+
       const params = new URLSearchParams({
-        page: currentPage,
-        limit: 12,
+        page: 1,
+        limit: 1000, // Fetch all products to handle client-side pagination
         sortBy,
         sortOrder
       });
@@ -119,15 +231,35 @@ const BooksProductsPage = () => {
         `https://ayanna-kiyanna-new-backend.onrender.com/api/products?${params}`
       );
 
-      setProducts(response.data.products);
-      setTotalPages(response.data.pagination.totalPages);
-      setTotalProducts(response.data.pagination.totalProducts);
+      const fetchedProducts = response.data.products || [];
+      setAllProducts(fetchedProducts);
+      setTotalProducts(fetchedProducts.length);
+
+      // Set initial displayed products (first 12)
+      const initialProducts = fetchedProducts.slice(0, 12);
+      setDisplayedProducts(initialProducts);
+      setHasMoreItems(fetchedProducts.length > 12);
+
     } catch (err) {
       console.error('Error fetching products:', err);
       setError('Error loading products');
+      setAllProducts([]);
+      setDisplayedProducts([]);
+      setTotalProducts(0);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleShowMore = () => {
+    setLoadingMore(true);
+
+    // Simulate loading delay for better UX
+    setTimeout(() => {
+      const newItemsToShow = itemsToShow + 12;
+      setItemsToShow(newItemsToShow);
+      setLoadingMore(false);
+    }, 500);
   };
 
   const handleLoginRedirect = () => {
@@ -280,12 +412,24 @@ const BooksProductsPage = () => {
         <Paper
           elevation={8}
           sx={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: 'linear-gradient(135deg, #FF6B6B 0%,rgb(175, 78, 205) 50%, #45B7D1 100%)',
             color: 'white',
-            p: 4,
+            p: { xs: 3, md: 5 },
             mb: 4,
-            borderRadius: 3,
-            textAlign: 'center'
+            borderRadius: '25px',
+            textAlign: 'center',
+            position: 'relative',
+            overflow: 'hidden',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.2) 0%, transparent 50%)',
+              pointerEvents: 'none'
+            }
           }}
         >
           <Typography
@@ -333,7 +477,7 @@ const BooksProductsPage = () => {
                 }
               }}
             >
-              මගේ ඇණවුම්
+              මගේ ඇණවුම් බලන්න
             </Button>
 
             {/* Admin Product Management Button */}
@@ -362,8 +506,38 @@ const BooksProductsPage = () => {
       </motion.div>
 
       {/* Search and Filter Section */}
-      <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
-        <Grid container spacing={3} alignItems="center">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        <Paper
+          elevation={6}
+          sx={{
+            p: { xs: 2, md: 4 },
+            mb: 4,
+            borderRadius: '20px',
+            background: 'linear-gradient(145deg, #ffffff 0%, #fef7ff 100%)',
+            border: '1px solid rgba(156, 39, 176, 0.1)',
+            boxShadow: '0 10px 30px rgba(156, 39, 176, 0.1)'
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              mb: 3,
+              textAlign: 'center',
+              fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+              background: 'linear-gradient(45deg, #FF6B6B, #4ECDC4)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              fontWeight: 'bold'
+            }}
+          >
+            නිෂ්පාදන සොයන්න සහ පෙරහන් කරන්න
+          </Typography>
+          <Grid container spacing={3} alignItems="center">
           <Grid item xs={12} md={4}>
             <TextField
               fullWidth
@@ -371,15 +545,43 @@ const BooksProductsPage = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               InputProps={{
-                startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                startAdornment: <SearchIcon sx={{ mr: 1, color: '#FF6B6B' }} />
               }}
-              sx={{ minWidth: 200 }}
+              sx={{
+                minWidth: 200,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '15px',
+                  '& fieldset': {
+                    borderColor: 'rgba(156, 39, 176, 0.3)',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#FF6B6B',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#4ECDC4',
+                  },
+                }
+              }}
             />
           </Grid>
           
           <Grid item xs={12} md={2}>
-            <FormControl fullWidth sx={{ minWidth: 200 }}>
-              <InputLabel>කාණ්ඩය</InputLabel>
+            <FormControl fullWidth sx={{
+              minWidth: 200,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '15px',
+                '& fieldset': {
+                  borderColor: 'rgba(156, 39, 176, 0.3)',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#FF6B6B',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#4ECDC4',
+                },
+              }
+            }}>
+              <InputLabel sx={{ color: '#FF6B6B' }}>කාණ්ඩය</InputLabel>
               <Select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
@@ -402,7 +604,21 @@ const BooksProductsPage = () => {
               placeholder="අවම මිල"
               value={minPrice}
               onChange={(e) => setMinPrice(e.target.value)}
-              sx={{ minWidth: 200 }}
+              sx={{
+                minWidth: 200,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '15px',
+                  '& fieldset': {
+                    borderColor: 'rgba(156, 39, 176, 0.3)',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#FF6B6B',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#4ECDC4',
+                  },
+                }
+              }}
             />
           </Grid>
 
@@ -413,13 +629,41 @@ const BooksProductsPage = () => {
               placeholder="උපරිම මිල"
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
-              sx={{ minWidth: 200 }}
+              sx={{
+                minWidth: 200,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '15px',
+                  '& fieldset': {
+                    borderColor: 'rgba(156, 39, 176, 0.3)',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#FF6B6B',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#4ECDC4',
+                  },
+                }
+              }}
             />
           </Grid>
 
           <Grid item xs={12} md={3}>
-            <FormControl fullWidth sx={{ minWidth: 200 }}>
-              <InputLabel>පිළිවෙල</InputLabel>
+            <FormControl fullWidth sx={{
+              minWidth: 200,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '15px',
+                '& fieldset': {
+                  borderColor: 'rgba(156, 39, 176, 0.3)',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#FF6B6B',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#4ECDC4',
+                },
+              }
+            }}>
+              <InputLabel sx={{ color: '#FF6B6B' }}>පිළිවෙල</InputLabel>
               <Select
                 value={`${sortBy}-${sortOrder}`}
                 onChange={(e) => {
@@ -438,90 +682,163 @@ const BooksProductsPage = () => {
             </FormControl>
           </Grid>
         </Grid>
-      </Paper>
+        </Paper>
+      </motion.div>
 
       {/* Products Grid */}
       {loading ? (
         <Box display="flex" justifyContent="center" py={8}>
-          <CircularProgress size={60} />
+          <CircularProgress
+            size={60}
+            sx={{
+              color: '#FF6B6B',
+              '& .MuiCircularProgress-circle': {
+                strokeLinecap: 'round',
+              }
+            }}
+          />
         </Box>
       ) : error ? (
-        <Alert severity="error" sx={{ mb: 4 }}>
+        <Alert
+          severity="error"
+          sx={{
+            mb: 4,
+            borderRadius: '15px',
+            '& .MuiAlert-icon': {
+              color: '#FF6B6B'
+            }
+          }}
+        >
           {error}
         </Alert>
-      ) : products.length === 0 ? (
-        <Paper elevation={3} sx={{ p: 8, textAlign: 'center' }}>
-          <Typography variant="h6" color="text.secondary">
-            කිසිදු නිෂ්පාදනයක් සොයා ගත නොහැකි විය
-          </Typography>
-        </Paper>
+      ) : displayedProducts.length === 0 ? (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Paper
+            elevation={3}
+            sx={{
+              p: 8,
+              textAlign: 'center',
+              borderRadius: '20px',
+              background: 'linear-gradient(145deg, #ffffff 0%, #fef7ff 100%)',
+              border: '1px solid rgba(156, 39, 176, 0.1)'
+            }}
+          >
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              sx={{ fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif' }}
+            >
+              කිසිදු නිෂ්පාදනයක් සොයා ගත නොහැකි විය
+            </Typography>
+          </Paper>
+        </motion.div>
       ) : (
         <>
-          <Typography variant="h6" sx={{ mb: 3, fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif' }}>
-            නිෂ්පාදන {totalProducts}ක් සොයා ගන්නා ලදී
-          </Typography>
-          
-          <Grid container spacing={3}>
-            {products.map((product) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={product._id}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                mb: 4,
+                textAlign: 'center',
+                fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                background: 'linear-gradient(45deg, #FF6B6B,rgb(28, 90, 86))',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontWeight: 'bold',
+                fontSize: '1rem'
+              }}
+            >
+              නිෂ්පාදන {totalProducts}ක් සොයා ගන්නා ලදී
+            </Typography>
+          </motion.div>
+
+          <ProductsContainer>
+            <AnimatePresence>
+              {displayedProducts.map((product, index) => (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                  whileHover={{ scale: 1.02 }}
+                  key={product._id}
+                  initial={{ opacity: 0, scale: 0.8, y: 50 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, y: -50 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: index * 0.1,
+                    type: "spring",
+                    stiffness: 100
+                  }}
+                  whileHover={{
+                    scale: 1.02,
+                    transition: { duration: 0.2 }
+                  }}
                 >
-                  <Card
-                    elevation={4}
-                    sx={{
-                      height: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      borderRadius: 2,
-                      overflow: 'hidden',
-                      '&:hover': {
-                        boxShadow: 8
-                      }
-                    }}
-                  >
+                  <StyledProductCard elevation={4}>
                     <CardMedia
                       component="img"
-                      height="200"
+                      height="220"
                       image={product.images[0]?.url || '/placeholder-image.jpg'}
                       alt={product.name}
-                      sx={{ objectFit: 'cover' }}
+                      sx={{
+                        objectFit: 'cover',
+                        transition: 'transform 0.3s ease',
+                        '&:hover': {
+                          transform: 'scale(1.05)'
+                        }
+                      }}
                     />
-                    
-                    <CardContent sx={{ flexGrow: 1, p: 2 }}>
+
+                    <CardContent sx={{ flexGrow: 1, p: 3 }}>
                       <Typography
                         variant="h6"
                         component="h3"
                         gutterBottom
                         sx={{
                           fontWeight: 'bold',
-                          fontSize: '1.1rem',
+                          fontSize: '1.2rem',
                           lineHeight: 1.3,
                           display: '-webkit-box',
                           WebkitLineClamp: 2,
                           WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden'
+                          overflow: 'hidden',
+                          color: '#2c3e50',
+                          mb: 2
                         }}
                       >
                         {product.name}
                       </Typography>
-                      
+
                       <Chip
                         label={product.category}
                         size="small"
-                        color="primary"
-                        sx={{ mb: 1 }}
+                        sx={{
+                          mb: 2,
+                          background: 'linear-gradient(45deg, #FF6B6B, #4ECDC4)',
+                          color: 'white',
+                          fontWeight: 'bold'
+                        }}
                       />
-                      
+
                       {product.publisherAuthor && (
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            mb: 1,
+                            fontStyle: 'italic'
+                          }}
+                        >
                           {product.publisherAuthor}
                         </Typography>
                       )}
-                      
+
                       <Typography
                         variant="body2"
                         color="text.secondary"
@@ -530,33 +847,51 @@ const BooksProductsPage = () => {
                           WebkitLineClamp: 2,
                           WebkitBoxOrient: 'vertical',
                           overflow: 'hidden',
-                          mb: 2
+                          mb: 2,
+                          lineHeight: 1.4
                         }}
                       >
                         {product.description}
                       </Typography>
-                      
-                      {formatPrice(product.price, product.discount)}
+
+                      <Box sx={{ mb: 2 }}>
+                        {formatPrice(product.price, product.discount)}
+                      </Box>
 
                       {/* Rating Display */}
                       {renderStars(product.averageRating || 0, product.totalRatings || 0)}
 
-                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                          mt: 1,
+                          fontWeight: 'medium'
+                        }}
+                      >
                         තොගයේ ඇත: {product.availableQuantity}
                       </Typography>
                     </CardContent>
-                    
-                    <CardActions sx={{ p: 2, pt: 0 }}>
+
+                    <CardActions sx={{ p: 3, pt: 0, gap: 1 }}>
                       <Button
                         size="small"
                         variant="outlined"
                         startIcon={<VisibilityIcon />}
                         onClick={() => handleViewMore(product._id)}
-                        sx={{ mr: 1 }}
+                        sx={{
+                          flex: 1,
+                          borderColor: '#FF6B6B',
+                          color: '#FF6B6B',
+                          '&:hover': {
+                            borderColor: '#FF5252',
+                            backgroundColor: 'rgba(255, 107, 107, 0.1)'
+                          }
+                        }}
                       >
                         වැඩි විස්තර
                       </Button>
-                      
+
                       <Button
                         size="small"
                         variant="contained"
@@ -564,32 +899,83 @@ const BooksProductsPage = () => {
                         onClick={() => handleAddToCart(product._id)}
                         disabled={product.availableQuantity === 0}
                         sx={{
+                          flex: 1,
                           background: 'linear-gradient(45deg, #FF6B6B, #4ECDC4)',
                           '&:hover': {
                             background: 'linear-gradient(45deg, #FF5252, #26C6DA)',
+                          },
+                          '&:disabled': {
+                            background: '#ccc'
                           }
                         }}
                       >
                         කරත්තයට
                       </Button>
                     </CardActions>
-                  </Card>
+                  </StyledProductCard>
                 </motion.div>
-              </Grid>
-            ))}
-          </Grid>
+              ))}
+            </AnimatePresence>
+          </ProductsContainer>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <Box display="flex" justifyContent="center" mt={4}>
-              <Pagination
-                count={totalPages}
-                page={currentPage}
-                onChange={(event, value) => setCurrentPage(value)}
-                color="primary"
-                size="large"
-              />
-            </Box>
+          {/* Show More Button */}
+          {hasMoreItems && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Box
+                display="flex"
+                justifyContent="center"
+                mt={6}
+                mb={4}
+              >
+                <ShowMoreButton
+                  onClick={handleShowMore}
+                  disabled={loadingMore}
+                  startIcon={loadingMore ? <CircularProgress size={20} color="inherit" /> : <ExpandMoreIcon />}
+                  sx={{
+                    minWidth: '200px',
+                    opacity: loadingMore ? 0.7 : 1
+                  }}
+                >
+                  {loadingMore ? 'Loading...' : 'තවත් නිෂ්පාදන පෙන්වන්න'}
+                </ShowMoreButton>
+              </Box>
+            </motion.div>
+          )}
+
+          {/* Products Summary */}
+          {!hasMoreItems && displayedProducts.length > 12 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Box
+                display="flex"
+                justifyContent="center"
+                mt={4}
+                mb={2}
+              >
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: 'text.secondary',
+                    fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                    textAlign: 'center',
+                    background: 'linear-gradient(45deg, #FF6B6B, #4ECDC4)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    fontWeight: 'medium'
+                  }}
+                >
+                  සියලුම නිෂ්පාදන පෙන්වා ඇත ({totalProducts} නිෂ්පාදන)
+                </Typography>
+              </Box>
+            </motion.div>
           )}
         </>
       )}

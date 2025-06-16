@@ -499,7 +499,7 @@ const OrdersPage = () => {
       >
         {/* Header */}
         <Typography
-          variant="h4"
+          variant="h5"
           component="h1"
           gutterBottom
           sx={{
@@ -508,7 +508,7 @@ const OrdersPage = () => {
             mb: 4
           }}
         >
-          මගේ ඇණවුම්
+          📦 මගේ ඇණවුම් (My Orders):
         </Typography>
 
         {error && (
