@@ -21,7 +21,7 @@ import {
   Container,
   Divider,
   Badge,
-  CircularProgress
+  CircularProgress,
 } from '@mui/material';
 import {
   Dashboard,
@@ -254,7 +254,7 @@ const quickActions = [
       title: 'සියලුම පන්ති ගෙවීම් සහ ආදායම් විශ්ලේෂණ',
       icon: <Payment />,
       color: '#ff9a9e',
-      gradient: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+      gradient: 'linear-gradient(135deg, #ff9a9e 0%,rgb(235, 134, 161) 100%)',
       path: '/all-class-payment-requests',
       description: [
         'සිසුන්ගේ පන්ති ගෙවීම් ඉල්ලීම් කළමනාකරණය.',
@@ -329,7 +329,7 @@ const quickActions = [
       title: 'ගෙන්වා දීමේ ගාස්තු කළමනාකරණය',
       icon: <LocalShipping />,
       color: '#9C27B0',
-      gradient: 'linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%)',
+      gradient: 'linear-gradient(135deg,rgb(105, 69, 203) 0%, #7B1FA2 100%)',
       path: '/admin-delivery-charge-management',
       description: [
         'ප්‍රදේශ අනුව ගෙන්වා දීමේ ගාස්තු සැකසීම.',
@@ -418,15 +418,7 @@ const quickActions = [
                   sx={{ mt: 0.5 }}
                 />
               </Box>
-            </Box>
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <IconButton color="primary">
-                <Notifications />
-              </IconButton>
-              <IconButton color="primary">
-                <Settings />
-              </IconButton>
-            </Box>
+            </Box>          
           </Box>
         </Paper>
 
@@ -440,7 +432,7 @@ const quickActions = [
               backdropFilter: 'blur(10px)'
             }}>
               <Typography variant="h5" fontWeight="bold" sx={{
-                mb: 3,
+                mb: 2,
                 fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                 color: theme.palette.primary.dark,
                 textAlign: 'center',
@@ -449,16 +441,194 @@ const quickActions = [
               }}>
                 ඉක්මන් ක්‍රියාමාර්ග
               </Typography>
+
+              <Typography variant="body1" sx={{
+                textAlign: 'center',
+                color: 'text.secondary',
+                mb: 3,
+                fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                maxWidth: '900px',
+                margin: '0 auto 24px auto',
+                fontSize: '1rem',
+                lineHeight: 1.6
+              }}>
+                පරිපාලන කාර්යයන් ඉක්මනින් සහ කාර්යක්ෂමව සිදු කිරීම සඳහා අවශ්‍ය සියලුම මෙවලම්.
+                එක් ක්ලික් කිරීමකින් ඔබට අවශ්‍ය ඕනෑම කළමනාකරණ පිටුවකට ප්‍රවේශ වන්න.
+              </Typography>
+
+              {/* Pending Actions Summary */}
+              {(pendingCount > 0 || pendingOrdersCount > 0 || unansweredQuestionsCount > 0 ||
+                unrepliedFeedbacksCount > 0 || unrepliedStudentMessagesCount > 0 ||
+                pendingEnrollmentRequestsCount > 0) && (
+                <Paper elevation={2} sx={{
+                  p: 3,
+                  mb: 4,
+                  borderRadius: 3,
+                  background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+                  border: '2px solid #ffb74d',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'linear-gradient(45deg, rgba(255, 183, 77, 0.1) 25%, transparent 25%, transparent 75%, rgba(255, 183, 77, 0.1) 75%)',
+                    backgroundSize: '20px 20px',
+                    pointerEvents: 'none'
+                  }
+                }}>
+                  <Box sx={{ position: 'relative', zIndex: 1 }}>
+                    <Typography variant="h6" fontWeight="bold" sx={{
+                      mb: 2,
+                      textAlign: 'center',
+                      color: '#e65100',
+                      fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 1
+                    }}>
+                      ⚠️ අවධානය අවශ්‍ය ක්‍රියාමාර්ග
+                    </Typography>
+
+                    <Box sx={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: 2,
+                      justifyContent: 'center',
+                      alignItems: 'center'
+                    }}>
+                      {pendingCount > 0 && (
+                        <Chip
+                          label={`සිසු කළමනාකරණය ${pendingCount}`}
+                          sx={{
+                            bgcolor: '#ff5722',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            fontSize: '0.9rem',
+                            fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                            '&:hover': { bgcolor: '#d84315' },
+                            cursor: 'pointer',
+                            animation: 'pulse 2s infinite'
+                          }}
+                          onClick={() => navigate('/student-management')}
+                        />
+                      )}
+                      {pendingEnrollmentRequestsCount > 0 && (
+                        <Chip
+                          label={`පන්ති ඉල්ලීම් කළමනාකරණය ${pendingEnrollmentRequestsCount}`}
+                          sx={{
+                            bgcolor: '#ff5722',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            fontSize: '0.9rem',
+                            fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                            '&:hover': { bgcolor: '#d84315' },
+                            cursor: 'pointer',
+                            animation: 'pulse 2s infinite'
+                          }}
+                          onClick={() => navigate('/class-requests')}
+                        />
+                      )}
+                      {pendingOrdersCount > 0 && (
+                        <Chip
+                          label={`ඇණවුම් කළමනාකරණය ${pendingOrdersCount}`}
+                          sx={{
+                            bgcolor: '#ff5722',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            fontSize: '0.9rem',
+                            fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                            '&:hover': { bgcolor: '#d84315' },
+                            cursor: 'pointer',
+                            animation: 'pulse 2s infinite'
+                          }}
+                          onClick={() => navigate('/admin-order-management')}
+                        />
+                      )}
+                      {unansweredQuestionsCount > 0 && (
+                        <Chip
+                          label={`විශේෂ නිවේදන ${unansweredQuestionsCount}`}
+                          sx={{
+                            bgcolor: '#ff5722',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            fontSize: '0.9rem',
+                            fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                            '&:hover': { bgcolor: '#d84315' },
+                            cursor: 'pointer',
+                            animation: 'pulse 2s infinite'
+                          }}
+                          onClick={() => navigate('/admin-special-notice-management')}
+                        />
+                      )}
+                      {unrepliedFeedbacksCount > 0 && (
+                        <Chip
+                          label={`ප්‍රතිපෝෂණ කළමනාකරණය ${unrepliedFeedbacksCount}`}
+                          sx={{
+                            bgcolor: '#ff5722',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            fontSize: '0.9rem',
+                            fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                            '&:hover': { bgcolor: '#d84315' },
+                            cursor: 'pointer',
+                            animation: 'pulse 2s infinite'
+                          }}
+                          onClick={() => navigate('/admin-feedback-management')}
+                        />
+                      )}
+                      {unrepliedStudentMessagesCount > 0 && (
+                        <Chip
+                          label={`සිසු පණිවිඩ ${unrepliedStudentMessagesCount}`}
+                          sx={{
+                            bgcolor: '#ff5722',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            fontSize: '0.9rem',
+                            fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                            '&:hover': { bgcolor: '#d84315' },
+                            cursor: 'pointer',
+                            animation: 'pulse 2s infinite'
+                          }}
+                          onClick={() => navigate('/admin-student-message-management')}
+                        />
+                      )}
+                    </Box>
+
+                    <Typography variant="body2" sx={{
+                      textAlign: 'center',
+                      color: '#bf360c',
+                      mt: 2,
+                      fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                      fontStyle: 'italic'
+                    }}>
+                      👆 ක්ලික් කර ඉක්මනින් ක්‍රියාමාර්ග ගන්න
+                    </Typography>
+                  </Box>
+                </Paper>
+              )}
               
-              <Grid container spacing={3}>
+              <Grid container spacing={3} sx={{
+                justifyContent: 'center',
+                alignItems: 'stretch'
+              }}>
                 {quickActions.map((action, index) => (
-                  <Grid item xs={12} sm={6} md={4} key={index}>
+                  <Grid item xs={12} sm={6} md={4} key={index} sx={{
+                    display: 'flex',
+                    minHeight: '400px' // Ensure consistent height
+                  }}>
                     <motion.div 
                       whileHover={{ scale: 1.03, boxShadow: theme.shadows[6] }}
                       transition={{ duration: 0.2 }}
                     >
                       <Card sx={{
-                        height: '100%',
+                        width: '400px',
+                        height: '400px', // Fixed height for all cards
+
                         display: 'flex',
                         flexDirection: 'column',
                         borderRadius: '12px',
@@ -467,6 +637,12 @@ const quickActions = [
                         color: 'white',
                         position: 'relative',
                         overflow: 'hidden',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'translateY(-8px)',
+                          boxShadow: theme.shadows[8]
+                        },
                         '&:before': {
                           content: '""',
                           position: 'absolute',
@@ -476,12 +652,15 @@ const quickActions = [
                           height: '4px',
                           background: 'rgba(255,255,255,0.3)'
                         }
-                      }}>
-                        <CardContent sx={{ 
-                          flexGrow: 1,
+                      }}
+                      onClick={() => navigate(action.path)}>
+                        <CardContent sx={{
+                          height: '100%',
+                          display: 'flex',
+                          flexDirection: 'column',
                           position: 'relative',
                           zIndex: 1,
-                          pb: '60px !important' // Space for button
+                          p: 3
                         }}>
                           <Box sx={{
                             display: 'flex',
@@ -513,7 +692,8 @@ const quickActions = [
                             p: 2,
                             borderRadius: '8px',
                             mb: 2,
-                            maxHeight: '200px',
+                            flex: 1, // Take remaining space
+                            height: '180px', // Fixed height for consistency
                             overflowY: 'auto',
                             '&::-webkit-scrollbar': {
                               width: '6px'
@@ -551,40 +731,32 @@ const quickActions = [
                             </ul>
                           </Box>
                           
-                          <Box sx={{
-                            position: 'absolute',
-                            bottom: 16,
-                            right: 16,
-                            left: 16
-                          }}>
-                            <Button
-                              variant="contained"
-                              fullWidth
-                              onClick={() => navigate(action.path)}
-                              sx={{
-                                bgcolor: 'white',
-                                color: action.color,
-                                fontWeight: 'bold',
-                                borderRadius: '8px',
-                                py: 1,
-                                boxShadow: theme.shadows[2],
-                                '&:hover': {
-                                  bgcolor: 'rgba(255,255,255,0.9)',
-                                  boxShadow: theme.shadows[4]
-                                },
-                                transition: 'all 0.2s ease',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                px: 2
-                              }}
-                            >
-                              <span>පිවිසෙන්න</span>
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke={action.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              </svg>
-                            </Button>
-                          </Box>
+                          <Button
+                            variant="contained"
+                            fullWidth
+                            sx={{
+                              bgcolor: 'rgba(255,255,255,0.2)',
+                              color: 'white',
+                              fontWeight: 'bold',
+                              borderRadius: '8px',
+                              py: 1.5,
+                              backdropFilter: 'blur(10px)',
+                              border: '1px solid rgba(255,255,255,0.3)',
+                              fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                              textTransform: 'none',
+                              fontSize: '1rem',
+                              boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+                              '&:hover': {
+                                bgcolor: 'rgba(255,255,255,0.3)',
+                                transform: 'translateY(-2px)',
+                                boxShadow: '0 6px 20px rgba(0,0,0,0.15)'
+                              },
+                              transition: 'all 0.3s ease',
+                              mt: 'auto' // Push to bottom
+                            }}
+                          >
+                            🚀 දැන් ප්‍රවේශ වන්න
+                          </Button>
                           
                           {/* Badge for pending items */}
                           {(action.title === 'සිසු කළමනාකරණය' && pendingCount > 0) ||
@@ -611,7 +783,7 @@ const quickActions = [
                               animation: 'pulse 1.5s infinite',
                               '@keyframes pulse': {
                                 '0%': { transform: 'scale(1)' },
-                                '50%': { transform: 'scale(1.1)' },
+                                '50%': { transform: 'scale(1.03)' },
                                 '100%': { transform: 'scale(1)' }
                               }
                             }}>
