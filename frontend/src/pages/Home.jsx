@@ -14,7 +14,13 @@ import {
   useTheme,
   useMediaQuery,
   TextField,
-  CircularProgress
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Backdrop,
+  Divider
 } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -52,6 +58,14 @@ const Home = () => {
   const [showAdminDialog, setShowAdminDialog] = useState(false);
   const [showStudentDialog, setShowStudentDialog] = useState(false);
   const [isDashboardLoading, setIsDashboardLoading] = useState(false);
+  const [showTeacherDialog, setShowTeacherDialog] = useState(false);
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [isSubmittingContact, setIsSubmittingContact] = useState(false);
+  const [showContactSuccess, setShowContactSuccess] = useState(false);
   const navigate = useNavigate();
 
 
@@ -173,6 +187,41 @@ const Home = () => {
         alert('Failed to verify user permissions. Please try again.');
       }
     }
+  };
+
+  // Handle contact form submission
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    if (!contactForm.name || !contactForm.email || !contactForm.message) {
+      alert('කරුණාකර සියලුම ක්ෂේත්‍ර පුරවන්න');
+      return;
+    }
+
+    setIsSubmittingContact(true);
+    try {
+      const response = await axios.post(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/contact',
+        contactForm
+      );
+
+      if (response.data.success) {
+        setShowContactSuccess(true);
+        setContactForm({ name: '', email: '', message: '' });
+      }
+    } catch (error) {
+      console.error('Error sending contact message:', error);
+      alert('පණිවුඩය යැවීමේදී දෝෂයක් ඇතිවිය. කරුණාකර නැවත උත්සාහ කරන්න (පණිවිඩය වලංගු වීම සදහා, පණිවිඩය අක්ෂර 10 ත් 1000 ත් අතර විය යුතුය..!).');
+    } finally {
+      setIsSubmittingContact(false);
+    }
+  };
+
+  // Handle contact form input changes
+  const handleContactInputChange = (field, value) => {
+    setContactForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   useEffect(() => {
@@ -2023,11 +2072,15 @@ const Home = () => {
           {/* Teacher Description with Animated Bullet Points */}
           <Box sx={{ mb: 4 }}>
             {[
-              "සිංහල සංස්කෘතික ක්ෂේත්‍රයේ ප්‍රවීණ ගුරුවරයෙක් වන අතර ඔහුගේ අත්දැකීම් වසර 25කට අධික කාලයක් පුරා විහිදෙයි.",
-              "ජාතික හා ජාත්‍යන්තර මට්ටමින් සිංහල සංස්කෘතිය නියෝජනය කර ඇත.",
-              "සාම්ප්‍රදායික ක්‍රම හා නවීන අධ්‍යාපන ක්‍රම අතර සුන්දර සම්බන්ධතාවක් ගොඩනගා ඇත.",
-              "සිසුන් සඳහා නවෝත්පාදනාත්මක ඉගැන්වීම් ක්‍රම භාවිතයෙන් සංස්කෘතික අධ්‍යාපනය ප්‍රගුණ කිරීම.",
-              "සිසුන් සඳහා නවෝත්පාදනාත්මක ඉගැන්වීම් ක්‍රම භාවිතයෙන් සංස්කෘතික අධ්‍යාපනය ප්‍රගුණ කිරීම."
+              "කැලණිය විශ්ව විද්‍යාලයේ සිංහල විශේෂවේදී ගෞරව උපාධිදාරියෙකි.",
+              "කොළඹ විශ්ව විද්‍යාලයෙහි පශ්චාත් උපාධි ඩිප්ලෝමාධාරියෙකි.",
+              "සබරගමුව පළාත් අධ්‍යාපන දෙපාර්තමේන්තුවේ සම්පත් දායකයෙකි.",
+              "දෙහිඕවිට අධ්‍යාපන කලාපයේ සම්පත් දායකයෙකි.",
+              "ජාතික රූපවාහිනී ගුරුගෙදර ඩැඩසටහනෙහි දේශකයෙකි.",
+              "සිංහල සාරසංග්‍රහය ඇතුළු ග්‍රන්ථ ගණනාවක කතුවරයෙකි.",
+              "“දිනක් ජීවත් වෙමු” රසවින්ඳනාත්මක වැඩසටහනෙහි දේශකවරයායි.",
+              "සාමාන්‍ය පෙළ, උසස් පෙළ උත්තර පත්‍ර පරීක්ෂක වරයෙකි.",
+              "වසර ගණනාවක සිට සිසු හද දිනූ ජනප්‍රිය දේශකයෙකි. "
             ].map((point, index) => (
               <motion.div
                 key={index}
@@ -2093,6 +2146,7 @@ const Home = () => {
             <Button
               variant="contained"
               startIcon={<School />}
+              onClick={() => setShowTeacherDialog(true)}
               sx={{
                 fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                 backgroundColor: 'rgb(203, 17, 144)',
@@ -2597,7 +2651,7 @@ const Home = () => {
             }}>
               පණිවුඩයක් යවන්න
             </Typography>
-            <Box component="form" sx={{
+            <Box component="form" onSubmit={handleContactSubmit} sx={{
               display: 'flex',
               flexDirection: 'column',
               gap: 3,
@@ -2613,6 +2667,8 @@ const Home = () => {
                   fullWidth
                   placeholder="ඔබගේ නම"
                   variant="outlined"
+                  value={contactForm.name}
+                  onChange={(e) => handleContactInputChange('name', e.target.value)}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '8px',
@@ -2647,6 +2703,9 @@ const Home = () => {
                   fullWidth
                   placeholder="ඔබගේ ඊමේල් ලිපිනය"
                   variant="outlined"
+                  type="email"
+                  value={contactForm.email}
+                  onChange={(e) => handleContactInputChange('email', e.target.value)}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '8px',
@@ -2680,6 +2739,8 @@ const Home = () => {
                   variant="outlined"
                   multiline
                   rows={4}
+                  value={contactForm.message}
+                  onChange={(e) => handleContactInputChange('message', e.target.value)}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '12px',
@@ -2707,10 +2768,12 @@ const Home = () => {
                   whileTap={{ scale: 0.98 }}
                 >
                   <Button
+                    type="submit"
                     variant="contained"
                     color="secondary"
                     size="large"
-                    endIcon={<ArrowRight />}
+                    endIcon={isSubmittingContact ? <CircularProgress size={20} color="inherit" /> : <ArrowRight />}
+                    disabled={isSubmittingContact}
                     sx={{
                       fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                       borderRadius: '50px',
@@ -2724,7 +2787,7 @@ const Home = () => {
                       }
                     }}
                   >
-                    පණිවුඩය යවන්න
+                    {isSubmittingContact ? 'යවමින්...' : 'පණිවුඩය යවන්න'}
                   </Button>
                 </motion.div>
               </Box>
@@ -2941,6 +3004,255 @@ const Home = () => {
         open={showStudentDialog}
         onClose={() => setShowStudentDialog(false)}
       />
+
+      {/* Teacher About Dialog */}
+      <Dialog
+        open={showTeacherDialog}
+        onClose={() => setShowTeacherDialog(false)}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 4,
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            overflow: 'hidden',
+            position: 'relative',
+            '&:before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: '200px',
+              height: '200px',
+              background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+              zIndex: 0
+            }
+          }
+        }}
+        sx={{
+          '& .MuiBackdrop-root': {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)'
+          },
+          zIndex: 10000
+        }}
+      >
+        <DialogTitle sx={{
+          textAlign: 'center',
+          pb: 2,
+          position: 'relative',
+          zIndex: 1
+        }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+            <Avatar
+              src="https://res.cloudinary.com/dl9k5qoae/image/upload/v1750023708/Abt1_cempmy.png"
+              sx={{
+                width: 120,
+                height: 120,
+                border: '4px solid rgba(255,255,255,0.3)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                background: 'linear-gradient(135deg, #ffd700 0%, #ffb347 100%)'
+              }}
+            >
+              <School sx={{ fontSize: 60, color: '#333' }} />
+            </Avatar>
+            <Typography
+              variant="h4"
+              sx={{
+                fontFamily: '"Yaldevi", "Noto Sans Sinhala", sans-serif',
+                fontWeight: 'bold',
+                textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+              }}
+            >
+              ජගත් කුමාර ජයසිංහ
+            </Typography>
+            <Typography
+              variant="subtitle1"
+              sx={{
+                fontFamily: '"Noto Sans Sinhala", "Gemunu Libre", sans-serif',
+                fontStyle: 'italic',
+                opacity: 0.9
+              }}
+            >
+              ප්‍රවීණ සිංහල දේශක හා ලේඛක
+            </Typography>
+          </Box>
+        </DialogTitle>
+
+        <DialogContent sx={{ position: 'relative', zIndex: 1, px: 4 }}>
+          <Box sx={{ mb: 3 }}>
+            <Typography
+              variant="body1"
+              paragraph
+              sx={{
+                fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                fontSize: '1.1rem',
+                lineHeight: 1.8,
+                mb: 3,
+                textAlign: 'justify'
+              }}
+            >
+              සිංහල සංස්කෘතික ක්ෂේත්‍රයේ ප්‍රවීණ ගුරුවරයෙක් වන අතර ඔහුගේ අත්දැකීම් වසර 25කට අධික කාලයක් පුරා විහිදෙයි.
+              ජාතික හා ජාත්‍යන්තර මට්ටමින් සිංහල සංස්කෘතිය නියෝජනය කර ඇති ඔහු, සාම්ප්‍රදායික ක්‍රම හා නවීන අධ්‍යාපන ක්‍රම අතර සුන්දර සම්බන්ධතාවක් ගොඩනගා ඇත.
+            </Typography>
+
+            <Typography
+              variant="body1"
+              paragraph
+              sx={{
+                fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                fontSize: '1.1rem',
+                lineHeight: 1.8,
+                mb: 3,
+                textAlign: 'justify'
+              }}
+            >
+              සිසුන් සඳහා නවෝත්පාදනාත්මක ඉගැන්වීම් ක්‍රම භාවිතයෙන් සංස්කෘතික අධ්‍යාපනය ප්‍රගුණ කිරීම ඔහුගේ මූලික අරමුණයි.
+              සිංහල භාෂාවේ සුන්දරත්වය හා ගැඹුර අනාගත පරපුරට රැකගැනීම සඳහා ඔහු නිරන්තරයෙන් කටයුතු කරයි.
+            </Typography>
+
+            <Typography
+              variant="body1"
+              paragraph
+              sx={{
+                fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                fontSize: '1.1rem',
+                lineHeight: 1.8,
+                textAlign: 'justify'
+              }}
+            >
+              ඔහුගේ ඉගැන්වීම් ක්‍රමවේදය සිසුන්ගේ සහභාගිත්වය උත්තේජනය කරන අතර, සිංහල සාහිත්‍යය, ව්‍යාකරණ, සහ සංස්කෘතික අධ්‍යයනයන්
+              ක්ෂේත්‍රවල ගැඹුරු දැනුමක් ලබා දීමට ඔහු කැපවී සිටී. අයන්න කියන්න ආයතනයේ ප්‍රධාන ගුරුවරයා ලෙස ඔහු සිසුන්ගේ
+              අධ්‍යාපනික සාර්ථකත්වය සහ සංස්කෘතික අනන්‍යතාව ගොඩනැගීමට මග පෙන්වයි.
+            </Typography>
+          </Box>
+        </DialogContent>
+
+        <DialogActions sx={{ justifyContent: 'center', pb: 3, position: 'relative', zIndex: 1 }}>
+          <Button
+            onClick={() => setShowTeacherDialog(false)}
+            variant="contained"
+            sx={{
+              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+              backgroundColor: 'rgba(255,255,255,0.2)',
+              color: 'white',
+              borderRadius: '25px',
+              px: 4,
+              py: 1,
+              fontWeight: 'bold',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              '&:hover': {
+                backgroundColor: 'rgba(255,255,255,0.3)',
+                transform: 'translateY(-2px)'
+              }
+            }}
+          >
+            හරි
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Contact Success Dialog */}
+      <Dialog
+        open={showContactSuccess}
+        onClose={() => setShowContactSuccess(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 4,
+            background: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
+            color: 'white',
+            textAlign: 'center',
+            overflow: 'hidden',
+            position: 'relative'
+          }
+        }}
+        sx={{
+          '& .MuiBackdrop-root': {
+            backgroundColor: 'rgba(0, 0, 0, 0.7)'
+          },
+          zIndex: 10000
+        }}
+      >
+        <DialogContent sx={{ py: 4, px: 3 }}>
+          <motion.div
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5, type: 'spring', stiffness: 200 }}
+          >
+            <Box sx={{ mb: 3 }}>
+              <motion.div
+                animate={{
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 10, -10, 0]
+                }}
+                transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+              >
+                <Check sx={{
+                  fontSize: 80,
+                  color: 'white',
+                  background: 'rgba(255,255,255,0.2)',
+                  borderRadius: '50%',
+                  p: 2,
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+                }} />
+              </motion.div>
+            </Box>
+
+            <Typography
+              variant="h4"
+              sx={{
+                fontFamily: '"Yaldevi", "Noto Sans Sinhala", sans-serif',
+                fontWeight: 'bold',
+                mb: 2,
+                textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+              }}
+            >
+              පණිවුඩය සාර්ථකව යවන ලදී! 🎉
+            </Typography>
+
+            <Typography
+              variant="body1"
+              sx={{
+                fontFamily: '"Noto Sans Sinhala", "Gemunu Libre", sans-serif',
+                fontSize: '1.1rem',
+                mb: 3,
+                opacity: 0.9
+              }}
+            >
+              ඔබගේ පණිවුඩය අපට ලැබී ඇත. අප ඉක්මනින් ඔබ සමඟ සම්බන්ධ වන්නෙමු.
+              <br />
+              ස්තූතියි! 🙏
+            </Typography>
+          </motion.div>
+        </DialogContent>
+
+        <DialogActions sx={{ justifyContent: 'center', pb: 3 }}>
+          <Button
+            onClick={() => setShowContactSuccess(false)}
+            variant="contained"
+            sx={{
+              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+              backgroundColor: 'rgba(255,255,255,0.2)',
+              color: 'white',
+              borderRadius: '25px',
+              px: 4,
+              py: 1,
+              fontWeight: 'bold',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              '&:hover': {
+                backgroundColor: 'rgba(255,255,255,0.3)',
+                transform: 'translateY(-2px)'
+              }
+            }}
+          >
+            හරි
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
