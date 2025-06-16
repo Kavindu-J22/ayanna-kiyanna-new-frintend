@@ -6,7 +6,6 @@ import {
   Grid,
   Card,
   CardContent,
-  CardMedia,
   Button,
   Chip,
   Avatar,
@@ -27,7 +26,9 @@ import {
   LocalLibrary as LocalLibraryIcon,
   Psychology as PsychologyIcon,
   EmojiEvents as EmojiEventsIcon,
-  Support as SupportIcon
+  Support as SupportIcon,
+  People as PeopleIcon,
+  Timeline as TimelineIcon
 } from '@mui/icons-material';
 import { styled, keyframes } from '@mui/material/styles';
 
@@ -61,11 +62,20 @@ const pulse = keyframes`
   }
 `;
 
+const glow = keyframes`
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.8);
+  }
+`;
+
 // Styled Components
 const HeroSection = styled(Box)(({ theme }) => ({
   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
   color: 'white',
-  padding: theme.spacing(8, 0),
+  padding: theme.spacing(12, 0),
   position: 'relative',
   overflow: 'hidden',
   '&::before': {
@@ -75,13 +85,15 @@ const HeroSection = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
+    background: 'url("data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.1\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"4\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
     animation: `${float} 6s ease-in-out infinite`,
   }
 }));
 
 const ServiceCard = styled(Card)(({ theme }) => ({
   height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
   background: 'linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%)',
   borderRadius: '20px',
   boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
@@ -92,7 +104,7 @@ const ServiceCard = styled(Card)(({ theme }) => ({
     transform: 'translateY(-10px)',
     boxShadow: '0 20px 40px rgba(123, 31, 162, 0.2)',
     '& .service-icon': {
-      animation: `${pulse} 1s ease-in-out infinite`,
+      animation: `${pulse} 1s ease-in-out`,
     }
   }
 }));
@@ -100,20 +112,34 @@ const ServiceCard = styled(Card)(({ theme }) => ({
 const ServiceIcon = styled(Avatar)(({ theme }) => ({
   width: 80,
   height: 80,
-  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
   margin: '0 auto 16px',
   fontSize: '2rem',
   boxShadow: '0 8px 25px rgba(123, 31, 162, 0.3)',
+  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  color: 'white',
 }));
 
 const FeatureChip = styled(Chip)(({ theme }) => ({
-  background: 'linear-gradient(45deg, #ff6b6b, #feca57)',
-  color: 'white',
+  background: 'rgba(102, 126, 234, 0.1)',
+  color: theme.palette.primary.main,
   fontWeight: 'bold',
+  border: '1px solid rgba(102, 126, 234, 0.3)',
   margin: theme.spacing(0.5),
+  '& .MuiChip-icon': {
+    color: theme.palette.primary.main,
+  },
   '&:hover': {
-    background: 'linear-gradient(45deg, #ff5252, #ffb74d)',
+    background: 'rgba(102, 126, 234, 0.2)',
   }
+}));
+
+const GlowingDot = styled('div')(({ theme, color }) => ({
+  width: '10px',
+  height: '10px',
+  borderRadius: '50%',
+  backgroundColor: color,
+  boxShadow: `0 0 10px ${color}, 0 0 20px ${color}`,
+  margin: '0 auto 10px',
 }));
 
 const Services = () => {
@@ -153,7 +179,7 @@ const Services = () => {
       title: 'සම්පත් පුස්තකාලය',
       description: 'පුළුල් අධ්‍යාපන සම්පත් සහ අධ්‍යයන ද්‍රව්‍ය එකතුව',
       icon: <MenuBookIcon />,
-      features: ['ඩිජිටල් පොත්', 'වීඩියෝ පාඩම්', 'අභ්‍යාස ප්‍රශ්න', 'සටහන් සහ සාරාංශ'],
+      features: ['හරවත් පොත් පත්', 'වීඩියෝ පාඩම්', 'අභ්‍යාස ප්‍රශ්න', 'සටහන් සහ සාරාංශ'],
       color: '#ffecd2'
     },
     {
@@ -166,10 +192,10 @@ const Services = () => {
   ];
 
   const achievements = [
-    { number: '500+', label: 'සාර්ථක සිසුන්' },
-    { number: '10+', label: 'අවුරුදු අත්දැකීම' },
-    { number: '95%', label: 'සාර්ථකත්ව අනුපාතය' },
-    { number: '24/7', label: 'සහාය සේවාව' }
+    { number: '10,000+', label: 'සාර්ථක සිසුන්', icon: <PeopleIcon /> },
+    { number: '25+', label: 'අවුරුදු අත්දැකීම', icon: <TimelineIcon /> },
+    { number: '98%', label: 'සාර්ථකත්ව අනුපාතය', icon: <EmojiEventsIcon /> },
+    { number: '24/7', label: 'සහාය සේවාව', icon: <SupportIcon /> }
   ];
 
   return (
@@ -190,42 +216,62 @@ const Services = () => {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 animation: `${fadeInUp} 1s ease-out`,
+                textShadow: '0 2px 10px rgba(0,0,0,0.1)'
               }}
             >
               අපගේ සේවාවන්
             </Typography>
             <Typography
-              variant="h5"
+              variant={isMobile ? 'h6' : 'h5'}
               sx={{
                 mb: 4,
                 opacity: 0.9,
                 maxWidth: '800px',
                 mx: 'auto',
                 animation: `${fadeInUp} 1s ease-out 0.2s both`,
+                lineHeight: 1.6
               }}
             >
               සිංහල භාෂාව ඉගෙන ගැනීම සඳහා අවශ්‍ය සියලුම සේවාවන් එක තැනකින්
             </Typography>
             
             {/* Achievement Stats */}
-            <Grid container spacing={3} sx={{ mt: 4, animation: `${fadeInUp} 1s ease-out 0.4s both` }}>
+            <Grid container spacing={3} justifyContent="center" sx={{ 
+              mt: 4, 
+              animation: `${fadeInUp} 1s ease-out 0.4s both`,
+              maxWidth: '800px',
+              mx: 'auto'
+            }}>
               {achievements.map((achievement, index) => (
-                <Grid item xs={6} md={3} key={index}>
+                <Grid item xs={6} sm={3} key={index}>
                   <Paper
                     elevation={0}
                     sx={{
-                      p: 2,
+                      p: 3,
+                      height: '100%',
                       background: 'rgba(255, 255, 255, 0.1)',
                       backdropFilter: 'blur(10px)',
                       borderRadius: '15px',
                       border: '1px solid rgba(255, 255, 255, 0.2)',
                       textAlign: 'center',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      minWidth: '200px',
                     }}
                   >
+                    <Avatar sx={{ 
+                      bgcolor: 'rgba(255,255,255,0.2)', 
+                      mb: 1,
+                      color: 'white'
+                    }}>
+                      {achievement.icon}
+                    </Avatar>
                     <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#ffeaa7' }}>
                       {achievement.number}
                     </Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                    <Typography variant="body2" sx={{ opacity: 0.9, color: 'white' }}>
                       {achievement.label}
                     </Typography>
                   </Paper>
@@ -240,7 +286,7 @@ const Services = () => {
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <Box textAlign="center" sx={{ mb: 6 }}>
           <Typography
-            variant="h3"
+            variant={isMobile ? 'h4' : 'h3'}
             component="h2"
             gutterBottom
             sx={{
@@ -250,35 +296,101 @@ const Services = () => {
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               mb: 2,
+              position: 'relative',
+              display: 'inline-block',
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                bottom: '-10px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '80px',
+                height: '4px',
+                background: 'linear-gradient(45deg, #667eea, #764ba2)',
+                borderRadius: '2px'
+              }
             }}
           >
             විශේෂ සේවාවන්
           </Typography>
-          <Typography variant="h6" color="text.secondary" sx={{ maxWidth: '600px', mx: 'auto' }}>
+          <Typography 
+            variant={isMobile ? 'body1' : 'h6'} 
+            color="text.secondary" 
+            sx={{ 
+              maxWidth: '600px', 
+              mx: 'auto',
+              mt: 3
+            }}
+          >
             ගුණාත්මක අධ්‍යාපනය සහ සම්පූර්ණ සහාය සේවාවන් ලබා දීම අපගේ මූලික අරමුණයි
           </Typography>
         </Box>
 
-        <Grid container spacing={4}>
+        <Grid container spacing={4} justifyContent="center">
           {services.map((service, index) => (
-            <Grid item xs={12} md={6} lg={4} key={index}>
-              <ServiceCard sx={{ animationDelay: `${index * 0.1}s` }}>
-                <CardContent sx={{ p: 4, textAlign: 'center' }}>
+            <Grid 
+              item 
+              xs={12} 
+              sm={6} 
+              md={4} 
+              key={index} 
+              sx={{
+                display: 'flex',
+                justifyContent: 'center'
+              }}
+            >
+              <ServiceCard sx={{ 
+                animationDelay: `${index * 0.1}s`,
+                width: '100%',
+                maxWidth: '400px'
+              }}>
+                <CardContent sx={{ 
+                  p: 4,
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  textAlign: 'center'
+                }}>
+                  <GlowingDot color={service.color} />
                   <ServiceIcon className="service-icon" sx={{ bgcolor: service.color }}>
                     {service.icon}
                   </ServiceIcon>
                   
-                  <Typography variant="h5" component="h3" gutterBottom sx={{ fontWeight: 'bold', color: '#2d3436' }}>
+                  <Typography 
+                    variant={isMobile ? 'h6' : 'h5'} 
+                    component="h3" 
+                    gutterBottom 
+                    sx={{ 
+                      fontWeight: 'bold', 
+                      color: '#2d3436',
+                      mb: 2
+                    }}
+                  >
                     {service.title}
                   </Typography>
                   
-                  <Typography variant="body1" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
+                  <Typography 
+                    variant="body1" 
+                    color="text.secondary" 
+                    sx={{ 
+                      mb: 3, 
+                      lineHeight: 1.6,
+                      flexGrow: 1
+                    }}
+                  >
                     {service.description}
                   </Typography>
                   
-                  <Divider sx={{ my: 2 }} />
+                  <Divider sx={{ my: 2, width: '100%' }} />
                   
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1 }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    flexWrap: 'wrap', 
+                    justifyContent: 'center', 
+                    gap: 1,
+                    width: '100%'
+                  }}>
                     {service.features.map((feature, featureIndex) => (
                       <FeatureChip
                         key={featureIndex}
@@ -298,42 +410,73 @@ const Services = () => {
         <Box
           sx={{
             mt: 8,
-            p: 6,
+            p: { xs: 4, md: 6 },
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             borderRadius: '25px',
             textAlign: 'center',
             color: 'white',
             position: 'relative',
             overflow: 'hidden',
+            animation: `${glow} 3s ease-in-out infinite`,
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: '-50%',
+              left: '-50%',
+              width: '200%',
+              height: '200%',
+              background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+              transform: 'rotate(30deg)',
+              animation: `${float} 10s linear infinite`
+            }
           }}
         >
-          <Typography variant="h4" component="h3" gutterBottom sx={{ fontWeight: 'bold' }}>
+          <Typography 
+            variant={isMobile ? 'h5' : 'h4'} 
+            component="h3" 
+            gutterBottom 
+            sx={{ 
+              fontWeight: 'bold',
+              position: 'relative',
+              zIndex: 1
+            }}
+          >
             අදම ආරම්භ කරන්න!
           </Typography>
-          <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
+          <Typography 
+            variant={isMobile ? 'body1' : 'h6'} 
+            sx={{ 
+              mb: 4, 
+              opacity: 0.9,
+              position: 'relative',
+              zIndex: 1
+            }}
+          >
             සිංහල භාෂාව ඉගෙන ගැනීමේ ගමන ආරම්භ කරන්න
           </Typography>
-          <Button
-            variant="contained"
-            size="large"
-            sx={{
-              bgcolor: 'white',
-              color: '#667eea',
-              fontWeight: 'bold',
-              px: 4,
-              py: 1.5,
-              borderRadius: '25px',
-              fontSize: '1.1rem',
-              '&:hover': {
-                bgcolor: '#f8f9ff',
-                transform: 'translateY(-2px)',
-                boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-              },
-            }}
-            href="/register"
-          >
-            ලියාපදිංචි වන්න
-          </Button>
+          <Box sx={{ position: 'relative', zIndex: 1 }}>
+            <Button
+              variant="contained"
+              size={isMobile ? 'medium' : 'large'}
+              sx={{
+                bgcolor: 'white',
+                color: '#667eea',
+                fontWeight: 'bold',
+                px: 4,
+                py: 1.5,
+                borderRadius: '25px',
+                fontSize: isMobile ? '0.9rem' : '1.1rem',
+                '&:hover': {
+                  bgcolor: '#f8f9ff',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                },
+              }}
+              href="/register"
+            >
+              ලියාපදිංචි වන්න
+            </Button>
+          </Box>
         </Box>
       </Container>
     </Box>

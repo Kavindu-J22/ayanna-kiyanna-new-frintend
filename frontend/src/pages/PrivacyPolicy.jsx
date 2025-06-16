@@ -250,13 +250,13 @@ const PrivacyPolicy = () => {
           
           <Box sx={{ bgcolor: '#f8f9ff', p: 3, borderRadius: 2, border: '1px solid rgba(123, 31, 162, 0.1)' }}>
             <Typography variant="body1" sx={{ fontWeight: 'medium', mb: 1 }}>
-              📧 ඊමේල්: privacy@ayannakiyanna.lk
+              📧 ඊමේල්: ayannakiyanna@gmail.com
             </Typography>
             <Typography variant="body1" sx={{ fontWeight: 'medium', mb: 1 }}>
-              📞 දුරකථන: +94 11 234 5678
+              📞 දුරකථන: +94 777 047 391
             </Typography>
             <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-              📍 ලිපිනය: අයන්න කියන්න ආයතනය, කොළඹ, ශ්‍රී ලංකාව
+              📍 ලිපිනය: 98/8, මල්වත්ත, යටන්වල, රුවන්වැල්ල
             </Typography>
           </Box>
         </ContentSection>
