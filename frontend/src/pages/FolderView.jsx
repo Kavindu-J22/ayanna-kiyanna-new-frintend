@@ -261,7 +261,7 @@ const FolderView = () => {
             </Typography>
           </Box>
           <Typography
-            variant="h6"
+            variant="h7"
             sx={{
               fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
               opacity: 0.9,
@@ -280,7 +280,7 @@ const FolderView = () => {
       )}
 
       {/* Files Grid */}
-      <Grid container spacing={3}>
+      <Grid container spacing={3} justifyContent={'center'}>
         <AnimatePresence>
           {files.map((file, index) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={file._id}>
@@ -295,6 +295,10 @@ const FolderView = () => {
                   elevation={6}
                   sx={{
                     height: '100%',
+                    minWidth: '300px',
+                    maxWidth: '300px',
+                    minHeight: '350px',
+                    maxHeight: '350px',
                     display: 'flex',
                     flexDirection: 'column',
                     background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',

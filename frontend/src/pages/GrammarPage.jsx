@@ -244,11 +244,11 @@ const GrammarPage = () => {
             ව්‍යාකරණ
           </Typography>
           <Typography
-            variant="h6"
+            variant="h7"
             sx={{
               fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
               opacity: 0.9,
-              maxWidth: '800px',
+              maxWidth: '700px',
               mx: 'auto',
               lineHeight: 1.6
             }}
@@ -266,127 +266,169 @@ const GrammarPage = () => {
         </Alert>
       )}
 
-      {/* Folders Grid */}
-      <Grid container spacing={3}>
-        <AnimatePresence>
-          {folders.map((folder, index) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={folder._id}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ y: -5 }}
-              >
-                <Card
-                  elevation={6}
+{/* Folders Grid */}
+<Grid container spacing={4} justifyContent="center" sx={{ padding: 3 }}>
+  <AnimatePresence>
+    {folders.map((folder, index) => (
+      <Grid item xs={12} sm={6} md={4} key={folder._id} sx={{ display: 'flex' }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.5, delay: index * 0.1 }}
+          whileHover={{ y: -5, scale: 1.02 }}
+          style={{ width: '100%' }}
+        >
+          <Card
+            elevation={6}
+            sx={{
+              height: '100%',
+              maxWidth: '350px',
+              minWidth: '350px',
+              display: 'flex',
+              flexDirection: 'column',
+              background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+              borderRadius: 3,
+              transition: 'all 0.3s ease',
+              boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              overflow: 'hidden',
+              '&:hover': {
+                transform: 'translateY(-5px)',
+                boxShadow: '0 15px 30px rgba(0,0,0,0.2)'
+              }
+            }}
+          >
+            <CardContent sx={{ flexGrow: 1, p: 3 }}>
+              <Box display="flex" alignItems="center" mb={2}>
+                <Avatar
                   sx={{
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-                    borderRadius: 3,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-5px)',
-                      boxShadow: '0 12px 24px rgba(0,0,0,0.15)'
-                    }
+                    bgcolor: '#E91E63',
+                    mr: 2,
+                    width: 48,
+                    height: 48,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
                   }}
                 >
-                  <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                    <Box display="flex" alignItems="center" mb={2}>
-                      <Avatar
-                        sx={{
-                          bgcolor: '#E91E63',
-                          mr: 2,
-                          width: 48,
-                          height: 48
-                        }}
-                      >
-                        <FolderIcon />
-                      </Avatar>
-                      <Typography
-                        variant="h6"
-                        component="h3"
-                        sx={{
-                          fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-                          fontWeight: 'bold',
-                          color: '#2C3E50'
-                        }}
-                      >
-                        {folder.title}
-                      </Typography>
-                    </Box>
+                  <FolderIcon fontSize="medium" />
+                </Avatar>
+                <Typography
+                  variant="h6"
+                  component="h3"
+                  sx={{
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                    fontWeight: 'bold',
+                    color: '#2C3E50',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {folder.title}
+                </Typography>
+              </Box>
 
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{
-                        fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
-                        mb: 2,
-                        lineHeight: 1.5
-                      }}
-                    >
-                      {folder.description}
-                    </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                  mb: 2,
+                  lineHeight: 1.5,
+                  minHeight: '60px',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 3,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden'
+                }}
+              >
+                {folder.description}
+              </Typography>
 
-                    <Box display="flex" alignItems="center" gap={1} mb={1}>
-                      <PersonIcon fontSize="small" color="action" />
-                      <Typography variant="caption" color="text.secondary">
-                        {folder.createdBy?.fullName}
-                      </Typography>
-                    </Box>
+              <Box 
+                sx={{
+                  backgroundColor: 'rgba(255,255,255,0.6)',
+                  borderRadius: 2,
+                  p: 1.5,
+                  mt: 'auto'
+                }}
+              >
+                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                  <PersonIcon fontSize="small" sx={{ color: '#5D6D7E' }} />
+                  <Typography variant="caption" sx={{ color: '#5D6D7E', fontWeight: 500 }}>
+                    {folder.createdBy?.fullName}
+                  </Typography>
+                </Box>
 
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <TimeIcon fontSize="small" color="action" />
-                      <Typography variant="caption" color="text.secondary">
-                        {new Date(folder.createdAt).toLocaleDateString('si-LK')}
-                      </Typography>
-                    </Box>
-                  </CardContent>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <TimeIcon fontSize="small" sx={{ color: '#5D6D7E' }} />
+                  <Typography variant="caption" sx={{ color: '#5D6D7E', fontWeight: 500 }}>
+                    {new Date(folder.createdAt).toLocaleDateString('si-LK')}
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
 
-                  <CardActions sx={{ p: 2, pt: 0 }}>
-                    <Button
-                      variant="contained"
-                      fullWidth
-                      onClick={() => handleExploreFolder(folder._id)}
-                      sx={{
-                        bgcolor: '#E91E63',
-                        fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-                        fontWeight: 'bold',
-                        '&:hover': {
-                          bgcolor: '#C2185B'
-                        }
-                      }}
-                    >
-                      ගවේෂණය කරන්න
-                    </Button>
+            <CardActions sx={{ p: 2, pt: 0 }}>
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={() => handleExploreFolder(folder._id)}
+                sx={{
+                  bgcolor: '#E91E63',
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                  fontWeight: 'bold',
+                  py: 1.5,
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontSize: '1rem',
+                  boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                  '&:hover': {
+                    bgcolor: '#C2185B',
+                    boxShadow: '0 6px 8px rgba(0,0,0,0.15)'
+                  }
+                }}
+              >
+                ගවේෂණය කරන්න
+              </Button>
 
-                    {(userRole === 'admin' || userRole === 'moderator') && (
-                      <Box display="flex" gap={1} ml={1}>
-                        <IconButton
-                          size="small"
-                          onClick={() => openEditDialog(folder)}
-                          sx={{ color: '#FF9800' }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton
-                          size="small"
-                          onClick={() => handleDeleteFolder(folder._id)}
-                          sx={{ color: '#F44336' }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Box>
-                    )}
-                  </CardActions>
-                </Card>
-              </motion.div>
-            </Grid>
-          ))}
-        </AnimatePresence>
+              {(userRole === 'admin' || userRole === 'moderator') && (
+                <Box display="flex" gap={1} ml={1}>
+                  <IconButton
+                    size="small"
+                    onClick={() => openEditDialog(folder)}
+                    sx={{ 
+                      color: '#FF9800',
+                      backgroundColor: 'rgba(255,152,0,0.1)',
+                      '&:hover': {
+                        backgroundColor: 'rgba(255,152,0,0.2)'
+                      }
+                    }}
+                  >
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    onClick={() => handleDeleteFolder(folder._id)}
+                    sx={{ 
+                      color: '#F44336',
+                      backgroundColor: 'rgba(244,67,54,0.1)',
+                      '&:hover': {
+                        backgroundColor: 'rgba(244,67,54,0.2)'
+                      }
+                    }}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              )}
+            </CardActions>
+          </Card>
+        </motion.div>
       </Grid>
+    ))}
+  </AnimatePresence>
+</Grid>
 
       {/* Empty State */}
       {folders.length === 0 && !loading && (

@@ -259,7 +259,7 @@ const LiteratureFolderView = () => {
             </Typography>
           </Box>
           <Typography
-            variant="h6"
+            variant="h7"
             sx={{
               fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
               opacity: 0.9,
@@ -278,7 +278,7 @@ const LiteratureFolderView = () => {
       )}
 
       {/* Files Grid */}
-      <Grid container spacing={3}>
+      <Grid container spacing={3} justifyContent="center">
         <AnimatePresence>
           {files.map((file, index) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={file._id}>
@@ -294,6 +294,10 @@ const LiteratureFolderView = () => {
                   sx={{
                     height: '100%',
                     display: 'flex',
+                    minWidth: '300px',
+                    maxWidth: '300px',
+                    minHeight: '350px',
+                    maxHeight: '350px',
                     flexDirection: 'column',
                     background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
                     borderRadius: 3,
