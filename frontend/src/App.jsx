@@ -20,8 +20,11 @@ import {
   Container,
   Tooltip,
   Snackbar,
-  Alert
+  Alert,
+  Badge,
+  Chip
 } from '@mui/material';
+import axios from 'axios';
 import {
   Menu as MenuIcon,
   ChevronLeft as ChevronLeftIcon,
@@ -204,7 +207,7 @@ const pulseGlow = keyframes`
 
 // Sidebar items with icons organized into categories
 const navItems = [
-  { name: "Dashboard", path: "/", icon: <DashboardIcon /> },
+  { name: "මුල් පිටුව", path: "/", icon: <DashboardIcon /> },
 
   // විෂය සමගාමි Category
   {
@@ -426,10 +429,33 @@ function AppContent() {
   const [showTip, setShowTip] = useState(true);
   const sidebarRef = useRef(null);
 
+  // Special notices count state
+  const [specialNoticesCount, setSpecialNoticesCount] = useState(0);
+
   // Admin view state
   const [isAdminView, setIsAdminView] = useState(false);
   const [adminViewStudentName, setAdminViewStudentName] = useState('');
   const [adminViewStudentId, setAdminViewStudentId] = useState('');
+
+  // Fetch special notices count
+  const fetchSpecialNoticesCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await axios.get(
+        'https://ayanna-kiyanna-new-backend.onrender.com/api/special-notices',
+        { headers: { 'x-auth-token': token } }
+      );
+
+      if (response.data.success) {
+        setSpecialNoticesCount(response.data.data.length);
+      }
+    } catch (error) {
+      console.error('Error fetching special notices count:', error);
+      setSpecialNoticesCount(0);
+    }
+  };
 
   // Check admin view status
   useEffect(() => {
@@ -452,6 +478,18 @@ function AppContent() {
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
+  }, [location.pathname]);
+
+  // Fetch special notices count on component mount and periodically
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchSpecialNoticesCount();
+
+      // Update count every 2 minutes
+      const interval = setInterval(fetchSpecialNoticesCount, 120000);
+      return () => clearInterval(interval);
+    }
   }, [location.pathname]);
 
   const handleBackToAdmin = async () => {
@@ -792,6 +830,7 @@ function AppContent() {
                 expandedCategory={expandedCategory}
                 handleToggleExpand={handleToggleExpand}
                 onItemClick={handleMobileDrawerToggle}
+                specialNoticesCount={specialNoticesCount}
               />
             <SidebarFooter>
             <Box sx={{ mb: 1, textAlign: 'center' }}>
@@ -919,6 +958,7 @@ function AppContent() {
                 expandedCategory={expandedCategory}
                 handleToggleExpand={handleToggleExpand}
                 onItemClick={handleDesktopDrawerToggle}
+                specialNoticesCount={specialNoticesCount}
               />
             <SidebarFooter sx={{mb: 1}}>
             <Box sx={{ mb: 1, textAlign: 'center' }}>
@@ -1178,7 +1218,7 @@ function AppContent() {
   );
 }
 
-function NavigationList({ expandedCategory, handleToggleExpand, onItemClick }) {
+function NavigationList({ expandedCategory, handleToggleExpand, onItemClick, specialNoticesCount }) {
   const location = useLocation();
 
   return (
@@ -1294,12 +1334,46 @@ function NavigationList({ expandedCategory, handleToggleExpand, onItemClick }) {
                 {React.cloneElement(item.icon, { sx: { fontSize: '1.25rem' } })}
               </ListItemIcon>
               <ListItemText
-                primary={item.name}
-                primaryTypographyProps={{
-                  fontWeight: location.pathname === item.path ? 'bold' : 'medium',
-                  fontSize: '0.95rem',
-                  color: location.pathname === item.path ? '#E1BEE7' : '#CE93D8'
-                }}
+                primary={
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                    <Typography
+                      sx={{
+                        fontWeight: location.pathname === item.path ? 'bold' : 'medium',
+                        fontSize: '0.95rem',
+                        color: location.pathname === item.path ? '#E1BEE7' : '#CE93D8'
+                      }}
+                    >
+                      {item.name}
+                    </Typography>
+                    {item.name === 'අයන්න කියන්න : Specal Notices' && specialNoticesCount > 0 && (
+                      <Chip
+                        label={specialNoticesCount}
+                        size="small"
+                        sx={{
+                          bgcolor: 'linear-gradient(135deg, #FF6B6B 0%,rgb(205, 78, 141) 50%,rgb(209, 69, 139) 100%)',
+                          background: 'linear-gradient(135deg, #FF6B6B 0%,rgb(205, 78, 163) 50%,rgb(209, 69, 155) 100%)',
+                          color: 'white',
+                          fontWeight: 'bold',
+                          fontSize: '0.75rem',
+                          height: '20px',
+                          minWidth: '20px',
+                          borderRadius: '10px',
+                          animation: 'pulse 2s infinite',
+                          boxShadow: '0 2px 8px rgba(255, 107, 107, 0.4)',
+                          '&:hover': {
+                            transform: 'scale(1.05)',
+                            boxShadow: '0 4px 12px rgba(255, 107, 107, 0.6)'
+                          },
+                          '@keyframes pulse': {
+                            '0%': { opacity: 1, transform: 'scale(1)' },
+                            '50%': { opacity: 0.8, transform: 'scale(1.02)' },
+                            '100%': { opacity: 1, transform: 'scale(1)' }
+                          }
+                        }}
+                      />
+                    )}
+                  </Box>
+                }
               />
             </ListItemButton>
           )}
