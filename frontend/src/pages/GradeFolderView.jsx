@@ -345,7 +345,7 @@ const GradeFolderView = () => {
             </Typography>
           </Box>
           <Typography
-            variant="h6"
+            variant="h7"
             sx={{
               fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
               opacity: 0.9,
@@ -418,6 +418,10 @@ const GradeFolderView = () => {
                   sx={{
                     height: '100%',
                     display: 'flex',
+                    minWidth: '300px',
+                    maxWidth: '300px',
+                    minHeight: '350px',
+                    maxHeight: '350px',
                     flexDirection: 'column',
                     background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
                     borderRadius: 3,

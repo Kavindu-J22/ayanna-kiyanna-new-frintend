@@ -491,7 +491,7 @@ const PaperBankPage = () => {
           )}
 
           {/* Papers Grid */}
-          <Grid container spacing={3}>
+          <Grid container spacing={3} justifyContent="center">
             <AnimatePresence>
               {filteredPapers.map((paper, index) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={paper._id}>
@@ -507,6 +507,10 @@ const PaperBankPage = () => {
                       sx={{
                         height: '100%',
                         display: 'flex',
+                        minWidth: '300px',
+                        maxWidth: '300px',
+                        minHeight: '420px',
+                        maxHeight: '420px',
                         flexDirection: 'column',
                         background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
                         borderRadius: 3,

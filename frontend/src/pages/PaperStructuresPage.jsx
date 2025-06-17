@@ -429,7 +429,7 @@ const PaperStructuresPage = () => {
           </Paper>
 
           {/* Paper Structures Grid */}
-          <Grid container spacing={3}>
+          <Grid container spacing={3} justifyContent="center">
             <AnimatePresence>
               {filteredPaperStructures.map((paperStructure, index) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={paperStructure._id}>
@@ -443,6 +443,10 @@ const PaperStructuresPage = () => {
                       sx={{
                         height: '100%',
                         display: 'flex',
+                        minWidth: '300px',
+                        maxWidth: '300px',
+                        minHeight: '350px',
+                        maxHeight: '350px',
                         flexDirection: 'column',
                         borderRadius: 3,
                         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
