@@ -36,7 +36,9 @@ import {
   AccountCircle as AccountCircleIcon,
   AdminPanelSettings as AdminIcon,
   Visibility as VisibilityIcon,
-  ArrowBack as ArrowBackIcon
+  ArrowBack as ArrowBackIcon,
+  CreditCard,
+  Payment
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -382,13 +384,13 @@ const StudentProfile = () => {
         <Typography variant="h4" gutterBottom sx={{
           fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
           fontWeight: 'bold',
-          color: 'primary.main',
+          color: '#333',
           mb: 3
         }}>
           My Profile
         </Typography>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={3} justifyContent="center">
           {/* User Account Details Section */}
           <Grid item xs={12}>
             <motion.div
@@ -546,13 +548,13 @@ const StudentProfile = () => {
       <Typography variant="h4" gutterBottom sx={{ 
         fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
         fontWeight: 'bold',
-        color: 'primary.main',
+        color: '#333',
         mb: 3
       }}>
-        {isAdmin ? 'Student Profile Management' : 'My Profile'}
+        {isAdmin ? 'Student Profile Management' : 'My Profile'} 👤
       </Typography>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={3} justifyContent="center">
         {/* User Account Details Section */}
         <Grid item xs={12}>
           <motion.div
@@ -725,466 +727,760 @@ const StudentProfile = () => {
                 </Box>
               </Box>
 
-              <Grid container spacing={3}>
-                {/* Personal Information */}
-                <Grid item xs={12}>
-                  <Typography variant="h6" color="primary" gutterBottom>
-                    Personal Information
+              {/* Personal Information Section */}
+              <Box sx={{ mb: 4 }}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    p: 3,
+                    borderRadius: 3,
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: 'white',
+                    mb: 3
+                  }}
+                >
+                  <Typography variant="h6" sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    fontWeight: 'bold',
+                    fontSize: '1.3rem'
+                  }}>
+                    <PersonIcon sx={{ fontSize: 28 }} />
+                    පුද්ගලික තොරතුරු
                   </Typography>
-                </Grid>
+                </Paper>
 
-                <Grid item xs={12} md={4}>
-                  {editMode ? (
-                    <TextField
-                      fullWidth
-                      label="Surname"
-                      value={editData.surname}
-                      onChange={(e) => handleInputChange('surname', e.target.value)}
-                      required
-                    />
-                  ) : (
-                    <Box>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Surname
-                      </Typography>
-                      <Typography variant="body1" fontWeight="medium">
-                        {student.surname || 'N/A'}
-                      </Typography>
-                    </Box>
-                  )}
-                </Grid>
-
-                <Grid item xs={12} md={4}>
-                  {editMode ? (
-                    <TextField
-                      fullWidth
-                      label="First Name"
-                      value={editData.firstName}
-                      onChange={(e) => handleInputChange('firstName', e.target.value)}
-                      required
-                    />
-                  ) : (
-                    <Box>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        First Name
-                      </Typography>
-                      <Typography variant="body1" fontWeight="medium">
-                        {student.firstName || 'N/A'}
-                      </Typography>
-                    </Box>
-                  )}
-                </Grid>
-
-                <Grid item xs={12} md={4}>
-                  {editMode ? (
-                    <TextField
-                      fullWidth
-                      label="Last Name"
-                      value={editData.lastName}
-                      onChange={(e) => handleInputChange('lastName', e.target.value)}
-                      required
-                    />
-                  ) : (
-                    <Box>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Last Name
-                      </Typography>
-                      <Typography variant="body1" fontWeight="medium">
-                        {student.lastName || 'N/A'}
-                      </Typography>
-                    </Box>
-                  )}
-                </Grid>
-
-                <Grid item xs={12} md={6}>
-                  {editMode ? (
-                    <TextField
-                      fullWidth
-                      label="Contact Number"
-                      value={editData.contactNumber}
-                      onChange={(e) => handleInputChange('contactNumber', e.target.value)}
-                      required
-                    />
-                  ) : (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <PhoneIcon color="primary" />
-                      <Box>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Contact Number
-                        </Typography>
-                        <Typography variant="body1" fontWeight="medium">
-                          {student.contactNumber || 'N/A'}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
-                </Grid>
-
-                <Grid item xs={12} md={6}>
-                  {editMode ? (
-                    <TextField
-                      fullWidth
-                      label="WhatsApp Number"
-                      value={editData.whatsappNumber}
-                      onChange={(e) => handleInputChange('whatsappNumber', e.target.value)}
-                      required
-                    />
-                  ) : (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <PhoneIcon color="primary" />
-                      <Box>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          WhatsApp Number
-                        </Typography>
-                        <Typography variant="body1" fontWeight="medium">
-                          {student.whatsappNumber || 'N/A'}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
-                </Grid>
-
-                <Grid item xs={12} md={6}>
-                  {editMode && isAdmin ? (
-                    <TextField
-                      fullWidth
-                      label="Email Address"
-                      value={editData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                      required
-                      helperText="Only admin can change email"
-                    />
-                  ) : (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <EmailIcon color="primary" />
-                      <Box>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Email Address
-                        </Typography>
-                        <Typography variant="body1" fontWeight="medium">
-                          {student.email || 'N/A'}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
-                </Grid>
-
-                <Grid item xs={12} md={6}>
-                  {editMode ? (
-                    <TextField
-                      fullWidth
-                      multiline
-                      rows={2}
-                      label="Address"
-                      value={editData.address}
-                      onChange={(e) => handleInputChange('address', e.target.value)}
-                      required
-                    />
-                  ) : (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <LocationIcon color="primary" />
-                      <Box>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Address
-                        </Typography>
-                        <Typography variant="body1" fontWeight="medium">
-                          {student.address || 'N/A'}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
-                </Grid>
-
-                {/* Additional Information */}
-                <Grid item xs={12}>
-                  <Typography variant="h6" color="primary" gutterBottom sx={{ mt: 2 }}>
-                    Additional Information
-                  </Typography>
-                </Grid>
-
-                <Grid item xs={12} md={4}>
-                  {editMode ? (
-                    <TextField
-                      fullWidth
-                      label="School"
-                      value={editData.school}
-                      onChange={(e) => handleInputChange('school', e.target.value)}
-                      required
-                    />
-                  ) : (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <SchoolIcon color="primary" />
-                      <Box>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          School
-                        </Typography>
-                        <Typography variant="body1" fontWeight="medium">
-                          {student.school || 'N/A'}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
-                </Grid>
-
-                <Grid item xs={12} md={4}>
-                  {editMode ? (
-                    <FormControl fullWidth required>
-                      <InputLabel>Gender</InputLabel>
-                      <Select
-                        value={editData.gender}
-                        onChange={(e) => handleInputChange('gender', e.target.value)}
-                        label="Gender"
-                      >
-                        <MenuItem value="Male">Male</MenuItem>
-                        <MenuItem value="Female">Female</MenuItem>
-                        <MenuItem value="Other">Other</MenuItem>
-                      </Select>
-                    </FormControl>
-                  ) : (
-                    <Box>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Gender
-                      </Typography>
-                      <Typography variant="body1" fontWeight="medium">
-                        {student.gender || 'N/A'}
-                      </Typography>
-                    </Box>
-                  )}
-                </Grid>
-
-                <Grid item xs={12} md={4}>
-                  {editMode ? (
-                    <TextField
-                      fullWidth
-                      type="date"
-                      label="Birthday"
-                      value={editData.birthday}
-                      onChange={(e) => handleInputChange('birthday', e.target.value)}
-                      slotProps={{ inputLabel: { shrink: true } }}
-                      required
-                    />
-                  ) : (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <CakeIcon color="primary" />
-                      <Box>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Birthday
-                        </Typography>
-                        <Typography variant="body1" fontWeight="medium">
-                          {student.birthday ? new Date(student.birthday).toLocaleDateString() : 'N/A'}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
-                </Grid>
-
-                <Grid item xs={12} md={4}>
-                  <Box>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Age
-                    </Typography>
-                    <Typography variant="body1" fontWeight="medium">
-                      {student.age || 'N/A'} years
-                    </Typography>
-                  </Box>
-                </Grid>
-
-                <Grid item xs={12} md={4}>
-                  {editMode ? (
-                    <FormControl fullWidth required>
-                      <InputLabel>Current Student Status</InputLabel>
-                      <Select
-                        value={editData.currentStudent}
-                        onChange={(e) => handleInputChange('currentStudent', e.target.value)}
-                        label="Current Student Status"
-                      >
-                        <MenuItem value="Current Student">Current Student</MenuItem>
-                        <MenuItem value="New Student">New Student</MenuItem>
-                      </Select>
-                    </FormControl>
-                  ) : (
-                    <Box>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Student Status
-                      </Typography>
-                      <Chip
-                        label={student.currentStudent || 'N/A'}
-                        color={student.currentStudent === 'Current Student' ? 'success' : 'info'}
-                        size="small"
+                <Grid container spacing={3}>
+                  {/* Name Fields - Side by Side */}
+                  <Grid item xs={12} md={4}>
+                    {editMode ? (
+                      <TextField
+                        fullWidth
+                        label="Surname"
+                        value={editData.surname}
+                        onChange={(e) => handleInputChange('surname', e.target.value)}
+                        required
+                        variant="outlined"
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: 'rgba(255,255,255,0.9)'
+                          }
+                        }}
                       />
-                    </Box>
-                  )}
-                </Grid>
+                    ) : (
+                      <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <PersonIcon color="primary" sx={{ fontSize: 24 }} />
+                          <Box>
+                            <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                              Surname
+                            </Typography>
+                            <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '1.1rem' }}>
+                              {student.surname || 'N/A'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Paper>
+                    )}
+                  </Grid>
 
-                <Grid item xs={12} md={4}>
-                  {editMode ? (
-                    <FormControl fullWidth required>
-                      <InputLabel>Selected Grade</InputLabel>
-                      <Select
-                        value={editData.selectedGrade}
-                        onChange={(e) => handleInputChange('selectedGrade', e.target.value)}
-                        label="Selected Grade"
-                      >
-                        <MenuItem value="Grade 6">Grade 6</MenuItem>
-                        <MenuItem value="Grade 7">Grade 7</MenuItem>
-                        <MenuItem value="Grade 8">Grade 8</MenuItem>
-                        <MenuItem value="Grade 9">Grade 9</MenuItem>
-                        <MenuItem value="Grade 10">Grade 10</MenuItem>
-                        <MenuItem value="Grade 11">Grade 11</MenuItem>
-                        <MenuItem value="A/L">A/L</MenuItem>
-                      </Select>
-                    </FormControl>
-                  ) : (
-                    <Box>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Selected Grade
-                      </Typography>
-                      <Chip
-                        label={student.selectedGrade || 'N/A'}
-                        color="primary"
-                        size="small"
+                  <Grid item xs={12} md={4}>
+                    {editMode ? (
+                      <TextField
+                        fullWidth
+                        label="First Name"
+                        value={editData.firstName}
+                        onChange={(e) => handleInputChange('firstName', e.target.value)}
+                        required
+                        variant="outlined"
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: 'rgba(255,255,255,0.9)'
+                          }
+                        }}
                       />
-                    </Box>
-                  )}
-                </Grid>
+                    ) : (
+                      <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <PersonIcon color="primary" sx={{ fontSize: 24 }} />
+                          <Box>
+                            <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                              First Name
+                            </Typography>
+                            <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '1.1rem' }}>
+                              {student.firstName || 'N/A'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Paper>
+                    )}
+                  </Grid>
 
-                {/* Guardian Information */}
-                <Grid item xs={12}>
-                  <Typography variant="h6" color="primary" gutterBottom sx={{ mt: 2 }}>
-                    Guardian Information
+                  <Grid item xs={12} md={4}>
+                    {editMode ? (
+                      <TextField
+                        fullWidth
+                        label="Last Name"
+                        value={editData.lastName}
+                        onChange={(e) => handleInputChange('lastName', e.target.value)}
+                        required
+                        variant="outlined"
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: 'rgba(255,255,255,0.9)'
+                          }
+                        }}
+                      />
+                    ) : (
+                      <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <PersonIcon color="primary" sx={{ fontSize: 24 }} />
+                          <Box>
+                            <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                              Last Name
+                            </Typography>
+                            <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '1.1rem' }}>
+                              {student.lastName || 'N/A'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Paper>
+                    )}
+                  </Grid>
+
+                  {/* Contact Information - Side by Side */}
+                  <Grid item xs={12} md={6}>
+                    {editMode ? (
+                      <TextField
+                        fullWidth
+                        label="Contact Number"
+                        value={editData.contactNumber}
+                        onChange={(e) => handleInputChange('contactNumber', e.target.value)}
+                        required
+                        variant="outlined"
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: 'rgba(255,255,255,0.9)'
+                          }
+                        }}
+                      />
+                    ) : (
+                      <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <PhoneIcon color="primary" sx={{ fontSize: 24 }} />
+                          <Box>
+                            <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                              Contact Number
+                            </Typography>
+                            <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '1.1rem' }}>
+                              {student.contactNumber || 'N/A'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Paper>
+                    )}
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    {editMode ? (
+                      <TextField
+                        fullWidth
+                        label="WhatsApp Number"
+                        value={editData.whatsappNumber}
+                        onChange={(e) => handleInputChange('whatsappNumber', e.target.value)}
+                        required
+                        variant="outlined"
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: 'rgba(255,255,255,0.9)'
+                          }
+                        }}
+                      />
+                    ) : (
+                      <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <PhoneIcon color="primary" sx={{ fontSize: 24 }} />
+                          <Box>
+                            <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                              WhatsApp Number
+                            </Typography>
+                            <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '1.1rem' }}>
+                              {student.whatsappNumber || 'N/A'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Paper>
+                    )}
+                  </Grid>
+
+                  {/* Email and Address - Side by Side */}
+                  <Grid item xs={12} md={6}>
+                    {editMode && isAdmin ? (
+                      <TextField
+                        fullWidth
+                        label="Email Address"
+                        value={editData.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        required
+                        helperText="Only admin can change email"
+                        variant="outlined"
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: 'rgba(255,255,255,0.9)'
+                          }
+                        }}
+                      />
+                    ) : (
+                      <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <EmailIcon color="primary" sx={{ fontSize: 24 }} />
+                          <Box>
+                            <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                              Email Address
+                            </Typography>
+                            <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '1.1rem' }}>
+                              {student.email || 'N/A'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Paper>
+                    )}
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    {editMode ? (
+                      <TextField
+                        fullWidth
+                        multiline
+                        rows={2}
+                        label="Address"
+                        value={editData.address}
+                        onChange={(e) => handleInputChange('address', e.target.value)}
+                        required
+                        variant="outlined"
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: 'rgba(255,255,255,0.9)'
+                          }
+                        }}
+                      />
+                    ) : (
+                      <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                          <LocationIcon color="primary" sx={{ fontSize: 24, mt: 0.5 }} />
+                          <Box>
+                            <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                              Address
+                            </Typography>
+                            <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '1.1rem', lineHeight: 1.4 }}>
+                              {student.address || 'N/A'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Paper>
+                    )}
+                  </Grid>
+                </Grid>
+              </Box>
+
+              {/* Academic Information Section */}
+              <Box sx={{ mb: 4 }}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    p: 3,
+                    borderRadius: 3,
+                    background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                    color: 'white',
+                    mb: 3
+                  }}
+                >
+                  <Typography variant="h6" sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    fontWeight: 'bold',
+                    fontSize: '1.3rem'
+                  }}>
+                    <SchoolIcon sx={{ fontSize: 28 }} />
+                    අධ්‍යයන තොරතුරු
                   </Typography>
-                </Grid>
+                </Paper>
 
-                <Grid item xs={12} md={4}>
-                  {editMode ? (
-                    <TextField
-                      fullWidth
-                      label="Guardian Name"
-                      value={editData.guardianName}
-                      onChange={(e) => handleInputChange('guardianName', e.target.value)}
-                      required
-                    />
-                  ) : (
-                    <Box>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Guardian Name
-                      </Typography>
-                      <Typography variant="body1" fontWeight="medium">
-                        {student.guardianName || 'N/A'}
-                      </Typography>
-                    </Box>
-                  )}
-                </Grid>
+                <Grid container spacing={3}>
+                  {/* School and Grade - Side by Side */}
+                  <Grid item xs={12} md={6}>
+                    {editMode ? (
+                      <TextField
+                        fullWidth
+                        label="School"
+                        value={editData.school}
+                        onChange={(e) => handleInputChange('school', e.target.value)}
+                        required
+                        variant="outlined"
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: 'rgba(255,255,255,0.9)'
+                          }
+                        }}
+                      />
+                    ) : (
+                      <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <SchoolIcon color="primary" sx={{ fontSize: 24 }} />
+                          <Box>
+                            <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                              School
+                            </Typography>
+                            <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '1.1rem' }}>
+                              {student.school || 'N/A'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Paper>
+                    )}
+                  </Grid>
 
-                <Grid item xs={12} md={4}>
-                  {editMode ? (
-                    <FormControl fullWidth required>
-                      <InputLabel>Guardian Type</InputLabel>
-                      <Select
-                        value={editData.guardianType}
-                        onChange={(e) => handleInputChange('guardianType', e.target.value)}
-                        label="Guardian Type"
-                      >
-                        <MenuItem value="Mother">Mother</MenuItem>
-                        <MenuItem value="Father">Father</MenuItem>
-                        <MenuItem value="Guardian">Guardian</MenuItem>
-                        <MenuItem value="Other">Other</MenuItem>
-                      </Select>
-                    </FormControl>
-                  ) : (
-                    <Box>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Guardian Type
-                      </Typography>
-                      <Typography variant="body1" fontWeight="medium">
-                        {student.guardianType || 'N/A'}
-                      </Typography>
-                    </Box>
-                  )}
-                </Grid>
+                  <Grid item xs={12} md={6}>
+                    {editMode ? (
+                      <FormControl fullWidth required>
+                        <InputLabel>Selected Grade</InputLabel>
+                        <Select
+                          value={editData.selectedGrade}
+                          onChange={(e) => handleInputChange('selectedGrade', e.target.value)}
+                          label="Selected Grade"
+                          sx={{
+                            borderRadius: 2,
+                            backgroundColor: 'rgba(255,255,255,0.9)'
+                          }}
+                        >
+                          <MenuItem value="Grade 6">Grade 6</MenuItem>
+                          <MenuItem value="Grade 7">Grade 7</MenuItem>
+                          <MenuItem value="Grade 8">Grade 8</MenuItem>
+                          <MenuItem value="Grade 9">Grade 9</MenuItem>
+                          <MenuItem value="Grade 10">Grade 10</MenuItem>
+                          <MenuItem value="Grade 11">Grade 11</MenuItem>
+                          <MenuItem value="A/L">A/L</MenuItem>
+                        </Select>
+                      </FormControl>
+                    ) : (
+                      <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <ClassIcon color="primary" sx={{ fontSize: 24 }} />
+                          <Box>
+                            <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                              Selected Grade
+                            </Typography>
+                            <Chip
+                              label={student.selectedGrade || 'N/A'}
+                              color="primary"
+                              size="medium"
+                              sx={{ fontWeight: 'bold' }}
+                            />
+                          </Box>
+                        </Box>
+                      </Paper>
+                    )}
+                  </Grid>
 
-                <Grid item xs={12} md={4}>
-                  {editMode ? (
-                    <TextField
-                      fullWidth
-                      label="Guardian Contact"
-                      value={editData.guardianContact}
-                      onChange={(e) => handleInputChange('guardianContact', e.target.value)}
-                      required
-                    />
-                  ) : (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <PhoneIcon color="primary" />
-                      <Box>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Guardian Contact
-                        </Typography>
-                        <Typography variant="body1" fontWeight="medium">
-                          {student.guardianContact || 'N/A'}
-                        </Typography>
+                  {/* Student Status - Full Width */}
+                  <Grid item xs={12}>
+                    {editMode ? (
+                      <FormControl fullWidth required>
+                        <InputLabel>Current Student Status</InputLabel>
+                        <Select
+                          value={editData.currentStudent}
+                          onChange={(e) => handleInputChange('currentStudent', e.target.value)}
+                          label="Current Student Status"
+                          sx={{
+                            borderRadius: 2,
+                            backgroundColor: 'rgba(255,255,255,0.9)'
+                          }}
+                        >
+                          <MenuItem value="Current Student">Current Student</MenuItem>
+                          <MenuItem value="New Student">New Student</MenuItem>
+                        </Select>
+                      </FormControl>
+                    ) : (
+                      <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <SchoolIcon color="primary" sx={{ fontSize: 28 }} />
+                          <Box>
+                            <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
+                              Student Status
+                            </Typography>
+                            <Chip
+                              label={student.currentStudent || 'N/A'}
+                              color={student.currentStudent === 'Current Student' ? 'success' : 'info'}
+                              size="large"
+                              sx={{ fontWeight: 'bold', fontSize: '1rem' }}
+                            />
+                          </Box>
+                        </Box>
+                      </Paper>
+                    )}
+                  </Grid>
+                </Grid>
+              </Box>
+
+              {/* Personal Details Section */}
+              <Box sx={{ mb: 4 }}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    p: 3,
+                    borderRadius: 3,
+                    background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                    color: '#333',
+                    mb: 3
+                  }}
+                >
+                  <Typography variant="h6" sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    fontWeight: 'bold',
+                    fontSize: '1.3rem'
+                  }}>
+                    <CakeIcon sx={{ fontSize: 28 }} />
+                    පුද්ගලික විස්තර
+                  </Typography>
+                </Paper>
+
+                <Grid container spacing={3}>
+                  {/* Gender and Birthday - Side by Side */}
+                  <Grid item xs={12} md={4}>
+                    {editMode ? (
+                      <FormControl fullWidth required>
+                        <InputLabel>Gender</InputLabel>
+                        <Select
+                          value={editData.gender}
+                          onChange={(e) => handleInputChange('gender', e.target.value)}
+                          label="Gender"
+                          sx={{
+                            borderRadius: 2,
+                            backgroundColor: 'rgba(255,255,255,0.9)'
+                          }}
+                        >
+                          <MenuItem value="Male">Male</MenuItem>
+                          <MenuItem value="Female">Female</MenuItem>
+                          <MenuItem value="Other">Other</MenuItem>
+                        </Select>
+                      </FormControl>
+                    ) : (
+                      <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <PersonIcon color="primary" sx={{ fontSize: 24 }} />
+                          <Box>
+                            <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                              Gender
+                            </Typography>
+                            <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '1.1rem' }}>
+                              {student.gender || 'N/A'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Paper>
+                    )}
+                  </Grid>
+
+                  <Grid item xs={12} md={4}>
+                    {editMode ? (
+                      <TextField
+                        fullWidth
+                        type="date"
+                        label="Birthday"
+                        value={editData.birthday}
+                        onChange={(e) => handleInputChange('birthday', e.target.value)}
+                        slotProps={{ inputLabel: { shrink: true } }}
+                        required
+                        variant="outlined"
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: 'rgba(255,255,255,0.9)'
+                          }
+                        }}
+                      />
+                    ) : (
+                      <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <CakeIcon color="primary" sx={{ fontSize: 24 }} />
+                          <Box>
+                            <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                              Birthday
+                            </Typography>
+                            <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '1.1rem' }}>
+                              {student.birthday ? new Date(student.birthday).toLocaleDateString() : 'N/A'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Paper>
+                    )}
+                  </Grid>
+
+                  <Grid item xs={12} md={4}>
+                    <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <PersonIcon color="primary" sx={{ fontSize: 24 }} />
+                        <Box>
+                          <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                            Age
+                          </Typography>
+                          <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '1.1rem' }}>
+                            {student.age || 'N/A'} years
+                          </Typography>
+                        </Box>
                       </Box>
-                    </Box>
-                  )}
+                    </Paper>
+                  </Grid>
                 </Grid>
+              </Box>
 
-                {/* System Information - Display Only */}
-                <Grid item xs={12}>
-                  <Typography variant="h6" color="primary" gutterBottom sx={{ mt: 2 }}>
+              {/* Guardian Information Section */}
+              <Box sx={{ mb: 4 }}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    p: 3,
+                    borderRadius: 3,
+                    background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+                    color: '#333',
+                    mb: 3
+                  }}
+                >
+                  <Typography variant="h6" sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    fontWeight: 'bold',
+                    fontSize: '1.3rem'
+                  }}>
+                    <PersonIcon sx={{ fontSize: 28 }} />
+                    භාරකරුගේ තොරතුරු
+                  </Typography>
+                </Paper>
+
+                <Grid container spacing={3}>
+                  {/* Guardian Details - All Side by Side */}
+                  <Grid item xs={12} md={4}>
+                    {editMode ? (
+                      <TextField
+                        fullWidth
+                        label="Guardian Name"
+                        value={editData.guardianName}
+                        onChange={(e) => handleInputChange('guardianName', e.target.value)}
+                        required
+                        variant="outlined"
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: 'rgba(255,255,255,0.9)'
+                          }
+                        }}
+                      />
+                    ) : (
+                      <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <PersonIcon color="primary" sx={{ fontSize: 24 }} />
+                          <Box>
+                            <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                              Guardian Name
+                            </Typography>
+                            <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '1.1rem' }}>
+                              {student.guardianName || 'N/A'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Paper>
+                    )}
+                  </Grid>
+
+                  <Grid item xs={12} md={4}>
+                    {editMode ? (
+                      <FormControl fullWidth required>
+                        <InputLabel>Guardian Type</InputLabel>
+                        <Select
+                          value={editData.guardianType}
+                          onChange={(e) => handleInputChange('guardianType', e.target.value)}
+                          label="Guardian Type"
+                          sx={{
+                            borderRadius: 2,
+                            backgroundColor: 'rgba(255,255,255,0.9)'
+                          }}
+                        >
+                          <MenuItem value="Mother">Mother</MenuItem>
+                          <MenuItem value="Father">Father</MenuItem>
+                          <MenuItem value="Guardian">Guardian</MenuItem>
+                          <MenuItem value="Other">Other</MenuItem>
+                        </Select>
+                      </FormControl>
+                    ) : (
+                      <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <PersonIcon color="primary" sx={{ fontSize: 24 }} />
+                          <Box>
+                            <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                              Guardian Type
+                            </Typography>
+                            <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '1.1rem' }}>
+                              {student.guardianType || 'N/A'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Paper>
+                    )}
+                  </Grid>
+
+                  <Grid item xs={12} md={4}>
+                    {editMode ? (
+                      <TextField
+                        fullWidth
+                        label="Guardian Contact"
+                        value={editData.guardianContact}
+                        onChange={(e) => handleInputChange('guardianContact', e.target.value)}
+                        required
+                        variant="outlined"
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: 'rgba(255,255,255,0.9)'
+                          }
+                        }}
+                      />
+                    ) : (
+                      <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <PhoneIcon color="primary" sx={{ fontSize: 24 }} />
+                          <Box>
+                            <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                              Guardian Contact
+                            </Typography>
+                            <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '1.1rem' }}>
+                              {student.guardianContact || 'N/A'}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Paper>
+                    )}
+                  </Grid>
+                </Grid>
+              </Box>
+
+              {/* System Information Section */}
+              <Box sx={{ mb: 4 }}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    p: 3,
+                    borderRadius: 3,
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: 'white',
+                    mb: 3
+                  }}
+                >
+                  <Typography variant="h6" sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    fontWeight: 'bold',
+                    fontSize: '1.3rem'
+                  }}>
+                    <AdminIcon sx={{ fontSize: 28 }} />
                     System Information
                   </Typography>
-                </Grid>
+                </Paper>
 
-                <Grid item xs={12} md={3}>
-                  <Box>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Student ID
-                    </Typography>
-                    <Typography variant="body1" fontWeight="medium" color="primary">
-                      {student.studentId || 'N/A'}
-                    </Typography>
-                  </Box>
-                </Grid>
+                <Grid container spacing={3}>
+                  {/* System Info - All Side by Side */}
+                  <Grid item xs={12} md={3}>
+                    <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <AccountCircleIcon color="primary" sx={{ fontSize: 24 }} />
+                        <Box>
+                          <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                            Student ID
+                          </Typography>
+                          <Typography variant="body1" fontWeight="bold" color="primary" sx={{ fontSize: '1.1rem' }}>
+                            {student.studentId || 'N/A'}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Paper>
+                  </Grid>
 
-                <Grid item xs={12} md={3}>
-                  <Box>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Payment Role
-                    </Typography>
-                    <Chip
-                      label={student.paymentRole || 'N/A'}
-                      color="info"
-                      size="small"
-                    />
-                  </Box>
-                </Grid>
+                  <Grid item xs={12} md={3}>
+                    <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <CreditCard color="primary" sx={{ fontSize: 24 }} />
+                        <Box>
+                          <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                            Payment Role
+                          </Typography>
+                          <Chip
+                            label={student.paymentRole || 'N/A'}
+                            color="info"
+                            size="medium"
+                            sx={{ fontWeight: 'bold' }}
+                          />
+                        </Box>
+                      </Box>
+                    </Paper>
+                  </Grid>
 
-                <Grid item xs={12} md={3}>
-                  <Box>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Payment Status
-                    </Typography>
-                    <Chip
-                      label={student.paymentStatus || 'N/A'}
-                      color={
-                        student.paymentStatus === 'Paid' ? 'success' :
-                        student.paymentStatus === 'Unpaid' ? 'error' : 'warning'
-                      }
-                      size="small"
-                    />
-                  </Box>
-                </Grid>
+                  <Grid item xs={12} md={3}>
+                    <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Payment color="primary" sx={{ fontSize: 24 }} />
+                        <Box>
+                          <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                            Payments & Behavior Status
+                          </Typography>
+                          <Chip
+                            label={
+                              student.paymentStatus === 'Paid' ? 'ඉතා හොදයි' :
+                              student.paymentStatus === 'Unpaid' ? 'සැලකිළිමත් විය යුතුයි' :
+                              student.paymentStatus === 'admissioned' ? 'හොදයි, ගැටලුවක් නැත' :
+                              'N/A'
+                            }
+                            color={
+                              student.paymentStatus === 'Paid' ? 'success' :
+                              student.paymentStatus === 'Unpaid' ? 'error' : 'warning'
+                            }
+                            size="medium"
+                            sx={{ fontWeight: 'bold' }}
+                          />
+                        </Box>
+                      </Box>
+                    </Paper>
+                  </Grid>
 
-                <Grid item xs={12} md={3}>
-                  <Box>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Free Classes
-                    </Typography>
-                    <Typography variant="body1" fontWeight="medium">
-                      {student.freeClasses?.length || 0} classes
-                    </Typography>
-                  </Box>
+                  <Grid item xs={12} md={3}>
+                    <Paper elevation={2} sx={{ p: 2, borderRadius: 2, height: '100%' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <ClassIcon color="primary" sx={{ fontSize: 24 }} />
+                        <Box>
+                          <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                            Free Classes
+                          </Typography>
+                          <Typography variant="body1" fontWeight="bold" sx={{ fontSize: '1.1rem' }}>
+                            {student.freeClasses?.length || 0} classes
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Paper>
+                  </Grid>
                 </Grid>
-              </Grid>
+              </Box>
 
               {/* Save Button */}
               {editMode && (
@@ -1226,13 +1522,15 @@ const StudentProfile = () => {
                 </Typography>
                 <Divider sx={{ mb: 3 }} />
 
-                <Grid container spacing={3}>
+                <Grid container spacing={3} justifyContent="center">
                   {student.enrolledClasses.map((classItem, index) => (
                     <Grid item xs={12} md={6} lg={4} key={classItem._id || index}>
                       <Card
                         elevation={4}
                         sx={{
                           height: '100%',
+                          maxWidth: '350px',
+                          minWidth: '350px',
                           borderRadius: 2,
                           border: '2px solid',
                           borderColor: 'primary.light',
@@ -1257,25 +1555,23 @@ const StudentProfile = () => {
 
                           <Box sx={{ mb: 2 }}>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                              Type: {classItem.type || 'N/A'}
+                              <strong>Type:</strong> {classItem.type || 'N/A'}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                              Date: {classItem.date ? new Date(classItem.date).toLocaleDateString() : 'N/A'}
+                              <strong>Date:</strong> {classItem.date || 'N/A'}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                              Time: {classItem.startTime || 'N/A'} - {classItem.endTime || 'N/A'}
+                              <strong>Time:</strong> {classItem.startTime || 'N/A'} - {classItem.endTime || 'N/A'}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                              Venue: {classItem.venue || 'N/A'}
+                              <strong>Venue:</strong> {classItem.venue || 'N/A'}
                             </Typography>
                             {classItem.platform && (
                               <Typography variant="body2" color="text.secondary" gutterBottom>
-                                Platform: {classItem.platform}
+                                <strong>Platform:</strong> {classItem.platform}
                               </Typography>
                             )}
-                            <Typography variant="body2" color="text.secondary">
-                              Capacity: {classItem.enrolledStudents?.length || 0}/{classItem.capacity || 'N/A'}
-                            </Typography>
+                            
                           </Box>
 
                           {/* Admin Access Button */}
@@ -1288,14 +1584,14 @@ const StudentProfile = () => {
                                 startIcon={<VisibilityIcon />}
                                 onClick={() => handleAccessAsStudent(classItem._id)}
                                 sx={{
-                                  background: 'linear-gradient(45deg, #FF6B6B 30%, #4ECDC4 90%)',
+                                  background: 'linear-gradient(45deg, #FF6B6B 30%,rgb(129, 78, 205) 90%)',
                                   fontWeight: 'bold',
                                   '&:hover': {
                                     background: 'linear-gradient(45deg, #FF5252 30%, #26A69A 90%)',
                                   }
                                 }}
                               >
-                                Access as this Student
+                                සිසුවා ලෙස ඇතුල්වන්න
                               </Button>
                             </Box>
                           )}
