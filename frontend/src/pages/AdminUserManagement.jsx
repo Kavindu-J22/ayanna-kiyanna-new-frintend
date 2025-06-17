@@ -237,11 +237,14 @@ const AdminUserManagement = () => {
           </Paper>
 
           {/* Users Grid */}
-          <Grid container spacing={3}>
+          <Grid container spacing={3} justifyContent="center">
             {filteredUsers.map((user) => {
               const roleInfo = getUserRoleInfo(user);
               return (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={user._id}>
+                <Grid item xs={12} sm={6} md={4} lg={3} key={user._id} sx={{
+                  display: 'grid',
+                  alignItems: 'stretch', // This ensures all cards stretch to the same height
+                  }}>
                   <motion.div
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -249,6 +252,8 @@ const AdminUserManagement = () => {
                     <Card sx={{
                       height: '100%',
                       display: 'flex',
+                      minWidth: '300px',
+                      maxWidth: '300px',
                       flexDirection: 'column',
                       borderRadius: 3,
                       boxShadow: '0 8px 32px rgba(0,0,0,0.1)',

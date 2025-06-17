@@ -61,7 +61,9 @@ import {
   CheckCircleOutline,
   Info,
   ArrowRightAlt,
-  Subject
+  Subject,
+  Public,
+  CalendarToday
 } from '@mui/icons-material';
 import { CgProfile } from "react-icons/cg";
 import { FaPerson } from "react-icons/fa6";
@@ -1684,372 +1686,581 @@ const StudentManagement = () => {
             )}
           </Box>
 
-          {/* Student Details Dialog */}
-          <Dialog
-            open={showDetailsDialog}
-            onClose={() => setShowDetailsDialog(false)}
-            maxWidth="lg"
-            fullWidth
-            PaperProps={{
-              sx: {
-                borderRadius: 4,
-                background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
-                boxShadow: '0 20px 60px rgba(0,0,0,0.15)'
-              }
-            }}
-          >
-            <DialogTitle sx={{
-              background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
-              color: 'white',
-              textAlign: 'center',
-              py: 3,
-              fontSize: '1.5rem',
-              fontWeight: 'bold'
-            }}>
-              <Person sx={{ mr: 1, fontSize: 30 }} />
-              Student Details - {selectedStudent?.studentId}
-            </DialogTitle>
-            <DialogContent sx={{ p: 4 }}>
-              {selectedStudent && (
-                <Grid container spacing={4}>
-                  {/* Personal Information Card */}
-                  <Grid item xs={12} md={6}>
-                    <Paper elevation={3} sx={{
-                      p: 3,
-                      borderRadius: 3,
-                      background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
-                      border: '2px solid #2196f3'
-                    }}>
-                      <Typography variant="h6" gutterBottom sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        color: 'primary.main',
-                        fontWeight: 'bold'
-                      }}>
-                        <Person sx={{ mr: 1 }} />
-                        Personal Information
-                      </Typography>
-                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                        <Typography variant="body1">
-                          <strong>Name:</strong> {selectedStudent.firstName} {selectedStudent.lastName}
-                        </Typography>
-                        <Typography variant="body1">
-                          <strong>Email:</strong> {selectedStudent.email}
-                        </Typography>
-                        <Typography variant="body1">
-                          <strong>Contact:</strong> {selectedStudent.contactNumber}
-                        </Typography>
-                        <Typography variant="body1">
-                          <strong>School:</strong> {selectedStudent.school}
-                        </Typography>
-                        <Typography variant="body1">
-                          <strong>Grade:</strong> {selectedStudent.selectedGrade}
-                        </Typography>
-                        <Typography variant="body1">{selectedStudent.currentStudent}</Typography>
-                      </Box>
-                    </Paper>
-                  </Grid>
+{/* Student Details Dialog */}
+<Dialog
+  open={showDetailsDialog}
+  onClose={() => setShowDetailsDialog(false)}
+  maxWidth="lg"
+  fullWidth
+  PaperProps={{
+    sx: {
+      borderRadius: '12px',
+      background: 'linear-gradient(145deg, #ffffff 0%, #f5f7fa 100%)',
+      boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
+      border: '1px solid rgba(0, 0, 0, 0.1)',
+      overflow: 'hidden'
+    }
+  }}
+>
+  {/* Dialog Header with Gradient */}
+  <DialogTitle sx={{
+    background: 'linear-gradient(135deg, #1976d2 0%, #2196f3 100%)',
+    color: 'white',
+    textAlign: 'center',
+    py: 2.5,
+    fontSize: '1.5rem',
+    fontWeight: 600,
+    letterSpacing: '0.5px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+  }}>
+    <Person sx={{ 
+      mr: 1.5, 
+      fontSize: 32,
+      background: 'rgba(255,255,255,0.2)',
+      borderRadius: '50%',
+      padding: '5px'
+    }} />
+    Student Details - {selectedStudent?.studentId}
+  </DialogTitle>
 
-                  {/* Guardian Information Card */}
-                  <Grid item xs={12} md={6}>
-                    <Paper elevation={3} sx={{
-                      p: 3,
-                      borderRadius: 3,
-                      background: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
-                      border: '2px solid #9c27b0'
-                    }}>
-                      <Typography variant="h6" gutterBottom sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        color: 'secondary.main',
-                        fontWeight: 'bold'
-                      }}>
-                        <Group sx={{ mr: 1 }} />
-                        Guardian Information
-                      </Typography>
-                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                        <Typography variant="body1">
-                          <strong>Guardian:</strong> {selectedStudent.guardianName}
-                        </Typography>
-                        <Typography variant="body1">
-                          <strong>Type:</strong> {selectedStudent.guardianType}
-                        </Typography>
-                        <Typography variant="body1">
-                          <strong>Contact:</strong> {selectedStudent.guardianContact}
-                        </Typography>
-                      </Box>
-                    </Paper>
-                  </Grid>
-
-                  {/* Status Information Card */}
-                  <Grid item xs={12}>
-                    <Paper elevation={3} sx={{
-                      p: 3,
-                      borderRadius: 3,
-                      background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
-                      border: '2px solid #4caf50'
-                    }}>
-                      <Typography variant="h6" gutterBottom sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        color: 'success.main',
-                        fontWeight: 'bold'
-                      }}>
-                        <Assignment sx={{ mr: 1 }} />
-                        Status Information
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Chip
-                          label={selectedStudent.status}
-                          color={getStatusColor(selectedStudent.status)}
-                          icon={getStatusIcon(selectedStudent.status)}
-                          size="large"
-                          sx={{ fontSize: '1rem', py: 2 }}
-                        />
-                        {selectedStudent.adminAction?.actionNote && (
-                          <Typography variant="body1" sx={{
-                            bgcolor: 'rgba(255,255,255,0.7)',
-                            p: 1,
-                            borderRadius: 1,
-                            border: '1px solid #ddd'
-                          }}>
-                            <strong>Admin Note:</strong> {selectedStudent.adminAction.actionNote}
-                          </Typography>
-                        )}
-                      </Box>
-                    </Paper>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="h6" gutterBottom>Payments & Behavior Information</Typography>
-                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
-                      <Chip
-                        label={selectedStudent.paymentRole}
-                        color={selectedStudent.paymentRole === 'Pay Card' ? 'primary' : 'secondary'}
-                        icon={<CreditCard />}
-                      />
-                      <Chip
-                      label={
-                        selectedStudent.paymentStatus === 'Paid' ? 'ඉතා හොදයි' :
-                        selectedStudent.paymentStatus === 'admissioned' ? 'හොදයි, ගැටලුවක් නැත' :
-                        selectedStudent.paymentStatus === 'Unpaid' ? 'සැලකිළිමත් විය යුතුයි' :
-                        selectedStudent.paymentStatus
-                      }
-                      color={
-                        selectedStudent.paymentStatus === 'Paid' ? 'success' :
-                        selectedStudent.paymentStatus === 'admissioned' ? 'primary' : // or any other color you prefer
-                        'warning'
-                      }
-                    />
-                    </Box>
-                    {selectedStudent.paymentRole === 'Free Card' && selectedStudent.freeClasses?.length > 0 && (
-                      <Box sx={{ mt: 2 }}>
-                        <Typography variant="subtitle2" gutterBottom>
-                          Free Classes:
-                        </Typography>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                          {selectedStudent.freeClasses.map((classItem) => (
-                            <Chip
-                              key={classItem._id}
-                              label={`${classItem.grade} - ${classItem.category}`}
-                              color="secondary"
-                              variant="outlined"
-                            />
-                          ))}
-                        </Box>
-                      </Box>
-                    )}
-                  </Grid>
-
-                  {/* Class Details Section */}
-                  <Grid item xs={12}>
-                    <Paper elevation={3} sx={{
-                      p: 3,
-                      borderRadius: 3,
-                      background: 'linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%)',
-                      border: '2px solid #ff9800'
-                    }}>
-                      <Typography variant="h6" gutterBottom sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        color: 'warning.dark',
-                        fontWeight: 'bold',
-                        mb: 3
-                      }}>
-                        <Class sx={{ mr: 1 }} />
-                        Enrolled Classes ({selectedStudent.enrolledClasses?.length || 0})
-                      </Typography>
-                      {selectedStudent.enrolledClasses && selectedStudent.enrolledClasses.length > 0 ? (
-                        <Grid container spacing={3}>
-                          {selectedStudent.enrolledClasses.map((classItem, index) => {
-                            // Use the calculated fields from backend
-                            const capacity = classItem.capacity || 0;
-                            const enrolledCount = classItem.enrolledCount || 0;
-                            const availableSpots = classItem.availableSpots || 0;
-
-                            return (
-                              <Grid item xs={12} md={6} key={index}>
-                                <Paper
-                                  elevation={4}
-                                  sx={{
-                                    p: 3,
-                                    borderRadius: 3,
-                                    border: '2px solid #e0e0e0',
-                                    background: 'linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%)',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s ease',
-                                    '&:hover': {
-                                      transform: 'translateY(-4px)',
-                                      boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
-                                      borderColor: 'primary.main'
-                                    }
-                                  }}
-                                  onClick={() => navigate(`/class/${classItem._id}`)}
-                                >
-                                  {/* Class Header with Actions */}
-                                  <Box sx={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    mb: 2
-                                  }}>
-                                    <Typography variant="subtitle1" fontWeight="bold" sx={{
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      color: 'primary.main'
-                                    }}>
-                                      <Category sx={{ mr: 1, fontSize: 20 }} />
-                                      {classItem.category}
-                                    </Typography>
-                                    <Box sx={{ display: 'flex', gap: 1 }}>
-                                      <Tooltip title="Navigate to Class Page" arrow>
-                                        <IconButton
-                                          size="small"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            navigate(`/class/${classItem._id}`);
-                                          }}
-                                          sx={{
-                                            bgcolor: 'primary.main',
-                                            color: 'white',
-                                            '&:hover': { bgcolor: 'primary.dark' }
-                                          }}
-                                        >
-                                          <Visibility fontSize="small" />
-                                        </IconButton>
-                                      </Tooltip>
-                                      <Tooltip title="Remove from Class" arrow>
-                                        <IconButton
-                                          size="small"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleRemoveFromClass(selectedStudent, classItem._id);
-                                          }}
-                                          sx={{
-                                            bgcolor: 'error.main',
-                                            color: 'white',
-                                            '&:hover': { bgcolor: 'error.dark' }
-                                          }}
-                                        >
-                                          <RemoveCircle fontSize="small" />
-                                        </IconButton>
-                                      </Tooltip>
-                                    </Box>
-                                  </Box>
-
-                                  {/* Class Details */}
-                                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                                    <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                                      <School sx={{ mr: 1, fontSize: 16, color: 'primary.main' }} />
-                                      <strong>Grade:</strong> {classItem.grade}
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                                      <Schedule sx={{ mr: 1, fontSize: 16, color: 'primary.main' }} />
-                                      <strong>Time:</strong> {classItem.startTime} - {classItem.endTime}
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                                      <LocationOn sx={{ mr: 1, fontSize: 16, color: 'primary.main' }} />
-                                      <strong>Venue:</strong> {classItem.venue}
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                                      <People sx={{ mr: 1, fontSize: 16, color: 'primary.main' }} />
-                                      <strong>Available Spots:</strong> {availableSpots} / {capacity} (Enrolled: {enrolledCount})
-                                    </Typography>
-                                    <Typography variant="body2">
-                                      <strong>Platform:</strong> {classItem.platform || 'Physical'}
-                                    </Typography>
-                                    <Typography variant="body2">
-                                      <strong>Day:</strong> {classItem.date}
-                                    </Typography>
-                                  </Box>
-
-                                  {/* Click to navigate hint */}
-                                  <Box sx={{
-                                    mt: 2,
-                                    pt: 2,
-                                    borderTop: '1px solid #e0e0e0',
-                                    textAlign: 'center'
-                                  }}>
-                                    <Typography variant="caption" color="text.secondary" sx={{
-                                      fontStyle: 'italic',
-                                      fontSize: '0.7rem'
-                                    }}>
-                                      Click card to navigate to class page
-                                    </Typography>
-                                  </Box>
-                                </Paper>
-                              </Grid>
-                            );
-                          })}
-                        </Grid>
-                      ) : (
-                        <Box sx={{
-                          textAlign: 'center',
-                          py: 4,
-                          bgcolor: 'rgba(255,255,255,0.7)',
-                          borderRadius: 2
-                        }}>
-                          <Class sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
-                          <Typography variant="h6" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-                            No classes enrolled yet
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Student hasn't enrolled in any classes
-                          </Typography>
-                        </Box>
-                      )}
-                    </Paper>
-                  </Grid>
-                </Grid>
-              )}
-            </DialogContent>
-            <DialogActions sx={{
+  {/* Main Content */}
+  <DialogContent sx={{ 
+    p: 0,
+    '&::-webkit-scrollbar': {
+      width: '8px'
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: 'rgba(0,0,0,0.2)',
+      borderRadius: '4px'
+    }
+  }}>
+    {selectedStudent && (
+      <Box sx={{ p: 3 }}>
+        {/* Top Cards Row */}
+        <Grid container spacing={3} sx={{ mb: 3 }}>
+          {/* Personal Information Card */}
+          <Grid item xs={12} md={6}>
+            <Paper elevation={0} sx={{
               p: 3,
-              background: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)',
-              borderTop: '2px solid #ddd'
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+              borderLeft: '5px solid #1976d2',
+              height: '100%',
+              transition: 'transform 0.3s, box-shadow 0.3s',
+              '&:hover': {
+                transform: 'translateY(-3px)',
+                boxShadow: '0 5px 15px rgba(0,0,0,0.1)'
+              }
             }}>
-              <Button
-                onClick={() => setShowDetailsDialog(false)}
-                variant="contained"
-                size="large"
-                startIcon={<CheckCircleOutline />}
-                sx={{
-                  bgcolor: 'primary.main',
-                  color: 'white',
-                  px: 4,
-                  py: 1,
-                  borderRadius: 3,
-                  fontWeight: 'bold',
-                  '&:hover': {
-                    bgcolor: 'primary.dark',
-                    transform: 'scale(1.05)'
-                  },
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                Close Details
-              </Button>
-            </DialogActions>
-          </Dialog>
+              <Box sx={{ 
+                display: 'flex',
+                alignItems: 'center',
+                mb: 2,
+                color: '#1976d2'
+              }}>
+                <Person sx={{ 
+                  mr: 1.5,
+                  fontSize: 28,
+                  background: 'rgba(25, 118, 210, 0.1)',
+                  borderRadius: '50%',
+                  padding: '5px'
+                }} />
+                <Typography variant="h6" sx={{ 
+                  fontWeight: 600,
+                  letterSpacing: '0.3px'
+                }}>
+                  Personal Information
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                display: 'grid',
+                gridTemplateColumns: 'max-content 1fr',
+                gap: '12px 8px',
+                alignItems: 'center'
+              }}>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>Name:</Typography>
+                <Typography>{selectedStudent.firstName} {selectedStudent.lastName}</Typography>
+                
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>Email:</Typography>
+                <Typography sx={{ wordBreak: 'break-word' }}>{selectedStudent.email}</Typography>
+                
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>Contact:</Typography>
+                <Typography>{selectedStudent.contactNumber}</Typography>
+                
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>School:</Typography>
+                <Typography>{selectedStudent.school}</Typography>
+                
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>Grade:</Typography>
+                <Typography>{selectedStudent.selectedGrade}</Typography>
+              </Box>
+            </Paper>
+          </Grid>
+
+          {/* Guardian Information Card */}
+          <Grid item xs={12} md={6}>
+            <Paper elevation={0} sx={{
+              p: 3,
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+              borderLeft: '5px solid #9c27b0',
+              height: '100%',
+              transition: 'transform 0.3s, box-shadow 0.3s',
+              '&:hover': {
+                transform: 'translateY(-3px)',
+                boxShadow: '0 5px 15px rgba(0,0,0,0.1)'
+              }
+            }}>
+              <Box sx={{ 
+                display: 'flex',
+                alignItems: 'center',
+                mb: 2,
+                color: '#9c27b0'
+              }}>
+                <Group sx={{ 
+                  mr: 1.5,
+                  fontSize: 28,
+                  background: 'rgba(156, 39, 176, 0.1)',
+                  borderRadius: '50%',
+                  padding: '5px'
+                }} />
+                <Typography variant="h6" sx={{ 
+                  fontWeight: 600,
+                  letterSpacing: '0.3px'
+                }}>
+                  Guardian Information
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                display: 'grid',
+                gridTemplateColumns: 'max-content 1fr',
+                gap: '12px 8px',
+                alignItems: 'center'
+              }}>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>Guardian:</Typography>
+                <Typography>{selectedStudent.guardianName}</Typography>
+                
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>Type:</Typography>
+                <Typography>{selectedStudent.guardianType}</Typography>
+                
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>Contact:</Typography>
+                <Typography>{selectedStudent.guardianContact}</Typography>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
+
+        {/* Status and Payment Row */}
+        <Grid container spacing={3} sx={{ mb: 3 }}>
+          {/* Status Card */}
+          <Grid item xs={12} md={6}>
+            <Paper elevation={0} sx={{
+              p: 3,
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+              borderLeft: '5px solid #4caf50',
+              transition: 'transform 0.3s, box-shadow 0.3s',
+              '&:hover': {
+                transform: 'translateY(-3px)',
+                boxShadow: '0 5px 15px rgba(0,0,0,0.1)'
+              }
+            }}>
+              <Box sx={{ 
+                display: 'flex',
+                alignItems: 'center',
+                mb: 2,
+                color: '#4caf50'
+              }}>
+                <Assignment sx={{ 
+                  mr: 1.5,
+                  fontSize: 28,
+                  background: 'rgba(76, 175, 80, 0.1)',
+                  borderRadius: '50%',
+                  padding: '5px'
+                }} />
+                <Typography variant="h6" sx={{ 
+                  fontWeight: 600,
+                  letterSpacing: '0.3px'
+                }}>
+                  Status Information
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                flexWrap: 'wrap'
+              }}>
+                <Chip
+                  label={selectedStudent.status}
+                  color={getStatusColor(selectedStudent.status)}
+                  icon={getStatusIcon(selectedStudent.status)}
+                  size="medium"
+                  sx={{ 
+                    fontSize: '0.9rem',
+                    py: 1.5,
+                    px: 2,
+                    fontWeight: 500,
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                  }}
+                />
+                {selectedStudent.adminAction?.actionNote && (
+                  <Box sx={{
+                    bgcolor: 'rgba(255,255,255,0.8)',
+                    p: 1.5,
+                    borderRadius: '8px',
+                    border: '1px solid #e0e0e0',
+                    flexGrow: 1,
+                    minWidth: '200px'
+                  }}>
+                    <Typography variant="subtitle2" sx={{ 
+                      fontWeight: 500,
+                      color: 'text.secondary',
+                      mb: 0.5
+                    }}>
+                      Admin Note:
+                    </Typography>
+                    <Typography variant="body2">
+                      {selectedStudent.adminAction.actionNote}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            </Paper>
+          </Grid>
+
+          {/* Payment Information Card */}
+          <Grid item xs={12} md={6}>
+            <Paper elevation={0} sx={{
+              p: 3,
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+              borderLeft: '5px solid #ff9800',
+              transition: 'transform 0.3s, box-shadow 0.3s',
+              '&:hover': {
+                transform: 'translateY(-3px)',
+                boxShadow: '0 5px 15px rgba(0,0,0,0.1)'
+              }
+            }}>
+              <Box sx={{ 
+                display: 'flex',
+                alignItems: 'center',
+                mb: 2,
+                color: '#ff9800'
+              }}>
+                <Payment sx={{ 
+                  mr: 1.5,
+                  fontSize: 28,
+                  background: 'rgba(255, 152, 0, 0.1)',
+                  borderRadius: '50%',
+                  padding: '5px'
+                }} />
+                <Typography variant="h6" sx={{ 
+                  fontWeight: 600,
+                  letterSpacing: '0.3px'
+                }}>
+                  Payment & Behavior Information
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2
+              }}>
+                <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
+                  <Chip
+                    label={selectedStudent.paymentRole}
+                    color={selectedStudent.paymentRole === 'Pay Card' ? 'primary' : 'secondary'}
+                    icon={<CreditCard sx={{ fontSize: '18px !important' }} />}
+                    sx={{
+                      fontWeight: 500,
+                      px: 1.5,
+                      py: 1,
+                      boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                    }}
+                  />
+                  <Chip
+                    label={
+                      selectedStudent.paymentStatus === 'Paid' ? 'ඉතා හොදයි' :
+                      selectedStudent.paymentStatus === 'admissioned' ? 'හොදයි, ගැටලුවක් නැත' :
+                      selectedStudent.paymentStatus === 'Unpaid' ? 'සැලකිළිමත් විය යුතුයි' :
+                      selectedStudent.paymentStatus
+                    }
+                    color={
+                      selectedStudent.paymentStatus === 'Paid' ? 'success' :
+                      selectedStudent.paymentStatus === 'admissioned' ? 'primary' :
+                      'warning'
+                    }
+                    sx={{
+                      fontWeight: 500,
+                      px: 1.5,
+                      py: 1,
+                      boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                    }}
+                  />
+                </Box>
+                
+                
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
+
+        {/* Enrolled Classes Section */}
+        <Paper elevation={0} sx={{
+          p: 3,
+          borderRadius: '12px',
+          background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+          borderLeft: '5px solid #673ab7',
+          mb: 2,
+          transition: 'transform 0.3s, box-shadow 0.3s',
+          '&:hover': {
+            transform: 'translateY(-3px)',
+            boxShadow: '0 5px 15px rgba(0,0,0,0.1)'
+          }
+        }}>
+          <Box sx={{ 
+            display: 'flex',
+            alignItems: 'center',
+            mb: 3,
+            color: '#673ab7'
+          }}>
+            <Class sx={{ 
+              mr: 1.5,
+              fontSize: 28,
+              background: 'rgba(103, 58, 183, 0.1)',
+              borderRadius: '50%',
+              padding: '5px'
+            }} />
+            <Typography variant="h6" sx={{ 
+              fontWeight: 600,
+              letterSpacing: '0.3px'
+            }}>
+              Enrolled Classes ({selectedStudent.enrolledClasses?.length || 0})
+            </Typography>
+          </Box>
+
+          {selectedStudent.enrolledClasses && selectedStudent.enrolledClasses.length > 0 ? (
+            <Grid container spacing={3}>
+              {selectedStudent.enrolledClasses.map((classItem, index) => {
+                const capacity = classItem.capacity || 0;
+                const enrolledCount = classItem.enrolledCount || 0;
+                const availableSpots = classItem.availableSpots || 0;
+
+                return (
+                  <Grid item xs={12} md={6} key={index}>
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        p: 3,
+                        borderRadius: '10px',
+                        border: '1px solid #e0e0e0',
+                        background: 'white',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'translateY(-5px)',
+                          boxShadow: '0 8px 20px rgba(0,0,0,0.12)',
+                          borderColor: '#1976d2'
+                        },
+                        position: 'relative',
+                        overflow: 'hidden',
+                        '&::before': {
+                          content: '""',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '4px',
+                          height: '100%',
+                          background: 'linear-gradient(to bottom, #1976d2, #42a5f5)'
+                        }
+                      }}
+                      onClick={() => navigate(`/class/${classItem._id}`)}
+                    >
+                      {/* Class Header */}
+                      <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'flex-start',
+                        mb: 2
+                      }}>
+                        <Box>
+                          <Typography variant="subtitle1" fontWeight="600" sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            color: 'primary.main',
+                            mb: 0.5
+                          }}>
+                            <Category sx={{ mr: 1, fontSize: 20 }} />
+                            {classItem.category}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            ml: 3
+                          }}>
+                            <School sx={{ mr: 1, fontSize: 16 }} />
+                            Grade: {classItem.grade}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                          <Tooltip title="View Class" arrow>
+                            <IconButton
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/class/${classItem._id}`);
+                              }}
+                              sx={{
+                                bgcolor: 'primary.light',
+                                color: 'primary.main',
+                                '&:hover': { 
+                                  bgcolor: 'primary.main',
+                                  color: 'white'
+                                }
+                              }}
+                            >
+                              <Visibility fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Remove Student" arrow>
+                            <IconButton
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRemoveFromClass(selectedStudent, classItem._id);
+                              }}
+                              sx={{
+                                bgcolor: 'error.light',
+                                color: 'error.main',
+                                '&:hover': { 
+                                  bgcolor: 'error.main',
+                                  color: 'white'
+                                }
+                              }}
+                            >
+                              <RemoveCircle fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                      </Box>
+
+                      {/* Class Details */}
+                      <Box sx={{ 
+                        display: 'grid',
+                        gridTemplateColumns: 'max-content 1fr',
+                        gap: '10px 8px',
+                        alignItems: 'center',
+                        mt: 2
+                      }}>
+                        <Schedule sx={{ fontSize: 18, color: 'text.secondary' }} />
+                        <Typography variant="body2">
+                          {classItem.startTime} - {classItem.endTime}
+                        </Typography>
+                        
+                        <LocationOn sx={{ fontSize: 18, color: 'text.secondary' }} />
+                        <Typography variant="body2">{classItem.venue}</Typography>
+                        
+                        <People sx={{ fontSize: 18, color: 'text.secondary' }} />
+                        <Typography variant="body2">
+                          {availableSpots} / {capacity} slots available ({enrolledCount} enrolled)
+                        </Typography>
+                        
+                        <Public sx={{ fontSize: 18, color: 'text.secondary' }} />
+                        <Typography variant="body2">{classItem.platform || 'Physical'}</Typography>
+                        
+                        <CalendarToday sx={{ fontSize: 18, color: 'text.secondary' }} />
+                        <Typography variant="body2">{classItem.date}</Typography>
+                      </Box>
+
+                      {/* Click hint */}
+                      <Box sx={{
+                        mt: 2,
+                        pt: 2,
+                        borderTop: '1px dashed #e0e0e0',
+                        textAlign: 'center'
+                      }}>
+                        <Typography variant="caption" color="text.secondary" sx={{
+                          fontStyle: 'italic',
+                          fontSize: '0.7rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <Info sx={{ fontSize: 14, mr: 0.5 }} />
+                          Click to view class details
+                        </Typography>
+                      </Box>
+                    </Paper>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          ) : (
+            <Box sx={{
+              textAlign: 'center',
+              py: 4,
+              bgcolor: 'rgba(255,255,255,0.7)',
+              borderRadius: '8px'
+            }}>
+              <Class sx={{ 
+                fontSize: 60, 
+                color: 'text.disabled', 
+                mb: 2,
+                opacity: 0.5
+              }} />
+              <Typography variant="h6" color="text.secondary" sx={{ 
+                fontStyle: 'italic',
+                mb: 1
+              }}>
+                No classes enrolled yet
+              </Typography>
+              <Typography variant="body2" color="text.disabled">
+                This student hasn't enrolled in any classes
+              </Typography>
+            </Box>
+          )}
+        </Paper>
+      </Box>
+    )}
+  </DialogContent>
+
+  {/* Dialog Footer */}
+  <DialogActions sx={{
+    p: 2.5,
+    background: '#f5f7fa',
+    borderTop: '1px solid #e0e0e0',
+    display: 'flex',
+    justifyContent: 'center'
+  }}>
+    <Button
+      onClick={() => setShowDetailsDialog(false)}
+      variant="contained"
+      size="large"
+      startIcon={<CheckCircleOutline sx={{ fontSize: 24 }} />}
+      sx={{
+        bgcolor: 'primary.main',
+        color: 'white',
+        px: 5,
+        py: 1.5,
+        borderRadius: '8px',
+        fontWeight: 600,
+        letterSpacing: '0.5px',
+        textTransform: 'uppercase',
+        boxShadow: '0 3px 10px rgba(25, 118, 210, 0.3)',
+        '&:hover': {
+          bgcolor: 'primary.dark',
+          boxShadow: '0 5px 15px rgba(25, 118, 210, 0.4)'
+        },
+        transition: 'all 0.2s ease'
+      }}
+    >
+      Close Details
+    </Button>
+  </DialogActions>
+</Dialog>
 
           {/* Action Confirmation Dialog */}
           <Dialog open={showActionDialog} onClose={() => setShowActionDialog(false)} maxWidth="sm" fullWidth>

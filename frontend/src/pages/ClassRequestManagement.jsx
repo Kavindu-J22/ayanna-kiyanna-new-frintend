@@ -41,7 +41,11 @@ import {
   Assignment,
   Person,
   Search,
-  Delete
+  Delete,
+  Close as CloseIcon,
+  PersonOutline as PersonOutlineIcon,
+  Class as ClassIcon,
+  Description as DescriptionIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -385,7 +389,7 @@ const ClassRequestManagement = () => {
                 />
               </Grid>
               <Grid item xs={12} md={4}>
-                <FormControl fullWidth>
+                <FormControl fullWidth sx={{ minWidth: '200px' }}>
                   <InputLabel>Status</InputLabel>
                   <Select
                     value={statusFilter}
@@ -400,7 +404,7 @@ const ClassRequestManagement = () => {
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={4}>
-                <FormControl fullWidth>
+                <FormControl fullWidth sx={{ minWidth: '200px' }}>
                   <InputLabel>Grade</InputLabel>
                   <Select
                     value={gradeFilter}
@@ -578,56 +582,219 @@ const ClassRequestManagement = () => {
             </TableContainer>
           </Paper>
 
-          {/* Request Details Dialog */}
-          <Dialog open={showDetailsDialog} onClose={() => setShowDetailsDialog(false)} maxWidth="md" fullWidth>
-            <DialogTitle>
-              Class Request Details
-            </DialogTitle>
-            <DialogContent>
-              {selectedRequest && (
-                <Grid container spacing={3}>
-                  <Grid item xs={12} md={6}>
-                    <Typography variant="h6" gutterBottom>Student Information</Typography>
-                    <Typography><strong>Name:</strong> {`${selectedRequest.student?.firstName || ''} ${selectedRequest.student?.lastName || ''}`.trim()}</Typography>
-                    <Typography><strong>Student ID:</strong> {selectedRequest.student?.studentId}</Typography>
-                    <Typography><strong>Grade:</strong> {selectedRequest.student?.selectedGrade}</Typography>
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <Typography variant="h6" gutterBottom>Class Information</Typography>
-                    <Typography><strong>Class:</strong> {selectedRequest.class?.grade} - {selectedRequest.class?.category}</Typography>
-                    <Typography><strong>Schedule:</strong> {selectedRequest.class?.date} • {selectedRequest.class?.startTime}-{selectedRequest.class?.endTime}</Typography>
-                    <Typography><strong>Venue:</strong> {selectedRequest.class?.venue}</Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="h6" gutterBottom>Request Details</Typography>
-                    <Typography><strong>Reason:</strong></Typography>
-                    <Typography sx={{ mt: 1, p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
-                      {selectedRequest.reason}
-                    </Typography>
-                    <Typography sx={{ mt: 2 }}><strong>Status:</strong></Typography>
-                    <Chip
-                      label={selectedRequest.status}
-                      color={getStatusColor(selectedRequest.status)}
-                      icon={getStatusIcon(selectedRequest.status)}
-                      sx={{ mt: 1 }}
-                    />
-                    <Typography sx={{ mt: 2 }}><strong>Submitted:</strong> {formatDate(selectedRequest.createdAt)}</Typography>
-                    {selectedRequest.adminResponse?.actionNote && (
-                      <>
-                        <Typography sx={{ mt: 2 }}><strong>Admin Response:</strong></Typography>
-                        <Typography sx={{ mt: 1, p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
-                          {selectedRequest.adminResponse.actionNote}
-                        </Typography>
-                      </>
-                    )}
-                  </Grid>
-                </Grid>
-              )}
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setShowDetailsDialog(false)}>Close</Button>
-            </DialogActions>
-          </Dialog>
+{/* Request Details Dialog */}
+<Dialog 
+  open={showDetailsDialog} 
+  onClose={() => setShowDetailsDialog(false)} 
+  maxWidth="md" 
+  fullWidth
+  PaperProps={{
+    sx: {
+      borderRadius: 3,
+      boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)'
+    }
+  }}
+>
+  <DialogTitle sx={{
+    backgroundColor: (theme) => theme.palette.primary.main,
+    color: 'white',
+    py: 2,
+    px: 3,
+    fontSize: '1.2rem',
+    fontWeight: 600,
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  }}>
+    Class Request Details
+    <IconButton 
+      onClick={() => setShowDetailsDialog(false)} 
+      sx={{ color: 'white' }}
+    >
+      <CloseIcon />
+    </IconButton>
+  </DialogTitle>
+  
+  <DialogContent sx={{ p: 3 }}>
+    {selectedRequest && (
+      <Grid container spacing={3}>
+        {/* Student Information Section */}
+        <Grid item xs={12} md={6}>
+          <Paper elevation={0} sx={{ 
+            p: 2.5, 
+            borderRadius: 2, 
+            border: '1px solid', 
+            borderColor: 'divider',
+            height: '100%'
+          }}>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              mb: 2,
+              color: 'primary.main'
+            }}>
+              <PersonOutlineIcon sx={{ mr: 1 }} />
+              <Typography variant="h6">Student Information</Typography>
+            </Box>
+            
+            <Box sx={{ mb: 1.5 }}>
+              <Typography variant="subtitle2" color="text.secondary">Name</Typography>
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                {`${selectedRequest.student?.firstName || ''} ${selectedRequest.student?.lastName || ''}`.trim()}
+              </Typography>
+            </Box>
+            
+            <Box sx={{ mb: 1.5 }}>
+              <Typography variant="subtitle2" color="text.secondary">Student ID</Typography>
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                {selectedRequest.student?.studentId}
+              </Typography>
+            </Box>
+            
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">Grade</Typography>
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                {selectedRequest.student?.selectedGrade}
+              </Typography>
+            </Box>
+          </Paper>
+        </Grid>
+        
+        {/* Class Information Section */}
+        <Grid item xs={12} md={6}>
+          <Paper elevation={0} sx={{ 
+            p: 2.5, 
+            borderRadius: 2, 
+            border: '1px solid', 
+            borderColor: 'divider',
+            height: '100%'
+          }}>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              mb: 2,
+              color: 'primary.main'
+            }}>
+              <ClassIcon sx={{ mr: 1 }} />
+              <Typography variant="h6">Requested Class Information</Typography>
+            </Box>
+            
+            <Box sx={{ mb: 1.5 }}>
+              <Typography variant="subtitle2" color="text.secondary">Class</Typography>
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                {selectedRequest.class?.grade} - {selectedRequest.class?.category}
+              </Typography>
+            </Box>
+            
+            <Box sx={{ mb: 1.5 }}>
+              <Typography variant="subtitle2" color="text.secondary">Schedule</Typography>
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                {selectedRequest.class?.date} • {selectedRequest.class?.startTime}-{selectedRequest.class?.endTime}
+              </Typography>
+            </Box>
+            
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">Venue</Typography>
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                {selectedRequest.class?.venue}
+              </Typography>
+            </Box>
+          </Paper>
+        </Grid>
+        
+        {/* Request Details Section */}
+        <Grid item xs={12}>
+          <Paper elevation={0} sx={{ 
+            p: 2.5, 
+            borderRadius: 2, 
+            border: '1px solid', 
+            borderColor: 'divider'
+          }}>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              mb: 2,
+              color: 'primary.main'
+            }}>
+              <DescriptionIcon sx={{ mr: 1 }} />
+              <Typography variant="h6">Request Details</Typography>
+            </Box>
+            
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>Reason</Typography>
+              <Paper elevation={0} sx={{ 
+                p: 2, 
+                backgroundColor: 'grey.50', 
+                borderRadius: 1.5,
+                border: '1px solid',
+                borderColor: 'grey.200'
+              }}>
+                <Typography variant="body1">
+                  {selectedRequest.reason}
+                </Typography>
+              </Paper>
+            </Box>
+            
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>Status</Typography>
+              <Chip
+                label={selectedRequest.status}
+                color={getStatusColor(selectedRequest.status)}
+                icon={getStatusIcon(selectedRequest.status)}
+                sx={{ 
+                  px: 1,
+                  '& .MuiChip-icon': {
+                    color: 'inherit !important'
+                  }
+                }}
+              />
+            </Box>
+            
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle2" color="text.secondary">Submitted</Typography>
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                {formatDate(selectedRequest.createdAt)}
+              </Typography>
+            </Box>
+            
+            {selectedRequest.adminResponse?.actionNote && (
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>Admin Response</Typography>
+                <Paper elevation={0} sx={{ 
+                  p: 2, 
+                  backgroundColor: 'grey.50', 
+                  borderRadius: 1.5,
+                  border: '1px solid',
+                  borderColor: 'grey.200'
+                }}>
+                  <Typography variant="body1">
+                    {selectedRequest.adminResponse.actionNote}
+                  </Typography>
+                </Paper>
+              </Box>
+            )}
+          </Paper>
+        </Grid>
+      </Grid>
+    )}
+  </DialogContent>
+  
+  <DialogActions sx={{ p: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+    <Button 
+      onClick={() => setShowDetailsDialog(false)}
+      variant="outlined"
+      sx={{ 
+        px: 3,
+        py: 1,
+        borderRadius: 2,
+        textTransform: 'none',
+        fontWeight: 500
+      }}
+    >
+      Close
+    </Button>
+  </DialogActions>
+</Dialog>
 
           {/* Action Confirmation Dialog */}
           <Dialog open={showActionDialog} onClose={() => setShowActionDialog(false)} maxWidth="sm" fullWidth>
