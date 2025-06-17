@@ -167,9 +167,12 @@ const StudentResourceView = () => {
         </Paper>
 
         {/* Resources Grid */}
-        <Grid container spacing={3}>
+        <Grid container spacing={3} justifyContent="center">
           {resources.map((resource) => (
-            <Grid item xs={12} sm={6} md={4} key={resource._id}>
+            <Grid item xs={12} sm={6} md={4} key={resource._id} sx={{
+            display: 'grid',
+            alignItems: 'stretch', // This ensures all cards stretch to the same height
+            }}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -178,6 +181,8 @@ const StudentResourceView = () => {
                 <Card sx={{
                   height: '100%',
                   display: 'flex',
+                  maxWidth: '350px',
+                  minWidth: '350px',
                   flexDirection: 'column',
                   transition: 'all 0.3s ease',
                   '&:hover': {
@@ -193,7 +198,17 @@ const StudentResourceView = () => {
                       {resource.title}
                     </Typography>
                     
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    <Typography variant="body2" color="text.secondary" sx={{
+                    fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                    mb: 2,
+                    lineHeight: 1.5,
+                    minHeight: '60px',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 5,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                    }}
+                    >
                       {resource.description}
                     </Typography>
 
