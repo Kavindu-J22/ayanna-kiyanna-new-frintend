@@ -307,7 +307,7 @@ const AppreciationFolderView = () => {
         <Typography 
           variant="body1" 
           sx={{ 
-            color: '#666', 
+            color: '#444', 
             ml: 7,
             fontStyle: 'italic'
           }}
@@ -329,13 +329,17 @@ const AppreciationFolderView = () => {
       )}
 
       {/* Files Grid */}
-      <Grid container spacing={3}>
+      <Grid container spacing={3} justifyContent="center">
         {files.map((file) => (
           <Grid item xs={12} sm={6} md={4} key={file._id}>
             <Card
               sx={{
                 height: '100%',
                 display: 'flex',
+                minWidth: '300px',
+                maxWidth: '300px',
+                minHeight: '350px',
+                maxHeight: '350px',
                 flexDirection: 'column',
                 background: 'linear-gradient(135deg, #fff 0%, #f8f9fa 100%)',
                 border: '2px solid transparent',
@@ -418,7 +422,7 @@ const AppreciationFolderView = () => {
                       onClick={() => openEditFileDialog(file)}
                       sx={{ color: '#ff9800', minWidth: 'auto' }}
                     >
-                      සංස්කරණය
+                      
                     </Button>
                     <Button
                       size="small"
@@ -426,7 +430,7 @@ const AppreciationFolderView = () => {
                       onClick={() => openDeleteFileDialog(file)}
                       sx={{ color: '#f44336', minWidth: 'auto' }}
                     >
-                      ඉවත් කරන්න
+                      
                     </Button>
                   </Box>
                 )}
@@ -591,8 +595,170 @@ const AppreciationFolderView = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Edit and Delete Dialogs - Similar structure to create dialog */}
-      {/* ... (Edit and Delete dialogs would be similar to the create dialog) */}
+      {/* Edit File Dialog */}
+      <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ bgcolor: '#ff9800', color: 'white', fontWeight: 'bold' }}>
+          ගොනුව සංස්කරණය කරන්න
+        </DialogTitle>
+        <DialogContent sx={{ mt: 2 }}>
+          <TextField
+            fullWidth
+            label="ගොනු නම"
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="විස්තරය"
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            margin="normal"
+            multiline
+            rows={3}
+            required
+          />
+          <TextField
+            fullWidth
+            label="අන්තර්ගතය (විකල්ප)"
+            value={formData.content}
+            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+            margin="normal"
+            multiline
+            rows={4}
+          />
+
+          {/* File Upload Section */}
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="h6" sx={{ mb: 2, color: '#ff9800', fontWeight: 'bold' }}>
+              ගොනු උඩුගත කරන්න (විකල්ප)
+            </Typography>
+            <CloudinaryUpload
+              onUploadSuccess={(files) => setFormData({ ...formData, attachments: files })}
+              onUploadError={(error) => setError('ගොනු උඩුගත කිරීමේදී දෝෂයක් ඇති විය')}
+              existingFiles={formData.attachments}
+              onRemoveFile={(index) => {
+                const updatedAttachments = formData.attachments.filter((_, i) => i !== index);
+                setFormData({ ...formData, attachments: updatedAttachments });
+              }}
+              maxFiles={5}
+              acceptedTypes={['image/*', 'application/pdf']}
+            />
+          </Box>
+
+          {/* Source Links Section */}
+          <Box sx={{ mt: 3 }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              <Typography variant="h6">මූලාශ්‍ර සබැඳි (විකල්ප)</Typography>
+              <Button
+                startIcon={<AddIcon />}
+                onClick={addSourceLink}
+                sx={{ color: '#ff9800' }}
+              >
+                සබැඳියක් එක් කරන්න
+              </Button>
+            </Box>
+
+            {formData.sourceLinks.map((link, index) => (
+              <Box key={index} sx={{ mb: 2, p: 2, border: '1px solid #ddd', borderRadius: 2 }}>
+                <TextField
+                  fullWidth
+                  label="සබැඳි නම"
+                  value={link.title}
+                  onChange={(e) => updateSourceLink(index, 'title', e.target.value)}
+                  margin="normal"
+                  size="small"
+                />
+                <TextField
+                  fullWidth
+                  label="URL"
+                  value={link.url}
+                  onChange={(e) => updateSourceLink(index, 'url', e.target.value)}
+                  margin="normal"
+                  size="small"
+                />
+                <TextField
+                  fullWidth
+                  label="විස්තරය (විකල්ප)"
+                  value={link.description}
+                  onChange={(e) => updateSourceLink(index, 'description', e.target.value)}
+                  margin="normal"
+                  size="small"
+                />
+                <Button
+                  onClick={() => removeSourceLink(index)}
+                  color="error"
+                  size="small"
+                  sx={{ mt: 1 }}
+                >
+                  ඉවත් කරන්න
+                </Button>
+              </Box>
+            ))}
+          </Box>
+
+          <Alert severity="info" sx={{ mt: 2 }}>
+            ගොනු සහ මූලාශ්‍ර සබැඳි විකල්ප වේ. ඔබට අවශ්‍ය ඒවා එක් කරන්න.
+          </Alert>
+        </DialogContent>
+        <DialogActions sx={{ p: 3 }}>
+          <Button onClick={() => setOpenEditDialog(false)}>
+            අවලංගු කරන්න
+          </Button>
+          <Button
+            onClick={handleEditFile}
+            variant="contained"
+            disabled={!formData.title || !formData.description}
+            sx={{
+              background: 'linear-gradient(45deg, #ff9800, #ffc107)',
+              '&:hover': { background: 'linear-gradient(45deg, #f57c00, #ff8f00)' }
+            }}
+          >
+            යාවත්කාලීන කරන්න
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete File Dialog */}
+      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ bgcolor: '#f44336', color: 'white', fontWeight: 'bold' }}>
+          ගොනුව ඉවත් කරන්න
+        </DialogTitle>
+        <DialogContent sx={{ mt: 2 }}>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            ඔබට මෙම ගොනුව ඉවත් කිරීමට අවශ්‍යද?
+          </Typography>
+          {selectedFile && (
+            <Box sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                {selectedFile.title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {selectedFile.description}
+              </Typography>
+            </Box>
+          )}
+          <Alert severity="warning" sx={{ mt: 2 }}>
+            මෙම ක්‍රියාව ආපසු හැරවිය නොහැක. ගොනුව ස්ථිරවම ඉවත් වේ.
+          </Alert>
+        </DialogContent>
+        <DialogActions sx={{ p: 3 }}>
+          <Button onClick={() => setOpenDeleteDialog(false)}>
+            අවලංගු කරන්න
+          </Button>
+          <Button
+            onClick={handleDeleteFile}
+            variant="contained"
+            sx={{
+              bgcolor: '#f44336',
+              '&:hover': { bgcolor: '#d32f2f' }
+            }}
+          >
+            ඉවත් කරන්න
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

@@ -261,12 +261,12 @@ const navItems = [
 
       // විචාර හා රසවින්දන Category
   {
-    name: "විචාර හා රසවින්දන",
+    name: "විචාර රසවින්දන හා වෙනත්",
     icon: <MenuBookIcon />,
     subcategories: [
       { name: "විචාර", path: "/reviews", icon: <MenuBookIcon /> },
       { name: "රසවින්දන", path: "/appreciation", icon: <MenuBookIcon /> },
-      { name: "වෙනත් අමතර", path: "/otherEnt", icon: <MenuBookIcon /> },
+      { name: "වෙනත්", path: "/otherEnt", icon: <MenuBookIcon /> },
     ],
   },
 
