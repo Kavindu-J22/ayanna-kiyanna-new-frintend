@@ -432,7 +432,11 @@ const PaperStructuresPage = () => {
           <Grid container spacing={3} justifyContent="center">
             <AnimatePresence>
               {filteredPaperStructures.map((paperStructure, index) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={paperStructure._id}>
+                <Grid item xs={12} sm={6} md={4} lg={3} key={paperStructure._id}
+                sx={{
+                display: 'grid',
+                alignItems: 'stretch', // This ensures all cards stretch to the same height
+                }}>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -445,8 +449,6 @@ const PaperStructuresPage = () => {
                         display: 'flex',
                         minWidth: '300px',
                         maxWidth: '300px',
-                        minHeight: '350px',
-                        maxHeight: '350px',
                         flexDirection: 'column',
                         borderRadius: 3,
                         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',

@@ -494,7 +494,11 @@ const PaperBankPage = () => {
           <Grid container spacing={3} justifyContent="center">
             <AnimatePresence>
               {filteredPapers.map((paper, index) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={paper._id}>
+                <Grid item xs={12} sm={6} md={4} lg={3} key={paper._id}
+                sx={{
+                display: 'grid',
+                alignItems: 'stretch', // This ensures all cards stretch to the same height
+                }}>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -509,8 +513,6 @@ const PaperBankPage = () => {
                         display: 'flex',
                         minWidth: '300px',
                         maxWidth: '300px',
-                        minHeight: '420px',
-                        maxHeight: '420px',
                         flexDirection: 'column',
                         background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
                         borderRadius: 3,

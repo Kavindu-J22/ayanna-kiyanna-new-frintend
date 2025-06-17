@@ -452,7 +452,11 @@ const GenericFolderView = ({
       <Grid container spacing={3} justifyContent="center">
         <AnimatePresence>
           {files.map((file, index) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={file._id}>
+            <Grid item xs={12} sm={6} md={4} lg={3} key={file._id}
+            sx={{
+            display: 'grid',
+            alignItems: 'stretch', // This ensures all cards stretch to the same height
+            }}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -467,8 +471,6 @@ const GenericFolderView = ({
                     display: 'flex',
                     minWidth: '300px',
                     maxWidth: '300px',
-                    minHeight: '370px',
-                    maxHeight: '370px',
                     flexDirection: 'column',
                     background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
                     borderRadius: 3,

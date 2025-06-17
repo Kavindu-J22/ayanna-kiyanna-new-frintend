@@ -241,15 +241,17 @@ const AppreciationPage = () => {
       {/* Folders Grid */}
       <Grid container spacing={3} justifyContent="center">
         {folders.map((folder) => (
-          <Grid item xs={12} sm={6} md={4} key={folder._id}>
+          <Grid item xs={12} sm={6} md={4} key={folder._id}
+          sx={{
+          display: 'grid',
+          alignItems: 'stretch', // This ensures all cards stretch to the same height
+          }}>
             <Card
               sx={{
                 height: '100%',
                 display: 'flex',
                 minWidth: '300px',
                 maxWidth: '300px',
-                minHeight: '320px',
-                maxHeight: '320px',
                 flexDirection: 'column',
                 background: 'linear-gradient(135deg, #fff 0%, #f8f9fa 100%)',
                 border: '2px solid transparent',
