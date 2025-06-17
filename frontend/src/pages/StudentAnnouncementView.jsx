@@ -97,6 +97,12 @@ const StudentAnnouncementView = () => {
     }
   };
 
+  // Helper function to check if announcement is the latest (first in the list)
+  const isLatestAnnouncement = (announcement, allAnnouncements) => {
+    if (!allAnnouncements || allAnnouncements.length === 0) return false;
+    return allAnnouncements[0]._id === announcement._id;
+  };
+
   const getPriorityColor = (priority) => {
     switch (priority) {
       case 'Urgent':
@@ -202,11 +208,36 @@ const StudentAnnouncementView = () => {
                   flexDirection: 'column',
                   transition: 'all 0.3s ease',
                   opacity: isExpired(announcement.expiryDate) ? 0.7 : 1,
+                  position: 'relative',
                   '&:hover': {
                     transform: 'translateY(-4px)',
                     boxShadow: 6
                   }
                 }}>
+                  {/* New Badge for Latest Announcement */}
+                  {isLatestAnnouncement(announcement, announcements) && !isExpired(announcement.expiryDate) && (
+                    <Box sx={{
+                      position: 'absolute',
+                      top: 48,
+                      right: 18,
+                      zIndex: 1
+                    }}>
+                      <Chip
+                        label="New"
+                        color="success"
+                        size="small"
+                        variant="filled"
+                        sx={{
+                          fontWeight: 'bold',
+                          background: 'linear-gradient(135deg, #4caf50 0%, #66bb6a 100%)',
+                          color: 'white',
+                          '&:hover': {
+                            background: 'linear-gradient(135deg, #388e3c 0%, #4caf50 100%)'
+                          }
+                        }}
+                      />
+                    </Box>
+                  )}
                   <CardContent sx={{ flexGrow: 1 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                       <Typography variant="h6" fontWeight="bold" sx={{

@@ -113,6 +113,9 @@ const SpecificClass = () => {
   // Free Class Dialog State
   const [freeClassDialog, setFreeClassDialog] = useState(false);
 
+  // Announcement count state
+  const [announcementCount, setAnnouncementCount] = useState(0);
+
   // Function to handle payment button clicks with free class check
   const handlePaymentButtonClick = (navigateTo) => {
     if (classData?.isFreeClass) {
@@ -125,6 +128,7 @@ const SpecificClass = () => {
   useEffect(() => {
     fetchClassData();
     checkUserRole();
+    fetchAnnouncementCount();
   }, [classId]);
 
   // Add effect to check if class is special
@@ -169,6 +173,20 @@ const SpecificClass = () => {
       setError('Failed to load class data');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAnnouncementCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `https://ayanna-kiyanna-new-backend.onrender.com/api/announcements/class/${classId}/count`,
+        { headers: { 'x-auth-token': token } }
+      );
+      setAnnouncementCount(response.data.count || 0);
+    } catch (err) {
+      console.error('Error fetching announcement count:', err);
+      setAnnouncementCount(0);
     }
   };
 
@@ -1388,7 +1406,7 @@ const SpecificClass = () => {
                       }}
                         onClick={() => navigate(`/student-announcements/${classId}`)}
                       >
-                        <CardContent sx={{ textAlign: 'center', py: 3 }}>
+                        <CardContent sx={{ textAlign: 'center', py: 3, position: 'relative' }}>
                           <Notifications sx={{ fontSize: 40, mb: 2 }} />
                           <Typography variant="h6" fontWeight="bold" sx={{
                             fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
@@ -1396,8 +1414,30 @@ const SpecificClass = () => {
                             විශේෂ නිවේදන සහ දැනුවත් කිරීම්
                           </Typography>
                           <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
-                            නවතම දැනුම්දීම්
+                            නවතම දැනුම්දීම් ({announcementCount})
                           </Typography>
+                          {announcementCount > 0 && (
+                            <Box sx={{
+                              position: 'absolute',
+                              top: 8,
+                              right: 8,
+                              background: 'rgba(255, 255, 255, 0.9)',
+                              borderRadius: '50%',
+                              width: 24,
+                              height: 24,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}>
+                              <Typography variant="caption" sx={{
+                                color: 'primary.main',
+                                fontWeight: 'bold',
+                                fontSize: '0.7rem'
+                              }}>
+                                {announcementCount}
+                              </Typography>
+                            </Box>
+                          )}
                         </CardContent>
                       </Card>
                     </motion.div>

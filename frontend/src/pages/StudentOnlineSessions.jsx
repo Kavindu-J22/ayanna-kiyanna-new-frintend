@@ -164,12 +164,15 @@ const StudentOnlineSessions = () => {
       </Box>
 
       {/* Sessions Grid */}
-      <Grid container spacing={3}>
+      <Grid container spacing={3} justifyContent="center">
         <AnimatePresence>
           {sessions.map((session) => {
             const statusInfo = getSessionStatus(session);
             return (
-              <Grid item xs={12} md={6} lg={4} key={session._id}>
+              <Grid item xs={12} md={6} lg={4} key={session._id} sx={{
+              display: 'grid',
+              alignItems: 'stretch', // This ensures all cards stretch to the same height
+              }}>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -178,6 +181,8 @@ const StudentOnlineSessions = () => {
                 >
                   <Card sx={{
                     height: '100%',
+                    maxWidth: '350px',
+                    minWidth: '350px',
                     background: statusInfo.status === 'live' 
                       ? 'linear-gradient(135deg, #4caf50 0%, #2e7d32 100%)'
                       : statusInfo.status === 'ended'
