@@ -369,33 +369,8 @@ const StudentExamView = () => {
                       </Box>
                     )}
 
-                    {/* Show message for overdue exams */}
-                    {exam.examLink && exam.isOverdue && (
-                      <Box sx={{ p: 2, pt: 0 }}>
-                        <Alert severity="warning" sx={{
-                          background: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
-                          border: '2px solid #ff6b6b',
-                          borderRadius: 3
-                        }}>
-                          <Typography sx={{
-                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-                            fontWeight: 'bold',
-                            fontSize: '1.1rem'
-                          }}>
-                            🕐 විභාගය කාලය ඉකුත්
-                          </Typography>
-                          <Typography sx={{
-                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-                            mt: 1
-                          }}>
-                            මෙම විභාගය සඳහා නියමිත කාලය ඉකුත් වී ඇත
-                          </Typography>
-                        </Alert>
-                      </Box>
-                    )}
-
-                    {/* Show message for exams with assigned marks */}
-                    {exam.examLink && exam.hasMarks && !exam.isOverdue && (
+                    {/* Show message for exams with assigned marks (priority over overdue) */}
+                    {exam.examLink && exam.hasMarks && (
                       <Box sx={{ p: 2, pt: 0 }}>
                         <Alert severity="info" sx={{
                           background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
@@ -414,6 +389,31 @@ const StudentExamView = () => {
                             mt: 1
                           }}>
                             මෙම විභාගය සඳහා ලකුණු ප්‍රදානය කර ඇත
+                          </Typography>
+                        </Alert>
+                      </Box>
+                    )}
+
+                    {/* Show message for overdue exams (only if no marks assigned) */}
+                    {exam.examLink && exam.isOverdue && !exam.hasMarks && (
+                      <Box sx={{ p: 2, pt: 0 }}>
+                        <Alert severity="warning" sx={{
+                          background: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+                          border: '2px solid #ff6b6b',
+                          borderRadius: 3
+                        }}>
+                          <Typography sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                            fontWeight: 'bold',
+                            fontSize: '1.1rem'
+                          }}>
+                            🕐 විභාගය කාලය ඉකුත්
+                          </Typography>
+                          <Typography sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                            mt: 1
+                          }}>
+                            මෙම විභාගය සඳහා නියමිත කාලය ඉකුත් වී ඇත
                           </Typography>
                         </Alert>
                       </Box>

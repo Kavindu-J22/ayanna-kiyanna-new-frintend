@@ -26,7 +26,11 @@ import {
   ListItemAvatar,
   ListItemText,
   Badge,
-  InputAdornment
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import {
   ArrowBack,
@@ -37,7 +41,8 @@ import {
   Person,
   Assignment,
   AttachFile,
-  Search
+  Search,
+  Sort
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -57,6 +62,9 @@ const AssignmentSubmissions = () => {
 
   // Search functionality
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Sorting functionality
+  const [sortBy, setSortBy] = useState('default');
 
   // Grading dialog state
   const [gradeDialog, setGradeDialog] = useState(false);
@@ -146,13 +154,49 @@ const AssignmentSubmissions = () => {
     return 'error';
   };
 
-  // Filter functions for search
-  const filteredSubmissions = submissions.filter(submission => {
-    const fullName = `${submission.studentId.firstName} ${submission.studentId.lastName}`.toLowerCase();
-    const studentId = submission.studentId.studentId.toLowerCase();
-    const query = searchQuery.toLowerCase();
-    return fullName.includes(query) || studentId.includes(query);
-  });
+  // Filter and sort functions
+  const filteredAndSortedSubmissions = submissions
+    .filter(submission => {
+      const fullName = `${submission.studentId.firstName} ${submission.studentId.lastName}`.toLowerCase();
+      const studentId = submission.studentId.studentId.toLowerCase();
+      const query = searchQuery.toLowerCase();
+      return fullName.includes(query) || studentId.includes(query);
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'marks-high-low':
+          // Sort by marks (high to low), put ungraded at the end
+          if (a.marks === null && b.marks === null) return 0;
+          if (a.marks === null) return 1;
+          if (b.marks === null) return -1;
+          return b.marks - a.marks;
+        case 'marks-low-high':
+          // Sort by marks (low to high), put ungraded at the end
+          if (a.marks === null && b.marks === null) return 0;
+          if (a.marks === null) return 1;
+          if (b.marks === null) return -1;
+          return a.marks - b.marks;
+        case 'name-a-z':
+          // Sort by student name A-Z
+          const nameA = `${a.studentId.firstName} ${a.studentId.lastName}`.toLowerCase();
+          const nameB = `${b.studentId.firstName} ${b.studentId.lastName}`.toLowerCase();
+          return nameA.localeCompare(nameB);
+        case 'name-z-a':
+          // Sort by student name Z-A
+          const nameA2 = `${a.studentId.firstName} ${a.studentId.lastName}`.toLowerCase();
+          const nameB2 = `${b.studentId.firstName} ${b.studentId.lastName}`.toLowerCase();
+          return nameB2.localeCompare(nameA2);
+        case 'date-new-old':
+          // Sort by submission date (newest first)
+          return new Date(b.submittedAt) - new Date(a.submittedAt);
+        case 'date-old-new':
+          // Sort by submission date (oldest first)
+          return new Date(a.submittedAt) - new Date(b.submittedAt);
+        default:
+          // Default sorting (newest first)
+          return new Date(b.submittedAt) - new Date(a.submittedAt);
+      }
+    });
 
   const filteredNotSubmittedStudents = notSubmittedStudents.filter(student => {
     const fullName = `${student.firstName} ${student.lastName}`.toLowerCase();
@@ -271,22 +315,40 @@ const AssignmentSubmissions = () => {
           </Grid>
         </Grid>
 
-        {/* Search Section */}
+        {/* Search and Sort Section */}
         <Paper elevation={2} sx={{ p: 3, mb: 3, borderRadius: 3 }}>
-          <TextField
-            fullWidth
-            placeholder="සිසුවාගේ නම හෝ Student ID අනුව සොයන්න..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search />
-                </InputAdornment>
-              ),
-            }}
-            sx={{ maxWidth: 500 }}
-          />
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+            <TextField
+              placeholder="සිසුවාගේ නම හෝ Student ID අනුව සොයන්න..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ flex: 1, minWidth: 300 }}
+            />
+            <FormControl sx={{ minWidth: 200 }}>
+              <InputLabel>ලකුණු අනුව සැකසීම</InputLabel>
+              <Select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                label="ලකුණු අනුව සැකසීම"
+                startAdornment={<Sort sx={{ mr: 1, color: 'action.active' }} />}
+              >
+                <MenuItem value="default">පෙරනිමි (නවතම පළමුව)</MenuItem>
+                <MenuItem value="marks-high-low">ලකුණු: වැඩි සිට අඩු</MenuItem>
+                <MenuItem value="marks-low-high">ලකුණු: අඩු සිට වැඩි</MenuItem>
+                <MenuItem value="name-a-z">නම: A සිට Z</MenuItem>
+                <MenuItem value="name-z-a">නම: Z සිට A</MenuItem>
+                <MenuItem value="date-new-old">දිනය: නව සිට පැරණි</MenuItem>
+                <MenuItem value="date-old-new">දිනය: පැරණි සිට නව</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         </Paper>
 
         {/* Smart Notes Section */}
@@ -335,7 +397,7 @@ const AssignmentSubmissions = () => {
           >
             <Tab
               label={
-                <Badge badgeContent={filteredSubmissions.length} color="primary">
+                <Badge badgeContent={filteredAndSortedSubmissions.length} color="primary">
                   ඉදිරිපත් කළ ප්‍රතිචාර
                 </Badge>
               }
@@ -352,9 +414,9 @@ const AssignmentSubmissions = () => {
           {/* Submitted Submissions Tab */}
           {tabValue === 0 && (
             <Box sx={{ p: 3 }}>
-              {filteredSubmissions.length > 0 ? (
+              {filteredAndSortedSubmissions.length > 0 ? (
                 <Grid container spacing={3}>
-                  {filteredSubmissions.map((submission) => (
+                  {filteredAndSortedSubmissions.map((submission) => (
                     <Grid item xs={12} md={6} key={submission._id}>
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}

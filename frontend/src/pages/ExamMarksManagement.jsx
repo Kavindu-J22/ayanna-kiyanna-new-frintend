@@ -23,6 +23,11 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  InputAdornment,
   useTheme,
   useMediaQuery
 } from '@mui/material';
@@ -32,7 +37,8 @@ import {
   Search,
   Assignment,
   Person,
-  Edit
+  Edit,
+  Sort
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -49,6 +55,7 @@ const ExamMarksManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('default');
 
   // Dialog states
   const [marksDialog, setMarksDialog] = useState(false);
@@ -237,22 +244,93 @@ const ExamMarksManagement = () => {
           )}
         </Paper>
 
-        {/* Search */}
-        <Paper sx={{ p: 2, mb: 3 }}>
-          <TextField
-            fullWidth
-            placeholder="සිසු නම හෝ Student ID අනුව සොයන්න..."
-            value={searchTerm}
-            onChange={handleSearch}
-            InputProps={{
-              startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />
-            }}
-          />
+        {/* Search and Sort */}
+        <Paper sx={{ p: 3, mb: 3 }}>
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+            <TextField
+              placeholder="සිසු නම හෝ Student ID අනුව සොයන්න..."
+              value={searchTerm}
+              onChange={handleSearch}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ flex: 1, minWidth: 300 }}
+            />
+            <FormControl sx={{ minWidth: 200 }}>
+              <InputLabel>ලකුණු අනුව සැකසීම</InputLabel>
+              <Select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                label="ලකුණු අනුව සැකසීම"
+                startAdornment={<Sort sx={{ mr: 1, color: 'action.active' }} />}
+              >
+                <MenuItem value="default">පෙරනිමි (නම අනුව)</MenuItem>
+                <MenuItem value="marks-high-low">ලකුණු: වැඩි සිට අඩු</MenuItem>
+                <MenuItem value="marks-low-high">ලකුණු: අඩු සිට වැඩි</MenuItem>
+                <MenuItem value="name-a-z">නම: A සිට Z</MenuItem>
+                <MenuItem value="name-z-a">නම: Z සිට A</MenuItem>
+                <MenuItem value="graded-first">ලකුණු ලබා දුන් පළමුව</MenuItem>
+                <MenuItem value="ungraded-first">ලකුණු නොලබා දුන් පළමුව</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         </Paper>
 
         {/* Students Grid */}
         <Grid container spacing={3}>
-          {students.map((student) => (
+          {students
+            .sort((a, b) => {
+              switch (sortBy) {
+                case 'marks-high-low':
+                  // Sort by marks (high to low), put ungraded at the end
+                  if (!a.examMark && !b.examMark) return 0;
+                  if (!a.examMark) return 1;
+                  if (!b.examMark) return -1;
+                  return b.examMark.marks - a.examMark.marks;
+                case 'marks-low-high':
+                  // Sort by marks (low to high), put ungraded at the end
+                  if (!a.examMark && !b.examMark) return 0;
+                  if (!a.examMark) return 1;
+                  if (!b.examMark) return -1;
+                  return a.examMark.marks - b.examMark.marks;
+                case 'name-a-z':
+                  // Sort by student name A-Z
+                  const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+                  const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+                  return nameA.localeCompare(nameB);
+                case 'name-z-a':
+                  // Sort by student name Z-A
+                  const nameA2 = `${a.firstName} ${a.lastName}`.toLowerCase();
+                  const nameB2 = `${b.firstName} ${b.lastName}`.toLowerCase();
+                  return nameB2.localeCompare(nameA2);
+                case 'graded-first':
+                  // Show graded students first
+                  if (a.examMark && !b.examMark) return -1;
+                  if (!a.examMark && b.examMark) return 1;
+                  // If both graded or both ungraded, sort by name
+                  const nameA3 = `${a.firstName} ${a.lastName}`.toLowerCase();
+                  const nameB3 = `${b.firstName} ${b.lastName}`.toLowerCase();
+                  return nameA3.localeCompare(nameB3);
+                case 'ungraded-first':
+                  // Show ungraded students first
+                  if (!a.examMark && b.examMark) return -1;
+                  if (a.examMark && !b.examMark) return 1;
+                  // If both graded or both ungraded, sort by name
+                  const nameA4 = `${a.firstName} ${a.lastName}`.toLowerCase();
+                  const nameB4 = `${b.firstName} ${b.lastName}`.toLowerCase();
+                  return nameA4.localeCompare(nameB4);
+                default:
+                  // Default sorting by name A-Z
+                  const nameA5 = `${a.firstName} ${a.lastName}`.toLowerCase();
+                  const nameB5 = `${b.firstName} ${b.lastName}`.toLowerCase();
+                  return nameA5.localeCompare(nameB5);
+              }
+            })
+            .map((student) => (
             <Grid item xs={12} sm={6} md={4} key={student._id} sx={{
             display: 'grid',
             alignItems: 'stretch', // This ensures all cards stretch to the same height
