@@ -607,33 +607,54 @@ const SpecificClass = () => {
                   border: '2px solid',
                   borderColor: 'primary.200'
                 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="h6" fontWeight="bold" sx={{
-                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-                    }}>
+                  {/* Header with Add Button */}
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center', 
+                    mb: 3 
+                  }}>
+                    <Typography 
+                      variant="h6" 
+                      fontWeight="bold" 
+                      sx={{
+                        fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
+                      }}
+                    >
                       පන්ති නිරීක්ෂකයින්
                     </Typography>
+                    
                     {isAdmin && (
-                      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                        <Tooltip title="නිරීක්ෂකයෙකු එක් කරන්න">
-                          <IconButton
-                            color="primary"
-                            onClick={() => setAddMonitorDialog(true)}
-                            disabled={classData.monitors?.length >= 5}
-                            size="small"
-                          >
-                            <PersonAdd />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
+                      <Tooltip title="නිරීක්ෂකයෙකු එක් කරන්න">
+                        <IconButton
+                          color="primary"
+                          onClick={() => setAddMonitorDialog(true)}
+                          disabled={classData.monitors?.length >= 5}
+                          size="small"
+                          sx={{ ml: 1 }}
+                        >
+                          <PersonAdd />
+                        </IconButton>
+                      </Tooltip>
                     )}
                   </Box>
 
+                  {/* Monitors List */}
                   {classData.monitors && classData.monitors.length > 0 ? (
-                    <List dense>
+                    <List dense sx={{ mb: 2 }}>
                       {classData.monitors.map((monitor, index) => (
-                        <ListItem key={monitor._id} sx={{ px: 0 }}>
-                          <ListItemAvatar>
+                        <ListItem 
+                          key={monitor._id} 
+                          sx={{ 
+                            px: 0,
+                            py: 1,
+                            '&:not(:last-child)': {
+                              borderBottom: '1px solid',
+                              borderColor: 'divider'
+                            }
+                          }}
+                        >
+                          <ListItemAvatar sx={{ minWidth: 40 }}>
                             <Avatar
                               src={monitor.profilePicture}
                               sx={{ width: 32, height: 32 }}
@@ -641,41 +662,58 @@ const SpecificClass = () => {
                               {monitor.firstName?.charAt(0)}
                             </Avatar>
                           </ListItemAvatar>
+                          
                           <ListItemText
                             primary={`${monitor.firstName} ${monitor.lastName}`}
                             secondary={monitor.studentId}
-                            primaryTypographyProps={{ fontSize: '0.9rem' }}
-                            secondaryTypographyProps={{ fontSize: '0.8rem' }}
+                            primaryTypographyProps={{ 
+                              fontSize: '0.9rem',
+                              fontWeight: 'medium'
+                            }}
+                            secondaryTypographyProps={{ 
+                              fontSize: '0.75rem',
+                              color: 'text.secondary'
+                            }}
+                            sx={{ mr: 1 }}
                           />
+                          
                           {isAdmin && (
                             <ListItemSecondaryAction>
-                              <IconButton
-                                edge="end"
-                                size="small"
-                                color="error"
-                                onClick={() => handleRemoveMonitor(monitor._id)}
-                                disabled={removingMonitor === monitor._id}
-                              >
-                                {removingMonitor === monitor._id ? (
-                                  <CircularProgress size={16} />
-                                ) : (
-                                  <PersonRemove />
-                                )}
-                              </IconButton>
+                              <Tooltip title="ඉවත් කරන්න">
+                                <IconButton
+                                  edge="end"
+                                  size="small"
+                                  color="error"
+                                  onClick={() => handleRemoveMonitor(monitor._id)}
+                                  disabled={removingMonitor === monitor._id}
+                                  sx={{ ml: 1 }}
+                                >
+                                  {removingMonitor === monitor._id ? (
+                                    <CircularProgress size={16} />
+                                  ) : (
+                                    <PersonRemove fontSize="small" />
+                                  )}
+                                </IconButton>
+                              </Tooltip>
                             </ListItemSecondaryAction>
                           )}
                         </ListItem>
                       ))}
                     </List>
                   ) : (
-                    <Typography variant="body2" color="text.secondary" textAlign="center">
+                    <Typography 
+                      variant="body2" 
+                      color="text.secondary" 
+                      textAlign="center"
+                      sx={{ mb: 2, fontStyle: 'italic' }}
+                    >
                       නිරීක්ෂකයින් නොමැත
                     </Typography>
                   )}
 
                   {/* Confirm Monitors Button */}
                   {isAdmin && classData.monitors && classData.monitors.length > 0 && (
-                    <Box sx={{ mt: 2 }}>
+                    <Box>
                       <Button
                         fullWidth
                         variant="contained"
@@ -707,6 +745,7 @@ const SpecificClass = () => {
                       >
                         {confirmingMonitors ? 'නිරීක්ෂකයින් තහවුරු කරමින්...' : 'නිරීක්ෂකයින් තහවුරු කරන්න'}
                       </Button>
+                      
                       <Typography
                         variant="caption"
                         color="text.secondary"
@@ -839,7 +878,7 @@ const SpecificClass = () => {
               {isAdmin ? 'පන්ති කළමනාකරණ විකල්ප' : 'මගේ පන්ති විකල්ප'}
             </Typography>
 
-            <Grid container spacing={3}>
+            <Grid container spacing={3} justifyContent="center">
               {isAdmin ? (
                 // Admin Management Options
                 <>
@@ -847,6 +886,8 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
+                        maxWidth: '300px',
+                        minWidth: '300px',
                         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                         color: 'white',
                         cursor: 'pointer',
@@ -873,6 +914,8 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
+                        maxWidth: '300px',
+                        minWidth: '300px',
                         background: 'linear-gradient(135deg, #4caf50 0%, #2e7d32 100%)',
                         color: 'white',
                         cursor: 'pointer',
@@ -899,6 +942,8 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
+                        maxWidth: '300px',
+                        minWidth: '300px',
                         background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
                         color: 'white',
                         cursor: 'pointer',
@@ -927,6 +972,8 @@ const SpecificClass = () => {
                         onClick={() => handlePaymentButtonClick(`/admin-class-payments/${classId}`)}
                         sx={{
                           height: '100%',
+                          maxWidth: '300px',
+                          minWidth: '300px',
                           background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
                           color: '#333',
                           cursor: 'pointer',
@@ -951,6 +998,8 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
+                        maxWidth: '300px',
+                        minWidth: '300px',
                         background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
                         color: '#333',
                         cursor: 'pointer',
@@ -977,6 +1026,8 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
+                        maxWidth: '300px',
+                        minWidth: '300px',
                         background: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
                         color: '#333',
                         cursor: 'pointer',
@@ -1003,6 +1054,8 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
+                        maxWidth: '300px',
+                        minWidth: '300px',
                         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                         color: 'white',
                         cursor: 'pointer',
@@ -1055,7 +1108,10 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
-                        background: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+                        minWidth: '300px',
+                        maxWidth: '300px',
+                        minHeight: '200px',
+                        background: 'linear-gradient(135deg, #a18cd1 0%,rgb(234, 65, 152) 100%)',
                         color: 'white',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'
@@ -1081,7 +1137,10 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        minWidth: '300px',
+                        maxWidth: '300px',
+                        minHeight: '200px',
+                        background: 'linear-gradient(135deg,rgb(102, 177, 234) 0%,rgb(85, 75, 162) 100%)',
                         color: 'white',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'
@@ -1112,6 +1171,8 @@ const SpecificClass = () => {
                       onClick={() => navigate('/student-profile')}
                        sx={{
                         height: '100%',
+                        minWidth: '300px',
+                        maxWidth: '300px',
                         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                         color: 'white',
                         cursor: 'pointer',
@@ -1136,6 +1197,8 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
+                        minWidth: '300px',
+                        maxWidth: '300px',
                         background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
                         color: 'white',
                         cursor: 'pointer',
@@ -1178,6 +1241,8 @@ const SpecificClass = () => {
                         onClick={() => handlePaymentButtonClick(`/student-class-payments/${classId}`)}
                         sx={{
                           height: '100%',
+                          minWidth: '300px',
+                          maxWidth: '300px',
                           background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
                           color: '#333',
                           cursor: 'pointer',
@@ -1202,6 +1267,8 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
+                        minWidth: '300px',
+                        maxWidth: '300px',
                         background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
                         color: '#333',
                         cursor: 'pointer',
@@ -1228,6 +1295,8 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
+                        minWidth: '300px',
+                        maxWidth: '300px',
                         background: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
                         color: '#333',
                         cursor: 'pointer',
@@ -1254,7 +1323,9 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        minWidth: '300px',
+                        maxWidth: '300px',
+                        background: 'linear-gradient(135deg,rgb(102, 234, 186) 0%,rgb(26, 158, 87) 100%)',
                         color: 'white',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'
@@ -1280,6 +1351,8 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
+                        minWidth: '300px',
+                        maxWidth: '300px',
                         background: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
                         color: '#333',
                         cursor: 'pointer',
@@ -1306,7 +1379,9 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
-                        background: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+                        minWidth: '300px',
+                        maxWidth: '300px',
+                        background: 'linear-gradient(135deg,rgb(140, 183, 209) 0%,rgb(234, 67, 103) 100%)',
                         color: 'white',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'
@@ -1332,7 +1407,9 @@ const SpecificClass = () => {
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Card sx={{
                         height: '100%',
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        minWidth: '300px',
+                        maxWidth: '300px',
+                        background: 'linear-gradient(135deg, #667eea 0%,rgb(75, 129, 162) 100%)',
                         color: 'white',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'

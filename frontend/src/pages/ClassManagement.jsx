@@ -291,7 +291,7 @@ const ClassManagement = () => {
         </Paper>
 
         {/* Statistics Cards */}
-        <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid container spacing={2} sx={{ mb: 3 }} justifyContent="center">
           {statsCards.map((stat, index) => (
             <Grid item xs={6} sm={4} md={3} key={index}>
               <motion.div whileHover={{ scale: 1.02 }}>
@@ -299,6 +299,8 @@ const ClassManagement = () => {
                   background: `linear-gradient(135deg, ${stat.color} 0%, ${stat.color}99 100%)`,
                   color: 'white',
                   height: '140px',
+                  minWidth: '300px',
+                  maxWidth: '300px',
                   display: 'flex',
                   alignItems: 'center'
                 }}>
