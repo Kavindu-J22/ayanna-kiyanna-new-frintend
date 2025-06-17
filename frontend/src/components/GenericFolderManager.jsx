@@ -247,7 +247,7 @@ const GenericFolderManager = ({
             {title}
           </Typography>
           <Typography
-            variant="h6"
+            variant="h7"
             sx={{
               fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
               opacity: 0.9,
@@ -322,7 +322,7 @@ const GenericFolderManager = ({
       </Dialog>
 
       {/* Folders Grid */}
-      <Grid container spacing={3}>
+      <Grid container spacing={3} justifyContent="center">
         <AnimatePresence>
           {folders.map((folder, index) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={folder._id}>
@@ -338,6 +338,10 @@ const GenericFolderManager = ({
                   sx={{
                     height: '100%',
                     display: 'flex',
+                    maxWidth: '350px',
+                    minWidth: '350px',
+                    minHeight: '300px',
+                    maxHeight: '300px',
                     flexDirection: 'column',
                     background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
                     borderRadius: 3,
@@ -377,11 +381,16 @@ const GenericFolderManager = ({
                       variant="body2"
                       color="text.secondary"
                       sx={{
-                        fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
-                        mb: 2,
-                        lineHeight: 1.5
+                      fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                      mb: 2,
+                      lineHeight: 1.5,
+                      minHeight: '60px',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden'
                       }}
-                    >
+                      >
                       {folder.description}
                     </Typography>
 

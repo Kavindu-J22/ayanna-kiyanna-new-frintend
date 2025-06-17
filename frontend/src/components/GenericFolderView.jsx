@@ -431,7 +431,7 @@ const GenericFolderView = ({
             {folder.title}
           </Typography>
           <Typography
-            variant="h6"
+            variant="h7"
             sx={{
               fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
               opacity: 0.9
@@ -449,7 +449,7 @@ const GenericFolderView = ({
       )}
 
       {/* Files Grid */}
-      <Grid container spacing={3}>
+      <Grid container spacing={3} justifyContent="center">
         <AnimatePresence>
           {files.map((file, index) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={file._id}>
@@ -465,6 +465,10 @@ const GenericFolderView = ({
                   sx={{
                     height: '100%',
                     display: 'flex',
+                    minWidth: '300px',
+                    maxWidth: '300px',
+                    minHeight: '370px',
+                    maxHeight: '370px',
                     flexDirection: 'column',
                     background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
                     borderRadius: 3,
@@ -504,11 +508,16 @@ const GenericFolderView = ({
                       variant="body2"
                       color="text.secondary"
                       sx={{
-                        fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
-                        mb: 2,
-                        lineHeight: 1.5
+                      fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                      mb: 2,
+                      lineHeight: 1.5,
+                      minHeight: '30px',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden'
                       }}
-                    >
+                      >
                       {file.description}
                     </Typography>
 
