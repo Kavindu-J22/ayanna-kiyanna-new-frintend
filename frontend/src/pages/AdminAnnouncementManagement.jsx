@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -25,10 +25,7 @@ import {
   MenuItem,
   List,
   ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  useTheme,
-  useMediaQuery
+  ListItemText
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -51,8 +48,6 @@ import axios from 'axios';
 const AdminAnnouncementManagement = () => {
   const { classId } = useParams();
   const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   // State management
   const [announcements, setAnnouncements] = useState([]);
@@ -89,7 +84,7 @@ const AdminAnnouncementManagement = () => {
         `https://ayanna-kiyanna-new-backend.onrender.com/api/classes/${classId}`,
         { headers: { 'x-auth-token': token } }
       );
-      setClassData(response.data);
+      setClassData(response.data.data || response.data);
     } catch (err) {
       console.error('Error fetching class data:', err);
       setError('Failed to load class data');
@@ -104,10 +99,11 @@ const AdminAnnouncementManagement = () => {
         `https://ayanna-kiyanna-new-backend.onrender.com/api/announcements/class/${classId}`,
         { headers: { 'x-auth-token': token } }
       );
-      setAnnouncements(response.data.announcements);
+      setAnnouncements(response.data.announcements || []);
     } catch (err) {
       console.error('Error fetching announcements:', err);
       setError('Failed to load announcements');
+      setAnnouncements([]);
     } finally {
       setLoading(false);
     }
@@ -117,7 +113,24 @@ const AdminAnnouncementManagement = () => {
     const files = Array.from(event.target.files);
     if (files.length === 0) return;
 
+    // Validate file types and sizes
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'application/pdf'];
+
+    for (const file of files) {
+      if (!allowedTypes.includes(file.type)) {
+        setError('කරුණාකර වලංගු ගොනු වර්ගයක් තෝරන්න (JPG, PNG, GIF, PDF)');
+        return;
+      }
+      if (file.size > maxSize) {
+        setError('ගොනු ප්‍රමාණය 10MB ට වඩා අඩු විය යුතුය');
+        return;
+      }
+    }
+
     setUploading(true);
+    setError('');
+
     try {
       const uploadPromises = files.map(async (file) => {
         const formData = new FormData();
@@ -131,6 +144,10 @@ const AdminAnnouncementManagement = () => {
             body: formData
           }
         );
+
+        if (!response.ok) {
+          throw new Error('Upload failed');
+        }
 
         const data = await response.json();
         return {
@@ -149,7 +166,7 @@ const AdminAnnouncementManagement = () => {
       }));
     } catch (err) {
       console.error('Error uploading files:', err);
-      alert('Failed to upload files');
+      setError('ගොනු උඩුගත කිරීමේදී දෝෂයක් ඇතිවිය');
     } finally {
       setUploading(false);
     }
@@ -165,40 +182,147 @@ const AdminAnnouncementManagement = () => {
   const handleCreateAnnouncement = async () => {
     try {
       setFormLoading(true);
+      setError('');
       const token = localStorage.getItem('token');
 
-      // Validate required fields
-      if (!formData.title || !formData.description) {
-        alert('Title and description are required');
+      // Enhanced validation
+      if (!formData.title?.trim()) {
+        setError('මාතෘකාව අවශ්‍ය වේ');
         setFormLoading(false);
         return;
       }
 
+      if (!formData.description?.trim()) {
+        setError('විස්තරය අවශ්‍ය වේ');
+        setFormLoading(false);
+        return;
+      }
+
+      if (formData.title.trim().length > 200) {
+        setError('මාතෘකාව අක්ෂර 200 ට වඩා අඩු විය යුතුය');
+        setFormLoading(false);
+        return;
+      }
+
+      if (formData.description.trim().length > 2000) {
+        setError('විස්තරය අක්ෂර 2000 ට වඩා අඩු විය යුතුය');
+        setFormLoading(false);
+        return;
+      }
+
+      // Ensure priority is valid - never send empty string
+      const validPriorities = ['Low', 'Medium', 'High', 'Urgent'];
+      let priority = formData.priority;
+
+      // If priority is empty string, null, undefined, or not in valid list, use Medium
+      if (!priority || priority === '' || !validPriorities.includes(priority)) {
+        priority = 'Medium';
+      }
+
+      console.log('Priority validation - formData.priority:', formData.priority, 'final priority:', priority);
+      console.log('Type of priority:', typeof priority);
+      console.log('Priority includes check:', validPriorities.includes(priority));
+
       const announcementData = {
         title: formData.title.trim(),
         description: formData.description.trim(),
-        priority: formData.priority || 'Medium',
+        priority: priority, // Always include priority with valid value
         attachments: formData.attachments || [],
-        classId,
-        expiryDate: formData.expiryDate ? formData.expiryDate.toISOString() : null
+        classId
       };
+
+      // Only add expiryDate if it's a valid date
+      if (formData.expiryDate && formData.expiryDate instanceof Date && !isNaN(formData.expiryDate)) {
+        announcementData.expiryDate = formData.expiryDate.toISOString();
+      }
 
       console.log('Creating announcement with data:', announcementData);
 
-      await axios.post(
+      // Final validation before sending
+      if (!announcementData.priority || !validPriorities.includes(announcementData.priority)) {
+        console.error('Invalid priority detected before sending:', announcementData.priority);
+        setError('Priority validation failed. Please try again.');
+        setFormLoading(false);
+        return;
+      }
+
+      // Validate all required fields
+      if (!announcementData.title || announcementData.title.trim() === '') {
+        console.error('Title is empty');
+        setError('Title is required');
+        setFormLoading(false);
+        return;
+      }
+
+      if (!announcementData.description || announcementData.description.trim() === '') {
+        console.error('Description is empty');
+        setError('Description is required');
+        setFormLoading(false);
+        return;
+      }
+
+      if (!announcementData.classId) {
+        console.error('ClassId is missing');
+        setError('Class ID is required');
+        setFormLoading(false);
+        return;
+      }
+
+      console.log('All validations passed, sending request...');
+
+      // Validate authentication
+      if (!token) {
+        setError('Authentication required. Please login again.');
+        setFormLoading(false);
+        return;
+      }
+
+
+
+      const response = await axios.post(
         'https://ayanna-kiyanna-new-backend.onrender.com/api/announcements',
         announcementData,
-        { headers: { 'x-auth-token': token } }
+        {
+          headers: {
+            'x-auth-token': token,
+            'Content-Type': 'application/json'
+          }
+        }
       );
 
-      setCreateDialog(false);
-      resetForm();
-      fetchAnnouncements();
-      alert('Announcement created successfully!');
+      if (response.data.success) {
+        setCreateDialog(false);
+        resetForm();
+        fetchAnnouncements();
+        alert('දැනුම්දීම සාර්ථකව සාදන ලදී!');
+      }
     } catch (err) {
+      console.error('=== ERROR DETAILS ===');
       console.error('Error creating announcement:', err);
-      console.error('Error response:', err.response?.data);
-      alert(err.response?.data?.message || 'Failed to create announcement');
+      console.error('Error message:', err.message);
+      console.error('Error response data:', err.response?.data);
+      console.error('Error status:', err.response?.status);
+      console.error('Error headers:', err.response?.headers);
+      console.error('Request config:', err.config);
+      console.error('Request data sent:', err.config?.data);
+      console.error('Full error response:', err.response);
+
+      // Try to parse the response if it's a string
+      if (err.response?.data && typeof err.response.data === 'string') {
+        try {
+          const parsedData = JSON.parse(err.response.data);
+          console.error('Parsed error data:', parsedData);
+        } catch {
+          console.error('Could not parse error response as JSON');
+        }
+      }
+
+      if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
+        const errorMessages = err.response.data.errors.map(error => `${error.param}: ${error.msg}`).join(', ');
+        setError(`වලංගු කිරීමේ දෝෂ: ${errorMessages}`);
+      } else {
+        setError(err.response?.data?.message || err.message || 'දැනුම්දීම සෑදීමේදී දෝෂයක් ඇතිවිය');
+      }
     } finally {
       setFormLoading(false);
     }
@@ -207,39 +331,90 @@ const AdminAnnouncementManagement = () => {
   const handleUpdateAnnouncement = async () => {
     try {
       setFormLoading(true);
+      setError('');
       const token = localStorage.getItem('token');
 
-      // Validate required fields
-      if (!formData.title || !formData.description) {
-        alert('Title and description are required');
+      // Enhanced validation
+      if (!formData.title?.trim()) {
+        setError('මාතෘකාව අවශ්‍ය වේ');
         setFormLoading(false);
         return;
+      }
+
+      if (!formData.description?.trim()) {
+        setError('විස්තරය අවශ්‍ය වේ');
+        setFormLoading(false);
+        return;
+      }
+
+      if (formData.title.trim().length > 200) {
+        setError('මාතෘකාව අක්ෂර 200 ට වඩා අඩු විය යුතුය');
+        setFormLoading(false);
+        return;
+      }
+
+      if (formData.description.trim().length > 2000) {
+        setError('විස්තරය අක්ෂර 2000 ට වඩා අඩු විය යුතුය');
+        setFormLoading(false);
+        return;
+      }
+
+      // Ensure priority is valid - never send empty string
+      const validPriorities = ['Low', 'Medium', 'High', 'Urgent'];
+      let priority = formData.priority;
+
+      // If priority is empty string, null, undefined, or not in valid list, use Medium
+      if (!priority || priority === '' || !validPriorities.includes(priority)) {
+        priority = 'Medium';
       }
 
       const announcementData = {
         title: formData.title.trim(),
         description: formData.description.trim(),
-        priority: formData.priority || 'Medium',
-        attachments: formData.attachments || [],
-        expiryDate: formData.expiryDate ? formData.expiryDate.toISOString() : null
+        priority: priority, // Always include priority with valid value
+        attachments: formData.attachments || []
       };
 
-      console.log('Updating announcement with data:', announcementData);
+      // Only add expiryDate if it's a valid date
+      if (formData.expiryDate && formData.expiryDate instanceof Date && !isNaN(formData.expiryDate)) {
+        announcementData.expiryDate = formData.expiryDate.toISOString();
+      }
 
-      await axios.put(
+      console.log('Updating announcement with data:', announcementData);
+      console.log('Form data before processing:', formData);
+
+      // Final validation before sending
+      if (!announcementData.priority || !validPriorities.includes(announcementData.priority)) {
+        console.error('Invalid priority detected before sending:', announcementData.priority);
+        setError('Priority validation failed. Please try again.');
+        setFormLoading(false);
+        return;
+      }
+
+      const response = await axios.put(
         `https://ayanna-kiyanna-new-backend.onrender.com/api/announcements/${selectedAnnouncement._id}`,
         announcementData,
         { headers: { 'x-auth-token': token } }
       );
 
-      setEditDialog(false);
-      resetForm();
-      fetchAnnouncements();
-      alert('Announcement updated successfully!');
+      if (response.data.success) {
+        setEditDialog(false);
+        resetForm();
+        fetchAnnouncements();
+        alert('දැනුම්දීම සාර්ථකව යාවත්කාලීන කරන ලදී!');
+      }
     } catch (err) {
       console.error('Error updating announcement:', err);
       console.error('Error response:', err.response?.data);
-      alert(err.response?.data?.message || 'Failed to update announcement');
+      console.error('Error status:', err.response?.status);
+      console.error('Full error response:', err.response);
+
+      if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
+        const errorMessages = err.response.data.errors.map(error => `${error.param}: ${error.msg}`).join(', ');
+        setError(`වලංගු කිරීමේ දෝෂ: ${errorMessages}`);
+      } else {
+        setError(err.response?.data?.message || 'දැනුම්දීම යාවත්කාලීන කිරීමේදී දෝෂයක් ඇතිවිය');
+      }
     } finally {
       setFormLoading(false);
     }
@@ -250,18 +425,20 @@ const AdminAnnouncementManagement = () => {
       setFormLoading(true);
       const token = localStorage.getItem('token');
 
-      await axios.delete(
+      const response = await axios.delete(
         `https://ayanna-kiyanna-new-backend.onrender.com/api/announcements/${selectedAnnouncement._id}`,
         { headers: { 'x-auth-token': token } }
       );
 
-      setDeleteDialog(false);
-      setSelectedAnnouncement(null);
-      fetchAnnouncements();
-      alert('Announcement deleted successfully!');
+      if (response.data.success) {
+        setDeleteDialog(false);
+        setSelectedAnnouncement(null);
+        fetchAnnouncements();
+        alert('දැනුම්දීම සාර්ථකව මකා දමන ලදී!');
+      }
     } catch (err) {
       console.error('Error deleting announcement:', err);
-      alert(err.response?.data?.message || 'Failed to delete announcement');
+      alert(err.response?.data?.message || 'දැනුම්දීම මකා දැමීමේදී දෝෂයක් ඇතිවිය');
     } finally {
       setFormLoading(false);
     }
@@ -276,14 +453,20 @@ const AdminAnnouncementManagement = () => {
       attachments: []
     });
     setSelectedAnnouncement(null);
+    setError(''); // Clear any errors
   };
 
   const openEditDialog = (announcement) => {
     setSelectedAnnouncement(announcement);
+
+    // Ensure priority is valid
+    const validPriorities = ['Low', 'Medium', 'High', 'Urgent'];
+    const priority = validPriorities.includes(announcement.priority) ? announcement.priority : 'Medium';
+
     setFormData({
-      title: announcement.title,
-      description: announcement.description,
-      priority: announcement.priority,
+      title: announcement.title || '',
+      description: announcement.description || '',
+      priority: priority,
       expiryDate: announcement.expiryDate ? new Date(announcement.expiryDate) : null,
       attachments: announcement.attachments || []
     });
@@ -495,7 +678,10 @@ const AdminAnnouncementManagement = () => {
             right: 24,
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
           }}
-          onClick={() => setCreateDialog(true)}
+          onClick={() => {
+            resetForm();
+            setCreateDialog(true);
+          }}
         >
           <Add />
         </Fab>
@@ -520,13 +706,24 @@ const AdminAnnouncementManagement = () => {
           <DialogContent>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <Box sx={{ pt: 2 }}>
+                {error && (
+                  <Alert severity="error" sx={{ mb: 3 }}>
+                    {error}
+                  </Alert>
+                )}
+
                 <TextField
                   fullWidth
                   label="දැනුම්දීම් මාතෘකාව"
                   value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, title: e.target.value }));
+                    if (error) setError(''); // Clear error when user starts typing
+                  }}
                   sx={{ mb: 3 }}
                   required
+                  error={!formData.title?.trim() && error}
+                  helperText={formData.title?.length > 200 ? 'මාතෘකාව ඉතා දිගයි' : ''}
                 />
 
                 <TextField
@@ -535,17 +732,25 @@ const AdminAnnouncementManagement = () => {
                   multiline
                   rows={4}
                   value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, description: e.target.value }));
+                    if (error) setError(''); // Clear error when user starts typing
+                  }}
                   sx={{ mb: 3 }}
                   required
+                  error={!formData.description?.trim() && error}
+                  helperText={formData.description?.length > 2000 ? 'විස්තරය ඉතා දිගයි' : ''}
                 />
 
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <InputLabel>ප්‍රමුඛතාව</InputLabel>
                   <Select
-                    value={formData.priority}
+                    value={formData.priority || 'Medium'}
                     label="ප්‍රමුඛතාව"
-                    onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value }))}
+                    onChange={(e) => {
+                      console.log('Priority changed to:', e.target.value);
+                      setFormData(prev => ({ ...prev, priority: e.target.value }));
+                    }}
                   >
                     <MenuItem value="Low">අඩු</MenuItem>
                     <MenuItem value="Medium">මධ්‍යම</MenuItem>
@@ -593,12 +798,9 @@ const AdminAnnouncementManagement = () => {
                 {formData.attachments.length > 0 && (
                   <List dense sx={{ mb: 3 }}>
                     {formData.attachments.map((attachment, index) => (
-                      <ListItem key={index}>
-                        <ListItemText
-                          primary={attachment.name}
-                          secondary={`${attachment.type} - ${(attachment.size / 1024 / 1024).toFixed(2)} MB`}
-                        />
-                        <ListItemSecondaryAction>
+                      <ListItem
+                        key={index}
+                        secondaryAction={
                           <IconButton
                             edge="end"
                             onClick={() => removeAttachment(index)}
@@ -606,7 +808,12 @@ const AdminAnnouncementManagement = () => {
                           >
                             <Close />
                           </IconButton>
-                        </ListItemSecondaryAction>
+                        }
+                      >
+                        <ListItemText
+                          primary={attachment.name}
+                          secondary={`${attachment.type} - ${(attachment.size / 1024 / 1024).toFixed(2)} MB`}
+                        />
                       </ListItem>
                     ))}
                   </List>
@@ -627,7 +834,7 @@ const AdminAnnouncementManagement = () => {
             <Button
               variant="contained"
               onClick={createDialog ? handleCreateAnnouncement : handleUpdateAnnouncement}
-              disabled={formLoading || !formData.title || !formData.description}
+              disabled={formLoading || !formData.title?.trim() || !formData.description?.trim()}
             >
               {formLoading ? <CircularProgress size={20} /> : (createDialog ? 'සෑදීම' : 'යාවත්කාලීන කරන්න')}
             </Button>
