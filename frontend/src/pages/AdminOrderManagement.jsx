@@ -743,7 +743,7 @@ const AdminOrderManagement = () => {
         {/* Header */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
           <Typography
-            variant="h4"
+            variant="h5"
             component="h1"
             sx={{
               fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
@@ -753,7 +753,7 @@ const AdminOrderManagement = () => {
             <Badge badgeContent={pendingCount} color="error" sx={{ mr: 2 }}>
               <OrderIcon sx={{ mr: 1 }} />
             </Badge>
-            ඇණවුම් කළමනාකරණය
+            ඇණවුම් කළමනාකරණය 🚚
           </Typography>
           
           <Typography variant="h6" color="text.secondary">

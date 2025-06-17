@@ -305,9 +305,12 @@ const AdminStudentNoticeManagement = () => {
           </AnimatePresence>
 
           {/* Notices Grid */}
-          <Grid container spacing={3}>
+          <Grid container spacing={3} justifyContent="center">
             {notices.map((notice) => (
-              <Grid item xs={12} md={6} lg={4} key={notice._id}>
+              <Grid item xs={12} md={6} lg={4} key={notice._id} sx={{
+              display: 'grid',
+              alignItems: 'stretch', // This ensures all cards stretch to the same height
+              }}>
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -315,6 +318,8 @@ const AdminStudentNoticeManagement = () => {
                   <Card sx={{
                     height: '100%',
                     display: 'flex',
+                    maxWidth: '350px',
+                    minWidth: '350px',
                     flexDirection: 'column',
                     borderRadius: 3,
                     boxShadow: '0 8px 32px rgba(0,0,0,0.1)'

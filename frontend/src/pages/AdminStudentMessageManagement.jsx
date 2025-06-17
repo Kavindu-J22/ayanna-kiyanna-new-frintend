@@ -373,9 +373,12 @@ const AdminStudentMessageManagement = () => {
           </Paper>
 
           {/* Messages Grid */}
-          <Grid container spacing={3}>
+          <Grid container spacing={3} justifyContent="center">
             {messages.map((message) => (
-              <Grid item xs={12} lg={6} key={message._id}>
+              <Grid item xs={12} lg={6} key={message._id} sx={{
+              display: 'grid',
+              alignItems: 'stretch', // This ensures all cards stretch to the same height
+              }}>
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -383,6 +386,8 @@ const AdminStudentMessageManagement = () => {
                   <Card sx={{
                     height: '100%',
                     display: 'flex',
+                    maxWidth: '350px',
+                    minWidth: '350px',
                     flexDirection: 'column',
                     borderRadius: 3,
                     boxShadow: '0 8px 32px rgba(0,0,0,0.1)',

@@ -163,7 +163,7 @@ const AdminDeliveryChargeManagement = () => {
         {/* Header */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
           <Typography
-            variant="h4"
+            variant="h5"
             component="h1"
             sx={{
               fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
@@ -225,9 +225,12 @@ const AdminDeliveryChargeManagement = () => {
             </Typography>
           </Paper>
         ) : (
-          <Grid container spacing={3}>
+          <Grid container spacing={3} justifyContent="center">
             {deliveryCharges.map((charge, index) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={charge._id}>
+              <Grid item xs={12} sm={6} md={4} lg={3} key={charge._id} sx={{
+              display: 'grid',
+              alignItems: 'stretch', // This ensures all cards stretch to the same height
+              }}>
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -238,6 +241,8 @@ const AdminDeliveryChargeManagement = () => {
                     elevation={4}
                     sx={{
                       height: '100%',
+                      minWidth: '300px',
+                      maxWidth: '300px',
                       borderRadius: 2,
                       '&:hover': { boxShadow: 8 }
                     }}

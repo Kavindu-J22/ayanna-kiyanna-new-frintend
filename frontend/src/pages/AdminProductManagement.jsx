@@ -324,14 +324,14 @@ const AdminProductManagement = () => {
         {/* Header */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
           <Typography
-            variant="h4"
+            variant="h5"
             component="h1"
             sx={{
               fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
               fontWeight: 'bold'
             }}
           >
-            නිෂ්පාදන කළමනාකරණය
+            නිෂ්පාදන කළමනාකරණය 📚
           </Typography>
 
           {activeTab === 0 && (
@@ -461,9 +461,12 @@ const AdminProductManagement = () => {
               </Box>
             ) : (
               <>
-                <Grid container spacing={3}>
+                <Grid container spacing={3} justifyContent="center">
                   {products.map((product) => (
-                    <Grid item xs={12} sm={6} md={4} lg={3} key={product._id}>
+                    <Grid item xs={12} sm={6} md={4} lg={3} key={product._id} sx={{
+                    display: 'grid',
+                    alignItems: 'stretch', // This ensures all cards stretch to the same height
+                    }}>
                       <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -474,6 +477,8 @@ const AdminProductManagement = () => {
                           sx={{
                             height: '100%',
                             display: 'flex',
+                            minWidth: '300px',
+                            maxWidth: '300px',
                             flexDirection: 'column',
                             borderRadius: 2,
                             '&:hover': {
@@ -608,7 +613,7 @@ const AdminProductManagement = () => {
                 {analyticsData && (
                   <Grid container spacing={3} sx={{ mb: 4 }}>
                     <Grid item xs={12} md={3}>
-                      <Card elevation={4} sx={{ p: 3, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
+                      <Card elevation={4} sx={{ p: 3, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', width: '300px', height: '150px' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                           <Box>
                             <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
@@ -624,7 +629,7 @@ const AdminProductManagement = () => {
                     </Grid>
 
                     <Grid item xs={12} md={3}>
-                      <Card elevation={4} sx={{ p: 3, background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white' }}>
+                      <Card elevation={4} sx={{ p: 3, background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white', width: '300px', height: '150px' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                           <Box>
                             <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
@@ -640,7 +645,7 @@ const AdminProductManagement = () => {
                     </Grid>
 
                     <Grid item xs={12} md={3}>
-                      <Card elevation={4} sx={{ p: 3, background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', color: 'white' }}>
+                      <Card elevation={4} sx={{ p: 3, background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', color: 'white', width: '300px', height: '150px' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                           <Box>
                             <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
@@ -656,7 +661,7 @@ const AdminProductManagement = () => {
                     </Grid>
 
                     <Grid item xs={12} md={3}>
-                      <Card elevation={4} sx={{ p: 3, background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', color: 'white' }}>
+                      <Card elevation={4} sx={{ p: 3, background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', color: 'white', width: '300px', height: '150px' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                           <Box>
                             <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
@@ -676,7 +681,7 @@ const AdminProductManagement = () => {
                 {/* Top Products */}
                 {analyticsData && analyticsData.topProducts && (
                   <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
-                    <Typography variant="h5" gutterBottom sx={{ fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif', fontWeight: 'bold', mb: 3 }}>
+                    <Typography variant="h6" gutterBottom sx={{ fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif', fontWeight: 'bold', mb: 3 }}>
                       🏆 ප්‍රමුඛ නිෂ්පාදන (ආදායම අනුව)
                     </Typography>
 
@@ -728,7 +733,7 @@ const AdminProductManagement = () => {
                 {/* Inventory Status */}
                 {inventoryData && (
                   <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
-                    <Typography variant="h5" gutterBottom sx={{ fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif', fontWeight: 'bold', mb: 3 }}>
+                    <Typography variant="h6" gutterBottom sx={{ fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif', fontWeight: 'bold', mb: 3 }}>
                       📦 ඉන්වෙන්ටරි තත්ත්වය (සක්‍රීය නිශ්පාදන වල)
                     </Typography>
 
