@@ -145,8 +145,6 @@ const AdminFeedbackManagement = () => {
     setFilteredFeedbacks(filtered);
   };
 
-
-
   const openReplyDialog = (feedback) => {
     setSelectedFeedback(feedback);
     setReplyData({
@@ -335,7 +333,7 @@ const AdminFeedbackManagement = () => {
   const { total, unreplied, replied } = getTabCounts();
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* Header */}
       <Box sx={{ mb: 4, textAlign: 'center' }}>
         <Typography variant="h3" component="h1" sx={{
@@ -400,10 +398,10 @@ const AdminFeedbackManagement = () => {
       </Paper>
 
       {/* Feedbacks */}
-      <Grid container spacing={3}>
+      <Box sx={{ width: '100%' }}>
         <AnimatePresence>
           {filteredFeedbacks.map((feedback, index) => (
-            <Grid item xs={12} key={feedback._id}>
+            <Box sx={{ mb: 3, width: '100%' }} key={feedback._id}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -417,7 +415,8 @@ const AdminFeedbackManagement = () => {
                   '&:hover': {
                     transform: 'translateY(-2px)',
                     boxShadow: '0 8px 30px rgba(233, 30, 99, 0.15)'
-                  }
+                  },
+                  width: '100%'
                 }}>
                   <CardContent sx={{ p: 3 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
@@ -657,10 +656,10 @@ const AdminFeedbackManagement = () => {
                   </CardContent>
                 </Card>
               </motion.div>
-            </Grid>
+            </Box>
           ))}
         </AnimatePresence>
-      </Grid>
+      </Box>
 
       {filteredFeedbacks.length === 0 && !loading && (
         <Box sx={{ textAlign: 'center', py: 8 }}>
@@ -900,8 +899,6 @@ const AdminFeedbackManagement = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
-
     </Container>
   );
 };
