@@ -357,10 +357,15 @@ const PhotoBucketPage = () => {
       )}
 
       {/* Photos Grid */}
-      <Grid container spacing={3}>
+      <Grid container spacing={3} justifyContent="center">
         <AnimatePresence>
           {photos.map((photo, index) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={photo._id}>
+            <Grid item xs={12} sm={6} md={4} lg={3} key={photo._id} sx={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+              gap: 2,
+              alignItems: 'stretch', // This ensures all cards stretch to the same height
+            }}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -370,6 +375,8 @@ const PhotoBucketPage = () => {
                 <Card sx={{
                   height: '100%',
                   display: 'flex',
+                  maxWidth: '560px',
+                  minWidth: '560px',
                   flexDirection: 'column',
                   borderRadius: 3,
                   overflow: 'hidden',

@@ -31,7 +31,8 @@ import {
   Login as LoginIcon,
   PersonAdd as PersonAddIcon,
   Info as InfoIcon,
-  Map as MapIcon
+  Map as MapIcon,
+  ArrowForward as ArrowForwardIcon
 } from '@mui/icons-material';
 import axios from 'axios';
 
@@ -255,277 +256,497 @@ const ClassesInfoPage = () => {
               maxWidth: { md: 'calc(33.333% - 24px)' } // Ensures exactly 3 cards per row
             }}
           >
-          <Card
+<Card
+  sx={{
+    width: '350px',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    background: 'linear-gradient(145deg, #FFFFFF 0%, #F8F4FF 50%, #F3E5F5 100%)',
+    border: 'none',
+    borderRadius: '16px',
+    boxShadow: '0 10px 30px rgba(123, 31, 162, 0.2)',
+    position: 'relative',
+    overflow: 'hidden',
+    transition: 'all 0.3s ease',
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: '8px',
+      background: 'linear-gradient(90deg, #FF9A9E 0%, #FAD0C4 50%, #FAD0C4 100%)',
+    },
+    '&:hover': {
+      transform: 'translateY(-8px)',
+      boxShadow: '0 15px 35px rgba(123, 31, 162, 0.3)',
+    }
+  }}
+>
+  {/* Decorative elements */}
+  <Box sx={{
+    position: 'absolute',
+    top: -50,
+    right: -50,
+    width: '150px',
+    height: '150px',
+    borderRadius: '50%',
+    background: 'radial-gradient(circle, rgba(255,154,158,0.15) 0%, rgba(255,154,158,0) 70%)',
+  }} />
+  <Box sx={{
+    position: 'absolute',
+    bottom: -30,
+    left: -30,
+    width: '120px',
+    height: '120px',
+    borderRadius: '50%',
+    background: 'radial-gradient(circle, rgba(156,39,176,0.1) 0%, rgba(156,39,176,0) 70%)',
+  }} />
+
+  <CardContent sx={{
+    p: 3,
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    pt: 4,
+    position: 'relative',
+    zIndex: 1,
+  }}>
+    {/* Class Header */}
+    <Box sx={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      mb: 3,
+      p: 2,
+      background: 'linear-gradient(135deg, rgba(255,154,158,0.2) 0%, rgba(250,208,196,0.2) 100%)',
+      borderRadius: '12px',
+      boxShadow: '0 4px 15px rgba(255,154,158,0.1)',
+      border: '1px solid rgba(255,154,158,0.3)',
+      position: 'relative',
+      overflow: 'hidden',
+      '&::after': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%)',
+      }
+    }}>
+      <Box sx={{
+        p: 1.5,
+        borderRadius: '50%',
+        background: 'linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%)',
+        mr: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0 4px 8px rgba(255,154,158,0.3)',
+        zIndex: 1
+      }}>
+        {React.cloneElement(getPlatformIcon(classItem.platform), {
+          sx: { color: 'white', fontSize: 28 }
+        })}
+      </Box>
+      <Typography
+        variant="h4"
+        sx={{
+          fontWeight: '800',
+          color: '#6A1B9A',
+          textAlign: 'center',
+          fontSize: '1.4rem',
+          textShadow: '0 2px 4px rgba(0,0,0,0.05)',
+          zIndex: 1
+        }}
+      >
+        {classItem.grade}
+      </Typography>
+    </Box>
+
+    {/* Class Details Chips */}
+    <Box sx={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      gap: 1.5, 
+      mb: 3, 
+      flexWrap: 'wrap',
+    }}>
+      <Chip
+        label={classItem.category}
+        sx={{
+          bgcolor: 'transparent',
+          color: '#FF9A9E',
+          fontWeight: 'bold',
+          fontSize: '0.85rem',
+          px: 1.5,
+          height: '32px',
+          border: '2px solid #FF9A9E',
+          '& .MuiChip-label': {
+            px: 1
+          }
+        }}
+      />
+      <Chip
+        label={classItem.platform}
+        sx={{
+          bgcolor: 'transparent',
+          color: '#9C27B0',
+          fontWeight: 'bold',
+          fontSize: '0.85rem',
+          px: 1.5,
+          height: '32px',
+          border: '2px solid #9C27B0',
+          '& .MuiChip-label': {
+            px: 1
+          }
+        }}
+      />
+    </Box>
+
+    {/* Class Information */}
+    <Box sx={{ flexGrow: 1, mb: 3 }}>
+      {/* Schedule Info */}
+      <Box sx={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        mb: 2.5,
+        p: 2,
+        background: 'rgba(255, 255, 255, 0.7)',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(156, 39, 176, 0.08)',
+        border: '1px solid rgba(156, 39, 176, 0.1)',
+        backdropFilter: 'blur(4px)',
+        transition: 'all 0.2s ease',
+        '&:hover': {
+          transform: 'translateY(-2px)',
+          boxShadow: '0 6px 16px rgba(156, 39, 176, 0.12)',
+        }
+      }}>
+        <Box sx={{
+          p: 1.2,
+          mr: 2,
+          borderRadius: '8px',
+          background: 'linear-gradient(135deg, rgba(255,154,158,0.2) 0%, rgba(250,208,196,0.2) 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <ScheduleIcon sx={{ fontSize: 22, color: '#FF9A9E' }} />
+        </Box>
+        <Box>
+          <Typography variant="body2" sx={{ 
+            color: '#6A1B9A', 
+            fontWeight: '700', 
+            fontSize: '0.95rem',
+            mb: 0.5
+          }}>
+            දිනය සහ වේලාව
+          </Typography>
+          <Typography variant="body2" sx={{ 
+            color: '#9C27B0', 
+            fontSize: '0.9rem',
+            fontWeight: '500'
+          }}>
+            {classItem.date}
+          </Typography>
+          <Typography variant="body2" sx={{ 
+            color: '#9C27B0', 
+            fontSize: '0.9rem',
+            fontWeight: '500'
+          }}>
+            {formatTime(classItem.startTime)} - {formatTime(classItem.endTime)}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Venue */}
+      <Box sx={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        mb: 2.5,
+        p: 2,
+        background: 'rgba(255, 255, 255, 0.7)',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(156, 39, 176, 0.08)',
+        border: '1px solid rgba(156, 39, 176, 0.1)',
+        backdropFilter: 'blur(4px)',
+        transition: 'all 0.2s ease',
+        '&:hover': {
+          transform: 'translateY(-2px)',
+          boxShadow: '0 6px 16px rgba(156, 39, 176, 0.12)',
+        }
+      }}>
+        <Box sx={{
+          p: 1.2,
+          mr: 2,
+          borderRadius: '8px',
+          background: 'linear-gradient(135deg, rgba(156,39,176,0.2) 0%, rgba(186,104,200,0.2) 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <LocationIcon sx={{ fontSize: 22, color: '#9C27B0' }} />
+        </Box>
+        <Box sx={{ flexGrow: 1 }}>
+          <Typography variant="body2" sx={{ 
+            color: '#6A1B9A', 
+            fontWeight: '700', 
+            fontSize: '0.95rem',
+            mb: 0.5
+          }}>
+            ස්ථානය
+          </Typography>
+          <Typography variant="body2" sx={{ 
+            color: '#9C27B0', 
+            fontSize: '0.9rem',
+            fontWeight: '500'
+          }}>
+            {classItem.venue}
+          </Typography>
+          {classItem.locationLink && (
+            <Button
+              size="small"
+              startIcon={<MapIcon sx={{ color: '#FF9A9E' }} />}
+              onClick={() => window.open(classItem.locationLink, '_blank')}
+              sx={{
+                mt: 1,
+                color: '#FF9A9E',
+                fontSize: '0.8rem',
+                fontWeight: '700',
+                textTransform: 'none',
+                p: 0.5,
+                minWidth: 'auto',
+                '&:hover': {
+                  bgcolor: 'rgba(255, 154, 158, 0.1)',
+                  color: '#E91E63'
+                }
+              }}
+            >
+              සිතියම බලන්න
+            </Button>
+          )}
+        </Box>
+      </Box>
+
+      {/* Capacity */}
+      <Box sx={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        mb: 2.5,
+        p: 2,
+        background: 'rgba(255, 255, 255, 0.7)',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(156, 39, 176, 0.08)',
+        border: '1px solid rgba(156, 39, 176, 0.1)',
+        backdropFilter: 'blur(4px)',
+        transition: 'all 0.2s ease',
+        '&:hover': {
+          transform: 'translateY(-2px)',
+          boxShadow: '0 6px 16px rgba(156, 39, 176, 0.12)',
+        }
+      }}>
+        <Box sx={{
+          p: 1.2,
+          mr: 2,
+          borderRadius: '8px',
+          background: 'linear-gradient(135deg, rgba(106,27,154,0.2) 0%, rgba(142,36,170,0.2) 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <PeopleIcon sx={{ fontSize: 22, color: '#6A1B9A' }} />
+        </Box>
+        <Box>
+          <Typography variant="body2" sx={{ 
+            color: '#6A1B9A', 
+            fontWeight: '700', 
+            fontSize: '0.95rem',
+            mb: 0.5
+          }}>
+            ධාරිතාව
+          </Typography>
+          <Typography variant="body2" sx={{ 
+            color: '#9C27B0', 
+            fontSize: '0.9rem',
+            fontWeight: '500'
+          }}>
+            ලියාපදිංචි: {classItem.enrolledCount || 0}/{classItem.capacity}
+          </Typography>
+          <Typography variant="body2" sx={{ 
+            color: classItem.availableSpots > 0 ? '#4CAF50' : '#F44336', 
+            fontSize: '0.9rem', 
+            fontWeight: '700',
+            mt: 0.5
+          }}>
+            {classItem.availableSpots > 0 
+              ? `ඉතිරි ස්ථාන: ${classItem.availableSpots}` 
+              : 'පන්තිය සම්පූර්ණයි'}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Monthly Fee */}
+      <Box sx={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        mb: 2.5,
+        p: 2,
+        background: 'rgba(255, 255, 255, 0.7)',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(156, 39, 176, 0.08)',
+        border: '1px solid rgba(156, 39, 176, 0.1)',
+        backdropFilter: 'blur(4px)',
+        transition: 'all 0.2s ease',
+        '&:hover': {
+          transform: 'translateY(-2px)',
+          boxShadow: '0 6px 16px rgba(156, 39, 176, 0.12)',
+        }
+      }}>
+        <Box sx={{
+          p: 1.2,
+          mr: 2,
+          borderRadius: '8px',
+          background: 'linear-gradient(135deg, rgba(255,193,7,0.2) 0%, rgba(255,235,59,0.2) 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <PaymentIcon sx={{ fontSize: 22, color: '#FFA000' }} />
+        </Box>
+        <Box>
+          <Typography variant="body2" sx={{ 
+            color: '#6A1B9A', 
+            fontWeight: '700', 
+            fontSize: '0.95rem',
+            mb: 0.5
+          }}>
+            මාසික ගාස්තුව
+          </Typography>
+          <Typography variant="body2" sx={{ 
+            color: '#FF6D00', 
+            fontSize: '1rem', 
+            fontWeight: '800'
+          }}>
+            රු. {classItem.monthlyFee ? classItem.monthlyFee.toLocaleString() : 'නොමිලේ'} /=
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Special Note */}
+      {classItem.specialNote && (
+        <Box sx={{
+          mb: 2.5,
+          p: 2,
+          background: 'rgba(255, 243, 224, 0.7)',
+          borderRadius: '12px',
+          boxShadow: '0 4px 12px rgba(255, 152, 0, 0.08)',
+          border: '1px solid rgba(255, 152, 0, 0.15)',
+          backdropFilter: 'blur(4px)',
+          transition: 'all 0.2s ease',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: '0 6px 16px rgba(255, 152, 0, 0.12)',
+          }
+        }}>
+          <Typography variant="body2" sx={{ 
+            color: '#E65100', 
+            fontWeight: '700', 
+            fontSize: '0.95rem', 
+            mb: 1,
+            display: 'flex',
+            alignItems: 'center'
+          }}>
+            <InfoIcon sx={{ fontSize: 18, mr: 1 }} />
+            විශේෂ සටහන
+          </Typography>
+          <Typography
+            variant="body2"
             sx={{
-              width: '350px', // Takes full width of grid item
-              height: '100%', // Fills the grid item height
-              display: 'flex',
-              flexDirection: 'column',
-              background: 'linear-gradient(135deg, #F8F4FF 0%, #F3E5F5 50%, #E8D5ED 100%)',
-              border: '3px solid #BA68C8',
-              borderRadius: 4,
-              boxShadow: '0 8px 32px rgba(123, 31, 162, 0.15)',
-              position: 'relative',
-              overflow: 'hidden',
-              '&::before': {
-                content: '""',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '6px',
-                background: 'linear-gradient(90deg, #7B1FA2, #9C27B0, #BA68C8, #E1BEE7)',
-              },
-              '&:hover': {
-                boxShadow: '0 12px 40px rgba(123, 31, 162, 0.25)',
-                border: '3px solid #7B1FA2',
-                transform: 'translateY(-4px)'
-              }
+              color: '#FF6D00',
+              fontSize: '0.9rem',
+              fontWeight: '500',
+              lineHeight: 1.5
             }}
           >
-            <CardContent sx={{
-              p: 3,
-              display: 'flex',
-              flexDirection: 'column',
-              flexGrow: 1, // Makes content fill available space
-              pt: 4
-            }}>
-              {/* Class Header */}
-              <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                mb: 3,
-                p: 2,
-                bgcolor: 'rgba(123, 31, 162, 0.08)',
-                borderRadius: 3,
-                border: '2px solid rgba(123, 31, 162, 0.2)'
-              }}>
-                <Box sx={{
-                  p: 1,
-                  borderRadius: '50%',
-                  bgcolor: '#7B1FA2',
-                  mr: 2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  {React.cloneElement(getPlatformIcon(classItem.platform), {
-                    sx: { color: 'white', fontSize: 24 }
-                  })}
-                </Box>
-                <Typography
-                  variant="h4"
-                  sx={{
-                    fontWeight: 'bold',
-                    color: '#4A148C',
-                    textAlign: 'center',
-                    fontSize: '1.2rem'
-                  }}
-                >
-                  {classItem.grade}
-                </Typography>
-              </Box>
+            {classItem.specialNote}
+          </Typography>
+        </Box>
+      )}
+    </Box>
 
-              {/* Class Details Chips */}
-              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 3, flexWrap: 'wrap' }}>
-                <Chip
-                  label={classItem.category}
-                  sx={{
-                    bgcolor: '#7B1FA2',
-                    color: 'white',
-                    fontWeight: 'bold',
-                    fontSize: '0.85rem',
-                    px: 1
-                  }}
-                />
-                <Chip
-                  label={classItem.platform}
-                  sx={{
-                    bgcolor: '#9C27B0',
-                    color: 'white',
-                    fontWeight: 'bold',
-                    fontSize: '0.85rem',
-                    px: 1
-                  }}
-                />
-              </Box>
-
-              {/* Class Information */}
-              <Box sx={{ flexGrow: 1, mb: 3 }}>
-                {/* Schedule Info */}
-                <Box sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  mb: 2,
-                  p: 1.5,
-                  bgcolor: 'rgba(156, 39, 176, 0.05)',
-                  borderRadius: 2,
-                  border: '1px solid rgba(156, 39, 176, 0.1)'
-                }}>
-                  <ScheduleIcon sx={{ fontSize: 20, color: '#7B1FA2', mr: 1.5 }} />
-                  <Box>
-                    <Typography variant="body2" sx={{ color: '#4A148C', fontWeight: 'bold', fontSize: '0.9rem' }}>
-                      දිනය සහ වේලාව
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#6A1B9A', fontSize: '0.85rem' }}>
-                      {classItem.date}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#6A1B9A', fontSize: '0.85rem' }}>
-                      {formatTime(classItem.startTime)} - {formatTime(classItem.endTime)}
-                    </Typography>
-                  </Box>
-                </Box>
-
-                {/* Venue */}
-                <Box sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  mb: 2,
-                  p: 1.5,
-                  bgcolor: 'rgba(156, 39, 176, 0.05)',
-                  borderRadius: 2,
-                  border: '1px solid rgba(156, 39, 176, 0.1)'
-                }}>
-                  <LocationIcon sx={{ fontSize: 20, color: '#7B1FA2', mr: 1.5 }} />
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="body2" sx={{ color: '#4A148C', fontWeight: 'bold', fontSize: '0.9rem' }}>
-                      ස්ථානය
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#6A1B9A', fontSize: '0.85rem' }}>
-                      {classItem.venue}
-                    </Typography>
-                    {classItem.locationLink && (
-                      <Button
-                        size="small"
-                        startIcon={<MapIcon />}
-                        onClick={() => window.open(classItem.locationLink, '_blank')}
-                        sx={{
-                          mt: 0.5,
-                          color: '#7B1FA2',
-                          fontSize: '0.75rem',
-                          fontWeight: 'bold',
-                          textTransform: 'none',
-                          p: 0.5,
-                          minWidth: 'auto',
-                          '&:hover': {
-                            bgcolor: 'rgba(123, 31, 162, 0.1)'
-                          }
-                        }}
-                      >
-                        සිතියම බලන්න
-                      </Button>
-                    )}
-                  </Box>
-                </Box>
-
-                {/* Capacity */}
-                <Box sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  mb: 2,
-                  p: 1.5,
-                  bgcolor: 'rgba(156, 39, 176, 0.05)',
-                  borderRadius: 2,
-                  border: '1px solid rgba(156, 39, 176, 0.1)'
-                }}>
-                  <PeopleIcon sx={{ fontSize: 20, color: '#7B1FA2', mr: 1.5 }} />
-                  <Box>
-                    <Typography variant="body2" sx={{ color: '#4A148C', fontWeight: 'bold', fontSize: '0.9rem' }}>
-                      ධාරිතාව
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#6A1B9A', fontSize: '0.85rem' }}>
-                      ලියාපදිංචි: {classItem.enrolledCount || 0}/{classItem.capacity}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#2E7D32', fontSize: '0.85rem', fontWeight: 'bold' }}>
-                      ඉතිරි ස්ථාන: {classItem.availableSpots}
-                    </Typography>
-                  </Box>
-                </Box>
-
-                {/* Monthly Fee */}
-                <Box sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  mb: 2,
-                  p: 1.5,
-                  bgcolor: 'rgba(156, 39, 176, 0.05)',
-                  borderRadius: 2,
-                  border: '1px solid rgba(156, 39, 176, 0.1)'
-                }}>
-                  <PaymentIcon sx={{ fontSize: 20, color: '#7B1FA2', mr: 1.5 }} />
-                  <Box>
-                    <Typography variant="body2" sx={{ color: '#4A148C', fontWeight: 'bold', fontSize: '0.9rem' }}>
-                      මාසික ගාස්තුව
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#6A1B9A', fontSize: '0.9rem', fontWeight: 'bold' }}>
-                      රු. {classItem.monthlyFee ? classItem.monthlyFee.toLocaleString() : 'නොමිලේ'} /=
-                    </Typography>
-                  </Box>
-                </Box>
-
-                {/* Special Note */}
-                {classItem.specialNote && (
-                  <Box sx={{
-                    mb: 2,
-                    p: 1.5,
-                    bgcolor: 'rgba(255, 193, 7, 0.1)',
-                    borderRadius: 2,
-                    border: '1px solid rgba(255, 193, 7, 0.3)'
-                  }}>
-                    <Typography variant="body2" sx={{ color: '#4A148C', fontWeight: 'bold', fontSize: '0.9rem', mb: 0.5 }}>
-                      විශේෂ සටහන
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: '#6A1B9A',
-                        fontSize: '0.85rem',
-                        fontStyle: 'italic'
-                      }}
-                    >
-                      {classItem.specialNote}
-                    </Typography>
-                  </Box>
-                )}
-              </Box>
-
-              {/* Enroll Button */}
-              <Box sx={{ mt: 'auto' }}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  size="large"
-                  onClick={() => handleEnrollClick(classItem)}
-                  disabled={classItem.availableSpots <= 0}
-                  sx={{
-                    background: classItem.availableSpots <= 0
-                      ? 'linear-gradient(45deg, #9E9E9E 30%, #757575 90%)'
-                      : 'linear-gradient(45deg, #7B1FA2 30%, #9C27B0 90%)',
-                    color: 'white',
-                    fontWeight: 'bold',
-                    py: 1.8,
-                    borderRadius: 3,
-                    fontSize: '1rem',
-                    textTransform: 'none',
-                    boxShadow: classItem.availableSpots <= 0
-                      ? 'none'
-                      : '0 4px 15px rgba(123, 31, 162, 0.3)',
-                    '&:hover': {
-                      background: classItem.availableSpots <= 0
-                        ? 'linear-gradient(45deg, #9E9E9E 30%, #757575 90%)'
-                        : 'linear-gradient(45deg, #6A1B9A 30%, #8E24AA 90%)',
-                      boxShadow: classItem.availableSpots <= 0
-                        ? 'none'
-                        : '0 6px 20px rgba(123, 31, 162, 0.4)'
-                    }
-                  }}
-                >
-                  {classItem.availableSpots <= 0 ? 'පන්තිය සම්පූර්ණයි' : 'දැන් ලියාපදිංචි වන්න'}
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
+    {/* Enroll Button */}
+    <Box sx={{ mt: 'auto' }}>
+      <Button
+        fullWidth
+        variant="contained"
+        size="large"
+        onClick={() => handleEnrollClick(classItem)}
+        disabled={classItem.availableSpots <= 0}
+        sx={{
+          background: classItem.availableSpots <= 0
+            ? 'linear-gradient(45deg, #BDBDBD 0%, #9E9E9E 100%)'
+            : 'linear-gradient(45deg, #FF9A9E 0%, #FAD0C4 100%)',
+          color: classItem.availableSpots <= 0 ? '#616161' : '#6A1B9A',
+          fontWeight: '800',
+          py: 2,
+          borderRadius: '12px',
+          fontSize: '1.05rem',
+          textTransform: 'none',
+          boxShadow: classItem.availableSpots <= 0
+            ? 'none'
+            : '0 6px 20px rgba(255, 154, 158, 0.4)',
+          transition: 'all 0.3s ease',
+          position: 'relative',
+          overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'linear-gradient(45deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%)',
+            opacity: 0,
+            transition: 'opacity 0.3s ease',
+          },
+          '&:hover': {
+            background: classItem.availableSpots <= 0
+              ? 'linear-gradient(45deg, #BDBDBD 0%, #9E9E9E 100%)'
+              : 'linear-gradient(45deg, #FAD0C4 0%, #FF9A9E 100%)',
+            boxShadow: classItem.availableSpots <= 0
+              ? 'none'
+              : '0 8px 25px rgba(255, 154, 158, 0.6)',
+            '&::before': {
+              opacity: 1,
+            }
+          },
+          '&:active': {
+            transform: 'scale(0.98)',
+          }
+        }}
+      >
+        {classItem.availableSpots <= 0 ? 'පන්තිය සම්පූර්ණයි' : 'දැන් ලියාපදිංචි වන්න'}
+        {classItem.availableSpots > 0 && (
+          <Box sx={{
+            position: 'absolute',
+            right: 20,
+            animation: 'pulse 2s infinite',
+            '@keyframes pulse': {
+              '0%': { transform: 'scale(1)' },
+              '50%': { transform: 'scale(1.1)' },
+              '100%': { transform: 'scale(1)' },
+            }
+          }}>
+            <ArrowForwardIcon sx={{ fontSize: 20 }} />
+          </Box>
+        )}
+      </Button>
+    </Box>
+  </CardContent>
+</Card>
         </Grid>
       ))
     )}
