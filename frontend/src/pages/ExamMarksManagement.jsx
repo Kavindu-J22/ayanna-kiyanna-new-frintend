@@ -253,7 +253,10 @@ const ExamMarksManagement = () => {
         {/* Students Grid */}
         <Grid container spacing={3}>
           {students.map((student) => (
-            <Grid item xs={12} sm={6} md={4} key={student._id}>
+            <Grid item xs={12} sm={6} md={4} key={student._id} sx={{
+            display: 'grid',
+            alignItems: 'stretch', // This ensures all cards stretch to the same height
+            }}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -262,6 +265,8 @@ const ExamMarksManagement = () => {
                 <Card sx={{
                   height: '100%',
                   display: 'flex',
+                  minWidth: '250px',
+                  maxWidth: '250px',
                   flexDirection: 'column',
                   transition: 'all 0.3s ease',
                   '&:hover': {
@@ -287,22 +292,30 @@ const ExamMarksManagement = () => {
                     {student.examMark ? (
                       <Box sx={{ 
                         p: 2, 
-                        bgcolor: 'success.light', 
+                        bgcolor: student.examMark.marks >= 50 ? 'success.light' : 
+                                student.examMark.marks >= 40 ? 'warning.light' : 'error.light', 
                         borderRadius: 2,
                         mb: 2
-                      }}>
-                        <Typography variant="h5" fontWeight="bold" color="success.dark">
-                          {student.examMark.marks}/100
+                    }}>
+                        <Typography variant="h5" fontWeight="bold" 
+                            color={student.examMark.marks >= 50 ? 'success.dark' : 
+                                  student.examMark.marks >= 40 ? 'warning.dark' : 'error.dark'}>
+                            {student.examMark.marks}/100
                         </Typography>
                         {student.examMark.remarks && (
-                          <Typography variant="body2" color="success.dark" sx={{ mt: 1 }}>
-                            {student.examMark.remarks}
-                          </Typography>
+                            <Typography variant="body2" 
+                                color={student.examMark.marks >= 50 ? 'success.dark' : 
+                                      student.examMark.marks >= 40 ? 'warning.dark' : 'error.dark'} 
+                                sx={{ mt: 1 }}>
+                                {student.examMark.remarks}
+                            </Typography>
                         )}
-                        <Typography variant="caption" color="success.dark">
-                          Assigned: {new Date(student.examMark.assignedAt).toLocaleDateString()}
+                        <Typography variant="caption" 
+                            color={student.examMark.marks >= 50 ? 'success.dark' : 
+                                  student.examMark.marks >= 40 ? 'warning.dark' : 'error.dark'}>
+                            Assigned: {new Date(student.examMark.assignedAt).toLocaleDateString()}
                         </Typography>
-                      </Box>
+                    </Box>
                     ) : (
                       <Box sx={{ 
                         p: 2, 

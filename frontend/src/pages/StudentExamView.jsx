@@ -306,26 +306,35 @@ const StudentExamView = () => {
                       {/* My Marks Section */}
                       {myMark ? (
                         <Box sx={{ 
-                          p: 2, 
-                          bgcolor: 'success.light', 
-                          borderRadius: 2,
-                          mb: 2
-                        }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                            <Grade color="success" />
-                            <Typography variant="subtitle2" fontWeight="bold" color="success.dark">
-                              Your Score
-                            </Typography>
-                          </Box>
-                          <Typography variant="h5" fontWeight="bold" color="success.dark">
-                            {myMark.marks}/100
+                        p: 2, 
+                        bgcolor: myMark.marks >= 70 ? 'success.light' : 
+                                myMark.marks >= 50 ? 'warning.light' : 'error.light', 
+                        borderRadius: 2,
+                        mb: 2
+                      }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                          <Grade color={myMark.marks >= 70 ? 'success' : 
+                                      myMark.marks >= 50 ? 'warning' : 'error'} />
+                          <Typography variant="subtitle2" fontWeight="bold" 
+                                      color={myMark.marks >= 70 ? 'success.dark' : 
+                                            myMark.marks >= 50 ? 'warning.dark' : 'error.dark'}>
+                            ඔබේ ළකුණු :
                           </Typography>
-                          {myMark.remarks && (
-                            <Typography variant="body2" color="success.dark" sx={{ mt: 1 }}>
-                              {myMark.remarks}
-                            </Typography>
-                          )}
                         </Box>
+                        <Typography variant="h5" fontWeight="bold" 
+                                    color={myMark.marks >= 70 ? 'success.dark' : 
+                                          myMark.marks >= 50 ? 'warning.dark' : 'error.dark'}>
+                          {myMark.marks}/100
+                        </Typography>
+                        {myMark.remarks && (
+                          <Typography variant="body2" 
+                                      color={myMark.marks >= 70 ? 'success.dark' : 
+                                            myMark.marks >= 50 ? 'warning.dark' : 'error.dark'} 
+                                      sx={{ mt: 1 }}>
+                            {myMark.remarks}
+                          </Typography>
+                        )}
+                      </Box>
                       ) : (
                         <Box sx={{ 
                           p: 2, 
@@ -335,7 +344,7 @@ const StudentExamView = () => {
                           textAlign: 'center'
                         }}>
                           <Typography variant="body2" color="text.secondary">
-                            Marks not assigned yet
+                            තවමත් ලකුණු ලබා දී නැත.
                           </Typography>
                         </Box>
                       )}
