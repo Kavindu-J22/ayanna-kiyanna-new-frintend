@@ -481,18 +481,18 @@ const NotificationsPage = () => {
                       secondary={
                         <Box>
                           <Typography 
-                            variant="body2" 
-                            color="text.secondary" 
-                            sx={{ 
-                              mb: 1,
-                              display: '-webkit-box',
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: 'vertical',
-                              overflow: 'hidden'
-                            }}
-                          >
-                            {notification.message}
-                          </Typography>
+                          variant="body2" 
+                          color="text.secondary" 
+                          sx={{ 
+                            mb: 1,
+                            display: '-webkit-box',
+                            WebkitLineClamp: 1,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden'
+                          }}
+                        >
+                          {notification.message.substring(0, 15)}...<strong style={{ fontSize: '0.8rem' }}>Click here.</strong>
+                        </Typography>
                           <Typography 
                             variant="caption" 
                             color={notification.read ? 'text.secondary' : 'primary.main'}
