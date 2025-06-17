@@ -355,9 +355,12 @@ const AdminExamManagement = () => {
         </Paper>
 
         {/* Exams Grid */}
-        <Grid container spacing={3}>
+        <Grid container spacing={3} justifyContent="center">
           {exams.map((exam) => (
-            <Grid item xs={12} sm={6} md={4} key={exam._id}>
+            <Grid item xs={12} sm={6} md={4} key={exam._id} sx={{
+            display: 'grid',
+            alignItems: 'stretch', // This ensures all cards stretch to the same height
+            }}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -365,6 +368,8 @@ const AdminExamManagement = () => {
               >
                 <Card sx={{
                   height: '100%',
+                  maxWidth: '350px',
+                  minWidth: '350px',
                   display: 'flex',
                   flexDirection: 'column',
                   transition: 'all 0.3s ease',

@@ -267,9 +267,12 @@ const StudentTimeScheduleView = () => {
         </motion.div>
 
         {/* Schedules Grid */}
-        <Grid container spacing={3}>
+        <Grid container spacing={3} justifyContent="center">
           {schedules.map((schedule, index) => (
-            <Grid item xs={12} md={6} lg={4} key={schedule._id}>
+            <Grid item xs={12} md={6} lg={4} key={schedule._id} sx={{
+            display: 'grid',
+            alignItems: 'stretch', // This ensures all cards stretch to the same height
+            }}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -277,6 +280,10 @@ const StudentTimeScheduleView = () => {
               >
                 <Card sx={{
                   height: '100%',
+                  maxWidth: '350px',
+                  minWidth: '350px',
+                  display: 'flex', // Add this
+                  flexDirection: 'column', // Add this
                   background: isCurrentWeek(schedule) 
                     ? 'linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 100%)'
                     : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
@@ -290,7 +297,12 @@ const StudentTimeScheduleView = () => {
                     boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
                   }
                 }}>
-                  <CardContent sx={{ p: 3 }}>
+                  <CardContent sx={{ 
+                  p: 3,
+                  flex: 1, // Add this
+                  display: 'flex', // Add this
+                  flexDirection: 'column' // Add this
+                }}>
                     {/* Schedule Header */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                       <Typography variant="h6" fontWeight="bold" sx={{
@@ -414,16 +426,20 @@ const StudentTimeScheduleView = () => {
                       </Box>
                     )}
 
-                    {/* Created By Info */}
-                    <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid #e0e0e0' }}>
-                      <Typography variant="caption" color="text.secondary">
-                        සාදන ලද්දේ: {schedule.createdBy?.fullName || 'Admin'}
-                      </Typography>
-                      <br />
-                      <Typography variant="caption" color="text.secondary">
-                        දිනය: {new Date(schedule.createdAt).toLocaleDateString('si-LK')}
-                      </Typography>
-                    </Box>
+                        {/* Created By Info - This will now always be at the bottom */}
+                      <Box sx={{ 
+                        mt: 'auto', // This pushes it to the bottom
+                        pt: 2, 
+                        borderTop: '1px solid #e0e0e0' 
+                      }}>
+                        <Typography variant="caption" color="text.secondary">
+                          සාදන ලද්දේ: {schedule.createdBy?.fullName || 'Admin'}
+                        </Typography>
+                        <br />
+                        <Typography variant="caption" color="text.secondary">
+                          දිනය: {new Date(schedule.createdAt).toLocaleDateString('si-LK')}
+                        </Typography>
+                      </Box>
                   </CardContent>
                 </Card>
               </motion.div>

@@ -414,9 +414,12 @@ const AdminTimeScheduleManagement = () => {
         </motion.div>
 
         {/* Schedules Grid */}
-        <Grid container spacing={3}>
+        <Grid container spacing={3} justifyContent="center">
           {schedules.map((schedule, index) => (
-            <Grid item xs={12} md={6} lg={4} key={schedule._id}>
+            <Grid item xs={12} md={6} lg={4} key={schedule._id} sx={{
+            display: 'grid',
+            alignItems: 'stretch', // This ensures all cards stretch to the same height
+            }}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -424,6 +427,8 @@ const AdminTimeScheduleManagement = () => {
               >
                 <Card sx={{
                   height: '100%',
+                  maxWidth: '350px',
+                  minWidth: '350px',
                   background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
                   border: '1px solid #e0e0e0',
                   borderRadius: 3,
@@ -431,9 +436,16 @@ const AdminTimeScheduleManagement = () => {
                   '&:hover': {
                     transform: 'translateY(-4px)',
                     boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
-                  }
+                  },
+                  display: 'flex', // Add this to make the card a flex container
+                  flexDirection: 'column' // Add this to make content flow vertically
                 }}>
-                  <CardContent sx={{ p: 3 }}>
+                  <CardContent sx={{ 
+                  p: 3,
+                  flex: 1, // This makes the content take up available space
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
                     {/* Schedule Header */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                       <Typography variant="h6" fontWeight="bold" sx={{
@@ -511,26 +523,26 @@ const AdminTimeScheduleManagement = () => {
                     )}
 
                     {/* Progress Bar */}
-                    <Box sx={{ mt: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="caption">ප්‍රගතිය</Typography>
-                        <Typography variant="caption">{schedule.completionPercentage || 0}%</Typography>
-                      </Box>
-                      <Box sx={{
-                        width: '100%',
-                        height: 8,
-                        bgcolor: '#e0e0e0',
-                        borderRadius: 4,
-                        overflow: 'hidden'
-                      }}>
-                        <Box sx={{
-                          width: `${schedule.completionPercentage || 0}%`,
-                          height: '100%',
-                          bgcolor: schedule.completionPercentage === 100 ? '#4caf50' : '#2196f3',
-                          transition: 'width 0.3s ease'
-                        }} />
-                      </Box>
+                    <Box sx={{ mt: 'auto', pt: 2 }}> {/* This will push it to the bottom */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                      <Typography variant="caption">ප්‍රගතිය</Typography>
+                      <Typography variant="caption">{schedule.completionPercentage || 0}%</Typography>
                     </Box>
+                    <Box sx={{
+                      width: '100%',
+                      height: 8,
+                      bgcolor: '#e0e0e0',
+                      borderRadius: 4,
+                      overflow: 'hidden'
+                    }}>
+                      <Box sx={{
+                        width: `${schedule.completionPercentage || 0}%`,
+                        height: '100%',
+                        bgcolor: schedule.completionPercentage === 100 ? '#4caf50' : '#2196f3',
+                        transition: 'width 0.3s ease'
+                      }} />
+                    </Box>
+                  </Box>
                   </CardContent>
                 </Card>
               </motion.div>

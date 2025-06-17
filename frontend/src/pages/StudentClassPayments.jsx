@@ -243,7 +243,7 @@ const StudentClassPayments = () => {
 
         {/* Monthly Payment Cards */}
         {paymentData && (
-          <Grid container spacing={3}>
+          <Grid container spacing={3} justifyContent="center">
             {paymentData.monthlyStatus.map((monthData, index) => {
               const status = getMonthStatus(monthData);
               const buttonText = getPaymentButtonText(monthData, status);
@@ -258,6 +258,8 @@ const StudentClassPayments = () => {
                   >
                     <Card sx={{
                       height: '100%',
+                      minWidth: '350px',
+                      maxWidth: '350px',
                       border: status === 'current' ? '3px solid #4caf50' : '1px solid #e0e0e0',
                       borderRadius: 3,
                       transition: 'all 0.3s ease',

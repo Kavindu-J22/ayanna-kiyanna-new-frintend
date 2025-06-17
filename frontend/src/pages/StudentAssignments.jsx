@@ -258,7 +258,7 @@ function getMarkColor(marks) {
                   {isOverdue(assignment.dueDate, assignment.submissionStatus) && (
                     <Box sx={{
                       position: 'absolute',
-                      top: 16,
+                      bottom: 100,
                       left: 16,
                       zIndex: 1
                     }}>
