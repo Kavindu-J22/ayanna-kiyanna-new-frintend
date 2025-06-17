@@ -239,13 +239,17 @@ const ReviewsPage = () => {
       )}
 
       {/* Folders Grid */}
-      <Grid container spacing={3}>
+      <Grid container spacing={3} justifyContent="center">
         {folders.map((folder) => (
           <Grid item xs={12} sm={6} md={4} key={folder._id}>
             <Card
               sx={{
                 height: '100%',
                 display: 'flex',
+                maxWidth: '350px',
+                minWidth: '350px',
+                minHeight: '320px',
+                maxHeight: '300px',
                 flexDirection: 'column',
                 background: 'linear-gradient(135deg, #fff 0%, #f8f9fa 100%)',
                 border: '2px solid transparent',
@@ -268,7 +272,19 @@ const ReviewsPage = () => {
                   </Typography>
                 </Box>
                 
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.6 }}>
+                <Typography variant="body2" color="text.secondary" 
+                sx={{
+                fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                mb: 2,
+                lineHeight: 1.5,
+                minHeight: '30px',
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                fontSize: '0.8rem'
+                }}
+                >
                   {folder.description}
                 </Typography>
 
