@@ -38,7 +38,8 @@ import {
   Visibility as VisibilityIcon,
   ArrowBack as ArrowBackIcon,
   CreditCard,
-  Payment
+  Payment,
+  Info
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -55,7 +56,8 @@ const StudentProfile = () => {
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState({});
   const [profilePictureUploading, setProfilePictureUploading] = useState(false);
-  
+  const [accessingAsStudent, setAccessingAsStudent] = useState(false);
+
   // Check if user is admin
   const userRole = localStorage.getItem('userRole');
   const isAdmin = userRole === 'admin' || userRole === 'moderator';
@@ -265,6 +267,7 @@ const StudentProfile = () => {
 
   const handleAccessAsStudent = async (classId) => {
     try {
+      setAccessingAsStudent(true);
       const currentToken = localStorage.getItem('token');
       const currentUserRole = localStorage.getItem('userRole');
       const currentUserId = localStorage.getItem('userId');
@@ -279,6 +282,7 @@ const StudentProfile = () => {
       if (!isEnrolled) {
         setError('Student is not enrolled in this class.');
         setTimeout(() => setError(''), 5000);
+        setAccessingAsStudent(false);
         return;
       }
 
@@ -339,11 +343,13 @@ const StudentProfile = () => {
       } else {
         setError('Failed to access student account. Please try again.');
         setTimeout(() => setError(''), 5000);
+        setAccessingAsStudent(false);
       }
     } catch (error) {
       console.error('Error accessing as student:', error);
       setError(error.response?.data?.message || 'Failed to access class as student. Please try again.');
       setTimeout(() => setError(''), 5000);
+      setAccessingAsStudent(false);
     }
   };
 
@@ -1581,17 +1587,26 @@ const StudentProfile = () => {
                                 fullWidth
                                 variant="contained"
                                 color="secondary"
-                                startIcon={<VisibilityIcon />}
+                                startIcon={accessingAsStudent ? <CircularProgress size={20} color="inherit" /> : <VisibilityIcon />}
                                 onClick={() => handleAccessAsStudent(classItem._id)}
+                                disabled={accessingAsStudent}
                                 sx={{
-                                  background: 'linear-gradient(45deg, #FF6B6B 30%,rgb(129, 78, 205) 90%)',
+                                  background: accessingAsStudent
+                                    ? 'linear-gradient(45deg, #ccc 30%, #999 90%)'
+                                    : 'linear-gradient(45deg, #FF6B6B 30%,rgb(129, 78, 205) 90%)',
                                   fontWeight: 'bold',
                                   '&:hover': {
-                                    background: 'linear-gradient(45deg, #FF5252 30%, #26A69A 90%)',
+                                    background: accessingAsStudent
+                                      ? 'linear-gradient(45deg, #ccc 30%, #999 90%)'
+                                      : 'linear-gradient(45deg, #FF5252 30%, #26A69A 90%)',
+                                  },
+                                  '&:disabled': {
+                                    background: 'linear-gradient(45deg, #ccc 30%, #999 90%)',
+                                    color: 'white'
                                   }
                                 }}
                               >
-                                සිසුවා ලෙස ඇතුල්වන්න
+                                {accessingAsStudent ? 'සිසුවා ලෙස ඇතුල්වෙමින්...' : 'සිසුවා ලෙස ඇතුල්වන්න'}
                               </Button>
                             </Box>
                           )}
@@ -1638,6 +1653,105 @@ const StudentProfile = () => {
             </motion.div>
           </Grid>
         )}
+
+        {/* Smart Notice Section */}
+        <Grid item xs={12}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <Paper
+              elevation={6}
+              sx={{
+                p: 4,
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                mt: 4
+              }}
+            >
+              <Typography variant="h5" gutterBottom sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                fontWeight: 'bold',
+                mb: 3,
+                fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif'
+              }}>
+                <Info sx={{ fontSize: 32 }} />
+                වැදගත් දැනුම්දීම
+              </Typography>
+
+              <Box sx={{
+                backgroundColor: 'rgba(255,255,255,0.1)',
+                borderRadius: 2,
+                p: 3,
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <Typography variant="body1" sx={{
+                  lineHeight: 1.8,
+                  mb: 2,
+                  fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                  fontSize: '1.1rem'
+                }}>
+                  <strong>🔐 පරිශීලක ගිණුමේ මුරපදය:</strong><br />
+                  ඔබට ඔබගේ පරිශීලක ගිණුමේ මුරපදය මාරු කිරීමට අවශ්‍යනම් Login පිටුවේ ඇති 'Forgot or Reset Password' Option එක මගින් එය සිදු කරගන්න.
+                </Typography>
+
+                <Typography variant="body1" sx={{
+                  lineHeight: 1.8,
+                  mb: 2,
+                  fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                  fontSize: '1.1rem'
+                }}>
+                  <strong>🎓 ශිෂ්‍ය ගිණුමේ මුරපදය:</strong><br />
+                  ඔබට ඔබගේ ශිෂ්‍ය ගිණුමේ මුරපදය වෙනස් කිරීමට අවශ්‍යනම් ශිෂ්‍ය ගිණුමට ඇතුල්වීමේ දී මුරපදය ඉල්ලන අවස්ථාවේ පෙන්වන 'Forgot or Reset Password' Option එක භාවිතා කරන්න.
+                </Typography>
+
+                <Typography variant="body1" sx={{
+                  lineHeight: 1.8,
+                  fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                  fontSize: '1.1rem'
+                }}>
+                  <strong>📞 සහාය අවශ්‍ය වේද?</strong><br />
+                  ඔබට වෙනත් ගැටලුවක් තිබේනම් Contact පිටුව හරහා අපව සම්බන්ධ කරගන්න.
+                </Typography>
+              </Box>
+
+              <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                mt: 3
+              }}>
+                <Button
+                  variant="contained"
+                  onClick={() => navigate('/contact-support')}
+                  sx={{
+                    backgroundColor: 'rgba(255,255,255,0.2)',
+                    color: 'white',
+                    fontWeight: 'bold',
+                    px: 4,
+                    py: 1.5,
+                    borderRadius: 2,
+                    border: '1px solid rgba(255,255,255,0.3)',
+                    fontFamily: '"Noto Sans Sinhala", "Yaldevi", sans-serif',
+                    fontSize: '1rem',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255,255,255,0.3)',
+                      transform: 'scale(1.05)'
+                    },
+                    transition: 'all 0.3s ease'
+                  }}
+                  startIcon={<PhoneIcon />}
+                >
+                  අපව සම්බන්ධ කරගන්න
+                </Button>
+              </Box>
+            </Paper>
+          </motion.div>
+        </Grid>
       </Grid>
     </Container>
   );
