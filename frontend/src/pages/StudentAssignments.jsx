@@ -74,6 +74,13 @@ const StudentAssignments = () => {
     }
   };
 
+  // Helper function to check if assignment is the latest (newest)
+  const isLatestAssignment = (assignment, allAssignments) => {
+    if (!allAssignments || allAssignments.length === 0) return false;
+    const sortedByCreatedAt = [...allAssignments].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    return sortedByCreatedAt[0]._id === assignment._id;
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return 'No due date';
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -253,6 +260,31 @@ function getMarkColor(marks) {
                       sx={{ fontWeight: 'bold' }}
                     />
                   </Box>
+
+                  {/* New Badge for Latest Assignment */}
+                  {isLatestAssignment(assignment, assignments) && !isOverdue(assignment.dueDate, assignment.submissionStatus) && (
+                    <Box sx={{
+                      position: 'absolute',
+                      top: 60,
+                      right: 16,
+                      zIndex: 1
+                    }}>
+                      <Chip
+                        label="New"
+                        color="success"
+                        size="small"
+                        variant="filled"
+                        sx={{
+                          fontWeight: 'bold',
+                          background: 'linear-gradient(135deg, #4caf50 0%, #66bb6a 100%)',
+                          color: 'white',
+                          '&:hover': {
+                            background: 'linear-gradient(135deg, #388e3c 0%, #4caf50 100%)'
+                          }
+                        }}
+                      />
+                    </Box>
+                  )}
 
                   {/* Overdue Badge */}
                   {isOverdue(assignment.dueDate, assignment.submissionStatus) && (

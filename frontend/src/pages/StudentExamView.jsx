@@ -110,6 +110,13 @@ const StudentExamView = () => {
     return myMarks.find(mark => mark.examId === examId);
   };
 
+  // Helper function to check if exam is the latest (newest)
+  const isLatestExam = (exam, allExams) => {
+    if (!allExams || allExams.length === 0) return false;
+    const sortedByCreatedAt = [...allExams].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    return sortedByCreatedAt[0]._id === exam._id;
+  };
+
   const handleStartExam = (examLink) => {
     window.open(examLink, '_blank');
   };
@@ -200,12 +207,38 @@ const StudentExamView = () => {
                     maxWidth: '350px',
                     minWidth: '350px',
                     flexDirection: 'column',
+                    position: 'relative',
                     transition: 'all 0.3s ease',
                     '&:hover': {
                       transform: 'translateY(-4px)',
                       boxShadow: 6
                     }
                   }}>
+                    {/* New Badge for Latest Exam */}
+                    {isLatestExam(exam, exams) && !exam.isOverdue && (
+                      <Box sx={{
+                        position: 'absolute',
+                        top: 20,
+                        right: 16,
+                        zIndex: 1
+                      }}>
+                        <Chip
+                          label="New"
+                          color="success"
+                          size="small"
+                          variant="filled"
+                          sx={{
+                            fontWeight: 'bold',
+                            background: 'linear-gradient(135deg, #4caf50 0%, #66bb6a 100%)',
+                            color: 'white',
+                            '&:hover': {
+                              background: 'linear-gradient(135deg, #388e3c 0%, #4caf50 100%)'
+                            }
+                          }}
+                        />
+                      </Box>
+                    )}
+
                     <CardContent sx={{ flexGrow: 1 }}>
                       <Typography variant="h6" fontWeight="bold" sx={{
                         fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
