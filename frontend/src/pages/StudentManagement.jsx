@@ -60,7 +60,8 @@ import {
   ContentCopy,
   CheckCircleOutline,
   Info,
-  ArrowRightAlt
+  ArrowRightAlt,
+  Subject
 } from '@mui/icons-material';
 import { CgProfile } from "react-icons/cg";
 import { FaPerson } from "react-icons/fa6";
@@ -94,6 +95,8 @@ const StudentManagement = () => {
   const [availableClasses, setAvailableClasses] = useState([]);
   const [availableGrades, setAvailableGrades] = useState([]);
   const [showMessageDialog, setShowMessageDialog] = useState(false);
+  const [showMessageSuccessDialog, setShowMessageSuccessDialog] = useState(false);
+  const [sentMessageDetails, setSentMessageDetails] = useState({ subject: '', message: '', studentName: '' });
   const [showClassChangeDialog, setShowClassChangeDialog] = useState(false);
   const [showStatusChangeDialog, setShowStatusChangeDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -310,8 +313,15 @@ const StudentManagement = () => {
         { headers: { 'x-auth-token': token } }
       );
 
-      setSuccess('Message sent successfully');
+      // Store message details for success dialog
+      setSentMessageDetails({
+        subject: messageSubject,
+        message: messageBody,
+        studentName: `${selectedStudent.firstName} ${selectedStudent.lastName}`
+      });
+
       setShowMessageDialog(false);
+      setShowMessageSuccessDialog(true);
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to send message');
     } finally {
@@ -2417,6 +2427,133 @@ const StudentManagement = () => {
                 startIcon={processing ? <CircularProgress size={20} /> : null}
               >
                 {processing ? 'Updating...' : 'Update'}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Message Success Dialog */}
+          <Dialog
+            open={showMessageSuccessDialog}
+            onClose={() => setShowMessageSuccessDialog(false)}
+            maxWidth="sm"
+            fullWidth
+            PaperProps={{
+              sx: {
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+                animation: 'float 3s ease-in-out infinite',
+                '@keyframes float': {
+                  '0%, 100%': { transform: 'translateY(0px)' },
+                  '50%': { transform: 'translateY(-10px)' }
+                }
+              }
+            }}
+          >
+            <DialogTitle sx={{
+              textAlign: 'center',
+              pb: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 2
+            }}>
+              <CheckCircle sx={{ fontSize: 40, color: '#4caf50' }} />
+              <Typography variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
+                Message Sent Successfully!
+              </Typography>
+            </DialogTitle>
+            <DialogContent sx={{ pt: 2 }}>
+              <Box sx={{
+                p: 3,
+                backgroundColor: 'rgba(255,255,255,0.1)',
+                borderRadius: 2,
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <Typography variant="h6" gutterBottom sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  color: '#fff',
+                  fontWeight: 'bold'
+                }}>
+                  <Person sx={{ color: '#4caf50' }} />
+                  Sent to: {sentMessageDetails.studentName}
+                </Typography>
+
+                <Box sx={{ mt: 2, mb: 2 }}>
+                  <Typography variant="subtitle1" sx={{
+                    fontWeight: 'bold',
+                    color: '#ffeb3b',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    mb: 1
+                  }}>
+                    <Subject sx={{ fontSize: 20 }} />
+                    Subject:
+                  </Typography>
+                  <Typography variant="body1" sx={{
+                    pl: 3,
+                    backgroundColor: 'rgba(255,255,255,0.1)',
+                    p: 1,
+                    borderRadius: 1,
+                    border: '1px solid rgba(255,255,255,0.2)'
+                  }}>
+                    {sentMessageDetails.subject}
+                  </Typography>
+                </Box>
+
+                <Box>
+                  <Typography variant="subtitle1" sx={{
+                    fontWeight: 'bold',
+                    color: '#ffeb3b',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    mb: 1
+                  }}>
+                    <Message sx={{ fontSize: 20 }} />
+                    Message:
+                  </Typography>
+                  <Typography variant="body1" sx={{
+                    pl: 3,
+                    backgroundColor: 'rgba(255,255,255,0.1)',
+                    p: 2,
+                    borderRadius: 1,
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    whiteSpace: 'pre-wrap',
+                    maxHeight: '150px',
+                    overflowY: 'auto'
+                  }}>
+                    {sentMessageDetails.message}
+                  </Typography>
+                </Box>
+              </Box>
+            </DialogContent>
+            <DialogActions sx={{ p: 3, justifyContent: 'center' }}>
+              <Button
+                onClick={() => setShowMessageSuccessDialog(false)}
+                variant="contained"
+                sx={{
+                  backgroundColor: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  px: 4,
+                  py: 1,
+                  borderRadius: 2,
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255,255,255,0.3)',
+                    transform: 'scale(1.05)'
+                  },
+                  transition: 'all 0.3s ease'
+                }}
+                startIcon={<CheckCircle />}
+              >
+                OK
               </Button>
             </DialogActions>
           </Dialog>
