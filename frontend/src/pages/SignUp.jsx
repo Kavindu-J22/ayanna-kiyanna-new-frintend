@@ -1193,7 +1193,7 @@ const SignUp = () => {
                       minWidth: { xs: 10, sm: 20 }
                     },
                     '& .MuiStepLabel-root': {
-                      flexDirection: { xs: 'column', sm: 'row' }
+                      flexDirection: { xs: 'column', sm: 'column' }
                     },
                     '& .MuiStepLabel-label': {
                       fontSize: { xs: '0.7rem', md: '0.8rem' }
