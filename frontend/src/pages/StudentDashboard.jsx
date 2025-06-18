@@ -62,6 +62,7 @@ import {
   Announcement as AnnouncementIcon,
   Link as LinkIcon,
   Close as CloseIcon,
+  ContentCopy as ContentCopyIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -74,6 +75,7 @@ const StudentDashboard = () => {
   const [student, setStudent] = useState(null);
   const [availableClasses, setAvailableClasses] = useState([]);
   const [classRequests, setClassRequests] = useState([]);
+  const [showAllRequests, setShowAllRequests] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(true);
   const [studentPassword, setStudentPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -125,6 +127,7 @@ const StudentDashboard = () => {
     sourceLinks: ['']
   });
   const [submittingMessage, setSubmittingMessage] = useState(false);
+  const [tooltipText, setTooltipText] = useState('Click to copy');
 
   // Month names in Sinhala
   const monthNames = [
@@ -903,6 +906,12 @@ const StudentDashboard = () => {
     loadFilteredClasses(grade);
   };
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(student?.studentId || '');
+    setTooltipText('Copied!');
+    setTimeout(() => setTooltipText('Click to copy'), 2000); // Revert after 2 seconds
+  };
+
   if (error) {
     return (
       <Container maxWidth="md" sx={{ py: 4 }}>
@@ -919,55 +928,220 @@ const StudentDashboard = () => {
   // Student Password Dialog
   if (showPasswordDialog) {
     return (
-      <Dialog open={true} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ textAlign: 'center' }}>
-          <Avatar sx={{ bgcolor: 'primary.main', mx: 'auto', mb: 2 }}>
-            <Lock />
-          </Avatar>
-          <Typography variant="h5" component="div">
-            Student Dashboard Access
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            Enter your student password to access your dashboard
-          </Typography>
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            label="Student Password"
-            type="password"
-            value={studentPassword}
-            onChange={(e) => setStudentPassword(e.target.value)}
-            error={!!passwordError}
-            helperText={passwordError}
-            sx={{ mt: 2 }}
-            onKeyPress={(e) => e.key === 'Enter' && handleStudentLogin()}
-          />
-        </DialogContent>
-        <DialogActions sx={{ p: 3, pt: 1, flexDirection: 'column', gap: 1 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-            <Button onClick={() => navigate('/')}>
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleStudentLogin}
-              disabled={authenticating}
-              startIcon={authenticating ? <CircularProgress size={20} /> : <Visibility />}
+      <Box sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Floating Sinhala Letters Background */}
+        <Box sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          opacity: 0.1,
+          fontSize: '8rem',
+          fontFamily: '"Noto Sans Sinhala", sans-serif',
+          color: 'white',
+          pointerEvents: 'none',
+          overflow: 'hidden'
+        }}>
+          {['අ', 'ක', 'ග', 'ත', 'න', 'ප', 'ම', 'ය', 'ර', 'ල', 'ව', 'ස', 'හ'].map((letter, index) => (
+            <Typography
+              key={index}
+              sx={{
+                position: 'absolute',
+                fontSize: 'inherit',
+                fontFamily: 'inherit',
+                animation: `float ${3 + index * 0.5}s ease-in-out infinite`,
+                left: `${Math.random() * 90}%`,
+                top: `${Math.random() * 90}%`,
+                '@keyframes float': {
+                  '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                  '50%': { transform: 'translateY(-20px) rotate(5deg)' }
+                }
+              }}
             >
-              {authenticating ? 'Authenticating...' : 'Access Dashboard'}
-            </Button>
-          </Box>
-          <Button
-            variant="text"
-            color="secondary"
-            onClick={handleForgotPassword}
-            sx={{ textTransform: 'none' }}
+              {letter}
+            </Typography>
+          ))}
+        </Box>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8, y: 50 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <Dialog
+            open={true}
+            maxWidth="sm"
+            fullWidth
+            PaperProps={{
+              sx: {
+                borderRadius: 4,
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(20px)',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                overflow: 'visible'
+              }
+            }}
           >
-            Forgot or Reset Password?
-          </Button>
-        </DialogActions>
-      </Dialog>
+            <DialogTitle sx={{
+              textAlign: 'center',
+              pb: 2,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              borderRadius: '16px 16px 0 0',
+              position: 'relative'
+            }}>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.3, duration: 0.5, type: "spring" }}
+              >
+                <Avatar sx={{
+                  bgcolor: 'rgba(255, 255, 255, 0.2)',
+                  mx: 'auto',
+                  mb: 2,
+                  width: 80,
+                  height: 80,
+                  border: '3px solid rgba(255, 255, 255, 0.3)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+                }}>
+                  <Lock sx={{ fontSize: 40 }} />
+                </Avatar>
+              </motion.div>
+              <Typography variant="h4" component="div" sx={{
+                fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                fontWeight: 'bold',
+                mb: 1,
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}>
+                සිසු ප්‍රවේශ පුවරුව
+              </Typography>
+              <Typography variant="body1" sx={{
+                mt: 1,
+                fontFamily: '"Noto Sans Sinhala", sans-serif',
+                opacity: 0.9
+              }}>
+                ඔබේ සිසු මුරපදය ඇතුළත් කර ප්‍රවේශ වන්න
+              </Typography>
+            </DialogTitle>
+
+            <DialogContent sx={{ p: 4, pt: 3 }}>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+              >
+                <TextField
+                  fullWidth
+                  label="සිසු මුරපදය"
+                  type="password"
+                  value={studentPassword}
+                  onChange={(e) => setStudentPassword(e.target.value)}
+                  error={!!passwordError}
+                  helperText={passwordError}
+                  sx={{
+                    mt: 2,
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      backgroundColor: 'rgba(102, 126, 234, 0.05)',
+                      '&:hover': {
+                        backgroundColor: 'rgba(102, 126, 234, 0.08)',
+                      },
+                      '&.Mui-focused': {
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                      }
+                    },
+                    '& .MuiInputLabel-root': {
+                      fontFamily: '"Noto Sans Sinhala", sans-serif'
+                    }
+                  }}
+                  onKeyPress={(e) => e.key === 'Enter' && handleStudentLogin()}
+                />
+              </motion.div>
+            </DialogContent>
+
+            <DialogActions sx={{ p: 4, pt: 2, flexDirection: 'column', gap: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', gap: 2 }}>
+                <Button
+                  onClick={() => navigate('/')}
+                  sx={{
+                    borderRadius: 3,
+                    px: 3,
+                    py: 1.5,
+                    fontFamily: '"Noto Sans Sinhala", sans-serif',
+                    textTransform: 'none',
+                    fontSize: '1rem'
+                  }}
+                >
+                  අවලංගු කරන්න
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleStudentLogin}
+                  disabled={authenticating}
+                  startIcon={authenticating ? <CircularProgress size={20} /> : <Visibility />}
+                  sx={{
+                    borderRadius: 3,
+                    px: 4,
+                    py: 1.5,
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    fontFamily: '"Noto Sans Sinhala", sans-serif',
+                    textTransform: 'none',
+                    fontSize: '1rem',
+                    boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                      boxShadow: '0 12px 40px rgba(102, 126, 234, 0.4)',
+                      transform: 'translateY(-2px)'
+                    },
+                    '&:disabled': {
+                      background: 'rgba(102, 126, 234, 0.3)'
+                    },
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  {authenticating ? 'සත්‍යාපනය කරමින්...' : 'ප්‍රවේශ වන්න'}
+                </Button>
+              </Box>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.5 }}
+                style={{ width: '100%' }}
+              >
+                <Button
+                  variant="text"
+                  color="secondary"
+                  onClick={handleForgotPassword}
+                  sx={{
+                    textTransform: 'none',
+                    fontFamily: '"Noto Sans Sinhala", sans-serif',
+                    fontSize: '0.95rem',
+                    borderRadius: 3,
+                    px: 3,
+                    py: 1,
+                    '&:hover': {
+                      backgroundColor: 'rgba(102, 126, 234, 0.08)'
+                    }
+                  }}
+                >
+                  මුරපදය අමතකද? නැවත සකසන්න
+                </Button>
+              </motion.div>
+            </DialogActions>
+          </Dialog>
+        </motion.div>
+      </Box>
     );
   }
 
@@ -1023,9 +1197,43 @@ const StudentDashboard = () => {
                 <Typography variant="h6" color="text.secondary">
                   Welcome back, {student?.firstName} {student?.lastName}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Student ID: {student?.studentId}
-                </Typography>
+
+                    <Tooltip 
+                  title={tooltipText} 
+                  arrow
+                  placement="top"
+                  componentsProps={{
+                    tooltip: {
+                      sx: {
+                        bgcolor: tooltipText === 'Copied!' ? 'success.main' : undefined,
+                      }
+                    }
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      cursor: 'pointer',
+                      '&:hover': { color: 'primary.main' }
+                    }}
+                    onClick={handleCopy}
+                  >
+                    Student ID: {student?.studentId}
+                    <ContentCopyIcon 
+                      fontSize="inherit" 
+                      sx={{ 
+                        opacity: 0.6, 
+                        '&:hover': { opacity: 1 },
+                        color: tooltipText === 'Copied!' ? 'success.main' : 'inherit'
+                      }} 
+                    />
+                  </Typography>
+                </Tooltip>
+
               </Grid>
               <Grid item>
                 <Chip
@@ -1038,577 +1246,408 @@ const StudentDashboard = () => {
             </Grid>
           </Paper>
 
-          <Grid container spacing={4}>
-            {/* Enrolled Classes */}
-            <Grid item xs={12} lg={8}>
-              <Paper elevation={6} sx={{ p: 3, borderRadius: 3, mb: 4 }}>
-                <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                  <ClassIcon sx={{ mr: 1 }} />
-                  My Enrolled Classes
-                </Typography>
-                <Divider sx={{ mb: 3 }} />
+ {/* Main Content Grid - Side by Side Layout */}
+<Grid container spacing={4} sx={{ 
+  display: 'flex', 
+  flexWrap: { xs: 'wrap', lg: 'nowrap' },
+  flexDirection: { xs: 'column', lg: 'row' },
+  width: '100%',
+  margin: 0
+}}>
+  {/* Left Side - My Enrolled Classes (2/3 width) */}
+  <Grid item xs={12} lg={8} sx={{ 
+    flex: { lg: 2 }, 
+    minWidth: 0,
+    order: { xs: 1, lg: 0 },
+    width: '100%',
+    padding: { xs: 0, lg: 'inherit' },
+    marginBottom: { xs: 3, lg: 0 }
+  }}>
+    <Paper elevation={8} sx={{
+      p: 3,
+      borderRadius: 4,
+      mb: { xs: 0, lg: 4 },
+      background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)',
+      backdropFilter: 'blur(10px)',
+      border: '1px solid rgba(255,255,255,0.2)',
+      boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+      height: '100%',
+      minHeight: '600px',
+      display: 'flex',
+      flexDirection: 'column',
+      width: '100%',
+      overflow: 'hidden'
+    }}>
+      <motion.div
+        initial={{ opacity: 0, x: -30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}
+      >
+        <Typography variant="h5" gutterBottom sx={{
+          display: 'flex',
+          alignItems: 'center',
+          fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+          fontWeight: 'bold',
+          color: 'primary.main',
+          mb: 3
+        }}>
+          <ClassIcon sx={{ mr: 2, fontSize: 30 }} />
+          මගේ ලියාපදිංචි පන්ති
+        </Typography>
+        <Divider sx={{ mb: 3, background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)', height: 2 }} />
 
-                {student?.enrolledClasses?.length > 0 ? (
-                  <Grid container spacing={3}>
-                    {student.enrolledClasses
-                      .filter(c => c.category !== 'Special Class')
-                      .map((classItem) => (
-                        <Grid item xs={12} md={6} key={classItem._id}>
-                          <Card sx={{
-                            height: '100%',
-                            border: student.status === 'Approved' ?
-                              (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected ?
-                                '2px solid #f44336' : '2px solid #4caf50') :
-                              '2px solid #ff9800'
+        {student?.enrolledClasses?.length > 0 ? (
+          <Grid container spacing={2} sx={{ flex: 1, width: '100%', margin: 0 }}>
+            {student.enrolledClasses
+              .filter(c => c.category !== 'Special Class')
+              .map((classItem) => (
+                <Grid item xs={12} key={classItem._id} sx={{ width: '100%' }}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    <Card sx={{
+                      height: '100%',
+                      borderRadius: 3,
+                      background: student.status === 'Approved' ?
+                        (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected ?
+                          'linear-gradient(135deg,rgb(249, 216, 244) 0%, #ffcdd2 100%)' :
+                          'linear-gradient(135deg,rgb(242, 232, 245) 0%,rgb(200, 230, 221) 100%)') :
+                        'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+                      border: student.status === 'Approved' ?
+                        (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected ?
+                          '2px solid #f44336' : '2px solid #4caf50') :
+                        '2px solid #ff9800',
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                      '&:hover': {
+                        boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
+                        transform: 'translateY(-2px)',
+                        transition: 'all 0.3s ease'
+                      },
+                      width: '100%'
+                    }}>
+                      <CardContent sx={{ p: 3 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                          <Typography variant="h6" sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                            fontWeight: 'bold',
+                            color: 'primary.main'
                           }}>
-                            <CardContent>
-                              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                <Typography variant="h6">{classItem.grade}</Typography>
-                                <Box sx={{ display: 'flex', gap: 1 }}>
-                                  <Chip
-                                    label={classItem.category}
-                                    size="small"
-                                    color="primary"
-                                  />
-                                  {paymentStatuses[classItem._id]?.isOverdue && (
-                                    <Chip
-                                      label="Payment Overdue"
-                                      size="small"
-                                      color="error"
-                                      icon={<Warning />}
-                                    />
-                                  )}
-                                  {paymentStatuses[classItem._id]?.isRejected && (
-                                    <Chip
-                                      label="Payment Rejected"
-                                      size="small"
-                                      color="error"
-                                      icon={<Warning />}
-                                    />
-                                  )}
-                                </Box>
-                              </Box>
-                              <Typography color="text.secondary" gutterBottom>
-                                <Schedule sx={{ fontSize: 16, mr: 1 }} />
-                                {classItem.date} • {classItem.startTime} - {classItem.endTime}
-                              </Typography>
-                              <Typography color="text.secondary" gutterBottom>
-                                <LocationOn sx={{ fontSize: 16, mr: 1 }} />
-                                {classItem.venue}
-                              </Typography>
-                              <Typography color="text.secondary" gutterBottom>
-                                Platform: {classItem.platform}
-                              </Typography>
-
-                              {/* Payment Warning Notice */}
-                              {(paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) && (
-                                <Alert severity="warning" sx={{ mt: 2, mb: 2 }}>
-                                  <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                    {paymentStatuses[classItem._id]?.isOverdue ? 'ගෙවීම ප්‍රමාද වී ඇත!' : 'ගෙවීම ප්‍රතික්ෂේප කර ඇත!'}
-                                  </Typography>
-                                  <Typography variant="caption">
-                                    පන්තියට ප්‍රවේශ වීමට පෙර ගෙවීම සම්පූර්ණ කරන්න.
-                                  </Typography>
-                                </Alert>
-                              )}
-
-                              <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-                                <Button
-                                  variant="contained"
-                                  fullWidth
-                                  disabled={
-                                    student.status !== 'Approved' ||
-                                    paymentStatuses[classItem._id]?.isOverdue ||
-                                    paymentStatuses[classItem._id]?.isRejected ||
-                                    accessingClass[classItem._id]
-                                  }
-                                  startIcon={
-                                    accessingClass[classItem._id] ? <CircularProgress size={16} color="inherit" /> :
-                                    student.status !== 'Approved' ? <Lock /> :
-                                    (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) ? <Warning /> :
-                                    <Visibility />
-                                  }
-                                  onClick={async () => {
-                                    if (student.status !== 'Approved') {
-                                      alert('Your student account is not yet approved. Please wait for admin approval.');
-                                      return;
-                                    }
-
-                                    // Validate payment status before allowing access
-                                    const canAccess = await validateClassAccess(classItem);
-                                    if (canAccess) {
-                                      navigate(`/class/${classItem._id}`);
-                                    }
-                                  }}
-                                >
-                                  {accessingClass[classItem._id] ? 'Loading...' :
-                                   student.status !== 'Approved' ? 'Pending Approval' :
-                                   (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) ? 'Payment Required' :
-                                   'Access Class'}
-                                </Button>
-
-                                {(paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) && (
-                                  <Button
-                                    variant="outlined"
-                                    color="error"
-                                    startIcon={<Payment />}
-                                    onClick={() => navigate(`/student-class-payments/${classItem._id}`)}
-                                    sx={{ minWidth: 'auto', px: 2 }}
-                                  >
-                                    Pay Now
-                                  </Button>
-                                )}
-                              </Box>
-                            </CardContent>
-                          </Card>
-                        </Grid>
-                      ))}
-                  </Grid>
-                ) : (
-                  <Alert severity="info">
-                    You haven't enrolled in any classes yet. Browse available classes below to get started.
-                  </Alert>
-                )}
-              </Paper>
-
-              {/* Special Classes Section */}
-              <Paper elevation={6} sx={{ p: 3, borderRadius: 3, mb: 4 }}>
-                <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                  <School sx={{ mr: 1, color: 'warning.main' }} />
-                  Enrolled Special Classes
-                </Typography>
-                <Divider sx={{ mb: 3 }} />
-
-                {student?.enrolledClasses?.filter(c => c.category === 'Special Class').length > 0 ? (
-                  <Grid container spacing={3}>
-                    {student.enrolledClasses
-                      .filter(c => c.category === 'Special Class')
-                      .map((classItem) => (
-                        <Grid item xs={12} md={6} key={classItem._id}>
-                          <Card sx={{
-                            height: '100%',
-                            border: '2px solid',
-                            borderColor: paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected ?
-                              'error.main' : 'warning.main',
-                            background: 'linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%)',
-                            '&:hover': {
-                              transform: 'translateY(-4px)',
-                              boxShadow: '0 8px 24px rgba(255, 152, 0, 0.2)',
-                              transition: 'all 0.3s ease'
-                            }
-                          }}>
-                            <CardContent>
-                              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                <Typography variant="h6" sx={{ color: 'warning.dark' }}>{classItem.grade}</Typography>
-                                <Box sx={{ display: 'flex', gap: 1 }}>
-                                  <Chip
-                                    label="Special Class"
-                                    size="small"
-                                    color="warning"
-                                    sx={{ fontWeight: 'bold' }}
-                                  />
-                                  {paymentStatuses[classItem._id]?.isOverdue && (
-                                    <Chip
-                                      label="Payment Overdue"
-                                      size="small"
-                                      color="error"
-                                      icon={<Warning />}
-                                    />
-                                  )}
-                                  {paymentStatuses[classItem._id]?.isRejected && (
-                                    <Chip
-                                      label="Payment Rejected"
-                                      size="small"
-                                      color="error"
-                                      icon={<Warning />}
-                                    />
-                                  )}
-                                </Box>
-                              </Box>
-                              <Typography color="text.secondary" gutterBottom>
-                                <Schedule sx={{ fontSize: 16, mr: 1, color: 'warning.main' }} />
-                                {classItem.date} • {classItem.startTime} - {classItem.endTime}
-                              </Typography>
-                              <Typography color="text.secondary" gutterBottom>
-                                <LocationOn sx={{ fontSize: 16, mr: 1, color: 'warning.main' }} />
-                                {classItem.venue}
-                              </Typography>
-                              <Typography color="text.secondary" gutterBottom>
-                                Platform: {classItem.platform}
-                              </Typography>
-
-                              {/* Payment Warning Notice */}
-                              {(paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) && (
-                                <Alert severity="warning" sx={{ mt: 2, mb: 2 }}>
-                                  <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                    {paymentStatuses[classItem._id]?.isOverdue ? 'ගෙවීම ප්‍රමාද වී ඇත!' : 'ගෙවීම ප්‍රතික්ෂේප කර ඇත!'}
-                                  </Typography>
-                                  <Typography variant="caption">
-                                    පන්තියට ප්‍රවේශ වීමට පෙර ගෙවීම සම්පූර්ණ කරන්න.
-                                  </Typography>
-                                </Alert>
-                              )}
-
-                              <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-                                <Button
-                                  variant="contained"
-                                  fullWidth
-                                  sx={{
-                                    bgcolor: 'warning.main',
-                                    '&:hover': {
-                                      bgcolor: 'warning.dark'
-                                    }
-                                  }}
-                                  disabled={
-                                    student.status !== 'Approved' ||
-                                    paymentStatuses[classItem._id]?.isOverdue ||
-                                    paymentStatuses[classItem._id]?.isRejected ||
-                                    accessingClass[classItem._id]
-                                  }
-                                  startIcon={
-                                    accessingClass[classItem._id] ? <CircularProgress size={16} color="inherit" /> :
-                                    student.status !== 'Approved' ? <Lock /> :
-                                    (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) ? <Warning /> :
-                                    <Visibility />
-                                  }
-                                  onClick={async () => {
-                                    if (student.status !== 'Approved') {
-                                      alert('Your student account is not yet approved. Please wait for admin approval.');
-                                      return;
-                                    }
-
-                                    // Validate payment status before allowing access
-                                    const canAccess = await validateClassAccess(classItem);
-                                    if (canAccess) {
-                                      navigate(`/class/${classItem._id}`);
-                                    }
-                                  }}
-                                >
-                                  {accessingClass[classItem._id] ? 'Loading...' :
-                                   student.status !== 'Approved' ? 'Pending Approval' :
-                                   (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) ? 'Payment Required' :
-                                   'Access Special Class'}
-                                </Button>
-
-                                {(paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) && (
-                                  <Button
-                                    variant="outlined"
-                                    color="error"
-                                    startIcon={<Payment />}
-                                    onClick={() => navigate(`/student-class-payments/${classItem._id}`)}
-                                    sx={{ minWidth: 'auto', px: 2 }}
-                                  >
-                                    Pay Now
-                                  </Button>
-                                )}
-                              </Box>
-                            </CardContent>
-                          </Card>
-                        </Grid>
-                      ))}
-                  </Grid>
-                ) : (
-                  <Alert severity="info" sx={{
-                    bgcolor: 'warning.50',
-                    border: '1px solid',
-                    borderColor: 'warning.200'
-                  }}>
-                    You haven't enrolled in any special classes yet. These classes are designed for specific learning needs and are available upon request.
-                  </Alert>
-                )}
-              </Paper>
-
-              {/* Available Classes */}
-              <Paper elevation={6} sx={{ p: 3, borderRadius: 3 }}>
-                <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Add sx={{ mr: 1 }} />
-                  Available Classes
-                </Typography>
-                <Divider sx={{ mb: 3 }} />
-
-                {/* Grade Filter */}
-                <Box sx={{ mb: 3 }}>
-                  <FormControl sx={{ minWidth: 200 }}>
-                    <InputLabel>Filter by Grade</InputLabel>
-                    <Select
-                      value={selectedGrade}
-                      label="Filter by Grade"
-                      onChange={handleGradeFilterChange}
-                      disabled={loadingGrades}
-                    >
-                      <MenuItem value="">
-                        <em>All Grades</em>
-                      </MenuItem>
-                      {availableGrades.map((grade) => (
-                        <MenuItem key={grade} value={grade}>
-                          {grade}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Box>
-
-                {availableClasses.length > 0 ? (
-                  <Grid container spacing={3}>
-                    {availableClasses.map((classItem) => (
-                      <Grid item xs={12} md={6} key={classItem._id}>
-                        <Card>
-                          <CardContent>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                              <Typography variant="h6">{classItem.grade}</Typography>
-                              <Chip
-                                label={classItem.category}
-                                size="small"
-                                variant="outlined"
-                              />
-                            </Box>
-                            <Typography color="text.secondary" gutterBottom>
-                              <Schedule sx={{ fontSize: 16, mr: 1 }} />
-                              {classItem.date} • {classItem.startTime} - {classItem.endTime}
-                            </Typography>
-                            <Typography color="text.secondary" gutterBottom>
-                              <LocationOn sx={{ fontSize: 16, mr: 1 }} />
-                              {classItem.venue}
-                            </Typography>
-                            <Typography color="text.secondary" gutterBottom>
-                              <Group sx={{ fontSize: 16, mr: 1 }} />
-                              {classItem.availableSpots} spots available
-                            </Typography>
-
-                            <Button
-                              variant="outlined"
-                              fullWidth
-                              sx={{ mt: 2 }}
-                              onClick={() => handleClassEnrollment(classItem)}
-                              disabled={student?.status !== 'Approved'}
-                            >
-                              Request to Enroll
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                    ))}
-                  </Grid>
-                ) : (
-                  <Alert severity="info">
-                    No additional classes available for enrollment at this time.
-                  </Alert>
-                )}
-              </Paper>
-            </Grid>
-
-            {/* Sidebar */}
-            <Grid item xs={12} lg={4}>
-              {/* Class Requests Status */}
-              <Paper elevation={6} sx={{ p: 3, borderRadius: 3, mb: 4 }}>
-                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Badge badgeContent={classRequests.filter(r => r.status === 'Pending').length} color="warning">
-                    <Pending sx={{ mr: 1 }} />
-                  </Badge>
-                  My Class Requests
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-
-                {classRequests.length > 0 ? (
-                  <List dense>
-                    {classRequests.slice(0, 5).map((request) => (
-                      <ListItem
-                        key={request._id}
-                        divider
-                        secondaryAction={
-                          request.status === 'Pending' && (
-                            <IconButton
-                              edge="end"
-                              aria-label="delete"
-                              onClick={() => deleteClassRequest(request._id)}
+                            {classItem.grade}
+                          </Typography>
+                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            <Chip
+                              label={classItem.category}
                               size="small"
-                              color="error"
-                            >
-                              <Delete />
-                            </IconButton>
-                          )
-                        }
-                      >
-                        <ListItemIcon>
-                          {request.status === 'Pending' && <Pending color="warning" />}
-                          {request.status === 'Approved' && <CheckCircle color="success" />}
-                          {request.status === 'Rejected' && <Notifications color="error" />}
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={`${request.class?.grade} - ${request.class?.category}`}
-                          secondary={
-                            <Box>
-                              <Typography variant="caption" display="block">
-                                Status: {request.status}
-                              </Typography>
-                              <Typography variant="caption" color="text.secondary">
-                                {request.reason.substring(0, 50)}...
-                              </Typography>
-                            </Box>
-                          }
-                        />
-                      </ListItem>
-                    ))}
-                  </List>
-                ) : (
-                  <Typography variant="body2" color="text.secondary">
-                    No class requests yet
-                  </Typography>
-                )}
-              </Paper>
-
-              {/* Quick Actions */}
-              <Paper elevation={6} sx={{ p: 3, borderRadius: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  Quick Actions
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  startIcon={<Person />}
-                  sx={{ mb: 1 }}
-                  onClick={() => navigate('/student-profile')}
-                >
-                  View Profile
-                </Button>
-
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  startIcon={<Payment />}
-                  sx={{ mb: 1, fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif' }}
-                  onClick={() => navigate('/my-payment-requests')}
-                >
-                  මගේ පන්ති ගෙවීම් ඉල්ලීම්
-                </Button>
-
-                <Button
-                  fullWidth
-                  variant="contained"
-                  startIcon={<MessageIcon />}
-                  onClick={handleOpenMessageDialog}
-                  sx={{
-                    mt: 1,
-                    background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-                    '&:hover': {
-                      background: 'linear-gradient(45deg, #5a6fd8 30%, #6a4190 90%)'
-                    },
-                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-                  }}
-                >
-                  ගුරුවරයාට පණිවිඩයක් හෝ ගැටලුවක් යවන්න
-                </Button>
-
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  startIcon={<Visibility />}
-                  onClick={() => setShowMyMessagesDialog(true)}
-                  sx={{
-                    mt: 1,
-                    mb: 1,
-                    borderColor: '#667eea',
-                    color: '#667eea',
-                    '&:hover': {
-                      borderColor: '#5a6fd8',
-                      backgroundColor: 'rgba(102, 126, 234, 0.04)'
-                    },
-                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif'
-                  }}
-                >
-                  මගේ පණිවිඩ සහ ගැටලු බලන්න
-                </Button>
-
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  startIcon={<DashboardIcon />}
-                  onClick={() => navigate('/')}
-                >
-                  Back to Home
-                </Button>
-
-              </Paper>
-
-              {/* Student Notices */}
-              <Paper elevation={6} sx={{ p: 3, borderRadius: 3, mt: 3 }}>
-                <Typography variant="h6" gutterBottom sx={{
-                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
-                  <AnnouncementIcon sx={{ mr: 1 }} />
-                  සිසුන් සඳහා විශේෂ නිවේදන
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-
-                {loadingNotices ? (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
-                    <CircularProgress />
-                  </Box>
-                ) : studentNotices.length > 0 ? (
-                  studentNotices.slice(0, 3).map((notice, index) => {
-                    // Check if this is the latest notice (first in the sorted array)
-                    const isLatest = index === 0;
-                    const isNew = isLatest && new Date(notice.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // Within last 7 days
-
-                    return (
-                      <Accordion key={notice._id} sx={{ mb: 1 }}>
-                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                            <Typography variant="subtitle1" sx={{
-                              fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
-                              fontWeight: 'bold',
-                              flex: 1
-                            }}>
-                              {notice.title}
-                            </Typography>
-                            {isNew && (
+                              sx={{
+                                background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+                                color: 'white',
+                                fontWeight: 'bold'
+                              }}
+                            />
+                            {paymentStatuses[classItem._id]?.isOverdue && (
                               <Chip
-                                label="NEW"
+                                label="ගෙවීම ප්‍රමාද"
                                 size="small"
-                                sx={{
-                                  background: 'linear-gradient(45deg, #ff4444 30%, #cc0000 90%)',
-                                  color: 'white',
-                                  fontWeight: 'bold',
-                                  fontSize: '0.7rem',
-                                  height: 20,
-                                  animation: 'pulse 2s infinite',
-                                  '@keyframes pulse': {
-                                    '0%': {
-                                      transform: 'scale(1)',
-                                      boxShadow: '0 0 0 0 rgba(255, 68, 68, 0.7)'
-                                    },
-                                    '70%': {
-                                      transform: 'scale(1.05)',
-                                      boxShadow: '0 0 0 10px rgba(255, 68, 68, 0)'
-                                    },
-                                    '100%': {
-                                      transform: 'scale(1)',
-                                      boxShadow: '0 0 0 0 rgba(255, 68, 68, 0)'
-                                    }
-                                  }
-                                }}
+                                color="error"
+                                icon={<Warning />}
+                                sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}
+                              />
+                            )}
+                            {paymentStatuses[classItem._id]?.isRejected && (
+                              <Chip
+                                label="ගෙවීම ප්‍රතික්ෂේපයි"
+                                size="small"
+                                color="error"
+                                icon={<Warning />}
+                                sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}
                               />
                             )}
                           </Box>
-                        </AccordionSummary>
-                      <AccordionDetails>
-                        <Typography variant="body2" sx={{ mb: 2 }}>
+                        </Box>
+
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                          <Schedule sx={{ fontSize: 18, mr: 1, color: 'primary.main' }} />
+                          <Typography color="text.secondary" sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>
+                            {classItem.date} • {classItem.startTime} - {classItem.endTime}
+                          </Typography>
+                        </Box>
+
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                          <LocationOn sx={{ fontSize: 18, mr: 1, color: 'primary.main' }} />
+                          <Typography color="text.secondary" sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>
+                            {classItem.venue}
+                          </Typography>
+                        </Box>
+
+                        <Typography color="text.secondary" gutterBottom sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>
+                          වේදිකාව: {classItem.platform}
+                        </Typography>
+
+                        {/* Payment Warning Notice */}
+                        {(paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) && (
+                          <Alert severity="warning" sx={{ mt: 2, mb: 2, borderRadius: 2 }}>
+                            <Typography variant="body2" sx={{
+                              fontWeight: 'bold',
+                              mb: 1,
+                              fontFamily: '"Noto Sans Sinhala", sans-serif'
+                            }}>
+                              {paymentStatuses[classItem._id]?.isOverdue ? 'ගෙවීම ප්‍රමාද වී ඇත!' : 'ගෙවීම ප්‍රතික්ෂේප කර ඇත!'}
+                            </Typography>
+                            <Typography variant="caption" sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>
+                              පන්තියට ප්‍රවේශ වීමට පෙර ගෙවීම සම්පූර්ණ කරන්න.
+                            </Typography>
+                          </Alert>
+                        )}
+
+                        <Box sx={{ display: 'flex', gap: 1, mt: 3 }}>
+                          <Button
+                            variant="contained"
+                            fullWidth
+                            disabled={
+                              student.status !== 'Approved' ||
+                              paymentStatuses[classItem._id]?.isOverdue ||
+                              paymentStatuses[classItem._id]?.isRejected ||
+                              accessingClass[classItem._id]
+                            }
+                            startIcon={
+                              accessingClass[classItem._id] ? <CircularProgress size={16} color="inherit" /> :
+                              student.status !== 'Approved' ? <Lock /> :
+                              (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) ? <Warning /> :
+                              <Visibility />
+                            }
+                            sx={{
+                              borderRadius: 3,
+                              py: 1.5,
+                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                              fontFamily: '"Noto Sans Sinhala", sans-serif',
+                              fontWeight: 'bold',
+                              '&:hover': {
+                                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                                transform: 'translateY(-1px)',
+                                boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)'
+                              },
+                              '&:disabled': {
+                                background: 'rgba(0,0,0,0.12)'
+                              }
+                            }}
+                            onClick={async () => {
+                              if (student.status !== 'Approved') {
+                                alert('ඔබේ සිසු ගිණුම තවම අනුමත කර නැත. කරුණාකර පරිපාලක අනුමැතිය සඳහා රැඳී සිටින්න.');
+                                return;
+                              }
+
+                              // Validate payment status before allowing access
+                              const canAccess = await validateClassAccess(classItem);
+                              if (canAccess) {
+                                navigate(`/class/${classItem._id}`);
+                              }
+                            }}
+                          >
+                            {accessingClass[classItem._id] ? 'පූරණය වෙමින්...' :
+                             student.status !== 'Approved' ? 'අනුමැතිය බලාපොරොත්තුවෙන්' :
+                             (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) ? 'ගෙවීම අවශ්‍යයි' :
+                             'පන්තියට ප්‍රවේශ වන්න'}
+                          </Button>
+
+                          {(paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) && (
+                            <Button
+                              variant="outlined"
+                              color="error"
+                              startIcon={<Payment />}
+                              onClick={() => navigate(`/student-class-payments/${classItem._id}`)}
+                              sx={{
+                                minWidth: 'auto',
+                                px: 2,
+                                borderRadius: 3,
+                                fontFamily: '"Noto Sans Sinhala", sans-serif',
+                                fontWeight: 'bold'
+                              }}
+                            >
+                              ගෙවන්න
+                            </Button>
+                          )}
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </Grid>
+              ))}
+          </Grid>
+        ) : (
+          <Alert severity="info" sx={{
+            borderRadius: 3,
+            background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+            border: '1px solid #2196f3',
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%'
+          }}>
+            <Typography sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>
+              ඔබ තවම කිසිදු පන්තියකට ලියාපදිංචි වී නැත. ආරම්භ කිරීමට පහත ඇති පන්ති බලන්න.
+            </Typography>
+          </Alert>
+        )}
+      </motion.div>
+    </Paper>
+  </Grid>
+
+  {/* Right Side - Student Notices (1/3 width) */}
+  <Grid item xs={12} lg={4} sx={{ 
+    flex: { lg: 1 }, 
+    minWidth: 0,
+    order: { xs: 2, lg: 0 },
+    width: '100%',
+    padding: { xs: 0, lg: 'inherit' }
+  }}>
+    <Paper elevation={8} sx={{
+      p: 3,
+      borderRadius: 4,
+      mb: { xs: 0, lg: 4 },
+      background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)',
+      backdropFilter: 'blur(10px)',
+      border: '1px solid rgba(255,255,255,0.2)',
+      boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+      height: '100%',
+      minHeight: '600px',
+      display: 'flex',
+      flexDirection: 'column',
+      width: '100%',
+      overflow: 'hidden'
+    }}>
+      <motion.div
+        initial={{ opacity: 0, x: 30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}
+      >
+        <Typography variant="h5" gutterBottom sx={{
+          fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+          fontWeight: 'bold',
+          display: 'flex',
+          alignItems: 'center',
+          color: 'primary.main',
+          mb: 3
+        }}>
+          <AnnouncementIcon sx={{ mr: 2, fontSize: 30 }} />
+          සිසුන් සඳහා විශේෂ නිවේදන
+        </Typography>
+        <Divider sx={{ mb: 3, background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)', height: 2 }} />
+
+        {loadingNotices ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4, flex: 1, alignItems: 'center', width: '100%' }}>
+            <CircularProgress sx={{ color: 'primary.main' }} />
+          </Box>
+        ) : studentNotices.length > 0 ? (
+          <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', width: '100%' }}>
+            <Box sx={{ flex: 1, overflowY: 'auto', pr: 1, width: '100%' }}>
+              {studentNotices.slice(0, 5).map((notice, index) => {
+                // Check if this is the latest notice (first in the sorted array)
+                const isLatest = index === 0;
+                const isNew = isLatest && new Date(notice.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // Within last 7 days
+
+                return (
+                  <motion.div
+                    key={notice._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    style={{ width: '100%' }}
+                  >
+                    <Accordion sx={{
+                      mb: 2,
+                      borderRadius: 3,
+                      background: 'linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%)',
+                      border: '1px solid rgba(102, 126, 234, 0.2)',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                      '&:before': { display: 'none' },
+                      '&:hover': {
+                        boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                        transform: 'translateY(-2px)',
+                        transition: 'all 0.3s ease'
+                      },
+                      width: '100%'
+                    }}>
+                      <AccordionSummary
+                        expandIcon={<ExpandMoreIcon sx={{ color: 'primary.main' }} />}
+                        sx={{
+                          borderRadius: 3,
+                          '&:hover': {
+                            backgroundColor: 'rgba(102, 126, 234, 0.05)'
+                          }
+                        }}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 2 }}>
+                          <Typography variant="subtitle1" sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                            fontWeight: 'bold',
+                            flex: 1,
+                            color: 'primary.main'
+                          }}>
+                            {notice.title}
+                          </Typography>
+                          {isNew && (
+                            <Chip
+                              label="නව"
+                              size="small"
+                              sx={{
+                                background: 'linear-gradient(45deg, #ff4444 30%, #cc0000 90%)',
+                                color: 'white',
+                                fontWeight: 'bold',
+                                fontSize: '0.7rem',
+                                height: 24,
+                                fontFamily: '"Noto Sans Sinhala", sans-serif',
+                                animation: 'pulse 2s infinite',
+                                '@keyframes pulse': {
+                                  '0%': {
+                                    transform: 'scale(1)',
+                                    boxShadow: '0 0 0 0 rgba(255, 68, 68, 0.7)'
+                                  },
+                                  '70%': {
+                                    transform: 'scale(1.05)',
+                                    boxShadow: '0 0 0 10px rgba(255, 68, 68, 0)'
+                                  },
+                                  '100%': {
+                                    transform: 'scale(1)',
+                                    boxShadow: '0 0 0 0 rgba(255, 68, 68, 0)'
+                                  }
+                                }
+                              }}
+                            />
+                          )}
+                        </Box>
+                      </AccordionSummary>
+                      <AccordionDetails sx={{ p: 3, pt: 1 }}>
+                        <Typography variant="body2" sx={{
+                          mb: 2,
+                          fontFamily: '"Noto Sans Sinhala", sans-serif',
+                          lineHeight: 1.6
+                        }}>
                           {notice.content}
                         </Typography>
 
                         {notice.content2 && (
-                          <Typography variant="body2" sx={{ mb: 2 }}>
+                          <Typography variant="body2" sx={{
+                            mb: 2,
+                            fontFamily: '"Noto Sans Sinhala", sans-serif',
+                            lineHeight: 1.6
+                          }}>
                             {notice.content2}
                           </Typography>
                         )}
 
                         {notice.attachments && notice.attachments.length > 0 && (
                           <Box sx={{ mb: 2 }}>
-                            <Typography variant="subtitle2" gutterBottom>
+                            <Typography variant="subtitle2" gutterBottom sx={{
+                              fontFamily: '"Noto Sans Sinhala", sans-serif',
+                              fontWeight: 'bold',
+                              color: 'primary.main'
+                            }}>
                               ගොනු:
                             </Typography>
                             {notice.attachments.map((attachment, index) => (
@@ -1617,7 +1656,16 @@ const StudentDashboard = () => {
                                 icon={<AttachFileIcon />}
                                 label={attachment.originalName || 'ගොනුව'}
                                 size="small"
-                                sx={{ mr: 1, mb: 1 }}
+                                sx={{
+                                  mr: 1,
+                                  mb: 1,
+                                  backgroundColor: '#fff3e0',
+                                  '&:hover': {
+                                    backgroundColor: '#ffe0b2',
+                                    transform: 'scale(1.05)'
+                                  },
+                                  fontFamily: '"Noto Sans Sinhala", sans-serif'
+                                }}
                                 onClick={() => window.open(attachment.url, '_blank')}
                               />
                             ))}
@@ -1626,7 +1674,11 @@ const StudentDashboard = () => {
 
                         {notice.sourceLinks && notice.sourceLinks.length > 0 && (
                           <Box sx={{ mb: 2 }}>
-                            <Typography variant="subtitle2" gutterBottom>
+                            <Typography variant="subtitle2" gutterBottom sx={{
+                              fontFamily: '"Noto Sans Sinhala", sans-serif',
+                              fontWeight: 'bold',
+                              color: 'primary.main'
+                            }}>
                               මූලාශ්‍ර සබැඳි:
                             </Typography>
                             {notice.sourceLinks.map((link, index) => (
@@ -1635,28 +1687,899 @@ const StudentDashboard = () => {
                                 icon={<LinkIcon />}
                                 label={`සබැඳිය ${index + 1}`}
                                 size="small"
-                                sx={{ mr: 1, mb: 1 }}
+                                sx={{
+                                  mr: 1,
+                                  mb: 1,
+                                  backgroundColor: '#f3e5f5',
+                                  '&:hover': {
+                                    backgroundColor: '#e1bee7',
+                                    transform: 'scale(1.05)'
+                                  },
+                                  fontFamily: '"Noto Sans Sinhala", sans-serif'
+                                }}
                                 onClick={() => window.open(link, '_blank')}
                               />
                             ))}
                           </Box>
                         )}
 
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" color="text.secondary" sx={{
+                          fontFamily: '"Noto Sans Sinhala", sans-serif'
+                        }}>
                           නිර්මාණය: {new Date(notice.createdAt).toLocaleDateString('si-LK')}
                         </Typography>
                       </AccordionDetails>
                     </Accordion>
-                    );
-                  })
-                ) : (
-                  <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
-                    නිවේදන නොමැත
+                  </motion.div>
+                );
+              })}
+            </Box>
+
+            {studentNotices.length > 5 && (
+              <Box sx={{ textAlign: 'center', mt: 3 }}>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 3,
+                    px: 4,
+                    py: 1.5,
+                    borderColor: '#667eea',
+                    color: '#667eea',
+                    fontFamily: '"Noto Sans Sinhala", sans-serif',
+                    fontWeight: 'bold',
+                    '&:hover': {
+                      borderColor: '#5a6fd8',
+                      backgroundColor: 'rgba(102, 126, 234, 0.08)',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 8px 25px rgba(102, 126, 234, 0.2)'
+                    }
+                  }}
+                >
+                  තවත් නිවේදන බලන්න
+                </Button>
+              </Box>
+            )}
+          </Box>
+        ) : (
+          <Alert severity="info" sx={{
+            borderRadius: 3,
+            background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+            border: '1px solid #2196f3',
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%'
+          }}>
+            <Typography variant="body2" color="text.secondary" sx={{
+              textAlign: 'center',
+              py: 2,
+              fontFamily: '"Noto Sans Sinhala", sans-serif'
+            }}>
+              නිවේදන නොමැත
+            </Typography>
+          </Alert>
+        )}
+      </motion.div>
+    </Paper>
+  </Grid>
+</Grid>
+
+          {/* Second Section - Available Classes */}
+          <Grid container spacing={4} sx={{ mt: 2 }}>
+            <Grid item xs={12}>
+              <Paper elevation={8} sx={{
+                p: 4,
+                borderRadius: 4,
+                mb: 4,
+                background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
+                border: '2px solid #4caf50',
+                boxShadow: '0 20px 40px rgba(76, 175, 80, 0.2)'
+              }}>
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <Typography variant="h5" gutterBottom sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                    fontWeight: 'bold',
+                    color: '#2e7d32',
+                    mb: 3
+                  }}>
+                    <Add sx={{ mr: 2, fontSize: 32, color: '#4caf50' }} />
+                    ලබා ගත හැකි අනෙකුත් පන්ති
                   </Typography>
-                )}
+                  <Divider sx={{ mb: 3, background: 'linear-gradient(90deg, #4caf50 0%, #2e7d32 100%)', height: 2 }} />
+
+                  {/* Grade Filter */}
+                  <Box sx={{ mb: 3 }}>
+                    <FormControl sx={{ minWidth: 200 }}>
+                      <InputLabel sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>ශ්‍රේණිය අනුව පෙරහන</InputLabel>
+                      <Select
+                        value={selectedGrade}
+                        label="ශ්‍රේණිය අනුව පෙරහන"
+                        onChange={handleGradeFilterChange}
+                        disabled={loadingGrades}
+                        sx={{
+                          borderRadius: 3,
+                          '& .MuiOutlinedInput-notchedOutline': {
+                            borderColor: '#4caf50'
+                          },
+                          '&:hover .MuiOutlinedInput-notchedOutline': {
+                            borderColor: '#2e7d32'
+                          }
+                        }}
+                      >
+                        <MenuItem value="" sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>
+                          <em>සියලුම ශ්‍රේණි</em>
+                        </MenuItem>
+                        {availableGrades.map((grade) => (
+                          <MenuItem key={grade} value={grade} sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>
+                            {grade}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
+
+                  {availableClasses.length > 0 ? (
+                    <Grid container spacing={3}>
+                      {availableClasses.map((classItem) => (
+                        <Grid item xs={12} md={6} lg={4} key={classItem._id}>
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.5 }}
+                            whileHover={{ scale: 1.03, y: -3 }}
+                          >
+                            <Card sx={{
+                              borderRadius: 4,
+                              width: '300px',
+                              background: 'linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%)',
+                              border: '1px solid #4caf50',
+                              boxShadow: '0 8px 25px rgba(76, 175, 80, 0.2)',
+                              '&:hover': {
+                                boxShadow: '0 15px 35px rgba(76, 175, 80, 0.3)',
+                                transform: 'translateY(-5px)',
+                                transition: 'all 0.3s ease'
+                              }
+                            }}>
+                              <CardContent sx={{ p: 3 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                  <Typography variant="h6" sx={{
+                                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                                    fontWeight: 'bold',
+                                    color: '#2e7d32'
+                                  }}>
+                                    {classItem.grade}
+                                  </Typography>
+                                  <Chip
+                                    label={classItem.category}
+                                    size="small"
+                                    sx={{
+                                      background: 'linear-gradient(45deg, #4caf50 30%, #2e7d32 90%)',
+                                      color: 'white',
+                                      fontWeight: 'bold',
+                                      fontFamily: '"Noto Sans Sinhala", sans-serif'
+                                    }}
+                                  />
+                                </Box>
+
+                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                                  <Schedule sx={{ fontSize: 18, mr: 1, color: '#4caf50' }} />
+                                  <Typography color="text.secondary" sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>
+                                    {classItem.date} • {classItem.startTime} - {classItem.endTime}
+                                  </Typography>
+                                </Box>
+
+                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                                  <LocationOn sx={{ fontSize: 18, mr: 1, color: '#4caf50' }} />
+                                  <Typography color="text.secondary" sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>
+                                    {classItem.venue}
+                                  </Typography>
+                                </Box>
+
+                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                  <Group sx={{ fontSize: 18, mr: 1, color: '#4caf50' }} />
+                                  <Typography color="text.secondary" sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>
+                                    ලබා ගත හැකි ස්ථාන {classItem.availableSpots}
+                                  </Typography>
+                                </Box>
+
+                                <Button
+                                  variant="contained"
+                                  fullWidth
+                                  sx={{
+                                    mt: 2,
+                                    borderRadius: 3,
+                                    py: 1.5,
+                                    background: 'linear-gradient(135deg, #4caf50 0%, #2e7d32 100%)',
+                                    fontFamily: '"Noto Sans Sinhala", sans-serif',
+                                    fontWeight: 'bold',
+                                    '&:hover': {
+                                      background: 'linear-gradient(135deg, #43a047 0%, #1b5e20 100%)',
+                                      transform: 'translateY(-2px)',
+                                      boxShadow: '0 8px 25px rgba(76, 175, 80, 0.4)'
+                                    },
+                                    '&:disabled': {
+                                      background: 'rgba(0,0,0,0.12)'
+                                    }
+                                  }}
+                                  onClick={() => handleClassEnrollment(classItem)}
+                                  disabled={student?.status !== 'Approved'}
+                                  startIcon={student?.status !== 'Approved' ? <Lock /> : <Add />}
+                                >
+                                  {student?.status !== 'Approved' ? 'අනුමැතිය බලාපොරොත්තුවෙන්' : 'ලියාපදිංචි වීමට ඉල්ලීම'}
+                                </Button>
+                              </CardContent>
+                            </Card>
+                          </motion.div>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  ) : (
+                    <Alert severity="info" sx={{
+                      borderRadius: 3,
+                      background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
+                      border: '1px solid #4caf50'
+                    }}>
+                      <Typography sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>
+                        මේ මොහොතේ ලියාපදිංචි වීම සඳහා අමතර පන්ති නොමැත.
+                      </Typography>
+                    </Alert>
+                  )}
+                </motion.div>
               </Paper>
             </Grid>
           </Grid>
+
+          {/* Third Section - Side by Side Layout */}
+          <Grid container spacing={4} sx={{ mt: 2 }}>
+            {/* Left Side - Enrolled Special Classes Section (1/3 width) */}
+            <Grid item xs={12} lg={4} sx={{ width: '100%' }}>
+              <Paper elevation={8} sx={{
+                p: 4,
+                borderRadius: 4,
+                mb: 4,
+                background: 'linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%)',
+                border: '2px solid #ff9800',
+                boxShadow: '0 20px 40px rgba(255, 152, 0, 0.2)',
+                height: '100%',
+                minHeight: { xs: 'auto', lg: '200px' }
+              }}>
+                <motion.div
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <Typography variant="h5" gutterBottom sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                    fontWeight: 'bold',
+                    color: '#e65100',
+                    mb: 3
+                  }}>
+                    <School sx={{ mr: 2, fontSize: 30, color: '#ff9800' }} />
+                    ලියාපදිංචි විශේෂ පන්ති
+                  </Typography>
+                  <Divider sx={{ mb: 3, background: 'linear-gradient(90deg, #ff9800 0%, #e65100 100%)', height: 2 }} />
+
+                  {student?.enrolledClasses?.filter(c => c.category === 'Special Class').length > 0 ? (
+                    <Grid container spacing={2}>
+                      {student.enrolledClasses
+                        .filter(c => c.category === 'Special Class')
+                        .map((classItem) => (
+                          <Grid item xs={12} key={classItem._id}>
+                            <motion.div
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.5 }}
+                              whileHover={{ scale: 1.02 }}
+                            >
+                              <Card sx={{
+                                borderRadius: 3,
+                                background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+                                border: '2px solid',
+                                borderColor: paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected ?
+                                  'error.main' : 'warning.main',
+                                boxShadow: '0 8px 25px rgba(255, 152, 0, 0.2)',
+                                '&:hover': {
+                                  boxShadow: '0 12px 30px rgba(255, 152, 0, 0.3)',
+                                  transform: 'translateY(-2px)',
+                                  transition: 'all 0.3s ease'
+                                }
+                              }}>
+                                <CardContent sx={{ p: 3 }}>
+                                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                    <Typography variant="h6" sx={{
+                                      color: '#e65100',
+                                      fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                                      fontWeight: 'bold'
+                                    }}>
+                                      {classItem.grade}
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                                      <Chip
+                                        label="විශේෂ පන්තිය"
+                                        size="small"
+                                        sx={{
+                                          background: 'linear-gradient(45deg, #ff9800 30%, #e65100 90%)',
+                                          color: 'white',
+                                          fontWeight: 'bold',
+                                          fontFamily: '"Noto Sans Sinhala", sans-serif'
+                                        }}
+                                      />
+                                      {paymentStatuses[classItem._id]?.isOverdue && (
+                                        <Chip
+                                          label="ගෙවීම ප්‍රමාද"
+                                          size="small"
+                                          color="error"
+                                          icon={<Warning />}
+                                          sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}
+                                        />
+                                      )}
+                                      {paymentStatuses[classItem._id]?.isRejected && (
+                                        <Chip
+                                          label="ගෙවීම ප්‍රතික්ෂේපයි"
+                                          size="small"
+                                          color="error"
+                                          icon={<Warning />}
+                                          sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}
+                                        />
+                                      )}
+                                    </Box>
+                                  </Box>
+
+                                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                                    <Schedule sx={{ fontSize: 18, mr: 1, color: '#ff9800' }} />
+                                    <Typography color="text.secondary" sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>
+                                      {classItem.date} • {classItem.startTime} - {classItem.endTime}
+                                    </Typography>
+                                  </Box>
+
+                                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                                    <LocationOn sx={{ fontSize: 18, mr: 1, color: '#ff9800' }} />
+                                    <Typography color="text.secondary" sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>
+                                      {classItem.venue}
+                                    </Typography>
+                                  </Box>
+
+                                  <Typography color="text.secondary" gutterBottom sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>
+                                    වේදිකාව: {classItem.platform}
+                                  </Typography>
+
+                                  {/* Payment Warning Notice */}
+                                  {(paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) && (
+                                    <Alert severity="warning" sx={{ mt: 2, mb: 2, borderRadius: 2 }}>
+                                      <Typography variant="body2" sx={{
+                                        fontWeight: 'bold',
+                                        mb: 1,
+                                        fontFamily: '"Noto Sans Sinhala", sans-serif'
+                                      }}>
+                                        {paymentStatuses[classItem._id]?.isOverdue ? 'ගෙවීම ප්‍රමාද වී ඇත!' : 'ගෙවීම ප්‍රතික්ෂේප කර ඇත!'}
+                                      </Typography>
+                                      <Typography variant="caption" sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>
+                                        පන්තියට ප්‍රවේශ වීමට පෙර ගෙවීම සම්පූර්ණ කරන්න.
+                                      </Typography>
+                                    </Alert>
+                                  )}
+
+                                  <Box sx={{ display: 'flex', gap: 1, mt: 3 }}>
+                                    <Button
+                                      variant="contained"
+                                      fullWidth
+                                      sx={{
+                                        borderRadius: 3,
+                                        py: 1.5,
+                                        background: 'linear-gradient(135deg, #ff9800 0%, #e65100 100%)',
+                                        fontFamily: '"Noto Sans Sinhala", sans-serif',
+                                        fontWeight: 'bold',
+                                        '&:hover': {
+                                          background: 'linear-gradient(135deg, #f57c00 0%, #d84315 100%)',
+                                          transform: 'translateY(-2px)',
+                                          boxShadow: '0 8px 25px rgba(255, 152, 0, 0.4)'
+                                        },
+                                        '&:disabled': {
+                                          background: 'rgba(0,0,0,0.12)'
+                                        }
+                                      }}
+                                      disabled={
+                                        student.status !== 'Approved' ||
+                                        paymentStatuses[classItem._id]?.isOverdue ||
+                                        paymentStatuses[classItem._id]?.isRejected ||
+                                        accessingClass[classItem._id]
+                                      }
+                                      startIcon={
+                                        accessingClass[classItem._id] ? <CircularProgress size={16} color="inherit" /> :
+                                        student.status !== 'Approved' ? <Lock /> :
+                                        (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) ? <Warning /> :
+                                        <Visibility />
+                                      }
+                                      onClick={async () => {
+                                        if (student.status !== 'Approved') {
+                                          alert('ඔබේ සිසු ගිණුම තවම අනුමත කර නැත. කරුණාකර පරිපාලක අනුමැතිය සඳහා රැඳී සිටින්න.');
+                                          return;
+                                        }
+
+                                        // Validate payment status before allowing access
+                                        const canAccess = await validateClassAccess(classItem);
+                                        if (canAccess) {
+                                          navigate(`/class/${classItem._id}`);
+                                        }
+                                      }}
+                                    >
+                                      {accessingClass[classItem._id] ? 'පූරණය වෙමින්...' :
+                                      student.status !== 'Approved' ? 'අනුමැතිය බලාපොරොත්තුවෙන්' :
+                                      (paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) ? 'ගෙවීම අවශ්‍යයි' :
+                                      'විශේෂ පන්තියට ප්‍රවේශ වන්න'}
+                                    </Button>
+
+                                    {(paymentStatuses[classItem._id]?.isOverdue || paymentStatuses[classItem._id]?.isRejected) && (
+                                      <Button
+                                        variant="outlined"
+                                        color="error"
+                                        startIcon={<Payment />}
+                                        onClick={() => navigate(`/student-class-payments/${classItem._id}`)}
+                                        sx={{
+                                          minWidth: 'auto',
+                                          px: 2,
+                                          borderRadius: 3,
+                                          fontFamily: '"Noto Sans Sinhala", sans-serif',
+                                          fontWeight: 'bold'
+                                        }}
+                                      >
+                                        ගෙවන්න
+                                      </Button>
+                                    )}
+                                  </Box>
+                                </CardContent>
+                              </Card>
+                            </motion.div>
+                          </Grid>
+                        ))}
+                    </Grid>
+                  ) : (
+                    <Alert severity="info" sx={{
+                      borderRadius: 3,
+                      background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+                      border: '1px solid #ff9800'
+                    }}>
+                      <Typography sx={{ fontFamily: '"Noto Sans Sinhala", sans-serif' }}>
+                        ඔබ තවම කිසිදු විශේෂ පන්තියකට ලියාපදිංචි වී නැත. මෙම පන්ති විශේෂ ඉගෙනුම් අවශ්‍යතා සඳහා නිර්මාණය කර ඇති අතර ගුරුතුමා විසින් අවශ්‍ය වූ විටදී ඇතුලත් කරණු ලබයි.
+                      </Typography>
+                    </Alert>
+                  )}
+                </motion.div>
+              </Paper>
+            </Grid>
+
+            {/* Right Side - My Class Requests Section (2/3 width) */}
+            <Grid item xs={12} lg={8} sx={{ width: '100%' }}>
+              <Paper elevation={8} sx={{
+                p: 4,
+                borderRadius: 4,
+                mb: 4,
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                height: '100%',
+                minHeight: { xs: 'auto', lg: '500px' }
+              }}>
+                <motion.div
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <Typography variant="h5" gutterBottom sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                    fontWeight: 'bold',
+                    color: 'primary.main',
+                    mb: 3
+                  }}>
+                    <Badge badgeContent={classRequests.filter(r => r.status === 'Pending').length} color="warning">
+                      <Pending sx={{ mr: 2, fontSize: 30 }} />
+                    </Badge>
+                    මගේ පන්ති ඉල්ලීම්
+                  </Typography>
+                  <Divider sx={{ mb: 3, background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)', height: 2 }} />
+
+                  {classRequests.length > 0 ? (
+                    <>
+                      <List dense>
+                        {classRequests.slice(0, showAllRequests ? classRequests.length : 5).map((request, index) => (
+                          <motion.div
+                            key={request._id}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.5, delay: index * 0.1 }}
+                          >
+                            <ListItem
+                              divider
+                              sx={{
+                                borderRadius: 2,
+                                mb: 1,
+                                background: request.status === 'Approved' ?
+                                  'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)' :
+                                  request.status === 'Rejected' ?
+                                  'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)' :
+                                  'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+                                border: '1px solid',
+                                borderColor: request.status === 'Approved' ? '#4caf50' :
+                                  request.status === 'Rejected' ? '#f44336' : '#ff9800',
+                                '&:hover': {
+                                  transform: 'translateX(5px)',
+                                  transition: 'all 0.3s ease'
+                                }
+                              }}
+                              secondaryAction={
+                                request.status === 'Pending' && (
+                                  <IconButton
+                                    edge="end"
+                                    aria-label="delete"
+                                    onClick={() => deleteClassRequest(request._id)}
+                                    size="small"
+                                    sx={{
+                                      color: 'error.main',
+                                      '&:hover': {
+                                        backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                                        transform: 'scale(1.1)'
+                                      }
+                                    }}
+                                  >
+                                    <Delete />
+                                  </IconButton>
+                                )
+                              }
+                            >
+                              <ListItemIcon>
+                                {request.status === 'Pending' && <Pending color="warning" />}
+                                {request.status === 'Approved' && <CheckCircle color="success" />}
+                                {request.status === 'Rejected' && <Notifications color="error" />}
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={
+                                  <Typography sx={{
+                                    fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                                    fontWeight: 'bold',
+                                    color: 'primary.main'
+                                  }}>
+                                    {request.class?.grade} - {request.class?.category}
+                                  </Typography>
+                                }
+                                secondary={
+                                  <Box>
+                                    <Typography variant="caption" display="block" sx={{
+                                      fontFamily: '"Noto Sans Sinhala", sans-serif',
+                                      fontWeight: 'bold',
+                                      color: request.status === 'Approved' ? 'success.main' :
+                                        request.status === 'Rejected' ? 'error.main' : 'warning.main'
+                                    }}>
+                                      තත්ත්වය: {request.status === 'Pending' ? 'බලාපොරොත්තුවෙන්' :
+                                        request.status === 'Approved' ? 'අනුමත' : 'ප්‍රතික්ෂේප'}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary" sx={{
+                                      fontFamily: '"Noto Sans Sinhala", sans-serif'
+                                    }}>
+                                      {request.reason.substring(0, 50)}...
+                                    </Typography>
+                                  </Box>
+                                }
+                              />
+                            </ListItem>
+                          </motion.div>
+                        ))}
+                      </List>
+
+                      {classRequests.length > 5 && (
+                        <Box sx={{ textAlign: 'center', mt: 2 }}>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => {
+                              // Add state to show more requests
+                              setShowAllRequests(!showAllRequests);
+                            }}
+                            sx={{
+                              borderRadius: 3,
+                              px: 3,
+                              borderColor: '#667eea',
+                              color: '#667eea',
+                              fontFamily: '"Noto Sans Sinhala", sans-serif',
+                              '&:hover': {
+                                borderColor: '#5a6fd8',
+                                backgroundColor: 'rgba(102, 126, 234, 0.08)'
+                              }
+                            }}
+                          >
+                            {showAllRequests ? 'අඩුවෙන් පෙන්වන්න' : 'තවත් ඉල්ලීම් බලන්න'}
+                          </Button>
+                        </Box>
+                      )}
+                    </>
+                  ) : (
+                    <Alert severity="info" sx={{
+                      borderRadius: 3,
+                      background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+                      border: '1px solid #2196f3'
+                    }}>
+                      <Typography variant="body2" color="text.secondary" sx={{
+                        fontFamily: '"Noto Sans Sinhala", sans-serif'
+                      }}>
+                        තවම පන්ති ඉල්ලීම් නොමැත
+                      </Typography>
+                    </Alert>
+                  )}
+                </motion.div>
+              </Paper>
+            </Grid>
+
+            {/* Quick Actions Section */}
+            <Grid item xs={12}>
+              <Paper elevation={8} sx={{
+                p: 4,
+                borderRadius: 4,
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
+              }}>
+                <Typography variant="h6" gutterBottom sx={{
+                  fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                  fontWeight: 'bold',
+                  color: 'primary.main',
+                  mb: 3,
+                  textAlign: 'center'
+                }}>
+                  ක්ෂණික ක්‍රියාමාර්ග
+                </Typography>
+                <Divider sx={{ mb: 3, background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)', height: 2 }} />
+
+                <Grid container spacing={2}>
+                  {/* Profile Action */}
+                  <Grid item xs={12}>
+                    <motion.div
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Paper
+                        elevation={4}
+                        sx={{
+                          p: 3,
+                          borderRadius: 3,
+                          background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+                          border: '1px solid #2196f3',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            boxShadow: '0 8px 25px rgba(33, 150, 243, 0.3)',
+                            transform: 'translateY(-3px)',
+                            transition: 'all 0.3s ease'
+                          }
+                        }}
+                        onClick={() => navigate('/student-profile')}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, width: '400px' }}>
+                          <Person sx={{ fontSize: 24, mr: 2, color: '#1976d2' }} />
+                          <Typography variant="h6" sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                            fontWeight: 'bold',
+                            color: '#1976d2'
+                          }}>
+                            ඔබගේ Profile එක බලන්න
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" color="text.secondary" sx={{
+                          fontFamily: '"Noto Sans Sinhala", sans-serif',
+                          ml: 4
+                        }}>
+                          ඔබේ පුද්ගලික තොරතුරු සහ ගිණුම් විස්තර බලන්න
+                        </Typography>
+                      </Paper>
+                    </motion.div>
+                  </Grid>
+
+                  {/* Payment Requests Action */}
+                  <Grid item xs={12}>
+                    <motion.div
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Paper
+                        elevation={4}
+                        sx={{
+                          p: 3,
+                          borderRadius: 3,
+                          background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+                          border: '1px solid #ff9800',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            boxShadow: '0 8px 25px rgba(255, 152, 0, 0.3)',
+                            transform: 'translateY(-3px)',
+                            transition: 'all 0.3s ease'
+                          }
+                        }}
+                        onClick={() => navigate('/my-payment-requests')}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, width: '400px' }}>
+                          <Payment sx={{ fontSize: 24, mr: 2, color: '#f57c00' }} />
+                          <Typography variant="h6" sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                            fontWeight: 'bold',
+                            color: '#f57c00'
+                          }}>
+                            මගේ පන්ති ගෙවීම්
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" color="text.secondary" sx={{
+                          fontFamily: '"Noto Sans Sinhala", sans-serif',
+                          ml: 4
+                        }}>
+                          පන්ති ගෙවීම් ඉල්ලීම් සහ ගෙවීම් ඉතිහාසය බලන්න
+                        </Typography>
+                      </Paper>
+                    </motion.div>
+                  </Grid>
+
+                  {/* Send Message Action */}
+                  <Grid item xs={12}>
+                    <motion.div
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Paper
+                        elevation={4}
+                        sx={{
+                          p: 3,
+                          borderRadius: 3,
+                          background: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
+                          border: '1px solid #9c27b0',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            boxShadow: '0 8px 25px rgba(156, 39, 176, 0.3)',
+                            transform: 'translateY(-3px)',
+                            transition: 'all 0.3s ease'
+                          }
+                        }}
+                        onClick={handleOpenMessageDialog}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, width: '400px' }}>
+                          <MessageIcon sx={{ fontSize: 24, mr: 2, color: '#7b1fa2' }} />
+                          <Typography variant="h6" sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                            fontWeight: 'bold',
+                            color: '#7b1fa2'
+                          }}>
+                            ගුරුවරයාට පණිවිඩයක්
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" color="text.secondary" sx={{
+                          fontFamily: '"Noto Sans Sinhala", sans-serif',
+                          ml: 4
+                        }}>
+                          ගුරුවරයාට පණිවිඩයක් හෝ ගැටලුවක් යවන්න
+                        </Typography>
+                      </Paper>
+                    </motion.div>
+                  </Grid>
+
+                  {/* View Messages Action */}
+                  <Grid item xs={12}>
+                    <motion.div
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Paper
+                        elevation={4}
+                        sx={{
+                          p: 3,
+                          borderRadius: 3,
+                          background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
+                          border: '1px solid #4caf50',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            boxShadow: '0 8px 25px rgba(76, 175, 80, 0.3)',
+                            transform: 'translateY(-3px)',
+                            transition: 'all 0.3s ease'
+                          }
+                        }}
+                        onClick={() => setShowMyMessagesDialog(true)}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, width: '400px' }}>
+                          <Visibility sx={{ fontSize: 24, mr: 2, color: '#388e3c' }} />
+                          <Typography variant="h6" sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                            fontWeight: 'bold',
+                            color: '#388e3c'
+                          }}>
+                            මගේ පණිවිඩ බලන්න
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" color="text.secondary" sx={{
+                          fontFamily: '"Noto Sans Sinhala", sans-serif',
+                          ml: 4
+                        }}>
+                          යවන ලද පණිවිඩ සහ ලැබුණු පිළිතුරු බලන්න
+                        </Typography>
+                      </Paper>
+                    </motion.div>
+                  </Grid>
+
+                  {/* Back to Home Action */}
+                  <Grid item xs={12}>
+                    <motion.div
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Paper
+                        elevation={4}
+                        sx={{
+                          p: 3,
+                          borderRadius: 3,
+                          background: 'linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%)',
+                          border: '1px solid #e91e63',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            boxShadow: '0 8px 25px rgba(233, 30, 99, 0.3)',
+                            transform: 'translateY(-3px)',
+                            transition: 'all 0.3s ease'
+                          }
+                        }}
+                        onClick={() => navigate('/')}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, width: '400px' }}>
+                          <DashboardIcon sx={{ fontSize: 24, mr: 2, color: '#c2185b' }} />
+                          <Typography variant="h6" sx={{
+                            fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
+                            fontWeight: 'bold',
+                            color: '#c2185b'
+                          }}>
+                            මුල් පිටුවට
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" color="text.secondary" sx={{
+                          fontFamily: '"Noto Sans Sinhala", sans-serif',
+                          ml: 4
+                        }}>
+                          ප්‍රධාන වෙබ් අඩවියට ආපසු යන්න
+                        </Typography>
+                      </Paper>
+                    </motion.div>
+                  </Grid>
+                </Grid>
+              </Paper>
+            </Grid>
+          </Grid>
+        </motion.div>
+
+        {/* Bottom Notice Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        >
+          <Paper elevation={6} sx={{
+            p: 3,
+            mt: 4,
+            borderRadius: 4,
+            background: 'linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%)',
+            border: '1px solid rgba(102, 126, 234, 0.2)',
+            textAlign: 'center'
+          }}>
+            <Typography variant="body2" sx={{
+              fontFamily: '"Noto Sans Sinhala", sans-serif',
+              color: 'text.secondary',
+              lineHeight: 1.6
+            }}>
+              <strong>සටහන:</strong> ඔබට ඔබගේ ශිෂ්‍ය ගිණුමේ මුරපදය වෙනස් කිරීමට අවශ්‍යනම් ශිෂ්‍ය ගිණුමට ඇතුල්වීමේ දී මුරපදය ඉල්ලන අවස්ථාවේ පෙන්වන 'Forgot or Reset Password' Option එක භාවිතා කරන්න.
+              තාක්ෂණික සහාය සඳහා Contact පිටුව ඔස්සේ අපව සම්බන්ධ කරන්න.
+            </Typography>
+          </Paper>
         </motion.div>
       </Container>
 
@@ -2023,6 +2946,22 @@ const StudentDashboard = () => {
           >
             පණිවිඩ නැවුම් කරන්න (Referesh)
           </Button>
+          <Typography 
+            gutterBottom 
+            sx={{ 
+              mb: 1,
+              p: 2,
+              backgroundColor: '#f5f5f5',
+              borderLeft: '4px solid #3f51b5',
+              borderRadius: '0 4px 4px 0',
+              fontStyle: 'italic',
+              color: '#555',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+              fontSize: '0.9rem'
+            }}
+          >
+            <strong>Note:</strong> ඔබේ පණිවිඩ වෙන්වන්නේ නැතිනම් එක් වරක් ඉහත බොත්තම ඔබා පණිවිඩ නැවුම් කරන්න (Refresh).
+          </Typography>
 
           {loadingMyMessages ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
