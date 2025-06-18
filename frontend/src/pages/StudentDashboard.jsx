@@ -1881,11 +1881,11 @@ const StudentDashboard = () => {
           {selectedEditMessage ? 'පණිවිඩය සංස්කරණය කරන්න' : 'ගුරුවරයාට පණිවිඩයක් යවන්න'}
         </DialogTitle>
 
-        <DialogContent sx={{ p: 3 }}>
+        <DialogContent sx={{ p: 3, mt: 2 }}>
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              <FormControl fullWidth sx={{ mb: 2 }}>
-                <InputLabel>විෂය</InputLabel>
+              <FormControl fullWidth sx={{ mb: 2, minWidth: 200 }}>
+                <InputLabel>කුමක් ගැනද</InputLabel>
                 <Select
                   value={messageData.about}
                   onChange={(e) => handleMessageInputChange('about', e.target.value)}
@@ -2013,6 +2013,7 @@ const StudentDashboard = () => {
             variant="contained"
             onClick={loadMyMessages}
             sx={{
+              mt: 1,
               mb: 3,
               background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
               '&:hover': {
@@ -2020,7 +2021,7 @@ const StudentDashboard = () => {
               }
             }}
           >
-            පණිවිඩ නැවුම් කරන්න
+            පණිවිඩ නැවුම් කරන්න (Referesh)
           </Button>
 
           {loadingMyMessages ? (
@@ -2030,9 +2031,13 @@ const StudentDashboard = () => {
           ) : myMessages.length > 0 ? (
             <Grid container spacing={3}>
               {myMessages.map((message) => (
-                <Grid item xs={12} md={6} key={message._id}>
+                <Grid item xs={12} md={6} key={message._id} sx={{
+                display: 'grid',
+                alignItems: 'stretch', // This ensures all cards stretch to the same height
+                }}>
                   <Card sx={{
                     borderRadius: 3,
+                    width: '350px',
                     boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
                     border: message.reply ? '2px solid #4caf50' : '2px solid #ff9800'
                   }}>

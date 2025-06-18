@@ -214,7 +214,8 @@ const MyPaymentRequests = () => {
             <Grid item xs={12} sm={6} md={3}>
               <Card sx={{ 
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white'
+                color: 'white',
+                width: '220px'
               }}>
                 <CardContent sx={{ textAlign: 'center' }}>
                   <Payment sx={{ fontSize: 40, mb: 1 }} />
@@ -226,7 +227,8 @@ const MyPaymentRequests = () => {
             <Grid item xs={12} sm={6} md={3}>
               <Card sx={{ 
                 background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
-                color: 'white'
+                color: 'white',
+                width: '220px'
               }}>
                 <CardContent sx={{ textAlign: 'center' }}>
                   <Pending sx={{ fontSize: 40, mb: 1 }} />
@@ -238,7 +240,8 @@ const MyPaymentRequests = () => {
             <Grid item xs={12} sm={6} md={3}>
               <Card sx={{ 
                 background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
-                color: 'white'
+                color: 'white',
+                width: '220px'
               }}>
                 <CardContent sx={{ textAlign: 'center' }}>
                   <CheckCircle sx={{ fontSize: 40, mb: 1 }} />
@@ -250,7 +253,8 @@ const MyPaymentRequests = () => {
             <Grid item xs={12} sm={6} md={3}>
               <Card sx={{ 
                 background: 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)',
-                color: 'white'
+                color: 'white',
+                width: '220px'
               }}>
                 <CardContent sx={{ textAlign: 'center' }}>
                   <Cancel sx={{ fontSize: 40, mb: 1 }} />
