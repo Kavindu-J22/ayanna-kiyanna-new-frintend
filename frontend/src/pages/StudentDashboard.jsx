@@ -1587,7 +1587,7 @@ const StudentDashboard = () => {
                             fontFamily: '"Gemunu Libre", "Noto Sans Sinhala", sans-serif',
                             fontWeight: 'bold',
                             flex: 1,
-                            color: 'primary.main'
+                            color: '#333'
                           }}>
                             {notice.title}
                           </Typography>
