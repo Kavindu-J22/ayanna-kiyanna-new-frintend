@@ -93,25 +93,25 @@ const StudentAssignments = () => {
   };
 
   const getStatusColor = (submissionStatus) => {
-    if (!submissionStatus.submitted) return 'warning';
+    if (!submissionStatus || !submissionStatus.submitted) return 'warning';
     if (submissionStatus.marks !== null && submissionStatus.marks !== undefined) return 'success';
     return 'info';
   };
 
   const getStatusText = (submissionStatus) => {
-    if (!submissionStatus.submitted) return 'ඉදිරිපත් නොකළ';
+    if (!submissionStatus || !submissionStatus.submitted) return 'ඉදිරිපත් නොකළ';
     if (submissionStatus.marks !== null && submissionStatus.marks !== undefined) return 'ලකුණු ලබා දී ඇත';
     return 'ඉදිරිපත් කර ඇත';
   };
 
   const getStatusIcon = (submissionStatus) => {
-    if (!submissionStatus.submitted) return <PendingActions />;
+    if (!submissionStatus || !submissionStatus.submitted) return <PendingActions />;
     if (submissionStatus.marks !== null && submissionStatus.marks !== undefined) return <Grade />;
     return <CheckCircle />;
   };
 
   const isOverdue = (dueDate, submissionStatus) => {
-    if (!dueDate || submissionStatus.submitted) return false;
+    if (!dueDate || !submissionStatus || submissionStatus.submitted) return false;
     return new Date() > new Date(dueDate);
   };
 
@@ -237,11 +237,11 @@ function getMarkColor(marks) {
                   flexDirection: 'column',
                   position: 'relative',
                   border: '1px solid',
-                  borderColor: isOverdue(assignment.dueDate, assignment.submissionStatus) ? 'error.main' : 'primary.light',
+                  borderColor: isOverdue(assignment.dueDate, assignment.submissionStatus || {}) ? 'error.main' : 'primary.light',
                   '&:hover': {
                     transform: 'translateY(-4px)',
                     boxShadow: 6,
-                    borderColor: isOverdue(assignment.dueDate, assignment.submissionStatus) ? 'error.dark' : 'primary.main'
+                    borderColor: isOverdue(assignment.dueDate, assignment.submissionStatus || {}) ? 'error.dark' : 'primary.main'
                   },
                   transition: 'all 0.3s ease'
                 }}>
@@ -253,16 +253,16 @@ function getMarkColor(marks) {
                     zIndex: 1
                   }}>
                     <Chip
-                      label={getStatusText(assignment.submissionStatus)}
-                      color={getStatusColor(assignment.submissionStatus)}
+                      label={getStatusText(assignment.submissionStatus || {})}
+                      color={getStatusColor(assignment.submissionStatus || {})}
                       size="small"
-                      icon={getStatusIcon(assignment.submissionStatus)}
+                      icon={getStatusIcon(assignment.submissionStatus || {})}
                       sx={{ fontWeight: 'bold' }}
                     />
                   </Box>
 
                   {/* New Badge for Latest Assignment */}
-                  {isLatestAssignment(assignment, assignments) && !isOverdue(assignment.dueDate, assignment.submissionStatus) && (
+                  {isLatestAssignment(assignment, assignments) && !isOverdue(assignment.dueDate, assignment.submissionStatus || {}) && (
                     <Box sx={{
                       position: 'absolute',
                       top: 60,
@@ -287,7 +287,7 @@ function getMarkColor(marks) {
                   )}
 
                   {/* Overdue Badge */}
-                  {isOverdue(assignment.dueDate, assignment.submissionStatus) && (
+                  {isOverdue(assignment.dueDate, assignment.submissionStatus || {}) && (
                     <Box sx={{
                       position: 'absolute',
                       bottom: 100,
@@ -364,7 +364,7 @@ function getMarkColor(marks) {
                       </Box>
 
                       {/* Marks Display */}
-                      {assignment.submissionStatus.marks !== null && assignment.submissionStatus.marks !== undefined && (
+                      {assignment.submissionStatus && assignment.submissionStatus.marks !== null && assignment.submissionStatus.marks !== undefined && (
                       <Box sx={{ 
                         mt: 2, 
                         p: 2, 
@@ -412,7 +412,7 @@ function getMarkColor(marks) {
                         විස්තර බලන්න
                       </Button>
 
-                      {!assignment.submissionStatus.submitted ? (
+                      {!assignment.submissionStatus || !assignment.submissionStatus.submitted ? (
                         <Button
                           size="small"
                           variant="contained"
@@ -428,7 +428,7 @@ function getMarkColor(marks) {
                         >
                           ඉදිරිපත් කරන්න
                         </Button>
-                      ) : assignment.submissionStatus.marks === null ? (
+                      ) : assignment.submissionStatus && assignment.submissionStatus.marks === null ? (
                         <Button
                           size="small"
                           variant="outlined"
