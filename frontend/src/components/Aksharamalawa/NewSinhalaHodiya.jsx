@@ -5,19 +5,6 @@ import VrnaLet from '../../assets/VranaLet.png';
 
 function NewSinhalaHodiya() {
     const navigate = useNavigate();
-    const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-
-    // Check localStorage for userEmail on component mount
-    useEffect(() => {
-        const userEmail = localStorage.getItem('userEmail');
-        if (!userEmail) {
-            setShowLoginPrompt(true);
-        }
-    }, []);
-
-    const handleLoginRedirect = () => {
-        navigate('/login');
-    };
 
     // Smooth popup close function
     const smoothClosePopup = (setterFunction, currentValue) => {
@@ -5657,24 +5644,6 @@ function NewSinhalaHodiya() {
         }
 
         </div>
-
-        {/* Creative Login Prompt Dialog */}
-        {showLoginPrompt && (
-            <div className='akuruwistharamain'>
-                <div className='AakuruwistharamainboxContent loginPromptContent'>
-                    <h1>🔐</h1>
-                    <p id='titleP'>ප්‍රවේශ වීම අවශ්‍යයි!</p>
-                    <p>මෙම සුහුරු සිංහල අක්ෂර මාලාව භාවිතා කිරීම සඳහා ඔබ මුලින්ම ලියාපදිංචි වී ප්‍රවේශ වීම අවශ්‍ය වේ.</p>
-                    <p>කරුණාකර පහත "ප්‍රවේශ වන්න" බොත්තම ක්ලික් කර ප්‍රවේශ වන්න.</p>
-                    <p id='EngP'>Please login first to use this Smart Sinhala Alphabet page.</p>
-                    <div className='loginPromptButtons'>
-                        <button className='MyOkBtn loginBtn' onClick={handleLoginRedirect}>
-                            ප්‍රවේශ වන්න
-                        </button>
-                    </div>
-                </div>
-            </div>
-        )}
 
         {/* Download Button - Page Bottom Right */}
         <button className="pageDownloadBtn" onClick={downloadVrnaLet} title="සුහුරු සිංහල අක්ෂර මාලාව රූපයක් ලෙස බාගන්න">
